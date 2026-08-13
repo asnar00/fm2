@@ -4,7 +4,7 @@ const feature_Keyframes = {
   lastT: 0,
   sinceLast: 0,
 };
-if (typeof feature_Blackbox !== 'undefined' && typeof feature_Events !== 'undefined') {
+if (typeof feature_Blackbox !== 'undefined' && typeof feature_Loop !== 'undefined') {
   const fm_kfRecord = feature_Blackbox.record;
   feature_Blackbox.record = function (event, stateAfter) {
     fm_kfRecord.call(this, event, stateAfter);

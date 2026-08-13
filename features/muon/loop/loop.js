@@ -1,4 +1,4 @@
-const feature_Events = {
+const feature_Loop = {
   instance: null,
   state: null,
   // load the wasm, apply the boot payload, wire one delegated listener:

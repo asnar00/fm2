@@ -1,2 +1,3 @@
 - [x] pwa
 - [x] readout
+- [x] blackbox

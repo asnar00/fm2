@@ -1,6 +1,6 @@
 - [x] serve
 - [x] shell
 - [x] users
-- [x] push
+- [x] comms
+- [x] loop
 - [x] diag
-- [x] events

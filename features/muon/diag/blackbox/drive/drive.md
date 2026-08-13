@@ -6,7 +6,7 @@
 
 ## spec
 
-The inverse of `/readout`: where readout lets an agent see the screen, drive lets it act on one. With `?drive=1` the page polls the server (4×/second) for queued commands and executes them — `send` (an event through the `/events` Rust loop), `tap` (any CSS selector, a real click — chrome and login included), `type` (fill an input and fire its events). Commands are enqueued by `POST diag/drive` and popped one per poll; localhost is open for tooling, the tunnel requires a cookie both ways. Together with readout this is muon's native demo-and-test framework: **a demo script is interactions followed by assertions on the readout**, and `tools/drive.py run <script>` executes exactly that, failing loudly on a missed assertion.
+The inverse of `/readout`: where readout lets an agent see the screen, drive lets it act on one. With `?drive=1` the page polls the server (4×/second) for queued commands and executes them — `send` (an event through the `/loop` Rust loop), `tap` (any CSS selector, a real click — chrome and login included), `type` (fill an input and fire its events). Commands are enqueued by `POST diag/drive` and popped one per poll; localhost is open for tooling, the tunnel requires a cookie both ways. Together with readout this is muon's native demo-and-test framework: **a demo script is interactions followed by assertions on the readout**, and `tools/drive.py run <script>` executes exactly that, failing loudly on a missed assertion.
 
 ## user
 
@@ -19,7 +19,7 @@ For agents: `python3 tools/drive.py tap '#build'` pokes the live page; `drive.py
 
 ## code description
 
-`drive.page.js`: `feature_Drive` suppresses `/gate`'s login redirect when active (a driven demo is not a user session, same stance as `/replay`) then polls `/diag/drive/next`, executing each command — `send` via `feature_Events.send` (typeof-guarded), `tap` via `querySelector(...).click()`, `type` by setting the value and dispatching an `input` event.
+`drive.page.js`: `feature_Drive` suppresses `/gate`'s login redirect when active (a driven demo is not a user session, same stance as `/replay`) then polls `/diag/drive/next`, executing each command — `send` via `feature_Loop.send` (typeof-guarded), `tap` via `querySelector(...).click()`, `type` by setting the value and dispatching an `input` event.
 
 `drive.rs`: a `route` /extension/ — `POST diag/drive` appends one command to a file-backed queue (size-capped, normalised to an array), `GET diag/drive/next` pops and returns the head or `{}`; both share `/readout`'s guard (localhost free, tunnel cookie-gated).
 

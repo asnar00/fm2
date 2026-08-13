@@ -4,8 +4,8 @@ const feature_Drive = {
     const cmd = await fetch('/diag/drive/next', { cache: 'no-store' })
       .then((r) => r.ok ? r.json() : null).catch(() => null);
     if (!cmd) return;
-    if (cmd.send && typeof feature_Events !== 'undefined') {
-      feature_Events.send(cmd.send);
+    if (cmd.send && typeof feature_Loop !== 'undefined') {
+      feature_Loop.send(cmd.send);
     }
     if (cmd.tap) {
       const el = document.querySelector(cmd.tap);

@@ -20,19 +20,19 @@ const feature_Replay = {
     let kf = null;
     for (const k of (data.keyframes || []))
       if (k.t <= first && (!kf || k.t > kf.t)) kf = k;
-    feature_Events.state = kf ? kf.state : '{}';
-    feature_Events.send({ type: 'replay-seed' });   // harmless: renders the seed
+    feature_Loop.state = kf ? kf.state : '{}';
+    feature_Loop.send({ type: 'replay-seed' });   // harmless: renders the seed
     for (const e of data.entries)
-      setTimeout(() => feature_Events.send(e.event), (e.t - first) / this.speed);
+      setTimeout(() => feature_Loop.send(e.event), (e.t - first) / this.speed);
   },
 };
-if (feature_Replay.active && typeof feature_Events !== 'undefined') {
+if (feature_Replay.active && typeof feature_Loop !== 'undefined') {
   if (typeof feature_Blackbox !== 'undefined') feature_Blackbox.paused = true;
   // a replay is not a user session: don't bounce the ghost to login
   if (typeof feature_Gate !== 'undefined')
     feature_Gate.redirectIfLoggedOut = () => false;
   const fm_replayWait = setInterval(() => {
-    if (feature_Events.instance) {
+    if (feature_Loop.instance) {
       clearInterval(fm_replayWait);
       feature_Replay.badge();
       feature_Replay.start();

@@ -57,16 +57,16 @@ const feature_Blackbox = {
 };
 
 // wrap the event loop (the JS extension idiom: reassign around the original)
-if (typeof feature_Events !== 'undefined') {
+if (typeof feature_Loop !== 'undefined') {
   feature_Blackbox.load();
   feature_Blackbox.flush();   // ship any previous session's tail (crashes included)
-  const fm_bbSend = feature_Events.send;
-  feature_Events.send = function (event) {
+  const fm_bbSend = feature_Loop.send;
+  feature_Loop.send = function (event) {
     fm_bbSend.call(this, event);
     feature_Blackbox.record(event, this.state);
   };
-  const fm_bbApply = feature_Events.apply;
-  feature_Events.apply = function (p) {
+  const fm_bbApply = feature_Loop.apply;
+  feature_Loop.apply = function (p) {
     fm_bbApply.call(this, p);
     if (!feature_Blackbox.log.keyframes.length) {
       feature_Blackbox.log.keyframes.push({ t: Date.now(), state: this.state });

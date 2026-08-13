@@ -18,21 +18,33 @@ The page must be open with ?drive=1&readout=1 (replay/demo URLs include them).
 """
 
 import json
+import os
 import sys
 import time
 import urllib.request
 
-BASE = "http://localhost:8095"
+# --base https://muon.xn--nb-lkaa.org and --cookie "muon_auth=..." (or env
+# MUON_BASE / MUON_COOKIE) drive an instance through the tunnel, which gates
+# the drive/readout endpoints
+BASE = os.environ.get("MUON_BASE", "http://localhost:8095")
+COOKIE = os.environ.get("MUON_COOKIE", "")
 
 
-def post(path, body):
-    req = urllib.request.Request(BASE + path, data=json.dumps(body).encode(),
-                                 method="POST")
+def request(path, body=None):
+    req = urllib.request.Request(BASE + path,
+        data=json.dumps(body).encode() if body is not None else None,
+        method="POST" if body is not None else "GET")
+    if COOKIE:
+        req.add_header("Cookie", COOKIE)
     return json.loads(urllib.request.urlopen(req).read())
 
 
+def post(path, body):
+    return request(path, body)
+
+
 def get(path):
-    return json.loads(urllib.request.urlopen(BASE + path).read())
+    return request(path)
 
 
 def find(node, want):
@@ -77,7 +89,15 @@ def run_script(path):
 
 
 def main():
+    global BASE, COOKIE
     args = sys.argv[1:]
+    while args and args[0].startswith("--"):
+        if args[0] == "--base":
+            BASE = args[1]; args = args[2:]
+        elif args[0] == "--cookie":
+            COOKIE = args[1]; args = args[2:]
+        else:
+            break
     if not args:
         print(__doc__)
         return

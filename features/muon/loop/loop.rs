@@ -1,5 +1,5 @@
-struct feature_Events;
-impl feature_Events {
+struct feature_Loop;
+impl feature_Loop {
     // base state: an empty JSON object. features extending init merge their
     // defaults into it.
     fn init() -> String {

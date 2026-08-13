@@ -40,7 +40,7 @@ const fm_bufToB64u = (b) => btoa(String.fromCharCode(...new Uint8Array(b)))
       if (feature_Gate.redirectIfLoggedOut(who)) return;
     }
     if (typeof feature_Panel !== 'undefined') feature_Panel.lastWho = who;
-    if (typeof feature_Events !== 'undefined') await feature_Events.boot();
+    if (typeof feature_Loop !== 'undefined') await feature_Loop.boot();
     if (typeof feature_Update !== 'undefined') await feature_Update.launch(who);
   } catch (e) {
     if (typeof feature_Diag !== 'undefined')

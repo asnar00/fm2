@@ -1,4 +1,4 @@
-# events
+# loop
 *the client runs an event loop: state → event → update → render*
 
 > (transcripts/2026-08-13-fm-spec.md#p97)
@@ -21,6 +21,6 @@ For agents building muon features: give an element `data-ev="name"`, extend `upd
 
 `events.rs` owns the loop's Rust side: `init()` (base state `{}`), `update(state, event)` (base: unchanged state), `boot()` (init → render → payload), `on_event(input)` (unwrap `{state, event}` → update → render → payload), and `event_payload` (the `{state, html}` JSON both exports return).
 
-`events.js` owns the page side: `feature_Events.boot()` fetches and instantiates the wasm, applies the boot payload, and installs one delegated click listener for `[data-ev]` elements; `send(event)` wraps state+event, calls `fm_event`, and applies the result; string passage uses the linker-generated `fm_alloc`.
+`events.js` owns the page side: `feature_Loop.boot()` fetches and instantiates the wasm, applies the boot payload, and installs one delegated click listener for `[data-ev]` elements; `send(event)` wraps state+event, calls `fm_event`, and applies the result; string passage uses the linker-generated `fm_alloc`.
 
 The wasm exports themselves (`fm_entry` → `boot`, `fm_event` → `on_event`, `fm_alloc`) are linker-generated glue, declared by the product's places.md.
