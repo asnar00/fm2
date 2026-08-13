@@ -14,6 +14,13 @@ prompt refines an existing capability, it gets a subfeature node under it —
 never a second quote folded into the parent. (The bundled update/ node had to
 be decomposed into update/{buildnum,watch,honest} when this rule landed.)
 
+**Pointer nodes are debt.** A spec-only node whose behaviour lives in another
+feature's files (today: the JS in shell/gate/install assets) documents intent
+but cannot be toggled — fm's promise doesn't hold for it yet. The event-core
+migration is the payoff path; do not add NEW client behaviour as asset JS
+without flagging the debt in notes.md. 4-6 children per node (fm.md rule);
+shell is at 6 — its next child forces a regroup (mind linearisation order).
+
 Deploy prints which nodes a release touches and flags releases with no new
 nodes — treat that flag as the question "did a request go nodeless?"
 
