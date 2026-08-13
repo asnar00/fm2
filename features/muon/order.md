@@ -1,4 +1,5 @@
 - [x] serve
 - [x] shell
 - [x] users
+- [x] push
 - [x] diag

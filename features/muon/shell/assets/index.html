@@ -53,6 +53,9 @@
   <div class="row" id="passkeyRow" style="display:none">
     <button id="passkeyBtn">enable Face ID login</button>
   </div>
+  <div class="row" id="pushRow" style="display:none">
+    <button id="pushBtn">enable notifications</button>
+  </div>
   <div class="row">
     <button id="updateBtn" class="primary" style="display:none">update</button>
     <button id="logoutBtn">log out</button>
@@ -170,6 +173,10 @@ $('build').onclick = async () => {
   $('updateBtn').style.display = upgrade ? '' : 'none';
   $('passkeyRow').style.display =
     (window.PublicKeyCredential && !localStorage.muonPasskey) ? '' : 'none';
+  const standalone = matchMedia('(display-mode: standalone)').matches
+    || navigator.standalone === true;
+  $('pushRow').style.display =
+    ('PushManager' in window && standalone && !localStorage.muonPush) ? '' : 'none';
   const changes = await fetch('changes.json', { cache: 'no-store' })
     .then(r => r.ok ? r.json() : []).catch(() => []);
   $('changes').innerHTML = changes.slice(0, 6).map(c =>
@@ -224,6 +231,32 @@ $('passkeyBtn').onclick = async () => {
     }
   } catch (e) {
     diag({ error: 'passkey create: ' + (e && e.message ? e.message : String(e)) });
+  }
+};
+
+// ---- push enrolment (panel): deploy notifications even when the app is closed
+$('pushBtn').onclick = async () => {
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const key = await fetch('push/vapid-key').then(r => r.text());
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true, applicationServerKey: b64uToBuf(key.trim()) });
+    const r = await fetch('push/subscribe', { method: 'POST',
+      body: JSON.stringify({
+        endpoint: sub.endpoint,
+        p256dh: bufToB64u(sub.getKey('p256dh')),
+        auth: bufToB64u(sub.getKey('auth')) }) }).then(x => x.json());
+    if (r.ok) {
+      localStorage.muonPush = '1';
+      $('pushBtn').textContent = 'notifications enabled ✓';
+      setTimeout(() => { $('pushRow').style.display = 'none'; }, 1500);
+    } else {
+      diag({ error: 'push subscribe: ' + (r.error || 'failed') });
+      $('pushBtn').textContent = 'notification setup failed — try again';
+    }
+  } catch (e) {
+    diag({ error: 'push enrol: ' + (e && e.message ? e.message : String(e)) });
+    $('pushBtn').textContent = 'notifications blocked or unavailable';
   }
 };
 </script>
