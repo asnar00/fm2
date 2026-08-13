@@ -28,6 +28,9 @@ const feature_Replay = {
 };
 if (feature_Replay.active && typeof feature_Events !== 'undefined') {
   if (typeof feature_Blackbox !== 'undefined') feature_Blackbox.paused = true;
+  // a replay is not a user session: don't bounce the ghost to login
+  if (typeof feature_Gate !== 'undefined')
+    feature_Gate.redirectIfLoggedOut = () => false;
   const fm_replayWait = setInterval(() => {
     if (feature_Events.instance) {
       clearInterval(fm_replayWait);
