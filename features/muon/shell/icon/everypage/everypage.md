@@ -18,4 +18,4 @@ Whichever screen you install from, the tile is the logo.
 
 ## code description
 
-`apple-touch-icon` and favicon links in the heads of index.html, login.html and install.html.
+This node owns `everypage.page.head.html`: the `apple-touch-icon` and favicon links, composed into the head slot of every page — so any page is a safe install point. Untick it and the monogram-tile behaviour honestly returns.

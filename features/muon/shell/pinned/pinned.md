@@ -18,4 +18,6 @@ The app feels native-solid: nothing drags, bounces or zooms.
 
 ## code description
 
-Shared head CSS in index.html, login.html and install.html (`position: fixed; inset: 0; overflow: hidden; overscroll-behavior: none; touch-action: manipulation`), the `maximum-scale=1, user-scalable=no` viewport, and the one-line `gesturestart` preventDefault.
+This node owns `pinned.page.css` (the fixed, non-overflowing, non-overscrolling page frame and `touch-action: manipulation`) and `pinned.page.js` (`feature_Pinned` + the `gesturestart` pinch guard) — composed into every page.
+
+The `maximum-scale=1, user-scalable=no` viewport attributes remain in each page skeleton (a page has exactly one viewport meta).

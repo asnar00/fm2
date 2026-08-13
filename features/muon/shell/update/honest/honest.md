@@ -18,4 +18,4 @@ If the panel says "can't reach the server", that's the truth — you may or may 
 
 ## code description
 
-In `/shell`'s loader: the launch path schedules a retry interval when the version fetch returns nothing; the panel-open handler awaits a live `checkForUpdate` and words the status line by whether it answered.
+This node owns `honest.js`: `feature_Honest.retry()` (the every-5s launch-check retry until an answer lands) and `statusText(live)` — the panel's "up to date" vs "can't reach the server" wording. Untick it and failed checks simply say nothing.

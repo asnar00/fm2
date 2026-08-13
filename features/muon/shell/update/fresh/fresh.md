@@ -18,4 +18,4 @@ Online, you always see the latest deploy. Offline, you get the newest build your
 
 ## code description
 
-The fetch handler in `/shell`'s `assets/sw.js`: try the network, `cache.put` on success, fall back to the cached copy on failure; auth and version paths return early, uncached.
+This node owns `fresh.sw.js`: the service worker's fetch handler — network-first with cache refresh on success and cache fallback on failure, `/auth/*` and `version` exempt. It consults `feature_Deadline` defensively: absent (`/deadline` unticked) means pure network-first.

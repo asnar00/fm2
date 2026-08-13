@@ -18,4 +18,4 @@ The corner button sits fully visible above the home-indicator zone on any displa
 
 ## code description
 
-`#build`'s position in `/shell`'s loader CSS: `bottom`/`right` computed as `calc(env(safe-area-inset-…) + margin)`. The panel sheet uses the same inset for its bottom offset.
+This node owns `corner.index.css`: the `#build` handle's safe-area-relative position (`bottom`/`right` as `calc(env(safe-area-inset-…) + margin)`). The panel sheet's own inset lives with `/panel`.

@@ -18,6 +18,4 @@ Tap the logo lozenge in the corner. Everything administrative lives there: see w
 
 ## code description
 
-The panel is part of `/shell`'s loader page: the `#build` handle and `#panel` markup, the open handler (live update re-check, changes fetch, enrolment-state checks), and the button handlers (update, logout, passkey and push enrolment retries).
-
-This node records the intent and the rules; see `/shell` for the code walk-through.
+This node owns the panel's markup (`panel.index.html`: shade, sheet, who-line, changes list, enrolment and update/logout rows), its styling (`panel.index.css`), and `panel.index.js` — `feature_Panel.open/close`, which re-checks the build live via `feature_Watch`, words the status via `feature_Honest`, and invites `feature_Passkey`/`feature_Push` to offer enrolment; plus the logout and update button handlers. All references are typeof-guarded, so sibling features can be unticked freely.

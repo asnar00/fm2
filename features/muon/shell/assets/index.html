@@ -8,271 +8,50 @@
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="icon" href="icon-192.png">
+<!-- fm:head -->
 <style>
-  html, body { position: fixed; inset: 0; overflow: hidden;
-    overscroll-behavior: none; touch-action: manipulation; }
   html, body { margin: 0; height: 100%; background: #000; color: #fff;
     font: 16px -apple-system, system-ui, sans-serif; }
   body { display: flex; align-items: center; justify-content: center; }
   #app { text-align: center; }
-  .logo { font-size: 14vw; line-height: 1; user-select: none;
-    transform: translateY(-100%); }
-  @media (min-width: 700px) { .logo { font-size: 98px; } }
-
-  /* system panel: a small logo button is its handle (hamburger stand-in);
-     it glows gently when a new build is waiting */
-  #build { position: fixed;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
-    right: calc(env(safe-area-inset-right, 0px) + 16px);
-    opacity: .55; font-size: 15px; padding: 8px 14px; line-height: 1;
-    border: 1px solid #3a3a3f; border-radius: 999px; background: #121215;
-    user-select: none; cursor: pointer; }
-  #build.update { color: #8ab8ff; border-color: #48628a;
-    animation: pulse 1.6s ease-in-out infinite; }
-  @keyframes pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
-  #shade { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; }
-  #panel { position: fixed; left: 50%; bottom: max(14px, env(safe-area-inset-bottom));
-    transform: translateX(-50%); width: min(92vw, 22rem); background: #101012;
-    border: 1px solid #2e2e33; border-radius: 14px; padding: 14px 16px;
-    display: none; font-size: 14px; }
-  #panel .who { color: #9a9aa2; margin-bottom: 8px; }
-  #panel .change { color: #77777e; font-size: 12.5px; margin: 3px 0;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  #panel .change b { color: #b9b9c0; font-weight: 600; }
-  #panel .row { display: flex; gap: 10px; margin-top: 12px; }
-  #panel button { flex: 1; font: inherit; font-size: 14px; padding: 8px 0;
-    border-radius: 9px; border: 1px solid #333; background: #1a1a1d; color: #fff; }
-  #panel button.primary { background: #fff; color: #000; border-color: #fff; }
+/* fm:style */
 </style>
 </head>
 <body>
 <div id="app"></div>
-<div id="build">ᕦ(ツ)ᕤ</div>
-<div id="shade"></div>
-<div id="panel">
-  <div class="who" id="who"></div>
-  <div id="changes"></div>
-  <div class="row" id="passkeyRow" style="display:none">
-    <button id="passkeyBtn">enable Face ID login</button>
-  </div>
-  <div class="row" id="pushRow" style="display:none">
-    <button id="pushBtn">enable notifications</button>
-  </div>
-  <div class="row">
-    <button id="updateBtn" class="primary" style="display:none">update</button>
-    <button id="logoutBtn">log out</button>
-  </div>
-</div>
+<!-- fm:body -->
 <script>
-document.addEventListener('gesturestart', (e) => e.preventDefault());
-// diagnostics first, so even a broken loader reports in
-const diag = (data) => fetch('diag/report', { method: 'POST',
-  body: JSON.stringify({ t: new Date().toISOString(), ...data }) }).catch(() => {});
-window.onerror = (msg, src, line, col) =>
-  diag({ error: String(msg), at: `${src}:${line}:${col}` });
-
 const $ = (id) => document.getElementById(id);
-let running = localStorage.muonVersion || 'first-run';
-let server = null;
-let who = null;
+const fm_b64uToBuf = (s) => Uint8Array.from(
+  atob(s.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
+const fm_bufToB64u = (b) => btoa(String.fromCharCode(...new Uint8Array(b)))
+  .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+// fm:script
 
-const fetchVersion = () => fetch('version', { cache: 'no-store' })
-  .then(r => r.ok ? r.text() : null).then(t => t ? t.trim() : null)
-  .catch(() => null);
-
-// one shared checker: updates state + lights the stamp when a newer build
-// exists. returns the server build, or null if it couldn't be reached.
-async function checkForUpdate() {
-  const v = await fetchVersion();
-  if (!v) return null;
-  server = v;
-  if (running !== 'first-run' && v !== running) {
-    $('build').classList.add('update');
-  }
-  return v;
-}
-
+// ---- the loader flow (shell): each step consults optional features and
+// carries on gracefully when one is unticked
 (async () => {
   try {
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-
-    // phone browsers are sent to install the PWA first — no login, no app,
-    // until installed. (?browser=1 is an undocumented dev bypass, session-
-    // scoped.) installed app and desktop continue.
-    const pwa = matchMedia('(display-mode: standalone)').matches
-                || navigator.standalone === true;
-    const phone = /iPhone|iPad|Android/.test(navigator.userAgent)
-                  || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    if (location.search.includes('browser=1')) sessionStorage.muonBrowser = '1';
-    if (phone && !pwa && !sessionStorage.muonBrowser) {
-      location.replace('install.html');
-      return;
+    if (typeof feature_Install !== 'undefined' && feature_Install.redirect()) return;
+    let who = null;
+    if (typeof feature_Gate !== 'undefined') {
+      who = await feature_Gate.whoami();
+      if (feature_Gate.redirectIfLoggedOut(who)) return;
     }
-
-    // shell is public; data is not. logged out -> login page.
-    who = await fetch('auth/whoami', { cache: 'no-store' })
-      .then(r => r.json()).catch(() => null);
-    if (who && who.ok && !who.authed) { location.replace('login.html'); return; }
-
+    if (typeof feature_Panel !== 'undefined') feature_Panel.lastWho = who;
     const res = await fetch('client.wasm');
     const { instance } = await WebAssembly.instantiate(await res.arrayBuffer(), {});
     const packed = instance.exports.fm_entry();
     const ptr = Number(packed >> 32n), len = Number(packed & 0xFFFFFFFFn);
     const bytes = new Uint8Array(instance.exports.memory.buffer, ptr, len);
     $('app').innerHTML = new TextDecoder().decode(bytes);
-
-    // self-update on launch: silent, immediate (network-first makes the
-    // fetch itself current; the reload covers assets mid-race)
-    const v = await fetchVersion();
-    server = v;
-    diag({ launch: true, running, server: v || 'offline',
-           authed: !!(who && who.authed), pwa,
-           sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller),
-           ua: navigator.userAgent.slice(0, 90) });
-    if (v) {
-      localStorage.muonVersion = v;
-      if (running !== 'first-run' && running !== v) {
-        await caches.delete('muon');
-        location.reload();
-        return;
-      }
-      running = v;
-    } else {
-      // launched without network (cache fallback): keep trying — the check
-      // failing must never masquerade as "up to date"
-      let tries = 0;
-      const timer = setInterval(async () => {
-        if (await checkForUpdate() || ++tries >= 12) clearInterval(timer);
-      }, 5000);
-    }
+    if (typeof feature_Update !== 'undefined') await feature_Update.launch(who);
   } catch (e) {
-    diag({ error: 'loader: ' + (e && e.message ? e.message : String(e)) });
+    if (typeof feature_Diag !== 'undefined')
+      feature_Diag.report({ error: 'loader: ' + (e && e.message ? e.message : String(e)) });
   }
 })();
-
-// mid-session update watch: foregrounding and regaining connectivity re-check,
-// plus a slow poll while visible so an open app notices a deploy by itself.
-// (a backgrounded iOS PWA is frozen — reaching THOSE needs web push, later.)
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') checkForUpdate();
-});
-window.addEventListener('online', checkForUpdate);
-setInterval(() => {
-  if (document.visibilityState === 'visible') checkForUpdate();
-}, 60000);
-
-// ---- system panel: tap the build stamp (always re-checks, live)
-$('build').onclick = async () => {
-  const live = await checkForUpdate();
-  const upgrade = server && server !== running;
-  $('who').textContent =
-    (who && who.name ? 'logged in as ' + who.name : 'not logged in')
-    + ' · build ' + running
-    + (upgrade ? ' → ' + server + ' available'
-       : (live ? ' — up to date' : ' — can’t reach the server'));
-  $('updateBtn').style.display = upgrade ? '' : 'none';
-  $('passkeyRow').style.display =
-    (window.PublicKeyCredential && !localStorage.muonPasskey) ? '' : 'none';
-  const standalone = matchMedia('(display-mode: standalone)').matches
-    || navigator.standalone === true;
-  // ask the service worker for the REAL subscription state — a stale local
-  // flag once left this button showing on an already-enrolled device
-  let pushEnrolled = !!localStorage.muonPush;
-  if (!pushEnrolled && 'PushManager' in window) {
-    try {
-      const reg = await navigator.serviceWorker.ready;
-      if (await reg.pushManager.getSubscription()) {
-        pushEnrolled = true;
-        localStorage.muonPush = '1';
-      }
-    } catch (e) {}
-  }
-  $('pushRow').style.display =
-    ('PushManager' in window && standalone && !pushEnrolled) ? '' : 'none';
-  const changes = await fetch('changes.json', { cache: 'no-store' })
-    .then(r => r.ok ? r.json() : []).catch(() => []);
-  $('changes').innerHTML = changes.slice(0, 6).map(c =>
-    '<div class="change"><b>' + c.build + '</b> '
-    + String(c.text).replace(/</g, '&lt;') + '</div>').join('');
-  $('shade').style.display = 'block';
-  $('panel').style.display = 'block';
-};
-const closePanel = () => { $('shade').style.display = 'none'; $('panel').style.display = 'none'; };
-$('shade').onclick = closePanel;
-$('logoutBtn').onclick = async () => {
-  await fetch('auth/logout', { method: 'POST' }).catch(() => {});
-  location.reload();
-};
-$('updateBtn').onclick = async () => {
-  if (server) localStorage.muonVersion = server;
-  await caches.delete('muon');
-  location.reload();
-};
-
-// ---- Face ID enrolment (panel): create a passkey while SMS-logged-in
-const b64uToBuf = (s) => Uint8Array.from(
-  atob(s.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
-const bufToB64u = (b) => btoa(String.fromCharCode(...new Uint8Array(b)))
-  .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-$('passkeyBtn').onclick = async () => {
-  try {
-    const o = await fetch('auth/passkey/register-challenge', { method: 'POST' })
-      .then(r => r.json());
-    if (!o.ok) { diag({ error: 'passkey challenge: ' + (o.error || '?') }); return; }
-    const cred = await navigator.credentials.create({ publicKey: {
-      challenge: b64uToBuf(o.challenge),
-      rp: { id: o.rp_id, name: 'muon' },
-      user: { id: b64uToBuf(o.user_id), name: o.user_name, displayName: o.user_name },
-      pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
-      authenticatorSelection: { authenticatorAttachment: 'platform',
-        residentKey: 'required', userVerification: 'required' },
-      attestation: 'none' } });
-    const r = await fetch('auth/passkey/register', { method: 'POST',
-      body: JSON.stringify({
-        id: cred.id,
-        attestation: bufToB64u(cred.response.attestationObject),
-        client_data: bufToB64u(cred.response.clientDataJSON) }) })
-      .then(x => x.json());
-    if (r.ok) {
-      localStorage.muonPasskey = '1';
-      $('passkeyBtn').textContent = 'Face ID enabled ✓';
-      setTimeout(() => { $('passkeyRow').style.display = 'none'; }, 1500);
-    } else {
-      diag({ error: 'passkey register: ' + (r.error || 'failed') });
-      $('passkeyBtn').textContent = 'Face ID setup failed — try again';
-    }
-  } catch (e) {
-    diag({ error: 'passkey create: ' + (e && e.message ? e.message : String(e)) });
-  }
-};
-
-// ---- push enrolment (panel): deploy notifications even when the app is closed
-$('pushBtn').onclick = async () => {
-  try {
-    const reg = await navigator.serviceWorker.ready;
-    const key = await fetch('push/vapid-key').then(r => r.text());
-    const sub = await reg.pushManager.subscribe({
-      userVisibleOnly: true, applicationServerKey: b64uToBuf(key.trim()) });
-    const r = await fetch('push/subscribe', { method: 'POST',
-      body: JSON.stringify({
-        endpoint: sub.endpoint,
-        p256dh: bufToB64u(sub.getKey('p256dh')),
-        auth: bufToB64u(sub.getKey('auth')) }) }).then(x => x.json());
-    if (r.ok) {
-      localStorage.muonPush = '1';
-      $('pushBtn').textContent = 'notifications enabled ✓';
-      setTimeout(() => { $('pushRow').style.display = 'none'; }, 1500);
-    } else {
-      diag({ error: 'push subscribe: ' + (r.error || 'failed') });
-      $('pushBtn').textContent = 'notification setup failed — try again';
-    }
-  } catch (e) {
-    diag({ error: 'push enrol: ' + (e && e.message ? e.message : String(e)) });
-    $('pushBtn').textContent = 'notifications blocked or unavailable';
-  }
-};
 </script>
 </body>
 </html>

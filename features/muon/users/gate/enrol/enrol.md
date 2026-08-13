@@ -18,4 +18,4 @@ New device: install, one SMS code, allow the two permission sheets — done fore
 
 ## code description
 
-`enrolDevice` in `/gate`'s login page: the passkey branch (register-challenge → `credentials.create` → register), then the push branch (`pushManager.subscribe` with the VAPID key → subscribe endpoint), each guarded, each diag-logged; called from both the PIN-verify and Face-ID success paths.
+This node owns `enrol.login.js`: `feature_Enrol.run()` — the passkey branch (register-challenge → `credentials.create` → register), then the push branch (`pushManager.subscribe` with the VAPID key → subscribe endpoint), each guarded, each reported via `log()`. Called by the login page's PIN-verify path and by `/passkey`'s Face ID sign-in path.

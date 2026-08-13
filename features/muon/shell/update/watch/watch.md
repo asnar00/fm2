@@ -18,4 +18,4 @@ Leave the app open through a deploy: the logo button starts pulsing within the m
 
 ## code description
 
-`checkForUpdate` in `/shell`'s loader, triggered by `visibilitychange`, `online`, and a `setInterval` guarded to visible state.
+This node owns `watch.js`: `feature_Watch.check()` (re-fetch the stamp, light the `#build` handle when newer) and its three triggers — `visibilitychange`, `online`, and the 60-second visible poll.

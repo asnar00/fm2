@@ -18,4 +18,4 @@ On a phone browser you see the logo and the three steps — nothing else. Instal
 
 ## code description
 
-`install.html`'s step markup (`.step` rows with `.key` tiles, an inline share-icon SVG) and the removal of the visible continue-in-browser link; the loader's redirect honours `sessionStorage.muonBrowser` for the dev bypass.
+This node owns `steps.install.html` (the iOS three-step and Android two-step instruction markup with key tiles and the share-icon SVG), `steps.install.css` (their styling), and `steps.install.js` (the Android copy swap). The wall page itself — skeleton, standalone self-redirect — remains `/install`'s asset.

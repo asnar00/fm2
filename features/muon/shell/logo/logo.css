@@ -1,0 +1,2 @@
+.logo { font-size: 14vw; line-height: 1; user-select: none; }
+@media (min-width: 700px) { .logo { font-size: 98px; } }

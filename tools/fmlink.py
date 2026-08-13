@@ -30,6 +30,20 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 SKIP_DIRS = {"build", "target", "assets"}
 
+# ---- asset fragments: implementation files in page languages -----------------
+# a feature may carry css/js/html fragment files beside its spec; the linker
+# assembles them into the page-owning feature's asset at slot markers, in
+# linearisation order, each wrapped in a provenance comment. filename infix
+# names the target page (bare = index); 'page' = every html page.
+FRAGMENT_PAGE = {"index": ["index.html"], "login": ["login.html"],
+                 "install": ["install.html"], "sw": ["sw.js"],
+                 "page": ["index.html", "login.html", "install.html"]}
+EXT_SLOT = {"css": "style", "js": "script", "html": "body"}
+SLOT_MARKER = {"head": "<!-- fm:head -->", "style": "/* fm:style */",
+               "body": "<!-- fm:body -->", "script": "// fm:script"}
+SLOT_COMMENT = {"head": "<!-- fm: {} -->", "style": "/* fm: {} */",
+                "body": "<!-- fm: {} -->", "script": "// fm: {}"}
+
 # fn names that additionally get std::ops glue, with required arity
 OP_TRAITS = {"add": ("Add", 2), "sub": ("Sub", 2), "mul": ("Mul", 2),
              "div": ("Div", 2), "rem": ("Rem", 2), "neg": ("Neg", 1)}
@@ -149,6 +163,24 @@ class FeatureCode:
                 m = re.match(r'([\w-]+)\s*=\s*(.+)$', line.strip())
                 if m:
                     self.deps[m.group(1)] = f"{m.group(1)} = {m.group(2)}"
+        self.fragments = []       # page fragments: {file, slot, text, src}
+        for frag in sorted(feature_dir.glob("*.*")):
+            ext = frag.suffix[1:]
+            if not frag.is_file() or ext not in EXT_SLOT:
+                continue
+            slot = EXT_SLOT[ext]
+            target = "index"
+            for mid in frag.name.split(".")[1:-1]:
+                if mid == "head" and ext == "html":
+                    slot = "head"
+                elif mid in FRAGMENT_PAGE:
+                    target = mid
+                else:
+                    fail(f"{self.rel}/{frag.name}: unknown fragment target '{mid}'")
+            for page in FRAGMENT_PAGE[target]:
+                self.fragments.append({"file": page, "slot": slot,
+                                       "text": frag.read_text(),
+                                       "src": self.rel.replace("features/", "", 1)})
         for rs in sorted(feature_dir.glob("*.rs")):
             self._parse(rs)
 
@@ -498,10 +530,40 @@ def build_places(product: str, places: list, base: Emitter, chains: dict,
         for a in asset_files:
             (site / a.name).write_bytes(a.read_bytes())
         print(f"  site/ assets: {', '.join(a.name for a in asset_files)}")
+    compose_assets(site, features)
 
     print("build OK")
     if run and native_binaries:
         run_binary(native_binaries[0], build_dir)
+
+
+def compose_assets(site: Path, features: list):
+    """Inject every included feature's page fragments at the slot markers of
+    the page-owning assets, in linearisation order, provenance-commented.
+    Toggling a feature off in order.md genuinely removes its fragments."""
+    by_page = {}
+    for feature in features:
+        for fr in feature.fragments:
+            by_page.setdefault(fr["file"], []).append(fr)
+    for page, items in sorted(by_page.items()):
+        path = site / page
+        if not path.exists():
+            fail(f"fragments target '{page}' but no such site asset exists")
+        text = path.read_text()
+        for slot in ("head", "style", "body", "script"):
+            slot_items = [i for i in items if i["slot"] == slot]
+            marker = SLOT_MARKER[slot]
+            if slot_items and marker not in text:
+                fail(f"{page} has no '{marker}' slot (needed by {slot_items[0]['src']})")
+            if marker in text:
+                blocks = "\n".join(
+                    SLOT_COMMENT[slot].format(i["src"]) + "\n" + i["text"].rstrip()
+                    for i in slot_items)
+                text = text.replace(marker, blocks)
+        path.write_text(text)
+    if by_page:
+        print("  fragments composed: " + ", ".join(
+            f"{p} ({len(i)})" for p, i in sorted(by_page.items())))
 
 
 def run_binary(binary: Path, cwd: Path):

@@ -18,6 +18,4 @@ Nothing to do — relaunch the app online and you're on the latest build.
 
 ## code description
 
-The launch comparison lives in `/shell`'s loader (fetch `version` cache-bypassed, compare with localStorage, `caches.delete` + reload once); deploy.sh writes the stamp.
-
-This node records the intent and the rules; see `/shell` for the code walk-through.
+This node owns `update.js`: `feature_Update` — the running/server build state, `fetchVersion`, and `launch()` (the silent compare-and-reload plus the diag launch report). Consulted by `/watch`, `/honest` and `/panel`; deploy.sh writes the stamp it compares.

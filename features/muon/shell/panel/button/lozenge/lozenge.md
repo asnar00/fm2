@@ -18,4 +18,4 @@ The corner logo visibly looks like a button now.
 
 ## code description
 
-`#build`'s CSS in `/shell`'s loader: `border`, `border-radius: 999px`, dark `background`; `.update` adds an accent `border-color`.
+This node owns `lozenge.index.css`: the pill outline (`border`, `border-radius: 999px`, dark fill) and the accent `border-color` when an update is waiting. Untick it and the button is a bare glyph again.

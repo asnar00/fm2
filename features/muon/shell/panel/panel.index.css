@@ -1,0 +1,14 @@
+#shade { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; }
+#panel { position: fixed; left: 50%;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  transform: translateX(-50%); width: min(92vw, 22rem); background: #101012;
+  border: 1px solid #2e2e33; border-radius: 14px; padding: 14px 16px;
+  display: none; font-size: 14px; }
+#panel .who { color: #9a9aa2; margin-bottom: 8px; }
+#panel .change { color: #77777e; font-size: 12.5px; margin: 3px 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#panel .change b { color: #b9b9c0; font-weight: 600; }
+#panel .row { display: flex; gap: 10px; margin-top: 12px; }
+#panel button { flex: 1; font: inherit; font-size: 14px; padding: 8px 0;
+  border-radius: 9px; border: 1px solid #333; background: #1a1a1d; color: #fff; }
+#panel button.primary { background: #fff; color: #000; border-color: #fff; }

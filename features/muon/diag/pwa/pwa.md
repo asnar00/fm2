@@ -18,4 +18,4 @@ Nothing visible — but when something's investigated remotely, we know which co
 
 ## code description
 
-The `pwa` constant in `/shell`'s loader (`matchMedia('(display-mode: standalone)')` OR `navigator.standalone === true`), included in the `diag()` launch report; the same check drives `/install`'s redirect and the panel's push-enrolment visibility.
+This node owns `pwa.js`: `feature_Pwa.standalone()` (`display-mode: standalone` + Safari's `navigator.standalone`) and `phone()` (UA + iPad touch-points). `/update` includes `pwa:` in launch reports; `/install` consults it for the redirect; `/push` for enrolment visibility.

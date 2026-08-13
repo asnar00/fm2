@@ -18,4 +18,4 @@ The logo rides high — that's on purpose (eventually).
 
 ## code description
 
-One declaration in `/shell`'s loader CSS: `.logo { transform: translateY(-100%) }`.
+This node owns `raise.css`: `.logo { transform: translateY(-100%) }` — one composable declaration. Untick it and the logo returns to centre.

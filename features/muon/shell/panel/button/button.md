@@ -18,4 +18,4 @@ The little logo in the corner is the menu. Glowing blue means an update is waiti
 
 ## code description
 
-In `/shell`'s loader: `#build` carries the logo glyphs as its content; `checkForUpdate` toggles the `.update` class (colour + pulse animation) instead of writing text.
+This node owns `button.index.html` (the `#build` div carrying the logo glyphs) and `button.index.css` (its look, plus the `.update` accent-pulse animation). `/watch` toggles the `.update` class; `/lozenge` adds the outline; `/corner` places it.

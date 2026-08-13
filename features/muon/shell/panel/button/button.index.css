@@ -1,0 +1,4 @@
+#build { position: fixed; opacity: .55; font-size: 15px; padding: 8px 14px;
+  line-height: 1; user-select: none; cursor: pointer; }
+#build.update { color: #8ab8ff; animation: fm_pulse 1.6s ease-in-out infinite; }
+@keyframes fm_pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }

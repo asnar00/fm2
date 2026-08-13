@@ -18,4 +18,4 @@ On terrible mobile signal the app stays responsive with the last good copy, quie
 
 ## code description
 
-In `assets/sw.js`: `Promise.race` between the network fetch (with cache refresh) and a deadline timer resolving to the cached copy; no cached copy means the race is skipped and the network is awaited.
+This node owns `deadline.sw.js`: `const feature_Deadline = { ms: 1200 }` — the entire feature is one composable constant. `/fresh` races the network against it only when it exists; unticking this node genuinely reverts to pure network-first.
