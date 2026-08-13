@@ -73,7 +73,11 @@ document.addEventListener('gesturestart', (e) => e.preventDefault());
     if (r.ok) {
       const who = await fetch("/auth/whoami", { cache: "no-store" })
         .then((x) => x.json()).catch(() => null);
-      if (who && who.authed) { location.replace("/?in=" + Date.now()); return; }
+      if (who && who.authed) {
+        await enrolDevice();   // first login sets the device up: Face ID + notifications
+        location.replace("/?in=" + Date.now());
+        return;
+      }
       $("err").textContent = "logged in, but this browser did not keep the cookie";
       return;
     }
@@ -83,11 +87,62 @@ document.addEventListener('gesturestart', (e) => e.preventDefault());
   $("pinStep").onsubmit = (e) => { e.preventDefault(); verify(); };
   $("pin").oninput = verify;
 
-  // ---- Face ID (passkey) sign-in: register first via the app's system panel
   const b64uToBuf = (s) => Uint8Array.from(
     atob(s.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
   const bufToB64u = (b) => btoa(String.fromCharCode(...new Uint8Array(b)))
     .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const dlog = (m) => fetch("/diag/report", { method: "POST",
+    body: JSON.stringify({ t: new Date().toISOString(), enrol: m }) }).catch(() => {});
+
+  // ---- first-login device setup: Face ID + notifications, automatically.
+  // both need user activation; the PIN keystroke provides it, but iOS may
+  // let it lapse over the network roundtrips — failures are logged to diag
+  // and the system panel buttons remain as the retry path.
+  async function enrolDevice() {
+    try {
+      if (window.PublicKeyCredential && !localStorage.muonPasskey) {
+        $("hint").textContent = "setting up Face ID…";
+        const o = await post("/auth/passkey/register-challenge", {});
+        if (o.ok) {
+          const cred = await navigator.credentials.create({ publicKey: {
+            challenge: b64uToBuf(o.challenge),
+            rp: { id: o.rp_id, name: "muon" },
+            user: { id: b64uToBuf(o.user_id), name: o.user_name, displayName: o.user_name },
+            pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+            authenticatorSelection: { authenticatorAttachment: "platform",
+              residentKey: "required", userVerification: "required" },
+            attestation: "none" } });
+          const rr = await post("/auth/passkey/register", {
+            id: cred.id,
+            attestation: bufToB64u(cred.response.attestationObject),
+            client_data: bufToB64u(cred.response.clientDataJSON) });
+          if (rr.ok) { localStorage.muonPasskey = "1"; dlog("passkey enrolled"); }
+          else dlog("passkey register failed: " + (rr.error || "?"));
+        }
+      }
+    } catch (e) { dlog("passkey skipped: " + (e && e.name ? e.name : String(e))); }
+    try {
+      const standalone = matchMedia("(display-mode: standalone)").matches
+        || navigator.standalone === true;
+      if ("PushManager" in window && standalone && !localStorage.muonPush) {
+        $("hint").textContent = "enabling notifications…";
+        const reg = await Promise.race([
+          navigator.serviceWorker.ready,
+          new Promise((resolve, reject) => setTimeout(() => reject(new Error("no sw")), 3000))]);
+        const key = await fetch("/push/vapid-key").then((x) => x.text());
+        const sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true, applicationServerKey: b64uToBuf(key.trim()) });
+        const rr = await post("/push/subscribe", {
+          endpoint: sub.endpoint,
+          p256dh: bufToB64u(sub.getKey("p256dh")),
+          auth: bufToB64u(sub.getKey("auth")) });
+        if (rr.ok) { localStorage.muonPush = "1"; dlog("push enrolled"); }
+        else dlog("push subscribe failed: " + (rr.error || "?"));
+      }
+    } catch (e) { dlog("push skipped: " + (e && e.name ? e.name : String(e))); }
+  }
+
+  // ---- Face ID (passkey) sign-in for already-enrolled devices
   if (window.PublicKeyCredential) $("faceid").style.display = "";
   $("faceid").onclick = async () => {
     $("err").textContent = "";
@@ -102,7 +157,12 @@ document.addEventListener('gesturestart', (e) => e.preventDefault());
         auth_data: bufToB64u(cred.response.authenticatorData),
         client_data: bufToB64u(cred.response.clientDataJSON),
         signature: bufToB64u(cred.response.signature) });
-      if (r.ok) { location.replace("/?in=" + Date.now()); return; }
+      if (r.ok) {
+        localStorage.muonPasskey = "1";   // just proved one exists — don't re-create
+        await enrolDevice();              // picks up notifications if missing
+        location.replace("/?in=" + Date.now());
+        return;
+      }
       $("err").textContent = r.error || "Face ID sign-in failed";
     } catch (e) {
       $("err").textContent = "Face ID cancelled or unavailable";

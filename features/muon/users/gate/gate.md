@@ -18,4 +18,4 @@ Visiting muon.nøøb.org logged out shows the login screen: phone number → tex
 
 ## code description
 
-`gate.rs`: `route` /extension/ — auth endpoints first, then pass-through for non-tunnel or authed requests via `existing.route(r)`, else `login_page` (serves `site/login.html`, a `/shell`-styled port of ftr's page including its iOS-autofill and cookie-race fixes).
+`gate.rs`: `route` /extension/ — auth endpoints first, then pass-through for non-tunnel or authed requests via `existing.route(r)`, else `login_page` (serves `site/login.html`, a `/shell`-styled port of ftr's page including its iOS-autofill and cookie-race fixes). The login page also runs **first-login device setup** (`enrolDevice`): after a successful PIN verify it automatically enrols Face ID (`/passkey`) and notifications (`/push`) — both ride the login tap's user activation; failures log to `/diag` and the system panel buttons remain as retry. Face ID sign-in marks the passkey flag (one already exists) and picks up notifications only.

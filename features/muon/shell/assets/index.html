@@ -21,13 +21,15 @@
     transform: translateY(-100%); }
   @media (min-width: 700px) { .logo { font-size: 98px; } }
 
-  /* system panel: the build stamp is its handle */
+  /* system panel: a small logo button is its handle (hamburger stand-in);
+     it glows gently when a new build is waiting */
   #build { position: fixed;
     bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
-    right: calc(env(safe-area-inset-right, 0px) + 20px);
-    opacity: .45; font-size: 11px; padding: 8px 10px;
+    right: calc(env(safe-area-inset-right, 0px) + 16px);
+    opacity: .4; font-size: 15px; padding: 8px 10px; line-height: 1;
     user-select: none; cursor: pointer; }
-  #build.update { opacity: 1; color: #8ab8ff; }
+  #build.update { color: #8ab8ff; animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
   #shade { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; }
   #panel { position: fixed; left: 50%; bottom: max(14px, env(safe-area-inset-bottom));
     transform: translateX(-50%); width: min(92vw, 22rem); background: #101012;
@@ -45,7 +47,7 @@
 </head>
 <body>
 <div id="app"></div>
-<div id="build"></div>
+<div id="build">ᕦ(ツ)ᕤ</div>
 <div id="shade"></div>
 <div id="panel">
   <div class="who" id="who"></div>
@@ -85,7 +87,6 @@ async function checkForUpdate() {
   if (!v) return null;
   server = v;
   if (running !== 'first-run' && v !== running) {
-    $('build').textContent = 'update ready';
     $('build').classList.add('update');
   }
   return v;
@@ -124,7 +125,6 @@ async function checkForUpdate() {
     // fetch itself current; the reload covers assets mid-race)
     const v = await fetchVersion();
     server = v;
-    $('build').textContent = v || running;
     diag({ launch: true, running, server: v || 'offline',
            authed: !!(who && who.authed), pwa,
            sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller),
