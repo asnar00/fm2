@@ -142,6 +142,13 @@ class FeatureCode:
         assets = feature_dir / "assets"
         self.assets = sorted(p for p in assets.iterdir()
                              if p.is_file()) if assets.is_dir() else []
+        self.deps = {}            # cargo deps this feature needs: name -> version
+        deps_file = feature_dir / "deps.toml"
+        if deps_file.exists():
+            for line in deps_file.read_text().splitlines():
+                m = re.match(r'([\w-]+)\s*=\s*"([^"]+)"', line.strip())
+                if m:
+                    self.deps[m.group(1)] = m.group(2)
         for rs in sorted(feature_dir.glob("*.rs")):
             self._parse(rs)
 
@@ -391,6 +398,8 @@ name = "{name}"
 version = "0.0.1"
 edition = "2021"
 
+[dependencies]
+{deps}
 [[bin]]
 name = "{name}"
 path = "src/main.rs"
@@ -401,10 +410,24 @@ name = "{name}"
 version = "0.0.1"
 edition = "2021"
 
+[dependencies]
+{deps}
 [lib]
 crate-type = ["cdylib"]
 path = "src/lib.rs"
 """
+
+
+def merged_deps(features: list) -> str:
+    """Union of every feature's deps.toml; version conflict = link error."""
+    merged = {}
+    for feature in features:
+        for name, version in feature.deps.items():
+            if name in merged and merged[name] != version:
+                fail(f"cargo dep '{name}' wanted at both '{merged[name]}' and "
+                     f"'{version}' — align the features' deps.toml files")
+            merged[name] = version
+    return "".join(f'{n} = "{v}"\n' for n, v in sorted(merged.items()))
 
 
 def cargo_build(crate_dir: Path, emitter: Emitter, wasm: bool, label: str):
@@ -423,7 +446,8 @@ def build_legacy(product: str, emitter: Emitter, chains: dict, run: bool):
                          {"name": "main", "kind": "native", "entry": "main"})
     build_dir = REPO / "products" / product / "build"
     (build_dir / "src").mkdir(parents=True, exist_ok=True)
-    (build_dir / "Cargo.toml").write_text(CARGO_BIN.format(name=product))
+    (build_dir / "Cargo.toml").write_text(
+        CARGO_BIN.format(name=product, deps=""))
     (build_dir / "src" / "main.rs").write_text("\n".join(emitter.lines) + "\n")
     print(f"emitted {build_dir.relative_to(REPO)}/src/main.rs "
           f"({len(emitter.lines)} lines)")
@@ -439,6 +463,7 @@ def build_places(product: str, places: list, base: Emitter, chains: dict,
     feature assets/ files are assembled into build/site/ for serving."""
     build_dir = REPO / "products" / product / "build"
     site = build_dir / "site"
+    deps = merged_deps(features)
     native_binaries = []
     for place in places:
         emitter = with_entry(base, chains, place)
@@ -446,7 +471,7 @@ def build_places(product: str, places: list, base: Emitter, chains: dict,
         crate_dir = build_dir / place["name"]
         (crate_dir / "src").mkdir(parents=True, exist_ok=True)
         wasm = place["kind"] == "wasm"
-        toml = (CARGO_WASM if wasm else CARGO_BIN).format(name=crate)
+        toml = (CARGO_WASM if wasm else CARGO_BIN).format(name=crate, deps=deps)
         (crate_dir / "Cargo.toml").write_text(toml)
         src = crate_dir / "src" / ("lib.rs" if wasm else "main.rs")
         src.write_text("\n".join(emitter.lines) + "\n")

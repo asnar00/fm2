@@ -1,3 +1,19 @@
+pub struct request {
+    pub method: String,
+    pub path: String,
+    pub cookie: String,
+    pub body: String,
+    pub tunnel: bool,
+}
+
+pub struct response {
+    pub status: u16,
+    pub ctype: String,
+    pub body: Vec<u8>,
+    pub set_cookie: String,
+    pub cache: String,
+}
+
 struct feature_Serve;
 impl feature_Serve {
     fn serve() {
@@ -12,48 +28,110 @@ impl feature_Serve {
     }
 
     fn handle(s: std::net::TcpStream) {
-        let path = request_path(&s);
-        let file = site_file(&path);
-        respond(s, file, content_type(&path));
+        let r = parse_request(&s);
+        let resp = route(r);
+        write_response(s, resp);
     }
 
-    // first line of the request: "GET /x HTTP/1.1" -> "x"; "/" -> "index.html"
-    fn request_path(s: &std::net::TcpStream) -> String {
-        use std::io::{BufRead, BufReader};
+    fn parse_request(s: &std::net::TcpStream) -> request {
+        use std::io::{BufRead, Read};
+        let mut reader = std::io::BufReader::new(s);
         let mut line = String::new();
-        let _ = BufReader::new(s).read_line(&mut line);
-        let raw = line.split_whitespace().nth(1).unwrap_or("/");
-        let clean = raw.trim_start_matches('/').split('?').next().unwrap_or("");
+        let _ = reader.read_line(&mut line);
+        let method = line.split_whitespace().next().unwrap_or("GET").to_string();
+        let raw_path = line.split_whitespace().nth(1).unwrap_or("/").to_string();
+        let mut cookie = String::new();
+        let mut tunnel = false;
+        let mut content_length = 0usize;
+        loop {
+            let mut h = String::new();
+            if reader.read_line(&mut h).unwrap_or(0) == 0 {
+                break;
+            }
+            let t = h.trim_end().to_string();
+            if t.is_empty() {
+                break;
+            }
+            let lower = t.to_lowercase();
+            if lower.starts_with("cookie:") {
+                cookie = t[7..].trim().to_string();
+            }
+            if lower.starts_with("cf-connecting-ip:") {
+                tunnel = true;
+            }
+            if lower.starts_with("content-length:") {
+                content_length = t[15..].trim().parse().unwrap_or(0);
+            }
+        }
+        let mut body = String::new();
+        if content_length > 0 && content_length < 65536 {
+            let mut buf = vec![0u8; content_length];
+            if reader.read_exact(&mut buf).is_ok() {
+                body = String::from_utf8_lossy(&buf).to_string();
+            }
+        }
+        request { method: method, path: clean_path(raw_path), cookie: cookie,
+                  body: body, tunnel: tunnel }
+    }
+
+    // "/x?q" -> "x"; "/" -> "index.html"; ".." refused (falls back to index)
+    fn clean_path(raw: String) -> String {
+        let clean = raw.trim_start_matches('/').split('?').next().unwrap_or("").to_string();
         if clean.is_empty() || clean.contains("..") {
             "index.html".to_string()
         } else {
-            clean.to_string()
+            clean
         }
     }
 
-    fn site_file(path: &String) -> Option<Vec<u8>> {
-        std::fs::read(format!("site/{}", path)).ok()
+    // base route: static files from site/. features extend this chain
+    // (auth gate, endpoints) via existing.route().
+    fn route(r: request) -> response {
+        let file = std::fs::read(format!("site/{}", r.path));
+        match file {
+            Ok(bytes) => response { status: 200, ctype: content_type(r.path).to_string(),
+                                    body: bytes, set_cookie: String::new(),
+                                    cache: "no-cache".to_string() },
+            Err(_) => text_response(404, "not found"),
+        }
     }
 
-    fn respond(s: std::net::TcpStream, file: Option<Vec<u8>>, ctype: &'static str) {
+    fn text_response(status: u16, text: &'static str) -> response {
+        response { status: status, ctype: "text/plain".to_string(),
+                   body: text.as_bytes().to_vec(), set_cookie: String::new(),
+                   cache: "no-store".to_string() }
+    }
+
+    fn json_response(status: u16, json: String) -> response {
+        response { status: status, ctype: "application/json".to_string(),
+                   body: json.into_bytes(), set_cookie: String::new(),
+                   cache: "no-store".to_string() }
+    }
+
+    fn write_response(s: std::net::TcpStream, r: response) {
         use std::io::Write;
         let mut s = s;
-        let body = match file {
-            Some(bytes) => bytes,
-            None => {
-                let _ = s.write_all(
-                    b"HTTP/1.1 404 Not Found\r\nContent-Length: 9\r\n\r\nnot found");
-                return;
-            }
-        };
-        let head = format!(
-            "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\nCache-Control: no-cache\r\n\r\n",
-            ctype, body.len());
+        let mut head = format!(
+            "HTTP/1.1 {} {}\r\nContent-Type: {}\r\nContent-Length: {}\r\nCache-Control: {}\r\nConnection: close\r\n",
+            r.status, status_name(r.status), r.ctype, r.body.len(), r.cache);
+        if !r.set_cookie.is_empty() {
+            head = format!("{}Set-Cookie: {}\r\n", head, r.set_cookie);
+        }
+        head = format!("{}\r\n", head);
         let _ = s.write_all(head.as_bytes());
-        let _ = s.write_all(&body);
+        let _ = s.write_all(&r.body);
     }
 
-    fn content_type(path: &String) -> &'static str {
+    fn status_name(status: u16) -> &'static str {
+        if status == 200 { return "OK"; }
+        if status == 401 { return "Unauthorized"; }
+        if status == 403 { return "Forbidden"; }
+        if status == 404 { return "Not Found"; }
+        if status == 429 { return "Too Many Requests"; }
+        "Error"
+    }
+
+    fn content_type(path: String) -> &'static str {
         if path.ends_with(".html") { return "text/html; charset=utf-8"; }
         if path.ends_with(".js") { return "text/javascript"; }
         if path.ends_with(".json") { return "application/manifest+json"; }
