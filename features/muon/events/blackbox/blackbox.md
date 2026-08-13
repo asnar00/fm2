@@ -6,7 +6,7 @@
 
 ## spec
 
-The always-on flight recorder, offline-first by design. Every turn of the `/events` loop appends `{t, event, state}` to a **rotating local log** (localStorage): bounded by age (last 5 minutes) and count (500 entries), with a maintained baseline state so the retained window is always replayable from its start — no unbounded growth, ever, connected or not. When the network permits, unsent entries **also** ship to the server in batches (every 10s while visible, on regaining connectivity, and on page-hide with a keepalive request); the send watermark survives restarts, so a session that ended offline — or crashed — ships its final minutes on the next launch. The server half (same node) ingests batches, cookie-gated, into a size-rotated log on the mini.
+The always-on flight recorder, offline-first by design. Every turn of the `/events` loop appends a lean `{t, event}` delta to a **rotating local log** (localStorage): bounded by age (last 5 minutes) and count (500 entries). Full state lives in a keyframes array — boot state is keyframe zero, `/keyframes` adds periodic ones — trimmed so the newest keyframe at-or-before the window start always survives: the retained window is always replayable, with no unbounded growth, ever, connected or not. When the network permits, unsent entries **also** ship to the server in batches (every 10s while visible, on regaining connectivity, and on page-hide with a keepalive request); the send watermark survives restarts, so a session that ended offline — or crashed — ships its final minutes on the next launch. The server half (same node) ingests batches, cookie-gated, into a size-rotated log on the mini.
 
 ## user
 
@@ -15,10 +15,10 @@ Nothing to do. Your recent interactions are always recoverable for debugging: th
 ## glossary
 
 - **rotating log**: a bounded record that discards its oldest entries as new ones arrive, holding the recent window only.
-- **baseline**: the state snapshot at the start of the retained window, from which the logged events replay.
+- **baseline keyframe**: the newest state snapshot at or before the retained window's start, from which the logged events replay.
 
 ## code description
 
-`blackbox.js` wraps the `/events` loop in the JS extension idiom — reassigning `feature_Events.send`/`apply` around the originals: each event appends `{t, event, state}` to the ring; trimming (age + count) advances the baseline to the last dropped state. The log persists under `localStorage.muonBlackbox`; `flush()` posts entries past the `sentT` watermark to `blackbox/events` (keepalive on page-hide), advancing the watermark only on success; boot flushes any previous session's leftovers.
+`blackbox.js` wraps the `/events` loop in the JS extension idiom — reassigning `feature_Events.send`/`apply` around the originals: each event appends a lean `{t, event}` to the ring; the first `apply` records boot state as keyframe zero. Trimming bounds entries by age and count, and keeps the newest keyframe at-or-before the window start. The log persists under `localStorage.muonBlackbox`; `flush()` posts keyframes and entries past the `sentT` watermark to `blackbox/events` (keepalive on page-hide), advancing the watermark only on success; boot flushes any previous session's leftovers.
 
 `blackbox.rs` is the server half: a `route` /extension/ ingesting `POST blackbox/events` — cookie-gated (event streams are user data), body-capped, appended as `<ms> <who> <batch>` lines to `/tmp/muon-blackbox.log`, size-rotated like `/diag`'s log.
