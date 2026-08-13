@@ -30,8 +30,10 @@ echo "deploying to $HOST"
 
 python3 "$SRC/tools/fmlink.py" muon
 
-# deploy stamp: the client compares this on launch and self-refreshes on change
-(cd "$SRC" && git rev-parse --short HEAD) > "$SRC/products/muon/build/site/version"
+# deploy stamp: the client compares this on launch and self-refreshes on change.
+# a plain increasing integer (the commit count — every release is a commit, so
+# this needs no counter file and still names an exact commit for debugging)
+(cd "$SRC" && git rev-list --count HEAD) > "$SRC/products/muon/build/site/version"
 
 rsync -a --delete \
   "$SRC/products/muon/build/server/target/release/muon_server" \
