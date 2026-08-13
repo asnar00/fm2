@@ -302,6 +302,14 @@ def all_transcripts() -> list:
 
 # ---------------------------------------------------------------- panes
 
+def doc_link(selected: bool) -> str:
+    """fm.md — the user-authored source of truth — sits at the top of the tree
+    as orientation for first-time visitors."""
+    sel = " sel" if selected else ""
+    return (f'<ul><li class="leaf"><a class="feature{sel}" href="/view/fm.md">'
+            f'fm.md</a></li></ul>')
+
+
 def tree_html(children: list, current: str) -> str:
     if not children:
         return ""
@@ -506,7 +514,7 @@ def render_feature_page(fpath: str, transcript_override: str) -> str:
     roots = load_children(FEATURES)
     build_indexes(roots)
     feature = find_feature(roots, fpath)
-    tree = tree_html(roots, fpath)
+    tree = doc_link(False) + tree_html(roots, fpath)
     base_url = f"/feature/{quote(fpath)}"
     if not feature:
         return build_page(fpath, tree,
@@ -521,7 +529,7 @@ def render_feature_page(fpath: str, transcript_override: str) -> str:
 def render_file_page(rel: str, transcript_override: str) -> str:
     roots = load_children(FEATURES)
     build_indexes(roots)
-    tree = tree_html(roots, "")
+    tree = doc_link(rel == "fm.md") + tree_html(roots, "")
     base_url = f"/view/{quote(rel)}"
     transcript = transcript_override or latest_transcript()
     target = REPO / rel

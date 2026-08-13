@@ -19,9 +19,11 @@ OUT = explorer.REPO / "products" / "muon" / "build" / "site" / "features"
 
 
 def relink(html: str) -> str:
-    """/feature/<path>[#f|?q] links -> /features/<path>/[#f|?q] (static layout)."""
-    return re.sub(r'href="/feature/([^"#?]+)([^"]*)"',
+    """/feature/<path>[#f|?q] links -> /features/<path>/[#f|?q] (static layout);
+    the fm.md doc link points at the tree root, which renders it."""
+    html = re.sub(r'href="/feature/([^"#?]+)([^"]*)"',
                   lambda m: f'href="/features/{m.group(1)}/{m.group(2)}"', html)
+    return html.replace('href="/view/fm.md"', 'href="/features/"')
 
 
 def all_paths(children, acc):
@@ -40,8 +42,8 @@ def main():
         page_dir = OUT / path
         page_dir.mkdir(parents=True, exist_ok=True)
         (page_dir / "index.html").write_text(page)
-    # /features/ itself lands on the muon root node
-    (OUT / "index.html").write_text(relink(explorer.render_feature_page("muon", "")))
+    # /features/ itself lands on fm.md — the founding document, as orientation
+    (OUT / "index.html").write_text(relink(explorer.render_file_page("fm.md", "")))
     print(f"features exported: {len(paths)} nodes -> site/features/")
 
 
