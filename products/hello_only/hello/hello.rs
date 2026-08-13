@@ -1,1 +1,1 @@
-../../../features/hello/hello.rs
+../../../features/test/hello/hello.rs

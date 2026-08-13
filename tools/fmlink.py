@@ -2,14 +2,19 @@
 """fm linker v0 — composes a product from the feature tree.
 
 Pipeline:
-  1. walk features/, linearising depth-first with sibling order (and static
-     include/exclude) taken from each node's order.md checklist
-  2. parse each feature's .rs files: feature_X impls (functions) and plain
-     structs (fields)
-  3. chain same-named functions in linearisation order; rewrite existing.fn()
-     to the previous definition in the chain
+  1. walk the product tree (symlinks into features/ or local overrides),
+     linearising depth-first with sibling order + include/exclude from each
+     node's order.md checklist
+  2. parse each feature's .rs files: feature_X impls (functions, with full
+     signatures) and plain structs (fields)
+  3. chain functions by (name, all parameter types) — full-signature keying,
+     i.e. multiple dispatch; rewrite existing.fn() to the previous definition
+     in the enclosing function's chain
   4. flat-merge same-named structs; duplicate field = link error
-  5. emit a cargo project under products/<name>/build/ and run cargo build,
+  5. emit dispatchers: a plain delegate for unique names, a generated trait +
+     generic fn for overloaded names (rustc's type system does the dispatch),
+     and std::ops operator glue for names like add/sub/mul (`col + col`)
+  6. emit a cargo project under products/<name>/build/ and run cargo build,
      mapping rustc diagnostics back to feature-source file:line
 
 Usage: fmlink.py [product] [--run]      (product defaults to "demo")
@@ -23,7 +28,13 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-FEATURES = REPO / "features"
+SKIP_DIRS = {"build", "target"}
+
+# fn names that additionally get std::ops glue, with required arity
+OP_TRAITS = {"add": ("Add", 2), "sub": ("Sub", 2), "mul": ("Mul", 2),
+             "div": ("Div", 2), "rem": ("Rem", 2), "neg": ("Neg", 1)}
+
+ARG_LETTERS = "abcdefgh"
 
 
 def fail(msg: str):
@@ -43,9 +54,6 @@ def read_order(directory: Path):
         if m:
             entries.append((m.group(2), m.group(1) == "x"))
     return entries
-
-
-SKIP_DIRS = {"build", "target"}
 
 
 def linearise(directory: Path, out: list, excluded: list, root: Path):
@@ -77,7 +85,6 @@ def linearise(directory: Path, out: list, excluded: list, root: Path):
 # ------------------------------------------------------------------ rust parse
 
 def match_brace(text: str, open_idx: int) -> int:
-    """Index of the '}' closing the '{' at open_idx."""
     depth = 0
     for i in range(open_idx, len(text)):
         if text[i] == "{":
@@ -93,6 +100,16 @@ def line_of(text: str, idx: int) -> int:
     return text.count("\n", 0, idx) + 1
 
 
+def parse_signature(header: str):
+    """('name', [param types], return type or '') from 'fn name(a: T, b: U) -> R'."""
+    m = re.search(r"fn\s+(\w+)\s*\(([^)]*)\)\s*(?:->\s*(.+?))?\s*$", header, re.S)
+    if not m:
+        fail(f"cannot parse fn signature: {header.strip()!r}")
+    params = [p.split(":", 1)[1].strip()
+              for p in m.group(2).split(",") if ":" in p]
+    return m.group(1), params, (m.group(3) or "").strip()
+
+
 class FeatureCode:
     """Everything one feature contributes: functions and struct fields."""
 
@@ -101,7 +118,7 @@ class FeatureCode:
         # resolve symlinks so diagnostics point at the real source location
         self.rel = str(feature_dir.resolve().relative_to(REPO))
         self.name = None          # e.g. "Hello" from struct feature_Hello
-        self.fns = []             # (fn_name, src_file, first_line, [lines])
+        self.fns = []             # dicts: name, params, ret, src, first, lines
         self.structs = []         # (struct_name, [(field, type, src_file, line)])
         for rs in sorted(feature_dir.glob("*.rs")):
             self._parse(rs)
@@ -141,8 +158,11 @@ class FeatureCode:
             fn_start = pos + fm.start()
             body_open = text.index("{", pos + fm.end())
             body_close = match_brace(text, body_open)
+            name, params, ret = parse_signature(text[fn_start:body_open])
             first, last = line_of(text, fn_start), line_of(text, body_close)
-            self.fns.append((fm.group(1), src, first, lines[first - 1:last]))
+            self.fns.append({"name": name, "params": params, "ret": ret,
+                             "src": src, "first": first,
+                             "lines": lines[first - 1:last]})
             pos = body_close + 1
 
 
@@ -152,22 +172,20 @@ class Emitter:
     """Accumulates generated lines with a per-line map back to feature source."""
 
     def __init__(self):
-        self.lines = []   # text
-        self.map = []     # (src_file, src_line) or None
+        self.lines = []
+        self.map = []
 
     def emit(self, text: str, src=None, line=None):
         self.lines.append(text)
         self.map.append((src, line) if src else None)
 
 
-def compose(features: list) -> Emitter:
-    out = Emitter()
-    out.emit("// generated by fm linker v0 — do not edit; edit features/ instead")
-    out.emit("#![allow(non_camel_case_types, dead_code, non_snake_case, unused)]")
-    out.emit("")
+def sig_str(name: str, params: list) -> str:
+    return f"{name}({', '.join(params)})"
 
-    # flat-merge structs, checking field collisions
-    merged = {}       # struct name -> [(field, type, src, line)]
+
+def merge_structs(features: list, out: Emitter):
+    merged = {}
     for feature in features:
         for sname, fields in feature.structs:
             existing_fields = {f[0]: f for f in merged.setdefault(sname, [])}
@@ -185,8 +203,25 @@ def compose(features: list) -> Emitter:
         out.emit("}")
         out.emit("")
 
-    # chain functions: head[fn_name] = feature struct name currently outermost
-    head = {}
+
+def rewrite_existing(text: str, fn: dict, key: tuple, heads: dict, feature) -> str:
+    """Rewrite existing.fn( -> feature_Prev::fn(. `existing` may only refer to
+    the enclosing function's own chain (name + signature)."""
+    def sub(m):
+        called = m.group(1)
+        if called != fn["name"]:
+            fail(f"{feature.rel}: existing.{called}() inside fn {fn['name']} — "
+                 f"`existing` may only call the enclosing function's own chain")
+        if key not in heads:
+            fail(f"{feature.rel}: existing.{called}() but no earlier feature "
+                 f"defines {sig_str(fn['name'], fn['params'])}")
+        return f"feature_{heads[key]}::{called}("
+    return re.sub(r"existing\s*\.\s*(\w+)\s*\(", sub, text)
+
+
+def compose_features(features: list, out: Emitter) -> dict:
+    """Emit feature impl blocks; return chains keyed by (name, param types)."""
+    chains = {}   # key -> {"head": feature struct name, "params": [...], "ret": str}
     for feature in features:
         if not feature.fns:
             continue
@@ -195,30 +230,111 @@ def compose(features: list) -> Emitter:
         out.emit(f"// ---- feature: {feature.rel}")
         out.emit(f"struct feature_{feature.name};")
         out.emit(f"impl feature_{feature.name} {{")
-        for fn_name, src, first_line, fn_lines in feature.fns:
-            for offset, text in enumerate(fn_lines):
-                rewritten = rewrite_existing(text, fn_name, head, feature)
-                out.emit(rewritten, src, first_line + offset)
+        for fn in feature.fns:
+            key = (fn["name"], tuple(fn["params"]))
+            if key in chains and chains[key]["ret"] != fn["ret"]:
+                fail(f"{sig_str(fn['name'], fn['params'])}: return type changed "
+                     f"from '{chains[key]['ret']}' to '{fn['ret']}' in {feature.rel}"
+                     f" — all links of a chain must agree")
+            heads = {k: v["head"] for k, v in chains.items()}
+            for offset, text in enumerate(fn["lines"]):
+                out.emit(rewrite_existing(text, fn, key, heads, feature),
+                         fn["src"], fn["first"] + offset)
         out.emit("}")
         out.emit("")
-        for fn_name, *_ in feature.fns:
-            head[fn_name] = feature.name
+        for fn in feature.fns:
+            chains[(fn["name"], tuple(fn["params"]))] = {
+                "head": feature.name, "params": fn["params"], "ret": fn["ret"]}
+    return chains
 
-    if "main" not in head:
-        fail("no feature defines main — nothing to run")
+
+def emit_dispatchers(chains: dict, out: Emitter):
+    """Top-level callables: plain delegates for unique names, generated trait +
+    generic dispatcher for overloaded names, std::ops glue for operator names."""
+    by_name = {}
+    for (name, ptypes), info in chains.items():
+        by_name.setdefault(name, []).append(info)
+
+    for name, entries in sorted(by_name.items()):
+        if name == "main":
+            continue
+        arities = {len(e["params"]) for e in entries}
+        if len(arities) > 1:
+            fail(f"'{name}' is defined with different arities {sorted(arities)} — "
+                 f"overloads of one name must take the same number of arguments")
+        n = arities.pop()
+
+        if len(entries) == 1:
+            e = entries[0]
+            sig = ", ".join(f"{l}: {t}" for l, t in zip(ARG_LETTERS, e["params"]))
+            args = ", ".join(ARG_LETTERS[:n])
+            ret = f" -> {e['ret']}" if e["ret"] else ""
+            out.emit(f"fn {name}({sig}){ret} {{ feature_{e['head']}::{name}({args}) }}")
+        else:
+            emit_overload_trait(name, n, entries, out)
+
+        for e in entries:
+            emit_op_glue(name, n, e, out)
+        out.emit("")
+
+
+def emit_overload_trait(name: str, n: int, entries: list, out: Emitter):
+    """Generated trait with one type param per argument slot after the first;
+    rustc's type system picks the impl — multiple dispatch, zero linker inference."""
+    tparams = [f"P{i}" for i in range(1, n)]
+    gen = f"<{', '.join(tparams)}>" if tparams else ""
+    callsig = "a: Self" + "".join(f", {l}: {p}"
+                                  for l, p in zip(ARG_LETTERS[1:], tparams))
+    out.emit("#[allow(non_camel_case_types)]")
+    out.emit(f"trait fm_{name}{gen}: Sized {{ type Out; "
+             f"fn call({callsig}) -> Self::Out; }}")
+    args = ", ".join(ARG_LETTERS[:n])
+    for e in entries:
+        ptypes = e["params"]
+        implgen = f"<{', '.join(ptypes[1:])}>" if n > 1 else ""
+        argsig = ", ".join(f"{l}: {t}" for l, t in zip(ARG_LETTERS, ptypes))
+        ret = e["ret"] or "()"
+        out.emit(f"impl fm_{name}{implgen} for {ptypes[0]} {{ type Out = {ret}; "
+                 f"fn call({argsig}) -> Self::Out {{ "
+                 f"feature_{e['head']}::{name}({args}) }} }}")
+    bound = f"A: fm_{name}" + (f"<{', '.join(tparams)}>" if tparams else "")
+    generics = ", ".join([bound] + tparams)
+    dsig = "a: A" + "".join(f", {l}: {p}"
+                            for l, p in zip(ARG_LETTERS[1:], tparams))
+    out.emit(f"fn {name}<{generics}>({dsig}) -> A::Out {{ A::call({args}) }}")
+
+
+def emit_op_glue(name: str, n: int, e: dict, out: Emitter):
+    """std::ops impls so `col + col` / `col + vec` work alongside add(col, col)."""
+    if name not in OP_TRAITS or OP_TRAITS[name][1] != n or not e["ret"]:
+        return
+    trait = OP_TRAITS[name][0]
+    ptypes, ret, head = e["params"], e["ret"], e["head"]
+    if n == 2:
+        out.emit(f"impl std::ops::{trait}<{ptypes[1]}> for {ptypes[0]} {{ "
+                 f"type Output = {ret}; fn {name}(self, b: {ptypes[1]}) -> {ret} "
+                 f"{{ feature_{head}::{name}(self, b) }} }}")
+    else:
+        out.emit(f"impl std::ops::{trait} for {ptypes[0]} {{ "
+                 f"type Output = {ret}; fn {name}(self) -> {ret} "
+                 f"{{ feature_{head}::{name}(self) }} }}")
+
+
+def compose(features: list) -> Emitter:
+    out = Emitter()
+    out.emit("// generated by fm linker v0 — do not edit; edit features/ instead")
+    out.emit("#![allow(non_camel_case_types, dead_code, non_snake_case, unused)]")
+    out.emit("")
+    merge_structs(features, out)
+    chains = compose_features(features, out)
+    out.emit("// ---- dispatchers (plain delegate / generated-trait multiple dispatch)")
+    emit_dispatchers(chains, out)
+    main_key = ("main", ())
+    if main_key not in chains:
+        fail("no feature defines main() — nothing to run")
     out.emit("// ---- entry point (outermost definition in the chain)")
-    out.emit(f"fn main() {{ feature_{head['main']}::main(); }}")
+    out.emit(f"fn main() {{ feature_{chains[main_key]['head']}::main(); }}")
     return out
-
-
-def rewrite_existing(text: str, fn_name: str, head: dict, feature) -> str:
-    """Rewrite existing.fn( -> feature_Prev::fn( using chain state before this feature."""
-    def sub(m):
-        called = m.group(1)
-        if called not in head:
-            fail(f"{feature.rel}: existing.{called}() but no earlier feature defines {called}")
-        return f"feature_{head[called]}::{called}("
-    return re.sub(r"existing\s*\.\s*(\w+)\s*\(", sub, text)
 
 
 # ------------------------------------------------------------------ build
@@ -258,8 +374,18 @@ def build(product: str, emitter: Emitter, run: bool):
             sys.exit(f"run FAILED ({run_result.returncode}): {run_result.stderr}")
 
 
+def translate(message: str) -> str:
+    """Rewrite rustc phrasing that leaks generated machinery into fm terms."""
+    m = re.match(r"the trait bound `(.+?): fm_(\w+)(?:<(.+?)>)?` is not satisfied",
+                 message)
+    if m:
+        first, name, rest = m.group(1), m.group(2), m.group(3)
+        params = first + (f", {rest}" if rest else "")
+        return f"no definition of {name}({params}) in any linked feature"
+    return message
+
+
 def report_diagnostics(cargo_json: str, emitter: Emitter):
-    """Print rustc errors/warnings with generated lines mapped to feature source."""
     for raw in cargo_json.splitlines():
         try:
             msg = json.loads(raw)
@@ -279,7 +405,7 @@ def report_diagnostics(cargo_json: str, emitter: Emitter):
                 where = (f"{mapped[0]}:{mapped[1]}" if mapped
                          else f"build/src/main.rs:{gen_line}")
                 break
-        print(f"  {m['level']}: {where}: {m['message']}")
+        print(f"  {m['level']}: {where}: {translate(m['message'])}")
 
 
 # ------------------------------------------------------------------ main
@@ -299,7 +425,8 @@ def main():
 
     feature_dirs, excluded = [], []
     linearise(product_dir, feature_dirs, excluded, product_dir)
-    print("linearisation:", " → ".join(str(d.relative_to(product_dir)) for d in feature_dirs))
+    print("linearisation:", " → ".join(str(d.relative_to(product_dir))
+                                       for d in feature_dirs))
     for ex in excluded:
         print(f"  excluded (order.md unticked): {ex}")
 

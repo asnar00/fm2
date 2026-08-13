@@ -1,1 +1,1 @@
-../../../features/hello/hello.md
+../../../features/test/hello/hello.md

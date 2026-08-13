@@ -1,2 +1,1 @@
-- [x] hello
-- [x] colour
+- [x] test

@@ -114,6 +114,18 @@ Decision: conversations live in `transcripts/` as part of the repo; feature-spec
 - **Immutability**: transcripts are generated, never hand-edited — they are the evidentiary record of user intent that fm.md's provenance requirement rests on.
 - Open: whether to also capture tool-level activity (file edits made during the conversation) — probably no; git history covers that.
 
+### 8. global functions only — no methods; overloads via signature-keyed chains — IMPLEMENTED
+
+Implemented in fmlink.py (2026-08-13, #p29): chains keyed on (name, all param types); `impl feature_X` blocks serve as natural namespaces (no mangling — `feature_Colour::add` and `feature_Vec::add` coexist); per overloaded name the linker generates the `fm_<name>` trait + generic dispatcher; unique names get a plain delegate fn; operator names (add/sub/mul/div/rem/neg) get `std::ops` glue, so `v1 + v2` works. `existing.fn()` may only call the enclosing function's own chain (enforced). Same-name-different-arity and mid-chain return-type changes are link errors. Trait-bound failures are translated to "no definition of add(vec2, colour) in any linked feature". Demo: `features/vec` + `features/sums` exercise colour/vec dispatch incl. alpha's extension and operator form. Practice note that emerged: features constructing mergeable structs should use `..Default::default()` in literals, since later features may add fields.
+
+Original decision rationale (2026-08-13): computation lives in global functions, never authored methods — `col = col + col` preferred over `col.sum(col)`; one composition primitive, uniformly applied. Two gaps, both linker-owned:
+
+- **Generated trait glue**: operators and trait conformances (`Add`, `Display`, …) are emitted by the linker as delegation impls over free functions matching name+shape conventions (`fn add(a: colour, b: colour) -> colour` ⇒ `impl Add for colour`). Authored code: structs + global functions only; impl blocks exist only as generated artifacts.
+- **Overloaded names — full-signature keying (multiple dispatch)**: chain identity = **(function name, all parameter types)**, read syntactically from the signature (zero-arg fns key on name alone — `main` is the degenerate case). So `add(colour, colour)`, `add(colour, vec2)`, and `add(vec2, colour)` are three independent chains; same name + same param types across features = same chain, composed in linearisation order (by design). Concrete links are emitted under mangled names (`add_colour_vec2__x`); call sites stay unrewritten because the linker emits one generic dispatcher per name — a generated trait with a type parameter per argument slot and an associated `Out`, exactly the pattern of Rust's own `Add<Rhs, Output=…>` — and **rustc's type system does the dispatch**: no linker type inference, zero runtime cost via monomorphisation. Each overload keeps its own return type (associated type), so the earlier shape-unification rule dissolves; the only remaining constraint is **same name ⇒ same arity** (one generic dispatcher per name), else link error. Non-overloaded names emit as plain functions (no trait noise). Undefined combos surface as unsatisfied trait bounds, mapped by diagnostics to "no add(colour, vec2) defined". Heterogeneous operators come free: `impl Add<vec2> for colour` glue gives `col + vec`. Prior art: this is Julia/CLOS-style multiple dispatch over global generic functions, realised statically via Rust traits.
+- `existing.fn()` resolves within the chain of the *enclosing* function's signature — an alpha `add(colour, colour)` extension can never accidentally reach the vec2 chain.
+
+This supersedes the earlier "impl blocks on merged structs" idea — methods are dropped entirely. Constructors are just global functions; subfeatures extend construction via the same chains.
+
 ## tools (scaffolding — not feature-modular)
 
 - `tools/export_transcript.py` — exports a Claude Code session log to `transcripts/<date>-<slug>.md` (verbatim prompts with stable `#pN` anchors + timestamps).
@@ -131,7 +143,7 @@ Working end-to-end:
 - emits a cargo project at `products/<name>/build/src/main.rs` with a per-line source map; rustc errors are reported as `features/<path>/<file>.rs:<line>` (verified: a planted type error mapped exactly)
 - demo product runs: `Hello, world!` + `Goodbye...`; unticking `goodbye` in `hello/order.md` removes the farewell
 
-The demo features live at `features/hello[/goodbye]` and `features/colour[/alpha]`, each with a spec following the fm.md format, provenance-anchored to `transcripts/2026-08-13-fm-spec.md#p13`.
+The demo features live under **`features/test/`** (moved 2026-08-13, #p30, to keep the root clear for the real feature space): `test/hello[/goodbye]`, `test/colour[/alpha]`, `test/vec`, `test/sums` — each with a spec in the fm.md format. `test` itself is a spec-only container node (no code). The `demo` product is now a single symlink to the `test` subtree.
 
 **Product subsetting added (2026-08-13, #p20):** the linker now composes from `products/<name>/` — a feature tree of symlinks into `features/` plus a root `order.md`. A symlink to a feature folder imports it with all subfeatures (`products/hello_goodbye`); a product-local folder with symlinked files and its own `order.md` overrides the shared node — `products/hello_only` unticks `goodbye` this way and prints only the greeting. An unticked `order.md` entry no longer needs a local folder (that's what subtraction looks like). Diagnostics resolve symlinks, so errors still cite `features/…` real paths. All three products (`demo`, `hello_goodbye`, `hello_only`) build and run correctly.
 
@@ -140,7 +152,7 @@ The demo features live at `features/hello[/goodbye]` and `features/colour[/alpha
 Known v0 limitations (deferred, not forgotten):
 
 - one `feature_` struct per feature node (all `.rs` files in a node are treated as one feature)
-- `impl` blocks on merged structs (methods on `colour`) are not yet handled
+- ~~`impl` blocks on merged structs~~ — superseded: methods dropped by design (proposal 8); computation is global functions + generated dispatch/operator glue
 - contexts, `@shared`/`@user` variables, cross-cutting targets, wasm: out of scope, per plan
 - parsing is regex + brace-matching, not a real Rust parser — adequate for fm-style code, will misread exotic syntax (strings containing braces, macros defining items)
 
