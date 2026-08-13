@@ -21,8 +21,11 @@
   @media (min-width: 700px) { .logo { font-size: 98px; } }
 
   /* system panel: the build stamp is its handle */
-  #build { position: fixed; bottom: 6px; right: 10px; opacity: .35;
-    font-size: 11px; padding: 8px 10px; user-select: none; cursor: pointer; }
+  #build { position: fixed;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+    right: calc(env(safe-area-inset-right, 0px) + 14px);
+    opacity: .35; font-size: 11px; padding: 8px 10px;
+    user-select: none; cursor: pointer; }
   #build.update { opacity: 1; color: #8ab8ff; }
   #shade { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; }
   #panel { position: fixed; left: 50%; bottom: max(14px, env(safe-area-inset-bottom));
