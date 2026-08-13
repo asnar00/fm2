@@ -229,9 +229,14 @@ def read_order(directory: Path):
     return entries
 
 
+NOT_FEATURES = {"assets", "build", "target"}  # support folders, not subfeatures
+
+
 def load_children(directory: Path) -> list:
     """Child features in order.md order; unlisted folders appended at the end."""
-    subs = {p.name: p for p in directory.iterdir() if p.is_dir()}
+    subs = {p.name: p for p in directory.iterdir()
+            if p.is_dir() and p.name not in NOT_FEATURES
+            and not p.name.startswith(".")}
     order = read_order(directory) or [(name, True) for name in sorted(subs)]
     children = []
     listed = set()
