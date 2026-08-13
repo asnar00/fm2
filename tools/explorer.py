@@ -464,6 +464,25 @@ PAGE = """<!doctype html>
 <div class="md">{transcript}</div></div>
 <label for="treeToggle" class="drawer-btn" id="treeBtn">☰</label>
 <label for="convoToggle" class="drawer-btn" id="convoBtn">❝</label>
+<script>
+// scroll-position shim: mobile Safari won't fragment-scroll inside the
+// off-canvas transcript drawer, so place it ourselves. progressive
+// enhancement only — everything renders fine without JS.
+(function () {{
+  function place() {{
+    var h = location.hash;
+    if (!h || h.length < 2) return;
+    var t; try {{ t = document.querySelector(h); }} catch (e) {{ return; }}
+    var right = document.getElementById('right');
+    if (!t || !right || !right.contains(t)) return;
+    var delta = t.getBoundingClientRect().top - right.getBoundingClientRect().top - 16;
+    if (Math.abs(delta) > 40) right.scrollTop += delta;
+  }}
+  place();
+  addEventListener('load', place);
+  addEventListener('hashchange', place);
+}})();
+</script>
 </body></html>"""
 
 
