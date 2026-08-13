@@ -54,6 +54,8 @@ window.onerror = (msg, src, line, col) =>
     document.getElementById('build').textContent = (v || running).trim();
     diag({ launch: true, running, server: v ? v.trim() : 'offline',
            authed: !!(who && who.authed),
+           pwa: matchMedia('(display-mode: standalone)').matches
+                || navigator.standalone === true,
            sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller),
            ua: navigator.userAgent.slice(0, 90) });
     if (v) {
