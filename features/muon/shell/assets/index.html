@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>muon</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  html, body { margin: 0; height: 100%; background: #000; color: #fff;
+    font: 16px -apple-system, system-ui, sans-serif; }
+  body { display: flex; align-items: center; justify-content: center; }
+  #app { text-align: center; }
+  .logo { font-size: 14vw; line-height: 1; user-select: none; }
+  @media (min-width: 700px) { .logo { font-size: 98px; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(async () => {
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+  const res = await fetch('client.wasm');
+  const { instance } = await WebAssembly.instantiate(await res.arrayBuffer(), {});
+  const packed = instance.exports.fm_entry();
+  const ptr = Number(packed >> 32n), len = Number(packed & 0xFFFFFFFFn);
+  const bytes = new Uint8Array(instance.exports.memory.buffer, ptr, len);
+  document.getElementById('app').innerHTML = new TextDecoder().decode(bytes);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+- [x] server: native, entry=serve
+- [x] client: wasm, entry=render
