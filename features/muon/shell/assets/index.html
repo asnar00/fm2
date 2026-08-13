@@ -144,11 +144,16 @@ async function checkForUpdate() {
   }
 })();
 
-// mid-session update watch: foregrounding and regaining connectivity re-check
+// mid-session update watch: foregrounding and regaining connectivity re-check,
+// plus a slow poll while visible so an open app notices a deploy by itself.
+// (a backgrounded iOS PWA is frozen — reaching THOSE needs web push, later.)
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') checkForUpdate();
 });
 window.addEventListener('online', checkForUpdate);
+setInterval(() => {
+  if (document.visibilityState === 'visible') checkForUpdate();
+}, 60000);
 
 // ---- system panel: tap the build stamp (always re-checks, live)
 $('build').onclick = async () => {
