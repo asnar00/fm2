@@ -10,13 +10,14 @@ Root of the shared infrastructure feature space. Muon is a Progressive Web App w
 
 ## user
 
-(to be written as the capabilities take shape)
+Muon lives at muon.nøøb.org. On a phone you install it to the home screen (the browser only ever shows install instructions); first login is a texted code, after which Face ID and update notifications set themselves up automatically. The app works offline, keeps itself on the latest build, and announces deploys by notification. The logo lozenge bottom-right opens the /system panel/: who you are, what's changed, log out, update.
 
 ## glossary
 
 - **muon**: the shared infrastructure layer — a Rust/wasm PWA base that all apps extend.
 - **app**: a user-facing tool built as a subfeature of `/muon`, inheriting its base capabilities.
+- **system panel**: muon's own UI surface (identity, builds, changes, enrolment, logout), opened from the logo button.
 
 ## code description
 
-No implementation yet — container node; subfeatures will hold the capabilities.
+Container node — the capabilities live in the subfeatures: `/serve` (stdlib HTTP server + the `route` extension chain), `/shell` (PWA loader, offline service worker with the freshness deadline, self-update, system panel, `render()` chain for content), `/users` (guest list, sessions; `/pin` SMS codes via `/vonage`, `/gate` login wall, `/passkey` Face ID), `/push` (Web Push deploy announcements), `/diag` (remote launch/error reports). Products build it as two places from one tree: `server` (native, entry `serve`) and `client` (wasm, entry `render`).
