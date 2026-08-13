@@ -68,3 +68,18 @@ nodes — treat that flag as the question "did a request go nodeless?"
   tuple RETURN types are fine.
 - Braces must balance everywhere, including inside string literals.
 - `existing.fn()` may only call the enclosing function's own chain.
+
+## Asset fragments (page-language implementations)
+
+- A node may carry css/js/html implementation files beside its spec:
+  `honest.js`, `pinned.page.css`, `enrol.login.js`. Filename infix names the
+  target page — {index login install sw}, bare = index, `page` = all html
+  pages; `.head.html` targets the head slot.
+- Page-owning assets carry slot markers (`<!-- fm:head -->`, `/* fm:style */`,
+  `<!-- fm:body -->`, `// fm:script`); the linker fills them in linearisation
+  order, provenance-commented.
+- One `const feature_<Name> = {...}` object per JS fragment. Cross-feature
+  references are ALWAYS typeof-guarded — absence is the unticked state, and
+  fragments must survive their siblings being toggled off (guard DOM lookups).
+- After changing fragments, sanity-check with toggle tests: untick the node,
+  relink, grep the composed page for its provenance comment.
