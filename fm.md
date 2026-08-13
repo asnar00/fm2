@@ -188,7 +188,10 @@ The subfeatures of a feature `A` are composed in the order defined by a file cal
 
 ## feature tree rules
 
-### one prompt per feature node
+### one prompt per feature
 
-If a feature node 
+If a feature node resolves to multiple user prompts, the feature should be decomposed into smaller sub-features, until each node resolves to only one user prompt. This ensures that features can be enabled or disabled at a fine-grained level.
 
+### 4-6 children per feature
+
+Humans have difficulty holding more than 7 items in short-term memory; therefore, we cap the number of children at 6, and aim for 4. Nodes with higher numbers of children should be re-organised, grouping similar children together under a new sub-feature. The grouped node is allowed to skip a provenance prompt, and can instead just say that it was created in response to this rule.

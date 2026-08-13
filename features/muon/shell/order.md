@@ -1,4 +1,6 @@
 - [x] logo
-- [x] install
 - [x] update
+- [x] icon
+- [x] install
+- [x] pinned
 - [x] panel
