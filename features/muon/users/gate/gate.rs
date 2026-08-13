@@ -31,15 +31,11 @@ impl feature_Gate {
         login_page()
     }
 
-    // the PWA shell is publicly served so installed apps can always update;
-    // the feature tree is deliberately public — a shareable artefact (the
-    // same stance ftr takes)
+    // base: nothing is public. the /public subfeature owns the actual policy
+    // (shell + feature tree) as an extension of this chain.
     fn is_public(path: String) -> bool {
-        path == "index.html" || path == "sw.js" || path == "client.wasm"
-            || path == "manifest.json" || path == "login.html"
-            || path == "install.html" || path == "version"
-            || path == "changes.json" || path.starts_with("icon-")
-            || path == "features" || path.starts_with("features/")
+        let _ = path;
+        false
     }
 
     fn login_page() -> response {

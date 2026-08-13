@@ -18,4 +18,6 @@ Login protects what matters (your data and actions), not the app's own machinery
 
 ## code description
 
-`is_public` in `gate.rs`, consulted by the gate's `route` extension before the tunnel/cookie checks; the whoami-driven redirect lives in `/shell`'s loader.
+`public.rs` owns the policy as a chain /extension/: `is_public` lists the shell files and the `/features/` tree, delegating anything else to `existing.is_public` — whose base, in `/gate`, answers false. The gate's `route` consults the chain head before its tunnel/cookie checks.
+
+The whoami-driven login redirect (the shell deciding to show login itself) lives in `/shell`'s loader.

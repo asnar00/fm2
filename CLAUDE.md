@@ -14,12 +14,15 @@ prompt refines an existing capability, it gets a subfeature node under it —
 never a second quote folded into the parent. (The bundled update/ node had to
 be decomposed into update/{buildnum,watch,honest} when this rule landed.)
 
-**Pointer nodes are debt.** A spec-only node whose behaviour lives in another
-feature's files (today: the JS in shell/gate/install assets) documents intent
-but cannot be toggled — fm's promise doesn't hold for it yet. The event-core
-migration is the payoff path; do not add NEW client behaviour as asset JS
-without flagging the debt in notes.md. 4-6 children per node (fm.md rule);
-shell is at 6 — its next child forces a regroup (mind linearisation order).
+**Pointer nodes are FORBIDDEN (user law, #p91).** The only nodes allowed to
+contain no code are grouping nodes. Every other node owns its implementation —
+code, assets, or chain extensions. Existing violations (client-behaviour nodes
+pointing into shell's asset JS) are scheduled debt: asset composition + the
+event core legalise them; do not create new ones. 4-6 children per node
+(fm.md rule); shell is at 6 — its next child forces a regroup (mind
+linearisation order). Also learned: a chain extension must linearise AFTER
+its base — a node early in DFS order (serve/features) cannot extend a chain
+defined later (gate's is_public); tree position constrains what a node can own.
 
 Deploy prints which nodes a release touches and flags releases with no new
 nodes — treat that flag as the question "did a request go nodeless?"
