@@ -30,6 +30,16 @@ echo "deploying to $HOST"
 
 python3 "$SRC/tools/fmlink.py" muon
 
+# the loader instantiates the wasm with ZERO imports — refuse to ship a build
+# that quietly grew import requirements (a dependency's wasm-bindgen glue once
+# turned the deployed app into a black screen)
+node -e '
+const fs = require("fs");
+WebAssembly.instantiate(fs.readFileSync(process.argv[1]), {})
+  .then(({instance}) => { if (!instance.exports.fm_entry) throw new Error("no fm_entry"); })
+  .catch(e => { console.error("deploy: wasm smoke test FAILED:", e.message); process.exit(1); })
+' "$SRC/products/muon/build/site/client.wasm"
+
 # deploy stamp: the client compares this on launch and self-refreshes on change.
 # a plain increasing integer (the commit count — every release is a commit, so
 # this needs no counter file and still names an exact commit for debugging)

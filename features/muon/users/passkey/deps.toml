@@ -1,4 +1,4 @@
 p256 = "0.13"
 ciborium = "0.2"
 base64 = "0.22"
-getrandom = { version = "0.2", features = ["js"] }
+getrandom = { version = "0.2", features = ["custom"] }
