@@ -19,11 +19,38 @@
   #app { text-align: center; }
   .logo { font-size: 14vw; line-height: 1; user-select: none; }
   @media (min-width: 700px) { .logo { font-size: 98px; } }
+
+  /* system panel: the build stamp is its handle */
+  #build { position: fixed; bottom: 6px; right: 10px; opacity: .35;
+    font-size: 11px; padding: 8px 10px; user-select: none; cursor: pointer; }
+  #build.update { opacity: 1; color: #8ab8ff; }
+  #shade { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; }
+  #panel { position: fixed; left: 50%; bottom: max(14px, env(safe-area-inset-bottom));
+    transform: translateX(-50%); width: min(92vw, 22rem); background: #101012;
+    border: 1px solid #2e2e33; border-radius: 14px; padding: 14px 16px;
+    display: none; font-size: 14px; }
+  #panel .who { color: #9a9aa2; margin-bottom: 8px; }
+  #panel .change { color: #77777e; font-size: 12.5px; margin: 3px 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #panel .change b { color: #b9b9c0; font-weight: 600; }
+  #panel .row { display: flex; gap: 10px; margin-top: 12px; }
+  #panel button { flex: 1; font: inherit; font-size: 14px; padding: 8px 0;
+    border-radius: 9px; border: 1px solid #333; background: #1a1a1d; color: #fff; }
+  #panel button.primary { background: #fff; color: #000; border-color: #fff; }
 </style>
 </head>
 <body>
 <div id="app"></div>
-<div id="build" style="position:fixed;bottom:6px;right:10px;opacity:.35;font-size:11px"></div>
+<div id="build"></div>
+<div id="shade"></div>
+<div id="panel">
+  <div class="who" id="who"></div>
+  <div id="changes"></div>
+  <div class="row">
+    <button id="updateBtn" class="primary" style="display:none">update</button>
+    <button id="logoutBtn">log out</button>
+  </div>
+</div>
 <script>
 document.addEventListener('gesturestart', (e) => e.preventDefault());
 // diagnostics first, so even a broken loader reports in
@@ -31,6 +58,15 @@ const diag = (data) => fetch('diag/report', { method: 'POST',
   body: JSON.stringify({ t: new Date().toISOString(), ...data }) }).catch(() => {});
 window.onerror = (msg, src, line, col) =>
   diag({ error: String(msg), at: `${src}:${line}:${col}` });
+
+const $ = (id) => document.getElementById(id);
+let running = localStorage.muonVersion || 'first-run';
+let server = null;
+let who = null;
+
+const fetchVersion = () => fetch('version', { cache: 'no-store' })
+  .then(r => r.ok ? r.text() : null).then(t => t ? t.trim() : null)
+  .catch(() => null);
 
 (async () => {
   try {
@@ -50,7 +86,7 @@ window.onerror = (msg, src, line, col) =>
     }
 
     // shell is public; data is not. logged out -> login page.
-    const who = await fetch('auth/whoami', { cache: 'no-store' })
+    who = await fetch('auth/whoami', { cache: 'no-store' })
       .then(r => r.json()).catch(() => null);
     if (who && who.ok && !who.authed) { location.replace('login.html'); return; }
 
@@ -59,19 +95,15 @@ window.onerror = (msg, src, line, col) =>
     const packed = instance.exports.fm_entry();
     const ptr = Number(packed >> 32n), len = Number(packed & 0xFFFFFFFFn);
     const bytes = new Uint8Array(instance.exports.memory.buffer, ptr, len);
-    document.getElementById('app').innerHTML = new TextDecoder().decode(bytes);
+    $('app').innerHTML = new TextDecoder().decode(bytes);
 
-    // self-update: deploys stamp site/version (git hash). compare with the
-    // version we launched from; on change, drop the cache and reload once —
-    // a deploy is live on the next launch. offline: skip quietly.
-    const v = await fetch('version', { cache: 'no-store' })
-      .then(r => r.ok ? r.text() : null).catch(() => null);
-    const running = localStorage.muonVersion || 'first-run';
-    document.getElementById('build').textContent = (v || running).trim();
-    diag({ launch: true, running, server: v ? v.trim() : 'offline',
-           authed: !!(who && who.authed),
-           pwa: matchMedia('(display-mode: standalone)').matches
-                || navigator.standalone === true,
+    // self-update on launch: silent, immediate (network-first makes the
+    // fetch itself current; the reload covers assets mid-race)
+    const v = await fetchVersion();
+    server = v;
+    $('build').textContent = v || running;
+    diag({ launch: true, running, server: v || 'offline',
+           authed: !!(who && who.authed), pwa,
            sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller),
            ua: navigator.userAgent.slice(0, 90) });
     if (v) {
@@ -79,12 +111,53 @@ window.onerror = (msg, src, line, col) =>
       if (running !== 'first-run' && running !== v) {
         await caches.delete('muon');
         location.reload();
+        return;
       }
+      running = v;
     }
   } catch (e) {
     diag({ error: 'loader: ' + (e && e.message ? e.message : String(e)) });
   }
 })();
+
+// mid-session update watch: re-check whenever the app returns to foreground
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState !== 'visible') return;
+  const v = await fetchVersion();
+  if (v && running !== 'first-run' && v !== running) {
+    server = v;
+    $('build').textContent = 'update ready';
+    $('build').classList.add('update');
+  }
+});
+
+// ---- system panel: tap the build stamp
+$('build').onclick = async () => {
+  const upgrade = server && server !== running;
+  $('who').textContent =
+    (who && who.name ? 'logged in as ' + who.name : 'not logged in')
+    + ' · build ' + running
+    + (upgrade ? ' → ' + server + ' available' : ' — up to date');
+  $('updateBtn').style.display = upgrade ? '' : 'none';
+  const changes = await fetch('changes.json', { cache: 'no-store' })
+    .then(r => r.ok ? r.json() : []).catch(() => []);
+  $('changes').innerHTML = changes.slice(0, 6).map(c =>
+    '<div class="change"><b>' + c.build + '</b> '
+    + String(c.text).replace(/</g, '&lt;') + '</div>').join('');
+  $('shade').style.display = 'block';
+  $('panel').style.display = 'block';
+};
+const closePanel = () => { $('shade').style.display = 'none'; $('panel').style.display = 'none'; };
+$('shade').onclick = closePanel;
+$('logoutBtn').onclick = async () => {
+  await fetch('auth/logout', { method: 'POST' }).catch(() => {});
+  location.reload();
+};
+$('updateBtn').onclick = async () => {
+  if (server) localStorage.muonVersion = server;
+  await caches.delete('muon');
+  location.reload();
+};
 </script>
 </body>
 </html>

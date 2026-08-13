@@ -18,4 +18,4 @@ Enter your phone number, receive a 4-digit code, type it in — logged in for a 
 
 ## code description
 
-`pin.rs`: `auth_request` / `auth_verify` / `auth_whoami` (the three JSON endpoints, wired into routing by `/gate`); pending-store helpers (`load_pending`, `set_pending_line`, `save_pending`, `clear_pending` — flat file, one line per phone); rate-limit helpers (`sms_count_last_hour`, `record_sms`); `make_pin` (urandom); base `send_sms` (console).
+`pin.rs`: `auth_request` / `auth_verify` / `auth_whoami` / `auth_logout` (the JSON endpoints, wired into routing by `/gate`; whoami names the user via the token's phone; logout clears the cookie — stateless tokens can't be revoked server-side); pending-store helpers (`load_pending`, `set_pending_line`, `save_pending`, `clear_pending` — flat file, one line per phone); rate-limit helpers (`sms_count_last_hour`, `record_sms`); `make_pin` (urandom); base `send_sms` (console).

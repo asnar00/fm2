@@ -16,6 +16,9 @@ impl feature_Gate {
         if r.path == "auth/whoami" {
             return auth_whoami(r);
         }
+        if r.path == "auth/logout" && r.method == "POST" {
+            return auth_logout(r);
+        }
         if is_public(r.path.clone()) {
             return existing.route(r);
         }
@@ -33,7 +36,7 @@ impl feature_Gate {
         path == "index.html" || path == "sw.js" || path == "client.wasm"
             || path == "manifest.json" || path == "login.html"
             || path == "install.html" || path == "version"
-            || path.starts_with("icon-")
+            || path == "changes.json" || path.starts_with("icon-")
     }
 
     fn login_page() -> response {

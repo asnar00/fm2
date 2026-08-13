@@ -35,6 +35,17 @@ python3 "$SRC/tools/fmlink.py" muon
 # this needs no counter file and still names an exact commit for debugging)
 (cd "$SRC" && git rev-list --count HEAD) > "$SRC/products/muon/build/site/version"
 
+# what's-changed list for the system panel: recent commit subjects, newest
+# first, each tagged with its build number (count minus offset)
+python3 - "$SRC" > "$SRC/products/muon/build/site/changes.json" <<'PY'
+import json, subprocess, sys
+src = sys.argv[1]
+count = int(subprocess.check_output(["git", "rev-list", "--count", "HEAD"], cwd=src))
+subjects = subprocess.check_output(["git", "log", "--format=%s", "-12"],
+                                   cwd=src, text=True).splitlines()
+print(json.dumps([{"build": count - i, "text": s} for i, s in enumerate(subjects)]))
+PY
+
 rsync -a --delete \
   "$SRC/products/muon/build/server/target/release/muon_server" \
   "$SRC/products/muon/build/site" \

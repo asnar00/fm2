@@ -130,6 +130,15 @@ impl feature_Users {
         diff == 0
     }
 
+    fn token_phone(token: String) -> String {
+        let parts: Vec<&str> = token.split('.').collect();
+        if parts.len() == 3 {
+            format!("+{}", parts[0])
+        } else {
+            String::new()
+        }
+    }
+
     fn cookie_token(cookie: String) -> String {
         for part in cookie.split(';') {
             let t = part.trim();

@@ -162,7 +162,21 @@ impl feature_Pin {
     }
 
     fn auth_whoami(r: request) -> response {
-        let ok = authed(r.cookie);
-        json_response(200, format!("{{\"ok\":true,\"authed\":{}}}", ok))
+        let t = cookie_token(r.cookie);
+        if !t.is_empty() && token_valid(t.clone()) {
+            let name = find_user(token_phone(t));
+            return json_response(200,
+                format!("{{\"ok\":true,\"authed\":true,\"name\":\"{}\"}}", name));
+        }
+        json_response(200, "{\"ok\":true,\"authed\":false}".to_string())
+    }
+
+    // stateless tokens can't be revoked server-side; logout clears the cookie
+    fn auth_logout(r: request) -> response {
+        println!("auth: logout {}", tag(token_phone(cookie_token(r.cookie))));
+        let mut resp = json_response(200, "{\"ok\":true}".to_string());
+        resp.set_cookie =
+            "muon_auth=; Max-Age=0; Path=/; Secure; HttpOnly; SameSite=Lax".to_string();
+        resp
     }
 }
