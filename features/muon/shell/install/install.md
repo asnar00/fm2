@@ -6,11 +6,11 @@
 
 ## spec
 
-A phone browser visiting muon is sent to `install.html` — logo, platform-appropriate add-to-home-screen instructions (iOS share sheet / Android menu) — before anything else (including login). The installed PWA and desktop browsers proceed as normal. Detection: mobile user agent (incl. modern iPad's Mac-like UA via touch points) and not `display-mode: standalone`. The page carries the full head (manifest, apple-touch-icon) because it *is* the install point — and since iOS installs the current page's URL, it self-redirects to `/` if ever launched standalone. A small "continue in the browser" escape link appends `?browser=1`, which the shell honours for that visit.
+A phone browser visiting muon is sent to `install.html` before anything else — a user never sees the login screen until they've installed. The page shows only the logo and the instruction steps: tap [share icon], then [⌄] view more, then [+] Add to Home Screen (Android: browser menu → Add to Home Screen). The installed PWA and desktop browsers proceed as normal. Detection: mobile user agent (incl. modern iPad's Mac-like UA via touch points) and not `display-mode: standalone`. The page carries the full head (manifest, apple-touch-icon) because it *is* the install point — and since iOS installs the current page's URL, it self-redirects to `/` if ever launched standalone. No visible escape; `?browser=1` remains as an undocumented dev bypass (session-scoped).
 
 ## user
 
-Visit muon.nøøb.org on a phone: you're shown how to add it to your home screen. Open the installed app and continue to login/app as usual. The dim link at the bottom lets you carry on in the browser anyway.
+Visit muon.nøøb.org on a phone: you're shown the logo and how to add muon to your home screen — nothing else until you do. Open the installed app to reach login and the app itself.
 
 ## glossary
 

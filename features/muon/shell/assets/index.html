@@ -33,8 +33,9 @@ window.onerror = (msg, src, line, col) =>
   try {
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 
-    // phone browsers are sent to install the PWA first (escape: ?browser=1,
-    // remembered for the session). installed app and desktop continue.
+    // phone browsers are sent to install the PWA first — no login, no app,
+    // until installed. (?browser=1 is an undocumented dev bypass, session-
+    // scoped.) installed app and desktop continue.
     const pwa = matchMedia('(display-mode: standalone)').matches
                 || navigator.standalone === true;
     const phone = /iPhone|iPad|Android/.test(navigator.userAgent)
