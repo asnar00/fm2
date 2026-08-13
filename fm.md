@@ -186,5 +186,9 @@ When trying to extend a feature, it is permissible to refactor the feature's cod
 
 The subfeatures of a feature `A` are composed in the order defined by a file called `order.md` which should exist in every feature folder. If the file doesn't exist, use the timestamp drawn from the conversation reference, and compose oldest features first.
 
+## feature tree rules
 
+### one prompt per feature node
+
+If a feature node 
 

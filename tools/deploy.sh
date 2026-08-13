@@ -40,6 +40,21 @@ WebAssembly.instantiate(fs.readFileSync(process.argv[1]), {})
   .catch(e => { console.error("deploy: wasm smoke test FAILED:", e.message); process.exit(1); })
 ' "$SRC/products/muon/build/site/client.wasm"
 
+# provenance visibility: which feature nodes does this release touch, and did
+# any capability ship without a node? informational — the judgment stays
+# human, but the omission becomes visible at the moment of shipping
+LIVE=$(curl -s --max-time 5 https://muon.xn--nb-lkaa.org/version 2>/dev/null | tr -cd '0-9')
+NOW=$(cd "$SRC" && git rev-list --count HEAD)
+if [ -n "$LIVE" ] && [ "$NOW" -gt "$LIVE" ] 2>/dev/null; then
+  N=$((NOW - LIVE))
+  echo "shipping $N commit(s) — feature nodes touched:"
+  (cd "$SRC" && git diff --name-only "HEAD~$N" HEAD -- features/ 2>/dev/null \
+    | xargs -n1 dirname 2>/dev/null | sort -u | sed 's/^/  /')
+  if ! (cd "$SRC" && git diff --name-only --diff-filter=A "HEAD~$N" HEAD -- features/ 2>/dev/null | grep -q '\.md$'); then
+    echo "  NOTE: no new feature nodes in this release — did every new capability get its node?"
+  fi
+fi
+
 # the feature tree, statically rendered — served publicly at /features/
 python3 "$SRC/tools/export_features.py"
 

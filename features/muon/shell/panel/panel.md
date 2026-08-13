@@ -6,7 +6,7 @@
 
 ## spec
 
-Muon's own UI, distinct from app content. A small logo lozenge bottom-right (#p69 — a button, not a version readout; #p58 — safe-area positioned) opens the panel: logged-in name, running /build number/ with update state ("up to date" / "N available" / "can't reach the server"), the what's-changed list, enrolment buttons for Face ID (`/passkey`) and notifications (`/push`) when the device lacks them (asking the real subscription state, not a cached flag), log out, and update. The handle pulses when `/update` finds a newer build.
+Muon's own UI, distinct from app content: a corner handle opens a small panel showing logged-in name, running /build number/ with update state, the what's-changed list, enrolment buttons for Face ID (`/passkey`) and notifications (`/push`) when the device lacks them (asking the real subscription state, not a cached flag), log out, and update. The handle's form and placement are subfeatures: `/button` (the logo lozenge) and `/corner` (safe-area positioning).
 
 ## user
 
