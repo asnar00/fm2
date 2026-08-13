@@ -419,9 +419,31 @@ pre.raw { background:var(--code); padding:12px; border-radius:8px; overflow-x:au
   font:12.5px/1.6 "SF Mono",Menlo,monospace; color:#c9e3ff;
   border:1px solid var(--border); }
 p.placeholder { color:var(--dim); font-style:italic; }
+.toggle, .shade, .drawer-btn { display:none; }
 @media (max-width: 900px) {
-  body { display:block; height:auto; overflow:auto; }
-  .pane { border-right:none; border-bottom:1px solid var(--border); }
+  /* phones: centre pane owns the screen; tree and conversation are drawers
+     that slide in from the sides (pure CSS — hidden-checkbox pattern) */
+  body { grid-template-columns: 1fr; }
+  #left, #right { position:fixed; top:0; bottom:0; z-index:40;
+    width:min(85vw, 330px); transition:transform .22s ease; }
+  #left { left:0; background:var(--bg); transform:translateX(-105%);
+    border-right:1px solid var(--border); box-shadow:6px 0 24px rgba(0,0,0,.5); }
+  #right { right:0; background:var(--panel); transform:translateX(105%);
+    border-left:1px solid var(--border); box-shadow:-6px 0 24px rgba(0,0,0,.5);
+    width:min(92vw, 400px); }
+  #treeToggle:checked ~ #left { transform:none; }
+  #convoToggle:checked ~ #right { transform:none; }
+  .shade { position:fixed; inset:0; z-index:35; background:rgba(0,0,0,.5); }
+  #treeToggle:checked ~ #treeShade { display:block; }
+  #convoToggle:checked ~ #convoShade { display:block; }
+  .drawer-btn { position:fixed; z-index:50; display:flex; align-items:center;
+    justify-content:center; top:calc(env(safe-area-inset-top, 0px) + 10px);
+    width:44px; height:34px; border:1px solid #3a3a3f; border-radius:999px;
+    background:rgba(18,18,21,.92); color:var(--text); font-size:15px;
+    cursor:pointer; user-select:none; }
+  #treeBtn { left:12px; }
+  #convoBtn { right:12px; }
+  #center { padding-top:56px; }
   .md .tw .pop { width:min(320px, 86vw); }
 }
 """
@@ -432,10 +454,16 @@ PAGE = """<!doctype html>
 <title>fm: {title}</title>
 <style>{style}</style></head>
 <body>
+<input type="checkbox" id="treeToggle" class="toggle">
+<input type="checkbox" id="convoToggle" class="toggle">
+<label for="treeToggle" class="shade" id="treeShade"></label>
+<label for="convoToggle" class="shade" id="convoShade"></label>
 <div class="pane" id="left"><h1 class="label">features</h1><div id="tree">{tree}</div></div>
 <div class="pane" id="center"><div class="md">{center}</div></div>
 <div class="pane" id="right"><h1 class="label">transcript · {tname}</h1>
 <div class="md">{transcript}</div></div>
+<label for="treeToggle" class="drawer-btn" id="treeBtn">☰</label>
+<label for="convoToggle" class="drawer-btn" id="convoBtn">❝</label>
 </body></html>"""
 
 
