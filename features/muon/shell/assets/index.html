@@ -22,9 +22,9 @@
 
   /* system panel: the build stamp is its handle */
   #build { position: fixed;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
-    right: calc(env(safe-area-inset-right, 0px) + 14px);
-    opacity: .35; font-size: 11px; padding: 8px 10px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+    right: calc(env(safe-area-inset-right, 0px) + 20px);
+    opacity: .45; font-size: 11px; padding: 8px 10px;
     user-select: none; cursor: pointer; }
   #build.update { opacity: 1; color: #8ab8ff; }
   #shade { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; }
@@ -70,6 +70,19 @@ let who = null;
 const fetchVersion = () => fetch('version', { cache: 'no-store' })
   .then(r => r.ok ? r.text() : null).then(t => t ? t.trim() : null)
   .catch(() => null);
+
+// one shared checker: updates state + lights the stamp when a newer build
+// exists. returns the server build, or null if it couldn't be reached.
+async function checkForUpdate() {
+  const v = await fetchVersion();
+  if (!v) return null;
+  server = v;
+  if (running !== 'first-run' && v !== running) {
+    $('build').textContent = 'update ready';
+    $('build').classList.add('update');
+  }
+  return v;
+}
 
 (async () => {
   try {
@@ -117,30 +130,34 @@ const fetchVersion = () => fetch('version', { cache: 'no-store' })
         return;
       }
       running = v;
+    } else {
+      // launched without network (cache fallback): keep trying — the check
+      // failing must never masquerade as "up to date"
+      let tries = 0;
+      const timer = setInterval(async () => {
+        if (await checkForUpdate() || ++tries >= 12) clearInterval(timer);
+      }, 5000);
     }
   } catch (e) {
     diag({ error: 'loader: ' + (e && e.message ? e.message : String(e)) });
   }
 })();
 
-// mid-session update watch: re-check whenever the app returns to foreground
-document.addEventListener('visibilitychange', async () => {
-  if (document.visibilityState !== 'visible') return;
-  const v = await fetchVersion();
-  if (v && running !== 'first-run' && v !== running) {
-    server = v;
-    $('build').textContent = 'update ready';
-    $('build').classList.add('update');
-  }
+// mid-session update watch: foregrounding and regaining connectivity re-check
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') checkForUpdate();
 });
+window.addEventListener('online', checkForUpdate);
 
-// ---- system panel: tap the build stamp
+// ---- system panel: tap the build stamp (always re-checks, live)
 $('build').onclick = async () => {
+  const live = await checkForUpdate();
   const upgrade = server && server !== running;
   $('who').textContent =
     (who && who.name ? 'logged in as ' + who.name : 'not logged in')
     + ' · build ' + running
-    + (upgrade ? ' → ' + server + ' available' : ' — up to date');
+    + (upgrade ? ' → ' + server + ' available'
+       : (live ? ' — up to date' : ' — can’t reach the server'));
   $('updateBtn').style.display = upgrade ? '' : 'none';
   const changes = await fetch('changes.json', { cache: 'no-store' })
     .then(r => r.ok ? r.json() : []).catch(() => []);
