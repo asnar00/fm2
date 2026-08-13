@@ -1,1 +1,2 @@
 - [x] pwa
+- [x] readout

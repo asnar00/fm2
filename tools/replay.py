@@ -108,7 +108,7 @@ def main():
     ensure_server()
     # browser=1: the dev bypass past the install wall — test browsers
     # (and simulators) wear phone user-agents
-    url = f"http://localhost:8095/?replay=1&browser=1&speed={args.speed}"
+    url = f"http://localhost:8095/?replay=1&browser=1&readout=1&speed={args.speed}"
     open_target(url, args.simulator)
     print(f"replaying at {url}")
 
