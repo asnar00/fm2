@@ -29,6 +29,21 @@
   const ptr = Number(packed >> 32n), len = Number(packed & 0xFFFFFFFFn);
   const bytes = new Uint8Array(instance.exports.memory.buffer, ptr, len);
   document.getElementById('app').innerHTML = new TextDecoder().decode(bytes);
+
+  // self-update: deploys stamp site/version (git hash). after paint, compare
+  // with the version we launched from; on change, drop the cache and reload
+  // once — so a deploy is picked up on the next launch, not the one after.
+  // offline: the fetch fails and we quietly stay as we are.
+  const v = await fetch('version', { cache: 'no-store' })
+    .then(r => r.ok ? r.text() : null).catch(() => null);
+  if (v) {
+    const seen = localStorage.muonVersion;
+    localStorage.muonVersion = v;
+    if (seen && seen !== v) {
+      await caches.delete('muon');
+      location.reload();
+    }
+  }
 })();
 </script>
 </body>

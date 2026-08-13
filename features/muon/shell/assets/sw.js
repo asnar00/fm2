@@ -8,8 +8,9 @@ self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  // auth state must never be answered from cache
-  if (new URL(e.request.url).pathname.includes('/auth/')) return;
+  // auth state and the deploy stamp must never be answered from cache
+  const path = new URL(e.request.url).pathname;
+  if (path.includes('/auth/') || path.endsWith('/version')) return;
   e.respondWith(caches.open(CACHE).then(async cache => {
     const hit = await cache.match(e.request);
     const net = fetch(e.request).then(res => {

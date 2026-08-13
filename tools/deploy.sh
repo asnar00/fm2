@@ -30,6 +30,9 @@ echo "deploying to $HOST"
 
 python3 "$SRC/tools/fmlink.py" muon
 
+# deploy stamp: the client compares this on launch and self-refreshes on change
+(cd "$SRC" && git rev-parse --short HEAD) > "$SRC/products/muon/build/site/version"
+
 rsync -a --delete \
   "$SRC/products/muon/build/server/target/release/muon_server" \
   "$SRC/products/muon/build/site" \
