@@ -106,7 +106,9 @@ def main():
     print(f"session window: {len(data['entries'])} events over {span:.1f}s, "
           f"{len(data['keyframes'])} keyframes")
     ensure_server()
-    url = f"http://localhost:8095/?replay=1&speed={args.speed}"
+    # browser=1: the dev bypass past the install wall — test browsers
+    # (and simulators) wear phone user-agents
+    url = f"http://localhost:8095/?replay=1&browser=1&speed={args.speed}"
     open_target(url, args.simulator)
     print(f"replaying at {url}")
 
