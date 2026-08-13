@@ -65,7 +65,7 @@
     if (r.ok) {
       const who = await fetch("/auth/whoami", { cache: "no-store" })
         .then((x) => x.json()).catch(() => null);
-      if (who && who.authed) { location.replace(location.pathname + "?in=" + Date.now()); return; }
+      if (who && who.authed) { location.replace("/?in=" + Date.now()); return; }
       $("err").textContent = "logged in, but this browser did not keep the cookie";
       return;
     }

@@ -20,29 +20,50 @@
 </head>
 <body>
 <div id="app"></div>
+<div id="build" style="position:fixed;bottom:6px;right:10px;opacity:.35;font-size:11px"></div>
 <script>
-(async () => {
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-  const res = await fetch('client.wasm');
-  const { instance } = await WebAssembly.instantiate(await res.arrayBuffer(), {});
-  const packed = instance.exports.fm_entry();
-  const ptr = Number(packed >> 32n), len = Number(packed & 0xFFFFFFFFn);
-  const bytes = new Uint8Array(instance.exports.memory.buffer, ptr, len);
-  document.getElementById('app').innerHTML = new TextDecoder().decode(bytes);
+// diagnostics first, so even a broken loader reports in
+const diag = (data) => fetch('diag/report', { method: 'POST',
+  body: JSON.stringify({ t: new Date().toISOString(), ...data }) }).catch(() => {});
+window.onerror = (msg, src, line, col) =>
+  diag({ error: String(msg), at: `${src}:${line}:${col}` });
 
-  // self-update: deploys stamp site/version (git hash). after paint, compare
-  // with the version we launched from; on change, drop the cache and reload
-  // once — so a deploy is picked up on the next launch, not the one after.
-  // offline: the fetch fails and we quietly stay as we are.
-  const v = await fetch('version', { cache: 'no-store' })
-    .then(r => r.ok ? r.text() : null).catch(() => null);
-  if (v) {
-    const seen = localStorage.muonVersion;
-    localStorage.muonVersion = v;
-    if (seen && seen !== v) {
-      await caches.delete('muon');
-      location.reload();
+(async () => {
+  try {
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+
+    // shell is public; data is not. logged out -> login page.
+    const who = await fetch('auth/whoami', { cache: 'no-store' })
+      .then(r => r.json()).catch(() => null);
+    if (who && who.ok && !who.authed) { location.replace('login.html'); return; }
+
+    const res = await fetch('client.wasm');
+    const { instance } = await WebAssembly.instantiate(await res.arrayBuffer(), {});
+    const packed = instance.exports.fm_entry();
+    const ptr = Number(packed >> 32n), len = Number(packed & 0xFFFFFFFFn);
+    const bytes = new Uint8Array(instance.exports.memory.buffer, ptr, len);
+    document.getElementById('app').innerHTML = new TextDecoder().decode(bytes);
+
+    // self-update: deploys stamp site/version (git hash). compare with the
+    // version we launched from; on change, drop the cache and reload once —
+    // a deploy is live on the next launch. offline: skip quietly.
+    const v = await fetch('version', { cache: 'no-store' })
+      .then(r => r.ok ? r.text() : null).catch(() => null);
+    const running = localStorage.muonVersion || 'first-run';
+    document.getElementById('build').textContent = (v || running).trim();
+    diag({ launch: true, running, server: v ? v.trim() : 'offline',
+           authed: !!(who && who.authed),
+           sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller),
+           ua: navigator.userAgent.slice(0, 90) });
+    if (v) {
+      localStorage.muonVersion = v;
+      if (running !== 'first-run' && running !== v) {
+        await caches.delete('muon');
+        location.reload();
+      }
     }
+  } catch (e) {
+    diag({ error: 'loader: ' + (e && e.message ? e.message : String(e)) });
   }
 })();
 </script>
