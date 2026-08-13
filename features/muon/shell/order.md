@@ -1,2 +1,4 @@
 - [x] logo
 - [x] install
+- [x] update
+- [x] panel
