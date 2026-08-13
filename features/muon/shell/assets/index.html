@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>muon</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#000000">
@@ -11,6 +11,8 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
 <style>
+  html, body { position: fixed; inset: 0; overflow: hidden;
+    overscroll-behavior: none; touch-action: manipulation; }
   html, body { margin: 0; height: 100%; background: #000; color: #fff;
     font: 16px -apple-system, system-ui, sans-serif; }
   body { display: flex; align-items: center; justify-content: center; }
@@ -23,6 +25,7 @@
 <div id="app"></div>
 <div id="build" style="position:fixed;bottom:6px;right:10px;opacity:.35;font-size:11px"></div>
 <script>
+document.addEventListener('gesturestart', (e) => e.preventDefault());
 // diagnostics first, so even a broken loader reports in
 const diag = (data) => fetch('diag/report', { method: 'POST',
   body: JSON.stringify({ t: new Date().toISOString(), ...data }) }).catch(() => {});

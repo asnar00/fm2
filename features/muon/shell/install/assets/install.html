@@ -2,13 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>muon</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#000000">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
 <style>
+  html, body { position: fixed; inset: 0; overflow: hidden;
+    overscroll-behavior: none; touch-action: manipulation; }
   html, body { margin: 0; min-height: 100vh; background: #000; color: #fff;
     font: 17px/1.6 -apple-system, system-ui, sans-serif; }
   body { display: grid; place-items: center; }
@@ -40,6 +42,7 @@
   </div>
 </main>
 <script>
+document.addEventListener('gesturestart', (e) => e.preventDefault());
   // iOS installs the page you're LOOKING AT as the app URL — so if this page
   // ever launches standalone, hand over to the app immediately.
   if (matchMedia('(display-mode: standalone)').matches || navigator.standalone === true)
