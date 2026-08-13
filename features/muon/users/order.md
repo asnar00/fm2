@@ -1,2 +1,3 @@
 - [x] pin
 - [x] gate
+- [x] passkey

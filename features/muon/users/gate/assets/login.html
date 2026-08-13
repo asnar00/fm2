@@ -39,6 +39,9 @@
     <input id="pin" inputmode="numeric" maxlength="4" pattern="[0-9]*"
            placeholder="····" autocomplete="one-time-code">
   </form>
+  <button id="faceid" type="button"
+    style="display:none;background:#191919;color:#fff;border:1px solid #333;margin-top:1.4rem">
+    sign in with Face ID</button>
   <div id="err"></div>
 </main>
 <script>
@@ -79,6 +82,32 @@ document.addEventListener('gesturestart', (e) => e.preventDefault());
   };
   $("pinStep").onsubmit = (e) => { e.preventDefault(); verify(); };
   $("pin").oninput = verify;
+
+  // ---- Face ID (passkey) sign-in: register first via the app's system panel
+  const b64uToBuf = (s) => Uint8Array.from(
+    atob(s.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
+  const bufToB64u = (b) => btoa(String.fromCharCode(...new Uint8Array(b)))
+    .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  if (window.PublicKeyCredential) $("faceid").style.display = "";
+  $("faceid").onclick = async () => {
+    $("err").textContent = "";
+    try {
+      const o = await post("/auth/passkey/challenge", {});
+      if (!o.ok) { $("err").textContent = o.error || "no challenge"; return; }
+      const cred = await navigator.credentials.get({ publicKey: {
+        challenge: b64uToBuf(o.challenge), rpId: o.rp_id,
+        userVerification: "required" } });
+      const r = await post("/auth/passkey/login", {
+        id: cred.id,
+        auth_data: bufToB64u(cred.response.authenticatorData),
+        client_data: bufToB64u(cred.response.clientDataJSON),
+        signature: bufToB64u(cred.response.signature) });
+      if (r.ok) { location.replace("/?in=" + Date.now()); return; }
+      $("err").textContent = r.error || "Face ID sign-in failed";
+    } catch (e) {
+      $("err").textContent = "Face ID cancelled or unavailable";
+    }
+  };
 </script>
 </body>
 </html>

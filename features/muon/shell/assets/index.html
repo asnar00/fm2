@@ -50,6 +50,9 @@
 <div id="panel">
   <div class="who" id="who"></div>
   <div id="changes"></div>
+  <div class="row" id="passkeyRow" style="display:none">
+    <button id="passkeyBtn">enable Face ID login</button>
+  </div>
   <div class="row">
     <button id="updateBtn" class="primary" style="display:none">update</button>
     <button id="logoutBtn">log out</button>
@@ -165,6 +168,8 @@ $('build').onclick = async () => {
     + (upgrade ? ' → ' + server + ' available'
        : (live ? ' — up to date' : ' — can’t reach the server'));
   $('updateBtn').style.display = upgrade ? '' : 'none';
+  $('passkeyRow').style.display =
+    (window.PublicKeyCredential && !localStorage.muonPasskey) ? '' : 'none';
   const changes = await fetch('changes.json', { cache: 'no-store' })
     .then(r => r.ok ? r.json() : []).catch(() => []);
   $('changes').innerHTML = changes.slice(0, 6).map(c =>
@@ -183,6 +188,43 @@ $('updateBtn').onclick = async () => {
   if (server) localStorage.muonVersion = server;
   await caches.delete('muon');
   location.reload();
+};
+
+// ---- Face ID enrolment (panel): create a passkey while SMS-logged-in
+const b64uToBuf = (s) => Uint8Array.from(
+  atob(s.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
+const bufToB64u = (b) => btoa(String.fromCharCode(...new Uint8Array(b)))
+  .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+$('passkeyBtn').onclick = async () => {
+  try {
+    const o = await fetch('auth/passkey/register-challenge', { method: 'POST' })
+      .then(r => r.json());
+    if (!o.ok) { diag({ error: 'passkey challenge: ' + (o.error || '?') }); return; }
+    const cred = await navigator.credentials.create({ publicKey: {
+      challenge: b64uToBuf(o.challenge),
+      rp: { id: o.rp_id, name: 'muon' },
+      user: { id: b64uToBuf(o.user_id), name: o.user_name, displayName: o.user_name },
+      pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
+      authenticatorSelection: { authenticatorAttachment: 'platform',
+        residentKey: 'required', userVerification: 'required' },
+      attestation: 'none' } });
+    const r = await fetch('auth/passkey/register', { method: 'POST',
+      body: JSON.stringify({
+        id: cred.id,
+        attestation: bufToB64u(cred.response.attestationObject),
+        client_data: bufToB64u(cred.response.clientDataJSON) }) })
+      .then(x => x.json());
+    if (r.ok) {
+      localStorage.muonPasskey = '1';
+      $('passkeyBtn').textContent = 'Face ID enabled ✓';
+      setTimeout(() => { $('passkeyRow').style.display = 'none'; }, 1500);
+    } else {
+      diag({ error: 'passkey register: ' + (r.error || 'failed') });
+      $('passkeyBtn').textContent = 'Face ID setup failed — try again';
+    }
+  } catch (e) {
+    diag({ error: 'passkey create: ' + (e && e.message ? e.message : String(e)) });
+  }
 };
 </script>
 </body>

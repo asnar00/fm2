@@ -142,13 +142,13 @@ class FeatureCode:
         assets = feature_dir / "assets"
         self.assets = sorted(p for p in assets.iterdir()
                              if p.is_file()) if assets.is_dir() else []
-        self.deps = {}            # cargo deps this feature needs: name -> version
+        self.deps = {}            # cargo deps: name -> full spec line (verbatim)
         deps_file = feature_dir / "deps.toml"
         if deps_file.exists():
             for line in deps_file.read_text().splitlines():
-                m = re.match(r'([\w-]+)\s*=\s*"([^"]+)"', line.strip())
+                m = re.match(r'([\w-]+)\s*=\s*(.+)$', line.strip())
                 if m:
-                    self.deps[m.group(1)] = m.group(2)
+                    self.deps[m.group(1)] = f"{m.group(1)} = {m.group(2)}"
         for rs in sorted(feature_dir.glob("*.rs")):
             self._parse(rs)
 
@@ -415,19 +415,23 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib"]
 path = "src/lib.rs"
+
+[profile.release]
+lto = true
+opt-level = "z"
 """
 
 
 def merged_deps(features: list) -> str:
-    """Union of every feature's deps.toml; version conflict = link error."""
+    """Union of every feature's deps.toml; conflicting specs = link error."""
     merged = {}
     for feature in features:
-        for name, version in feature.deps.items():
-            if name in merged and merged[name] != version:
-                fail(f"cargo dep '{name}' wanted at both '{merged[name]}' and "
-                     f"'{version}' — align the features' deps.toml files")
-            merged[name] = version
-    return "".join(f'{n} = "{v}"\n' for n, v in sorted(merged.items()))
+        for name, spec in feature.deps.items():
+            if name in merged and merged[name] != spec:
+                fail(f"cargo dep '{name}' wanted as both '{merged[name]}' and "
+                     f"'{spec}' — align the features' deps.toml files")
+            merged[name] = spec
+    return "".join(f"{spec}\n" for _, spec in sorted(merged.items()))
 
 
 def cargo_build(crate_dir: Path, emitter: Emitter, wasm: bool, label: str):
