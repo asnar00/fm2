@@ -18,9 +18,9 @@ Open muon in a mobile browser; add to home screen to install. Works offline afte
 
 ## code description
 
-`shell.rs` defines the `render() -> String` chain base (returns empty HTML); subfeatures extend it with content.
+`shell.rs` defines the `render(state) -> String` chain base (returns empty HTML, drawn from the `/events` loop's state); subfeatures extend it with content.
 
-`assets/index.html` is the loader: it fetches `client.wasm`, instantiates it, calls the exported `fm_entry()`, unpacks the returned ptr/len pair from wasm memory, and sets `#app`'s HTML. It also registers the service worker.
+`assets/index.html` is the loader skeleton: it registers the service worker, walks the launch flow (install redirect, whoami, then hands the app to `feature_Events.boot()`), with every feature reference typeof-guarded.
 
 **Self-update**: after paint the loader checks the deploy stamp (`site/version`, the commit-count build number written by deploy.sh) against the one it launched from — on change it drops the cache and reloads once. Returning to foreground, regaining connectivity, and a 60-second visible-poll all re-check; a failed check surfaces as "can't reach the server", never as "up to date".
 

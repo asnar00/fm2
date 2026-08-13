@@ -3,3 +3,4 @@
 - [x] users
 - [x] push
 - [x] diag
+- [x] events

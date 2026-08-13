@@ -40,12 +40,7 @@ const fm_bufToB64u = (b) => btoa(String.fromCharCode(...new Uint8Array(b)))
       if (feature_Gate.redirectIfLoggedOut(who)) return;
     }
     if (typeof feature_Panel !== 'undefined') feature_Panel.lastWho = who;
-    const res = await fetch('client.wasm');
-    const { instance } = await WebAssembly.instantiate(await res.arrayBuffer(), {});
-    const packed = instance.exports.fm_entry();
-    const ptr = Number(packed >> 32n), len = Number(packed & 0xFFFFFFFFn);
-    const bytes = new Uint8Array(instance.exports.memory.buffer, ptr, len);
-    $('app').innerHTML = new TextDecoder().decode(bytes);
+    if (typeof feature_Events !== 'undefined') await feature_Events.boot();
     if (typeof feature_Update !== 'undefined') await feature_Update.launch(who);
   } catch (e) {
     if (typeof feature_Diag !== 'undefined')

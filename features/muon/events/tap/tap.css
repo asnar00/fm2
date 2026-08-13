@@ -1,0 +1,4 @@
+.tap { display: inline-block; margin-top: 2.2rem; padding: .5rem 1.4rem;
+  border: 1px solid #3a3a3f; border-radius: 999px; background: #121215;
+  color: #ccc; font-size: 15px; cursor: pointer; user-select: none; }
+.tap:active { background: #1e1e22; }

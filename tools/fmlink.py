@@ -66,11 +66,12 @@ def read_places(product_dir: Path):
         return None
     places = []
     for line in f.read_text().splitlines():
-        m = re.match(r"-\s*\[( |x)\]\s*(\w+)\s*:\s*(native|wasm)\s*,\s*entry\s*=\s*(\w+)",
+        m = re.match(r"-\s*\[( |x)\]\s*(\w+)\s*:\s*(native|wasm)\s*,\s*entry\s*=\s*(\w+)"
+                     r"(?:\s*,\s*event\s*=\s*(\w+))?",
                      line.strip())
         if m and m.group(1) == "x":
             places.append({"name": m.group(2), "kind": m.group(3),
-                           "entry": m.group(4)})
+                           "entry": m.group(4), "event": m.group(5)})
     if not places:
         fail(f"{f.relative_to(REPO)} defines no included places")
     return places
@@ -411,15 +412,39 @@ def with_entry(base: Emitter, chains: dict, place: dict) -> Emitter:
         if chains[key]["ret"] != "String":
             fail(f"place '{place['name']}': wasm entry {entry}() must return "
                  f"String (found '{chains[key]['ret'] or 'nothing'}')")
-        out.emit(f"// ---- wasm export for place '{place['name']}'")
-        out.emit("#[no_mangle]")
-        out.emit("pub extern \"C\" fn fm_entry() -> u64 {")
-        out.emit(f"    let s: String = feature_{head}::{entry}();")
+        out.emit(f"// ---- wasm exports for place '{place['name']}'")
+        out.emit("fn fm_pack(s: String) -> u64 {")
         out.emit("    let b = s.into_bytes();")
         out.emit("    let packed = ((b.as_ptr() as u64) << 32) | (b.len() as u64);")
         out.emit("    std::mem::forget(b);")
         out.emit("    packed")
         out.emit("}")
+        out.emit("#[no_mangle]")
+        out.emit("pub extern \"C\" fn fm_alloc(len: u32) -> u32 {")
+        out.emit("    let mut buf = vec![0u8; len as usize];")
+        out.emit("    let ptr = buf.as_mut_ptr() as u32;")
+        out.emit("    std::mem::forget(buf);")
+        out.emit("    ptr")
+        out.emit("}")
+        out.emit("#[no_mangle]")
+        out.emit("pub extern \"C\" fn fm_entry() -> u64 {")
+        out.emit(f"    fm_pack(feature_{head}::{entry}())")
+        out.emit("}")
+        event = place.get("event")
+        if event:
+            ekey = (event, ("String",))
+            if ekey not in chains or chains[ekey]["ret"] != "String":
+                fail(f"place '{place['name']}': event chain {event}(String) -> "
+                     f"String is not defined")
+            ehead = chains[ekey]["head"]
+            out.emit("#[no_mangle]")
+            out.emit("pub extern \"C\" fn fm_event(ptr: u32, len: u32) -> u64 {")
+            out.emit("    let input = unsafe {")
+            out.emit("        String::from_raw_parts(ptr as *mut u8,")
+            out.emit("                               len as usize, len as usize)")
+            out.emit("    };")
+            out.emit(f"    fm_pack(feature_{ehead}::{event}(input))")
+            out.emit("}")
     return out
 
 

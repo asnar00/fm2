@@ -1,2 +1,2 @@
 - [x] server: native, entry=serve
-- [x] client: wasm, entry=render
+- [x] client: wasm, entry=boot, event=on_event
