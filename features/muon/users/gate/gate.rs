@@ -32,7 +32,8 @@ impl feature_Gate {
     fn is_public(path: String) -> bool {
         path == "index.html" || path == "sw.js" || path == "client.wasm"
             || path == "manifest.json" || path == "login.html"
-            || path == "version" || path.starts_with("icon-")
+            || path == "install.html" || path == "version"
+            || path.starts_with("icon-")
     }
 
     fn login_page() -> response {

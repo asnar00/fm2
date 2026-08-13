@@ -1,1 +1,2 @@
 - [x] logo
+- [x] install

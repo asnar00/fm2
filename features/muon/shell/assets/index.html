@@ -33,6 +33,18 @@ window.onerror = (msg, src, line, col) =>
   try {
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 
+    // phone browsers are sent to install the PWA first (escape: ?browser=1,
+    // remembered for the session). installed app and desktop continue.
+    const pwa = matchMedia('(display-mode: standalone)').matches
+                || navigator.standalone === true;
+    const phone = /iPhone|iPad|Android/.test(navigator.userAgent)
+                  || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (location.search.includes('browser=1')) sessionStorage.muonBrowser = '1';
+    if (phone && !pwa && !sessionStorage.muonBrowser) {
+      location.replace('install.html');
+      return;
+    }
+
     // shell is public; data is not. logged out -> login page.
     const who = await fetch('auth/whoami', { cache: 'no-store' })
       .then(r => r.json()).catch(() => null);

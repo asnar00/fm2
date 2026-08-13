@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>muon</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  html, body { margin: 0; min-height: 100vh; background: #000; color: #fff;
+    font: 17px/1.6 -apple-system, system-ui, sans-serif; }
+  body { display: grid; place-items: center; }
+  main { text-align: center; padding: 2rem; max-width: 24rem; }
+  .logo { font-size: 16vw; line-height: 1.1; user-select: none; }
+  @media (min-width: 700px) { .logo { font-size: 80px; } }
+  h1 { font-size: 1.3rem; margin: 1.2rem 0 .4rem; font-weight: 600; }
+  p { color: #bbb; margin: .4rem 0; }
+  .share { display: inline-block; transform: translateY(2px); }
+  .later { display: block; margin-top: 2.2rem; color: #555; font-size: .85rem;
+    text-decoration: none; }
+</style>
+</head>
+<body>
+<main>
+  <div class="logo">ᕦ(ツ)ᕤ</div>
+  <h1>install muon</h1>
+  <p id="ios">tap <span class="share">⎋</span> share, then<br><b>Add to Home Screen</b></p>
+  <p id="android" style="display:none">open the browser menu, then<br><b>Add to Home Screen</b> / <b>Install app</b></p>
+  <a class="later" href="/?browser=1">continue in the browser</a>
+</main>
+<script>
+  // iOS installs the page you're LOOKING AT as the app URL — so if this page
+  // ever launches standalone, hand over to the app immediately.
+  if (matchMedia('(display-mode: standalone)').matches || navigator.standalone === true)
+    location.replace('/');
+  if (/Android/.test(navigator.userAgent)) {
+    document.getElementById('ios').style.display = 'none';
+    document.getElementById('android').style.display = 'block';
+  }
+  fetch('diag/report', { method: 'POST', body: JSON.stringify(
+    { t: new Date().toISOString(), install_screen: true,
+      ua: navigator.userAgent.slice(0, 90) }) }).catch(() => {});
+</script>
+</body>
+</html>
