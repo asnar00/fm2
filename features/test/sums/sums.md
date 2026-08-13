@@ -18,4 +18,8 @@ With this feature included, the demo prints the colour sum (with alpha channel),
 
 ## code description
 
-`sums.rs` extends `main` (lines 3-13): calls the previous chain (line 4), then adds two colours via `add` (lines 5-6) — dispatched to the colour chain, alpha extension included — adds two vectors (line 8), and adds two vectors with `+` (line 10), exercising the generated `std::ops::Add` glue. Struct literals use `..Default::default()` so this feature stays agnostic to fields added by other features.
+`sums.rs` extends `main` (lines 3-13): it calls the previous chain (line 4), then adds two colours via `add` (lines 5-6) — dispatched to the colour chain, alpha extension included.
+
+It then adds two vectors (line 8), and adds two vectors with `+` (line 10), exercising the generated `std::ops::Add` glue.
+
+Struct literals use `..Default::default()` so this feature stays agnostic to fields added by other features.

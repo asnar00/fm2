@@ -20,4 +20,14 @@ Muon lives at muon.nøøb.org. On a phone you install it to the home screen (the
 
 ## code description
 
-Container node — the capabilities live in the subfeatures: `/serve` (stdlib HTTP server + the `route` extension chain), `/shell` (PWA loader, offline service worker with the freshness deadline, self-update, system panel, `render()` chain for content), `/users` (guest list, sessions; `/pin` SMS codes via `/vonage`, `/gate` login wall, `/passkey` Face ID), `/push` (Web Push deploy announcements), `/diag` (remote launch/error reports). Products build it as two places from one tree: `server` (native, entry `serve`) and `client` (wasm, entry `render`).
+Container node — the capabilities live in the subfeatures.
+
+`/serve`: the stdlib HTTP server and the `route` extension chain everything else plugs into.
+
+`/shell`: the PWA client — loader, offline service worker with the freshness deadline, self-update, and the system panel; content renders through the `render()` chain.
+
+`/users`: identity and sessions — `/pin` SMS codes (delivered by `/vonage`), `/gate` the login wall, `/passkey` Face ID.
+
+`/push`: Web Push, first used for deploy announcements. `/diag`: remote launch and error reports from installed devices.
+
+Products build muon as two places from one tree: `server` (native, entry `serve`) and `client` (wasm, entry `render`).

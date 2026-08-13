@@ -19,4 +19,12 @@ Once per device: tap the build number → "enable notifications" → allow. From
 
 ## code description
 
-`push.rs`: `serve` /extension/ (`notify_if_updated` then `existing.serve()`); `route` /extension/ (`push/vapid-key` public, `push/subscribe` cookie-gated); subscription store (`push-subs.txt`, upsert-by-endpoint); `send_push` (encrypt → temp file → curl with `Authorization: vapid`); `encrypt_payload` (RFC 8291), `vapid_jwt` (ES256, raw r‖s), `hkdf_bytes`, `endpoint_origin`. Client halves: sw.js `push`/`notificationclick` listeners, panel enrolment button in `/shell`'s loader. `deps.toml` adds `hkdf` + `aes-gcm`; `p256` gains its `ecdh` feature (declared in `/passkey`'s deps).
+`push.rs` extends two chains. Its `serve` /extension/ runs `notify_if_updated` before `existing.serve()` — since the server restarts on every deploy, comparing `site/version` with the last announced build at startup *is* the deploy-notification trigger. Its `route` /extension/ adds `push/vapid-key` (public) and `push/subscribe` (cookie-gated).
+
+Subscriptions live in `push-subs.txt`, upserted by endpoint; delivery failures with 404/410 prune the line.
+
+`send_push` does the wire work: encrypt the payload, write it to a temp file, and POST it with `curl` under an `Authorization: vapid` header. `encrypt_payload` implements RFC 8291 (ephemeral ECDH → HKDF-SHA256 → AES-128-GCM, aes128gcm framing); `vapid_jwt` signs the ES256 token (raw r‖s signature); `hkdf_bytes` and `endpoint_origin` support them.
+
+The client halves live elsewhere: sw.js carries the `push`/`notificationclick` listeners, and `/shell`'s panel has the enrolment button.
+
+`deps.toml` adds `hkdf` and `aes-gcm`; `p256` gains its `ecdh` feature (declared in `/passkey`'s deps, which owns the p256 line).

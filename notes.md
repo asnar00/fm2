@@ -171,6 +171,8 @@ Open design questions (pre-code):
 - **Feature UI pulls contexts forward**: runtime feature toggles need the `@dynamic` guard machinery, per-user settings (`@user` vars), and the linker embedding feature metadata into products so a running app can introspect its own tree.
 - **Linker gaps muon hits immediately**: per-feature cargo dependency declarations (merged into the generated Cargo.toml); a wasm/cdylib product target (+ index.html, manifest.json, service-worker shim emission); parser robustness against real Rust (async, generics, use statements).
 
+**Spec style convention (2026-08-13):** code descriptions are written as short paragraphs — one per thing described (entry/extension points first, then mechanics, then helpers) — never a single dense block.
+
 ## tools (scaffolding — not feature-modular)
 
 - `tools/export_transcript.py` — exports a Claude Code session log to `transcripts/<date>-<slug>.md` (verbatim prompts with stable `#pN` anchors + timestamps).

@@ -18,4 +18,8 @@ Nothing to do — every launch of the app phones home a one-line status. To watc
 
 ## code description
 
-`diag.rs`: `route` /extension/ — intercepts `POST diag/report`, delegates everything else via `existing.route(r)`; `diag_report` caps the body at 2KB and appends `<ms> <json>` via `append_diag`; `rotate_diag_log` renames the log to `.old` past 1MB. The client half lives in `/shell`'s loader (`diag()` helper, `window.onerror` hook, launch report after paint).
+`diag.rs`'s `route` /extension/ intercepts `POST diag/report` and delegates everything else via `existing.route(r)`.
+
+`diag_report` caps the body at 2KB and appends a `<ms> <json>` line via `append_diag`; `rotate_diag_log` renames the log to `.old` once it passes 1MB.
+
+The client half lives in `/shell`'s loader: the `diag()` helper, the `window.onerror` hook, and the launch report posted after paint.

@@ -18,4 +18,10 @@ Run the server place binary from the product build directory (so `site/` resolve
 
 ## code description
 
-`serve.rs` declares the `request` struct (method, path, cookie, body, tunnel — where tunnel means cloudflared's `cf-connecting-ip` header was present) and the `response` struct (status, ctype, body, set_cookie, cache). `serve` binds port 8095; `handle` runs each connection through `parse_request` → `route` → `write_response`. **`route(request) -> response` is the extension point**: the base implementation serves static files from `site/` with a directory-index fallback (`site/<path>/index.html` — the exported feature tree at `/features/` relies on it); features add endpoints and gating by redefining it and delegating via `existing.route(r)` (see `/gate`). Helpers: `clean_path` (query stripped, `..` refused, `/` → index.html), `text_response`/`json_response` constructors, `content_type` (`.wasm` → `application/wasm` so streaming instantiation works), `status_name`.
+`serve.rs` declares the two structs every other server feature builds on: `request` (method, path, cookie, body, tunnel — where tunnel means cloudflared's `cf-connecting-ip` header was present) and `response` (status, ctype, body, set_cookie, cache).
+
+**`route(request) -> response` is the extension point.** The base implementation serves static files from `site/`, with a directory-index fallback (`site/<path>/index.html` — the exported feature tree at `/features/` relies on it). Features add endpoints and gating by redefining `route` and delegating via `existing.route(r)` — see `/gate`.
+
+`serve` binds port 8095 and hands each connection to `handle`, which runs it through `parse_request` → `route` → `write_response`.
+
+Helpers: `clean_path` strips the query, refuses `..`, and maps `/` to index.html; `text_response`/`json_response` construct responses; `content_type` maps extensions (`.wasm` → `application/wasm` so streaming instantiation works); `status_name` names the status codes.

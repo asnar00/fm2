@@ -18,4 +18,6 @@ Open the app: you should see `ᕦ(ツ)ᕤ` in the middle of a black screen.
 
 ## code description
 
-`logo.rs` extends `render` (lines 3-5): calls the previous chain via `existing.render()` and appends the logo div (glyphs written as escapes — `\u{1566}` ᕦ, `\u{30c4}` ツ, `\u{1564}` ᕤ — to keep the source ASCII-safe). Styling for `.logo` lives in the shell's `index.html`.
+`logo.rs` extends `render` (lines 3-5): it calls the previous chain via `existing.render()` and appends the logo div. The glyphs are written as escapes — `\u{1566}` ᕦ, `\u{30c4}` ツ, `\u{1564}` ᕤ — to keep the source ASCII-safe.
+
+Styling for `.logo` lives in the shell's `index.html`.

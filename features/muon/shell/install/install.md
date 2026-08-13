@@ -18,4 +18,8 @@ Visit muon.nøøb.org on a phone: you're shown the logo and how to add muon to y
 
 ## code description
 
-`assets/install.html`: static public page (added to the gate's `is_public` shell list); standalone self-redirect (line ~35), Android copy swap, and a `/diag` funnel line on view. The detection + redirect lives in `/shell`'s loader: phone-and-not-standalone (and no `?browser=1`) → `location.replace('install.html')`, checked before the whoami/login step.
+`assets/install.html` is a static public page (on the gate's `is_public` shell list): logo, the add-to-home-screen steps, an Android copy swap, and a `/diag` funnel line on view.
+
+Because iOS installs the page being viewed, it self-redirects to `/` if ever launched standalone.
+
+The detection and redirect live in `/shell`'s loader: phone-and-not-standalone (and no `?browser=1` dev bypass) → `location.replace('install.html')`, checked before the whoami/login step.

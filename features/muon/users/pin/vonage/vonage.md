@@ -18,4 +18,6 @@ Nothing to do if `~/.agent-config.json` has vonage credentials; codes arrive by 
 
 ## code description
 
-`vonage.rs`: single `send_sms` /extension/ — reads creds, falls back via `existing.send_sms(to, text)` when unconfigured, otherwise POSTs form-encoded fields with `curl --data-urlencode` and checks `messages[0].status == "0"` in the JSON reply, returning `""` on success or an error string.
+`vonage.rs` is a single `send_sms` /extension/. It reads the credentials from `~/.agent-config.json`, and falls back to the previous chain link — console delivery — via `existing.send_sms(to, text)` when they're absent.
+
+With credentials, it POSTs the form-encoded fields using `curl --data-urlencode` and checks `messages[0].status == "0"` in the JSON reply, returning `""` on success or an error string.

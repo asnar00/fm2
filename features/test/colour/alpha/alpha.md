@@ -18,4 +18,6 @@ For agents: with this feature included, `colour` values carry `col.a` alongside 
 
 ## code description
 
-`alpha.rs` re-declares `pub struct colour` (lines 1-3) containing only the new field `a`; the linker merges it into the composed `colour` struct after the base channels. `feature_Alpha` (line 5) redefines `add` (lines 7-12) as an `/extension`: it computes the alpha sum before the moves, calls the previous chain via `existing.add(a, b)` (line 9), then writes the summed alpha into the result.
+`alpha.rs` re-declares `pub struct colour` (lines 1-3) containing only the new field `a`; the linker merges it into the composed `colour` struct after the base channels.
+
+`feature_Alpha` (line 5) redefines `add` (lines 7-12) as an `/extension`: it computes the alpha sum before the moves, calls the previous chain via `existing.add(a, b)` (line 9), then writes the summed alpha into the result.

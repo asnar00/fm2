@@ -19,4 +19,14 @@ Once: open the system panel (tap the build number) and choose "enable Face ID lo
 
 ## code description
 
-`passkey.rs`: `route` /extension/ (four endpoints ahead of `/gate`); `passkey_register_challenge`/`passkey_register` (cookie-gated; parses attestationObject CBOR → authData → credential id + COSE EC2 key via `ciborium`); `passkey_login_challenge`/`passkey_login` (public; full verification chain, `p256` for ECDSA-DER, `sha2` for hashes). One-time challenges and stored keys live as flat files beside the other auth state. `deps.toml` adds `p256`, `ciborium`, `base64`, and `getrandom` with its `js` feature (wasm builds). Client halves live in `/gate`'s login page (sign-in button) and `/shell`'s panel (enrolment button); failures report via `/diag`.
+`passkey.rs`'s `route` /extension/ adds four endpoints ahead of `/gate` in the chain.
+
+Registration (cookie-gated): `passkey_register_challenge` issues a one-time challenge bound to the logged-in phone; `passkey_register` parses the attestationObject CBOR → authData → credential id + COSE EC2 public key (via `ciborium`) and stores it.
+
+Login (public by nature): `passkey_login_challenge` issues an anonymous challenge; `passkey_login` runs the full verification chain — clientData type/origin/challenge, authenticatorData rpIdHash and UP/UV flags, then the ECDSA-DER signature over `authData ‖ SHA256(clientData)` (`p256`, `sha2`) — before issuing the session cookie.
+
+One-time challenges (5-minute expiry, single use) and stored public keys live as flat files beside the other auth state.
+
+`deps.toml` adds `p256` (with `ecdh` for `/push`), `ciborium`, `base64`, and `getrandom` with its `custom` feature — *not* `js`, which makes the wasm demand wasm-bindgen imports our glue-free loader can't provide.
+
+Client halves live in `/gate`'s login page (sign-in button, first-login enrolment) and `/shell`'s panel (retry button); failures report via `/diag`.

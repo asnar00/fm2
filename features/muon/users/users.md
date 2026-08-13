@@ -19,4 +19,12 @@ Add someone: append `{ "name": "x", "phone": "+44…" }` to `~/.muon-auth/users.
 
 ## code description
 
-`users.rs`: `find_user` (guest-list lookup via `normalise_phone`), `secret`/`random_bytes` (urandom-backed key material), `hmac_sha256` (standard construction over the `sha2` crate — see `deps.toml`), `make_token`/`token_valid` (constant-time compare via `constant_eq`), `cookie_token`/`authed` (cookie → verdict), `tag` (log-safe last-4-digits).
+`users.rs` owns identity and sessions, used by every other auth feature.
+
+Guest list: `find_user` looks a phone up in `users.json`, comparing via `normalise_phone` (digits only, `+` restored).
+
+Key material: `random_bytes` reads urandom; `secret` generates the 32-byte signing key once; `hmac_sha256` is the standard construction over the `sha2` crate (see `deps.toml`).
+
+Tokens: `make_token` builds the year-long `digits.expiry.hmac` cookie value; `token_valid` re-computes and compares in constant time (`constant_eq`); `token_phone` recovers the phone.
+
+Cookie plumbing: `cookie_token` extracts the token from a Cookie header; `authed` gives the final verdict. `tag` renders log-safe last-4-digit phone references.

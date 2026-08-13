@@ -147,7 +147,7 @@ The spec has a standard format, as follows:
 
     ## code description
 
-    An agent-facing tutorial describing the code in the implementation file, with line number references. This should introduce salient functions first (i.e. new functions introduced) followed by a description of how they modify the existing program; and only then descriptions of internal functionality and boilerplate.
+    An agent-facing tutorial describing the code in the implementation file, with line number references. This should introduce salient functions first (i.e. new functions introduced) followed by a description of how they modify the existing program; and only then descriptions of internal functionality and boilerplate. Separate paragraph for each element being described.
 
 A few style rules must be followed:
 

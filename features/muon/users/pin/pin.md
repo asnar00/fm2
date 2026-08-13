@@ -18,4 +18,10 @@ Enter your phone number, receive a 4-digit code, type it in — logged in for a 
 
 ## code description
 
-`pin.rs`: `auth_request` / `auth_verify` / `auth_whoami` / `auth_logout` (the JSON endpoints, wired into routing by `/gate`; whoami names the user via the token's phone; logout clears the cookie — stateless tokens can't be revoked server-side); pending-store helpers (`load_pending`, `set_pending_line`, `save_pending`, `clear_pending` — flat file, one line per phone); rate-limit helpers (`sms_count_last_hour`, `record_sms`); `make_pin` (urandom); base `send_sms` (console).
+`pin.rs` provides the four JSON endpoints, wired into routing by `/gate`: `auth_request` (guest-list check, rate limit, PIN issue, send), `auth_verify` (constant-time check, attempts/expiry, cookie on success), `auth_whoami` (names the user via the token's phone), and `auth_logout` (clears the cookie — stateless tokens can't be revoked server-side).
+
+The pending store is a flat file, one line per phone: `load_pending`, `set_pending_line`, `save_pending`, `clear_pending`.
+
+Rate limiting is file-backed too (`sms_count_last_hour`, `record_sms` — 5 texts per phone per hour); `make_pin` draws from urandom.
+
+The base `send_sms` prints to the console — the dev/test delivery; `/vonage` extends it with the real thing.
