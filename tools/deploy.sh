@@ -30,6 +30,9 @@ echo "deploying to $HOST"
 
 python3 "$SRC/tools/fmlink.py" muon
 
+# replay sessions are local-only test data — never ship one
+rm -f "$SRC/products/muon/build/site/replay.json"
+
 # the loader instantiates the wasm with ZERO imports — refuse to ship a build
 # that quietly grew import requirements (a dependency's wasm-bindgen glue once
 # turned the deployed app into a black screen)

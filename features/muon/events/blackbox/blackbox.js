@@ -17,7 +17,9 @@ const feature_Blackbox = {
   save() {
     try { localStorage[this.key] = JSON.stringify(this.log); } catch (e) {}
   },
+  paused: false,          // /replay pauses recording so playback isn't recorded
   record(event, stateAfter) {
+    if (this.paused) return;
     const _ = stateAfter;   // base keeps entries lean; /keyframes uses it
     this.log.entries.push({ t: Date.now(), event });
     this.trim();
