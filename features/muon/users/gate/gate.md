@@ -6,7 +6,7 @@
 
 ## spec
 
-Extends the `/serve` route chain: `/auth/request`, `/auth/verify` and `/auth/whoami` answer everywhere; all other traffic that arrived through the cloudflare tunnel (cloudflared always stamps `cf-connecting-ip`) needs a valid session cookie or receives the login page with status 401 (`no-store` — Safari reuses cached 401s). Local/LAN requests hit the port directly, carry no tunnel header, and pass ungated — the dev loop stays frictionless.
+Extends the `/serve` route chain: `/auth/request`, `/auth/verify` and `/auth/whoami` answer everywhere; the app shell and the feature tree (`/features/`, statically exported at deploy — a deliberately public, shareable artefact) are served without login; all other traffic that arrived through the cloudflare tunnel (cloudflared always stamps `cf-connecting-ip`) needs a valid session cookie or receives the login page with status 401 (`no-store` — Safari reuses cached 401s). Local/LAN requests hit the port directly, carry no tunnel header, and pass ungated — the dev loop stays frictionless.
 
 ## user
 

@@ -84,15 +84,25 @@ impl feature_Serve {
         }
     }
 
-    // base route: static files from site/. features extend this chain
-    // (auth gate, endpoints) via existing.route().
+    // base route: static files from site/, with directory-index fallback
+    // (site/<path>/index.html — the exported feature tree relies on it).
+    // features extend this chain (auth gate, endpoints) via existing.route().
     fn route(r: request) -> response {
         let file = std::fs::read(format!("site/{}", r.path));
         match file {
             Ok(bytes) => response { status: 200, ctype: content_type(r.path).to_string(),
                                     body: bytes, set_cookie: String::new(),
                                     cache: "no-cache".to_string() },
-            Err(_) => text_response(404, "not found"),
+            Err(_) => {
+                let index = format!("site/{}/index.html", r.path.trim_end_matches('/'));
+                match std::fs::read(index) {
+                    Ok(bytes) => response { status: 200,
+                                            ctype: "text/html; charset=utf-8".to_string(),
+                                            body: bytes, set_cookie: String::new(),
+                                            cache: "no-cache".to_string() },
+                    Err(_) => text_response(404, "not found"),
+                }
+            }
         }
     }
 

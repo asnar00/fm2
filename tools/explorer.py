@@ -419,10 +419,17 @@ pre.raw { background:var(--code); padding:12px; border-radius:8px; overflow-x:au
   font:12.5px/1.6 "SF Mono",Menlo,monospace; color:#c9e3ff;
   border:1px solid var(--border); }
 p.placeholder { color:var(--dim); font-style:italic; }
+@media (max-width: 900px) {
+  body { display:block; height:auto; overflow:auto; }
+  .pane { border-right:none; border-bottom:1px solid var(--border); }
+  .md .tw .pop { width:min(320px, 86vw); }
+}
 """
 
 PAGE = """<!doctype html>
-<html><head><meta charset="utf-8"><title>fm: {title}</title>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fm: {title}</title>
 <style>{style}</style></head>
 <body>
 <div class="pane" id="left"><h1 class="label">features</h1><div id="tree">{tree}</div></div>
