@@ -26,9 +26,11 @@
   #build { position: fixed;
     bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
     right: calc(env(safe-area-inset-right, 0px) + 16px);
-    opacity: .4; font-size: 15px; padding: 8px 10px; line-height: 1;
+    opacity: .55; font-size: 15px; padding: 8px 14px; line-height: 1;
+    border: 1px solid #3a3a3f; border-radius: 999px; background: #121215;
     user-select: none; cursor: pointer; }
-  #build.update { color: #8ab8ff; animation: pulse 1.6s ease-in-out infinite; }
+  #build.update { color: #8ab8ff; border-color: #48628a;
+    animation: pulse 1.6s ease-in-out infinite; }
   @keyframes pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
   #shade { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; }
   #panel { position: fixed; left: 50%; bottom: max(14px, env(safe-area-inset-bottom));
@@ -175,8 +177,20 @@ $('build').onclick = async () => {
     (window.PublicKeyCredential && !localStorage.muonPasskey) ? '' : 'none';
   const standalone = matchMedia('(display-mode: standalone)').matches
     || navigator.standalone === true;
+  // ask the service worker for the REAL subscription state — a stale local
+  // flag once left this button showing on an already-enrolled device
+  let pushEnrolled = !!localStorage.muonPush;
+  if (!pushEnrolled && 'PushManager' in window) {
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      if (await reg.pushManager.getSubscription()) {
+        pushEnrolled = true;
+        localStorage.muonPush = '1';
+      }
+    } catch (e) {}
+  }
   $('pushRow').style.display =
-    ('PushManager' in window && standalone && !localStorage.muonPush) ? '' : 'none';
+    ('PushManager' in window && standalone && !pushEnrolled) ? '' : 'none';
   const changes = await fetch('changes.json', { cache: 'no-store' })
     .then(r => r.ok ? r.json() : []).catch(() => []);
   $('changes').innerHTML = changes.slice(0, 6).map(c =>
