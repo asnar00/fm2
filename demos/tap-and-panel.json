@@ -1,0 +1,17 @@
+[
+  {"send": {"type": "click", "ev": "tap"}},
+  {"send": {"type": "click", "ev": "tap"}},
+  {"send": {"type": "click", "ev": "tap"}},
+  {"wait": 600},
+  {"assert": {"find": {"ev": "tap"}, "text": "taps: 3"}},
+  {"tap": "#build"},
+  {"wait": 600},
+  {"assert": {"find": {"id": "panel"}, "hidden": false}},
+  {"assert": {"find": {"id": "who"}, "text_starts": "not logged in"}},
+  {"tap": "#shade"},
+  {"wait": 600},
+  {"assert": {"find": {"id": "panel"}, "hidden": true}},
+  {"send": {"type": "click", "ev": "tap"}},
+  {"wait": 600},
+  {"assert": {"find": {"ev": "tap"}, "text": "taps: 4"}}
+]
