@@ -486,6 +486,15 @@ def print_chains(chains: dict, features: list):
     for (page, slot), srcs in sorted(slots.items()):
         print(f"fragment {page} [{slot}]:")
         print(f"  {' → '.join(srcs)}")
+    # lib/chain ratio: verbatim .lib.rs code sits outside the composition
+    # machinery — a steadily climbing share means typed code is escaping the
+    # chain model and the parser needs to grow
+    chain_lines = sum(len(fn["lines"]) for f in features for fn in f.fns)
+    lib_lines = sum(len(text.splitlines()) for f in features for _, text in f.libs)
+    total = chain_lines + lib_lines
+    if total:
+        print(f"rust lines: {chain_lines} chain, {lib_lines} verbatim lib "
+              f"({100 * lib_lines // total}% lib)")
 
 
 # ------------------------------------------------------------------ build

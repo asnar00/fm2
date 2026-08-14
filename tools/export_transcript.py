@@ -149,6 +149,14 @@ def main():
     session = args.session or latest_session(PROJECT_LOG_DIR)
     date = datetime.fromtimestamp(session.stat().st_mtime).strftime("%Y-%m-%d")
     out_path = args.out / f"{date}-{args.slug}.md"
+    if out_path.exists():
+        m = re.search(r"session `([^`]+)`", out_path.read_text()[:500])
+        if m and m.group(1) != session.stem:
+            raise SystemExit(
+                f"refusing to overwrite {out_path}: it records a different "
+                f"session ({m.group(1)}; this one is {session.stem}) and "
+                f"transcripts are the evidentiary record — pick a distinct "
+                f"--slug for this session")
     n = export(session, out_path, args.title or args.slug)
     print(f"wrote {out_path} ({n} prompts)")
 

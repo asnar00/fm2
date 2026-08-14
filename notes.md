@@ -334,6 +334,11 @@ Known v0 limitations (deferred, not forgotten):
 - "print our greeing" → greeting (~32); "turn this into the a single global function" (~26).
 - Rust syntax: struct fields separate with `,` not `;`; `existing.main()` missing `;` (~43).
 - `some_fun` vs `some_func` (~166/174).
+- *(added 2026-08-14)* **Ordering section** (~187): describes unchecking in
+  order.md as exclusion in general; per the #p132a rule, selection now lives in
+  products (shared-tree order.md is catalog + ordering, stays fully ticked; a
+  product unticks via its own order.md override). The section may want to
+  relocate that semantic to products.
 
 ## hygiene todos (2026-08-14, from the fresh-eyes review)
 
@@ -357,25 +362,23 @@ cheap insurance first, then the debt it protects, then doctrine. Tick as done.*
   explicitly named pages stay hard requirements), and stale composition-target
   pages are removed when their owner is excluded. Toggle then passed cleanly
   both ways.
-- [ ] **3. features-browser template migration** — the one genuine provenance
-  gap (#p9–#p22): drawers/place/tidy/fmdoc are spec-only pointers into
-  `tools/explorer.py` templates. Move the page templates into node assets so
-  the tree owns its code and the toggle promise holds there too.
-- [ ] **4. errata consolidation** — fold the ordering-section unchecking
-  semantic relocating to products (#p132a) into the "fm.md errata" section
-  above, so the author has one list when next editing. (Struct extension is
-  confirmed flat — doctrine and merge_structs agree; the sole vestige is the
-  one stale `colour.colour.r` conversion sentence already on the errata list.)
-- [ ] **5. lib/chain ratio** — a small metric (in audit_prompts.py or a
-  sibling script): verbatim `.lib.rs` lines vs chain lines per link. A steady
-  climb means typed code is escaping the composition model — the early-warning
-  gauge for when the regex parser must grow up (or the syn-based v1 arrives).
-- [ ] **6. export_transcript collision guard** — a second same-day session
-  with the same slug silently overwrites the first session's transcript
-  (happened 2026-08-14, recovered from git; sessions are now split by slug:
-  `-fm-spec-2`). The tool should refuse to overwrite a file whose session id
-  differs, or auto-suffix. Transcripts are the evidentiary record — the one
-  file class that must never be lossy.
+- [~] **3. features-browser template migration** — PINNED by user decision
+  (2026-08-14, fm-spec-2 #p15): the feature browser and linker may live
+  outside the tree as scaffolding for now. The #p9–#p22 audit gap stays a
+  known, accepted gap rather than debt-to-clear.
+- [x] **4. errata consolidation** — DONE 2026-08-14: the #p132a
+  ordering-semantic note is folded into the "fm.md errata" section above.
+  (Struct extension confirmed flat — doctrine and merge_structs agree; the
+  sole vestige is the stale `colour.colour.r` sentence already listed.)
+- [x] **5. lib/chain ratio** — DONE 2026-08-14: `--chains` now ends with a
+  summary line (currently 1403 chain / 84 lib lines, 5% lib). A steady climb
+  means typed code is escaping the composition model — the early-warning gauge
+  for when the regex parser must grow up (or the syn-based v1 arrives).
+- [x] **6. export_transcript collision guard** — DONE 2026-08-14: the tool now
+  refuses to overwrite a transcript recording a different session id (the
+  header's ``session `<id>` `` line), telling you to pick a distinct --slug;
+  same-session regeneration is unaffected. Motivated by the same-day collision
+  that briefly clobbered the session-1 transcript (recovered from git).
 - [ ] **7. depth doctrine ("absorb")** — one-prompt-per-node stacks
   refinements; the 4–6 cap fights breadth but nothing fights depth. Discuss
   and record whether a sanctioned collapse of a refinement stack into its
