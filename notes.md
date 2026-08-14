@@ -16,6 +16,8 @@ What the inquiry has established so far (evidence: two days of practice):
 - **Observability falls out of the architecture.** Explicit state + explicit events made recording, keyframing, replay, drive, and readout nearly free. They weren't features added to an app; they were properties the architecture already had, waiting to be surfaced.
 - **The instruments should be shaped like the subject.** The tree browser serves the tree; deploys narrate which nodes shipped; demo scripts are both demonstration and regression test. When the meta-work and the work share a shape, each improves the other.
 
+**The method, named (#p126):** the monolithic-code episode resolves under this frame — it was less a discipline failure than an articulation failure: the laws it "broke" were discovered by colliding with their absence, and nearly every principle now in force (tree owns its code, one prompt per node, shell-public-data-gated, honest checks, readout-over-pixels) was born as a repair. So the working method is the cycle: build → notice the wrongness → articulate the principle it reveals → encode it (laws, mechanisms, tools) → continue. Errors are experiments; the repair is the result. When something feels wrong, ask "what principle is trying to be born?"
+
 The open questions ARE the agenda: cross-cutting features, contexts and runtime dynamism, the placement/data vocabulary, typed message routing, extension chains for assets, chain semantics under regrouping, what happens at 1,000 nodes, multi-user permission. Each will be answered the same way — by building the smallest thing that forces the question, inside the discipline, with the answer recorded here.
 
 ## restatement (checking understanding)
