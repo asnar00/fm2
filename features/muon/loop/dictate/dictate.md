@@ -6,7 +6,7 @@
 
 ## spec
 
-The 🎙️ tool. Open it: the display surface shows your recordings as a grid of
+The 🎤 tool. Open it: the display surface shows your recordings as a grid of
 file icons, with a record button; recording swaps it for a stop button and a
 pulsing dot. Each recording becomes an immutable local file — muon's first
 **blob store**: audio lives in IndexedDB (blobs can't ride in loop state);
@@ -21,7 +21,7 @@ as subfeatures.
 
 ## user
 
-Tap 🎙️ in the toolbar. Tap the record button and talk (first use asks for
+Tap 🎤 in the toolbar. Tap the record button and talk (first use asks for
 microphone permission); tap stop when done. Each note appears as a file icon
 in the grid. Notes are stored on this device — nothing leaves it yet.
 
@@ -36,10 +36,10 @@ in the grid. Notes are stored on this device — nothing leaves it yet.
 ## code description
 
 `dictate.rs` owns the tool's state machine. `tools_list` registers
-`{dictate, 🎙️}`. `update` claims: `dict_rec` (set `dict_recording`),
+`{dictate, 🎤}`. `update` claims: `dict_rec` (set `dict_recording`),
 `dict_stop` (clear it), `RecSaved` (append one metadata entry to
 `dict_files`), `RecList` (replace `dict_files` wholesale — the boot reseed).
-`render`, when dictate is the open tool: the grid (one 🎙️ icon + time label
+`render`, when dictate is the open tool: the grid (one 🎤 icon + time label
 per file, newest last) and the record/stop control (`dict_rec` / `dict_stop`
 with a pulse dot while recording).
 

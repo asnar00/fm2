@@ -5,7 +5,7 @@ impl feature_Dictate {
         let mut list: serde_json::Value = serde_json::from_str(&prev)
             .unwrap_or(serde_json::json!([]));
         if let Some(arr) = list.as_array_mut() {
-            arr.push(serde_json::json!({ "id": "dictate", "label": "dictate", "icon": "🎙️" }));
+            arr.push(serde_json::json!({ "id": "dictate", "label": "dictate", "icon": "🎤" }));
         }
         list.to_string()
     }
@@ -61,7 +61,7 @@ impl feature_Dictate {
         for f in files {
             let label = f["label"].as_str().unwrap_or("note");
             grid.push_str(&format!(
-                "<div class=\"file-icon\"><span class=\"icon\">🎙️</span><div class=\"file-label\">{}</div></div>",
+                "<div class=\"file-icon\"><span class=\"icon\">🎤</span><div class=\"file-label\">{}</div></div>",
                 label));
         }
         grid.push_str("</div>");
