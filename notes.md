@@ -29,6 +29,25 @@ fm.md framing when the author next revises; not a decision.
 
 **SCOPE (#p129): "shared across what?" is the real axis, and it's a lattice.** device ⊂ user ⊂ group ⊂ everyone — fm.md's day-one `@user`/`@shared` annotations were already two points on it; `Local<T>` and groups fill the ends. Scope is irreducible domain complexity: hiding it converts it into leaks (an unscoped shared value is a privacy bug awaiting a second user), so the vocabulary makes it explicit as scope-named types: `Local<T>`, `PerUser<T>`, `PerGroup<T>`, `Global<T>`. Mechanically scope is a key: authoritative store keyed by scope-instance (user = the cookie-proven phone — identity is already built), broadcast filtered per scope key, long-polls subscribing to their keys (global + user:me + my groups) — sessions/rooms fall out of scoping rather than existing separately; the scope boundary IS the access-control boundary (placement and permission unify). Cost gradient: global trivial (done), per-user nearly free, device-local free, per-group the real homework (groups are themselves data: membership, invitation — its own probe, not a type parameter smuggle). Next probe candidate, smaller than Shared<T> generation: key taps by phone — the same three demo instances then show phone+tab (one user) converging while the simulator (_test) counts alone: scoping made felt.
 
+**JOIN, SESSIONS, PRESENCE (fm-spec-2 #p19–22).** The restart bug (a
+relaunched instance shows zero taps until the next write anywhere) exposed the
+missing half of the authority model: broadcast covers steady-state deltas but
+not the *catch-up* — and a fresh boot is just a maximally-stale replica, so
+boot-join and reconnect-join are one mechanism. Named **join** (#p21;
+"hydrate" rejected as jargon). Session-object question resolved: no new
+primitive — a session is (scope key) × (presence). The durable axis (who MAY
+hear) is the scope lattice; the ephemeral axis (who IS here) is presence,
+which is necessarily *server-derived* state (a crashed replica can't write
+its own departure; the server holds the long-polls) published as an ordinary
+scoped var. The one genuinely new noun is **instance identity** (a durable
+per-instance id — also the missing key for true Local scope); deferred with
+presence until something renders them. Built now: `loop/scope/join` — init()
+queues a Join through the outbox; the server replies with a snapshot of the
+sender's hearable vars (global + user.<me>, the same audience rule as
+wait_filter); the VarJoin reply applies through the update chain, so joins
+are blackbox-visible and replay-safe. Offline boot leaves the Join queued —
+reconnect catch-up falls out free.
+
 **RULE (transcripts/2026-08-14-fm-spec.md#p132a): tick/untick is a product property, not a core-tree property.** The shared tree's order.md is catalog + ordering and stays fully ticked; a product switches features off via its own order.md override (the mechanism products/hello_only has used since day one). Persisted policy — like disabling `update/auto` — belongs in the product; the shared tree never records anyone's selection. (fm.md's ordering section still describes unchecking as exclusion in general — the author may want to relocate that semantic to products when next editing.)
 
 **The reverse index (transcripts/2026-08-14-fm-spec.md#p135).** Nodes already cite their originating prompt; `tools/audit_prompts.py` inverts those citations, giving prompt → node(s) and three audits: prompts no node cites (missed / coalesced / conversational), many-to-one coalescing both ways, and nodes with no provenance at all. Building it surfaced three transcript-integrity fixes: mid-turn messages now get rider anchors (`p132a`) so the main numbering never shifts; edited-and-resent prompts keep their anchor but carry a do-not-cite mark; and snapshot files of the same session are aliased by session id so a citation of an old snapshot counts toward the same anchor. First run: 131 live prompts, 43 reached nodes, zero orphan nodes, zero dangling citations — the genuine gap is the features-browser interaction cluster (#p9–#p22), which lives in tool templates awaiting migration into the tree.
