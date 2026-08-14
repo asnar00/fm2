@@ -74,8 +74,11 @@ question "did a request go nodeless?"
 - fmlink parses at regex level: one `feature_` struct per node; no commas
   inside fn parameter types; braces balanced everywhere including string
   literals; `existing.fn()` only calls the enclosing function's own chain.
-- Fragment targets: {index, login, install, sw}, bare = index, `page` = all
-  HTML pages, `.head.html` for the head slot.
+- Fragment targets: {index, login, install, sw}, bare = index, `page` = every
+  HTML page *present in the composition* (a `page` fragment silently skips a
+  page whose owning feature is excluded; an explicitly named page is a hard
+  requirement), `.head.html` for the head slot. The linker removes stale
+  composition-target pages from site/ when their owner is excluded.
 - wasm: getrandom needs its `custom` feature (never `js`); deploy smoke-tests
   that client.wasm instantiates with zero imports.
 

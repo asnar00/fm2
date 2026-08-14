@@ -178,9 +178,12 @@ class FeatureCode:
                     target = mid
                 else:
                     fail(f"{self.rel}/{frag.name}: unknown fragment target '{mid}'")
+            # 'page' fragments decorate whichever pages this composition has;
+            # an explicitly named page is a hard requirement
             for page in FRAGMENT_PAGE[target]:
                 self.fragments.append({"file": page, "slot": slot,
                                        "text": frag.read_text(),
+                                       "required": target != "page",
                                        "src": self.rel.replace("features/", "", 1)})
         # verbatim library files: full Rust (generics, traits, helpers) the
         # composition machinery doesn't touch — emitted as-is, per node
@@ -465,16 +468,24 @@ def with_entry(base: Emitter, chains: dict, place: dict) -> Emitter:
     return out
 
 
-def print_chains(chains: dict):
-    """Dump chain topology: each chain key with its contributors in
-    linearisation order (innermost first, outermost last). Stable, sorted
-    output — diff it before/after a tree reorganisation to prove the regroup
-    did or didn't rewire behaviour."""
+def print_chains(chains: dict, features: list):
+    """Dump composition topology: each Rust chain, then each page slot's
+    fragment order — both in linearisation order (innermost/first-injected
+    first). Stable, sorted output — diff it before/after a tree reorganisation
+    to prove the regroup did or didn't rewire behaviour. Fragment order is
+    behaviour too: CSS cascade and script order follow it."""
     for (name, ptypes), info in sorted(chains.items()):
         ret = f" -> {info['ret']}" if info["ret"] else ""
         members = [m.replace("features/", "", 1) for m in info["members"]]
         print(f"{sig_str(name, list(ptypes))}{ret}:")
         print(f"  {' → '.join(members)}")
+    slots = {}
+    for feature in features:
+        for fr in feature.fragments:
+            slots.setdefault((fr["file"], fr["slot"]), []).append(fr["src"])
+    for (page, slot), srcs in sorted(slots.items()):
+        print(f"fragment {page} [{slot}]:")
+        print(f"  {' → '.join(srcs)}")
 
 
 # ------------------------------------------------------------------ build
@@ -584,11 +595,23 @@ def build_places(product: str, places: list, base: Emitter, chains: dict,
         for a in asset_files:
             (site / a.name).write_bytes(a.read_bytes())
         print(f"  site/ assets: {', '.join(a.name for a in asset_files)}")
+    remove_stale_pages(site, {a.name for a in asset_files})
     compose_assets(site, features)
 
     print("build OK")
     if run and native_binaries:
         run_binary(native_binaries[0], build_dir)
+
+
+def remove_stale_pages(site: Path, copied: set):
+    """Delete composition-target pages left over from a previous build whose
+    owning feature is now excluded — their slot markers are already consumed
+    and their presence isn't this composition's choice."""
+    targets = {p for pages in FRAGMENT_PAGE.values() for p in pages}
+    for page in sorted(targets - copied):
+        if (site / page).exists():
+            (site / page).unlink()
+            print(f"  removed stale site/{page} (owner not in this composition)")
 
 
 def compose_assets(site: Path, features: list):
@@ -602,7 +625,12 @@ def compose_assets(site: Path, features: list):
     for page, items in sorted(by_page.items()):
         path = site / page
         if not path.exists():
-            fail(f"fragments target '{page}' but no such site asset exists")
+            needed = [i for i in items if i["required"]]
+            if not needed:
+                by_page[page] = []   # only 'page'-target decorators — page absent
+                continue
+            fail(f"fragments target '{page}' but no such site asset exists "
+                 f"(required by {needed[0]['src']})")
         text = path.read_text()
         for slot in ("head", "style", "body", "script"):
             slot_items = [i for i in items if i["slot"] == slot]
@@ -615,9 +643,10 @@ def compose_assets(site: Path, features: list):
                     for i in slot_items)
                 text = text.replace(marker, blocks)
         path.write_text(text)
-    if by_page:
+    composed = {p: i for p, i in by_page.items() if i}
+    if composed:
         print("  fragments composed: " + ", ".join(
-            f"{p} ({len(i)})" for p, i in sorted(by_page.items())))
+            f"{p} ({len(i)})" for p, i in sorted(composed.items())))
 
 
 def run_binary(binary: Path, cwd: Path):
@@ -690,7 +719,7 @@ def main():
     features = [FeatureCode(d) for d in feature_dirs]
     base, chains = compose(features)
     if args.chains:
-        print_chains(chains)
+        print_chains(chains, features)
         return
     places = read_places(product_dir)
     if places is None:

@@ -205,7 +205,7 @@ first, switch linearisation, diff — an empty diff proves the current tree
 already agrees with chronology; any non-empty diff is reviewed as a real
 (latent) behaviour difference.
 
-**Experiment run (2026-08-14, #p13 of fm-spec-2): DFS vs chronology on muon.**
+**Experiment run (2026-08-14, fm-spec-2 #p11): DFS vs chronology on muon.**
 `fmlink.py --chains` built (prints every chain's contributors in linearisation
 order; stable sorted output for diffing). A scratch comparator resolved every
 muon node's provenance timestamp and checked the 8 multi-member chains:
@@ -345,9 +345,18 @@ cheap insurance first, then the debt it protects, then doctrine. Tick as done.*
   exits; stable sorted output for diffing. First run fed the proposal-9
   chronology experiment (see there: 6 of 8 muon chains already chronological;
   route and update rewire).
-- [ ] **2. shell regroup** — shell is at the 6-child cap; its next child forces
-  a regroup. Do it deliberately (with the chain dump as before/after evidence)
-  rather than under pressure mid-feature.
+- [x] **2. shell regroup** — DONE 2026-08-14 (fm-spec-2 #p13–14):
+  `shell/pwa{icon, install, pinned}` groups "being an installed app"; shell is
+  at 4 children. The three were contiguous, so linearisation was preserved —
+  proven by an empty `--chains` diff (which now also dumps fragment order per
+  page/slot; fragment order is behaviour: cascade + script wrap order). The
+  group toggle test surfaced the **optional-feature problem** live: diag's
+  `page`-targeted fragments failed when the install page's owner was excluded,
+  and a stale install.html lingered in site/ from the previous build. Linker
+  fixed: `page` now means "every HTML page present in the composition" (soft;
+  explicitly named pages stay hard requirements), and stale composition-target
+  pages are removed when their owner is excluded. Toggle then passed cleanly
+  both ways.
 - [ ] **3. features-browser template migration** — the one genuine provenance
   gap (#p9–#p22): drawers/place/tidy/fmdoc are spec-only pointers into
   `tools/explorer.py` templates. Move the page templates into node assets so

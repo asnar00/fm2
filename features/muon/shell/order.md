@@ -1,6 +1,4 @@
 - [x] logo
 - [x] update
-- [x] icon
-- [x] install
-- [x] pinned
+- [x] pwa
 - [x] panel
