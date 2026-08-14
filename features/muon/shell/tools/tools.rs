@@ -1,13 +1,13 @@
 struct feature_Tools;
 impl feature_Tools {
-    // the registry chain: each tool redefines this to append {id, label}.
+    // the registry chain: each tool redefines this to append {id, label, icon}.
     fn tools_list(state: String) -> String {
         let _ = state;
         "[]".to_string()
     }
 
-    // launcher-mode marker: the key existing (even empty) means the launcher
-    // owns the screen; if this feature is unticked the key never appears and
+    // launcher-mode marker: the key existing (even empty) means the toolbar
+    // owns navigation; if this feature is unticked the key never appears and
     // tools render unconditionally as before.
     fn init() -> String {
         let state = existing.init();
@@ -40,27 +40,30 @@ impl feature_Tools {
 
     fn render(state: String) -> String {
         let base = existing.render(state.clone());
+        format!("{}{}", base, render_toolbar(state))
+    }
+
+    fn render_toolbar(state: String) -> String {
         let s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
         let open = Var::<String>::local("open_tool").get(&s);
-        if !open.is_empty() {
-            return format!("{}<div class=\"home-chip\" data-ev=\"tools_home\">‹ tools</div>", base);
-        }
-        format!("{}{}", base, render_grid(state))
-    }
-
-    fn render_grid(state: String) -> String {
         let list: serde_json::Value = serde_json::from_str(&tools_list(state))
             .unwrap_or(serde_json::json!([]));
         let empty: Vec<serde_json::Value> = Vec::new();
-        let mut grid = String::from("<div class=\"tool-grid\">");
+        let mut bar = String::from("<div class=\"toolbar\">");
+        if !open.is_empty() {
+            bar.push_str("<div class=\"tool-button back\" data-ev=\"tools_home\">‹</div>");
+        }
         for t in list.as_array().unwrap_or(&empty) {
             let id = t["id"].as_str().unwrap_or("");
+            let icon = t["icon"].as_str().unwrap_or("·");
             let label = t["label"].as_str().unwrap_or(id);
-            grid.push_str(&format!(
-                "<div class=\"tool-button\" data-ev=\"tool_{}\">{}</div>", id, label));
+            let sel = if open == id { " sel" } else { "" };
+            bar.push_str(&format!(
+                "<div class=\"tool-button{}\" data-ev=\"tool_{}\" title=\"{}\">{}</div>",
+                sel, id, label, icon));
         }
-        grid.push_str("</div>");
-        grid
+        bar.push_str("</div>");
+        bar
     }
 }

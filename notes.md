@@ -90,8 +90,12 @@ interrogation of the dataset that also works offline. What fell out:
 **MUON IS AN OS (fm-spec-2 #p41): tools on a launcher.** The muon/apps
 grouping question resolves with better vocabulary: muon runs **tools**
 (user's preferred term over "apps"), organised into **toolsets** (pages) when
-one screen overflows. The main screen is a launcher grid; which tool is open
-is per-instance Local state (navigation never syncs across devices). A tool
+one screen overflows. The form (revised in draft, #p42 — first live use of
+two-phase churn-in-place: tools.md now carries both prompts): a **toolbar**
+of small icon buttons along the bottom edge beside the corner stamp, the
+whole screen above it the **display surface** for the open tool, a `‹` at
+the toolbar's left to close. Which tool is open is per-instance Local state
+(navigation never syncs across devices). A tool
 registers on the `tools_list` chain from its own node. Discovery while
 building: **provenance ordering forces old features to register on new
 chains via new subfeatures** (tap predates the chain, so `tap/counter` does
