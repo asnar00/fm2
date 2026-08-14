@@ -530,6 +530,14 @@ cheap insurance first, then the debt it protects, then doctrine. Tick as done.*
   freeze point, after which changes become subfeatures. Absorb becomes mostly
   unnecessary; where wanted, publish IS the natural absorb point.
 
+- [x] **8. export_transcript log-dir bug** — FIXED 2026-08-14 (session 3):
+  `PROJECT_LOG_DIR` was hardcoded to `…-Users-asnaroo-Desktop-experiments`
+  (missing `-fm2`), so it silently exported whichever session was newest in
+  the *parent folder's* log dir — one wrong transcript was written and
+  deleted before anything cited it. Now derived from the repo's own path
+  (`str(REPO_ROOT).replace("/", "-")`), the exact fix ftr's feature_common
+  established for this bug class. Tooling fix, no node (per the taxonomy).
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.

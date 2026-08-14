@@ -26,8 +26,10 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-PROJECT_LOG_DIR = Path.home() / ".claude/projects/-Users-asnaroo-Desktop-experiments"
 REPO_ROOT = Path(__file__).resolve().parent.parent
+# derived from the repo's own path, so it cannot silently point at another
+# project's logs after a move (the ftr hardcoded-path bug class)
+PROJECT_LOG_DIR = Path.home() / ".claude/projects" / str(REPO_ROOT).replace("/", "-")
 
 # user-message content that is command noise, not a prompt
 NOISE_PREFIXES = (

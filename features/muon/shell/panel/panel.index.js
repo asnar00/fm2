@@ -31,8 +31,11 @@ const feature_Panel = {
     $('panel').style.display = 'none';
   },
 };
+// seam: what the corner button's tap does (default: open the panel);
+// a later feature may redefine it without touching this file
+feature_Panel.buttonTap = () => feature_Panel.open();
 const fm_buildBtn = $('build');
-if (fm_buildBtn) fm_buildBtn.onclick = () => feature_Panel.open();
+if (fm_buildBtn) fm_buildBtn.onclick = () => feature_Panel.buttonTap();
 $('shade').onclick = () => feature_Panel.close();
 $('logoutBtn').onclick = async () => {
   await fetch('auth/logout', { method: 'POST' }).catch(() => {});
