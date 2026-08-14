@@ -86,8 +86,22 @@ def fmt_time(iso: str) -> str:
     return datetime.fromisoformat(iso.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M")
 
 
+def abandoned_retries(entries: list[dict]) -> set[int]:
+    """An edited/resent prompt is logged as a sibling of the original (same
+    parentUuid); only the last sibling is the live branch. Earlier siblings
+    keep their anchors (numbering is append-only) but are marked superseded."""
+    last_of_parent = {}
+    for i, e in enumerate(entries):
+        if is_prompt(e) and e.get("parentUuid"):
+            last_of_parent[e["parentUuid"]] = i
+    return {i for i, e in enumerate(entries)
+            if is_prompt(e) and e.get("parentUuid")
+            and last_of_parent[e["parentUuid"]] != i}
+
+
 def export(session_path: Path, out_path: Path, title: str) -> int:
     entries = [json.loads(line) for line in session_path.read_text().splitlines() if line.strip()]
+    superseded = abandoned_retries(entries)
 
     lines = [
         f"# transcript: {title}",
@@ -96,7 +110,7 @@ def export(session_path: Path, out_path: Path, title: str) -> int:
     ]
     prompt_n = 0
     queued_n = 0  # mid-turn messages ride the current prompt: p42a, p42b — main numbering never shifts
-    for entry in entries:
+    for idx, entry in enumerate(entries):
         queued = queued_prompt(entry)
         if queued is not None:
             queued_n += 1
@@ -111,6 +125,8 @@ def export(session_path: Path, out_path: Path, title: str) -> int:
             prompt_n += 1
             queued_n = 0
             lines += [f"### p{prompt_n}", f"*{fmt_time(entry['timestamp'])}*", ""]
+            if idx in superseded:
+                lines += ["*(edited and resent — superseded by the next prompt; do not cite)*", ""]
             lines += [f"> {line}" for line in text.splitlines()]
             lines.append("")
         else:
