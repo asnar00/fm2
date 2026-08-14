@@ -15,11 +15,9 @@ through the normal event loop. A fresh boot is just a maximally-stale replica;
 the same queued `Join` performs reconnect catch-up after offline, because the
 outbox holds it until the network returns. Snapshot application is
 last-write-wins at boot; presence and instance identity are named future
-refinements (fm-spec-2 #p21). A further named refinement (fm-spec-2 #p29):
-join should gate first paint — hold the interface until the snapshot arrives
-or a timeout passes, so the user never sees pre-join values at all. Today the
-snapshot lands moments after boot; the gate becomes worth its node when that
-flash is noticeable.
+refinements (fm-spec-2 #p21). Refined by `/gate` (first paint waits for the
+snapshot, or times out and says so — #p29, #p31) and `/resume` (foreground
+return and network return are join moments too — #p31).
 
 ## user
 
