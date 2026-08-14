@@ -86,6 +86,9 @@ post data live?
    consent; dark-shipped nodes gated by per-user vars).
 4. **Instance identity + presence** — named in join's spec, awaiting a
    renderer (the multi-device single-surface use case wants them).
+5. **Join gates first paint** (#p29, user-requested): hold the interface at
+   startup until the join snapshot arrives or a timeout passes — no flash of
+   pre-join values. Small node under `loop/scope/join` when taken up.
 
 ## small print
 
