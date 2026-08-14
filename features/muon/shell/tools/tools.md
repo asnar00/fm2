@@ -10,6 +10,9 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p43, draft-phase revision)
 > let's introduce some colour discipline for this first run - let's make it white on dark grey background (no outline), and black on light grey when selected?
 
+> (transcripts/2026-08-14-fm-spec-2.md#p48, draft-phase revision)
+> when we select dictate, the other tool icons (=taps) slide off to the left, the dictate icon slides to leftmost, and the rec/stop buttons are the new tools to the right of dictate - they don't sit above the toolbar.
+
 ## spec
 
 muon runs **tools**: each is a small icon button in a **toolbar** — a
@@ -46,8 +49,11 @@ launcher-mode by setting `open_tool` to empty (the key's *absence* means this
 feature is toggled off — tools then render unconditionally, preserving
 pre-toolbar behaviour). `update` handles `tool_<id>` clicks (open; clicking
 the open tool's button is a no-op) and `tools_home` (the `‹`, close).
-`render` appends the toolbar: the `‹` chip when a tool is open, then one
-button per registered tool, the open one marked `sel`.
+`render` appends the toolbar. Closed: one button per registered tool. Open:
+the toolbar becomes the tool's control surface — `‹`, the open tool's icon
+(leftmost, `sel`), then whatever the `tool_controls` chain contributes (base:
+nothing; the open tool redefines it to add its own buttons). Renders are
+whole-DOM swaps, so the "slide" is a mount animation on mode change.
 
 `tools.css` styles the toolbar (safe-area aware, clear of the corner stamp)
 and its buttons: white glyph on dark grey, black on light grey when selected,

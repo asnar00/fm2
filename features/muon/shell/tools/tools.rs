@@ -6,6 +6,13 @@ impl feature_Tools {
         "[]".to_string()
     }
 
+    // the controls chain: the open tool redefines this to put its own
+    // buttons into the toolbar, right of its icon.
+    fn tool_controls(state: String) -> String {
+        let _ = state;
+        String::new()
+    }
+
     // launcher-mode marker: the key existing (even empty) means the toolbar
     // owns navigation; if this feature is unticked the key never appears and
     // tools render unconditionally as before.
@@ -47,21 +54,29 @@ impl feature_Tools {
         let s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
         let open = Var::<String>::local("open_tool").get(&s);
-        let list: serde_json::Value = serde_json::from_str(&tools_list(state))
+        let list: serde_json::Value = serde_json::from_str(&tools_list(state.clone()))
             .unwrap_or(serde_json::json!([]));
         let empty: Vec<serde_json::Value> = Vec::new();
         let mut bar = String::from("<div class=\"toolbar\">");
-        if !open.is_empty() {
-            bar.push_str("<div class=\"tool-button back\" data-ev=\"tools_home\">‹</div>");
-        }
         for t in list.as_array().unwrap_or(&empty) {
             let id = t["id"].as_str().unwrap_or("");
+            // open mode: only the open tool's icon remains, leftmost after
+            // the back chevron; the others have slid away
+            if !open.is_empty() && open != id {
+                continue;
+            }
             let icon = t["icon"].as_str().unwrap_or("·");
             let label = t["label"].as_str().unwrap_or(id);
             let sel = if open == id { " sel" } else { "" };
+            if open == id {
+                bar.push_str("<div class=\"tool-button back\" data-ev=\"tools_home\">‹</div>");
+            }
             bar.push_str(&format!(
                 "<div class=\"tool-button{}\" data-ev=\"tool_{}\" title=\"{}\"><span class=\"icon\">{}</span></div>",
                 sel, id, label, icon));
+        }
+        if !open.is_empty() {
+            bar.push_str(&tool_controls(state));
         }
         bar.push_str("</div>");
         bar

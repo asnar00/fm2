@@ -22,3 +22,10 @@
   background: none; color: inherit;
   font-size: 22px; width: 24px; opacity: 0.6;
 }
+/* renders are whole-DOM swaps, so "sliding" is a mount animation: toolbar
+   contents ease in from the left on each mode change */
+.toolbar .tool-button { animation: bar-slide 0.18s ease-out; }
+@keyframes bar-slide {
+  from { transform: translateX(-14px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}

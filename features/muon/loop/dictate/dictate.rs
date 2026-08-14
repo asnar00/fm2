@@ -49,7 +49,23 @@ impl feature_Dictate {
         if s["open_tool"].as_str().unwrap_or("") != "dictate" {
             return base;
         }
-        format!("{}{}{}", base, render_files(state.clone()), render_control(state))
+        format!("{}{}", base, render_files(state))
+    }
+
+    // dictate's toolbar controls: record when idle, stop (with the pulsing
+    // dot) while recording — they sit in the toolbar, right of the mic.
+    fn tool_controls(state: String) -> String {
+        let prev = existing.tool_controls(state.clone());
+        let s: serde_json::Value = serde_json::from_str(&state)
+            .unwrap_or(serde_json::json!({}));
+        if s["open_tool"].as_str().unwrap_or("") != "dictate" {
+            return prev;
+        }
+        if s["dict_recording"].as_bool().unwrap_or(false) {
+            format!("{}<div class=\"tool-button ctrl recording\" data-ev=\"dict_stop\">■<span class=\"rec-dot\"></span></div>", prev)
+        } else {
+            format!("{}<div class=\"tool-button ctrl\" data-ev=\"dict_rec\">●</div>", prev)
+        }
     }
 
     fn render_files(state: String) -> String {
@@ -68,13 +84,4 @@ impl feature_Dictate {
         grid
     }
 
-    fn render_control(state: String) -> String {
-        let s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        if s["dict_recording"].as_bool().unwrap_or(false) {
-            "<div class=\"rec-control recording\" data-ev=\"dict_stop\"><span class=\"rec-dot\"></span>stop</div>".to_string()
-        } else {
-            "<div class=\"rec-control\" data-ev=\"dict_rec\">record</div>".to_string()
-        }
-    }
 }

@@ -40,8 +40,9 @@ in the grid. Notes are stored on this device — nothing leaves it yet.
 `dict_stop` (clear it), `RecSaved` (append one metadata entry to
 `dict_files`), `RecList` (replace `dict_files` wholesale — the boot reseed).
 `render`, when dictate is the open tool: the grid (one 🎤 icon + time label
-per file, newest last) and the record/stop control (`dict_rec` / `dict_stop`
-with a pulse dot while recording).
+per file, newest last). `tool_controls` (the `/tools` chain, revised at #p48)
+puts the record/stop buttons in the toolbar right of the mic: ● when idle,
+■ with the pulsing dot while recording.
 
 `dictate.js` is the hardware half: it opens IndexedDB (`muon-blobs`,
 store `audio`); wraps `feature_Loop.apply` to watch `dict_recording` —
