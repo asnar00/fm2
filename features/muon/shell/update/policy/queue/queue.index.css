@@ -1,0 +1,49 @@
+/* the full-screen updates queue: above the panel, safe-area padded */
+#queueView {
+  position: fixed; inset: 0; z-index: 20;
+  display: none; flex-direction: column;
+  background: #161619; color: #eee;
+  padding: calc(env(safe-area-inset-top, 0px) + 10px) 14px
+           calc(env(safe-area-inset-bottom, 0px) + 10px);
+}
+#queueView .qhead {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #9a9aa2; padding: 4px 2px 10px;
+}
+#queueView .qhead button {
+  background: none; border: none; color: #eee; font-size: 18px; padding: 4px 8px;
+}
+#queueList { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.qrow {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 2px; border-bottom: 1px solid #232328;
+  font-size: 13px; line-height: 1.4;
+}
+.qtext { flex: 1; }
+.qkind {
+  flex: none; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2px 6px; border-radius: 4px; margin-top: 2px;
+  background: #26262c; color: #9a9aa2;
+}
+.qkind.feature { background: #23282f; color: #9db7d8; }
+/* the tickbox: live (tappable, filled when on) vs static (dimmed, inert) */
+.qtick {
+  flex: none; width: 18px; height: 18px; margin-top: 1px;
+  border: 1px solid #4a4a52; border-radius: 4px; background: #1c1c21;
+}
+.qtick.on { background: #9db7d8; border-color: #9db7d8; }
+.qtick.on::after {
+  content: "✓"; display: block; text-align: center;
+  color: #14141a; font-size: 13px; line-height: 18px;
+}
+.qtick.static {
+  opacity: 0.35; border-style: dashed;
+  background: #26262c;
+}
+.qtick.static::after {
+  content: "✓"; display: block; text-align: center;
+  color: #9a9aa2; font-size: 13px; line-height: 18px;
+}
+/* the panel teaser advertises it opens */
+#changes.expandable { cursor: pointer; }
