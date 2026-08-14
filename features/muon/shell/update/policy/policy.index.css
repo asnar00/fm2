@@ -1,0 +1,3 @@
+#policySeg { display: flex; align-items: center; gap: 6px; }
+#policySeg button { opacity: 0.55; }
+#policySeg button.sel { opacity: 1; outline: 1px solid currentColor; }

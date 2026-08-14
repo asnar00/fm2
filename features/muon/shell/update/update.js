@@ -10,6 +10,9 @@ const feature_Update = {
     return this.server && this.running !== 'first-run'
       && this.server !== this.running;
   },
+  // extension point: may a newer build apply without asking? (a policy
+  // feature may replace this; the base always consents)
+  consented: async () => true,
   async launch(who) {
     const v = await this.fetchVersion();
     this.server = v;
@@ -20,12 +23,19 @@ const feature_Update = {
         sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller),
         ua: navigator.userAgent.slice(0, 90) });
     if (v) {
-      localStorage.muonVersion = v;
       if (this.running !== 'first-run' && this.running !== v) {
-        await caches.delete('muon');
-        location.reload();
+        if (await this.consented(v)) {
+          localStorage.muonVersion = v;
+          await caches.delete('muon');
+          location.reload();
+          return;
+        }
+        // declined for now: stay (honestly) on the running build; the
+        // pulsing handle carries the ask
+        if (typeof feature_Watch !== 'undefined') feature_Watch.check();
         return;
       }
+      localStorage.muonVersion = v;
       this.running = v;
     } else if (typeof feature_Honest !== 'undefined') {
       feature_Honest.retry(); // launched without network: keep trying

@@ -3,3 +3,4 @@
 - [x] honest
 - [x] watch
 - [x] auto
+- [x] policy

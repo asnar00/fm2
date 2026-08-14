@@ -69,12 +69,28 @@ python3 "$SRC/tools/export_features.py"
 # what's-changed list for the system panel: recent commit subjects, newest
 # first, each tagged with its build number (count minus offset)
 python3 - "$SRC" > "$SRC/products/muon/build/site/changes.json" <<'PY'
-import json, subprocess, sys
+import json, re, subprocess, sys
 src = sys.argv[1]
 count = int(subprocess.check_output(["git", "rev-list", "--count", "HEAD"], cwd=src))
-subjects = subprocess.check_output(["git", "log", "--format=%s", "-12"],
-                                   cwd=src, text=True).splitlines()
-print(json.dumps([{"build": count - i, "text": s} for i, s in enumerate(subjects)]))
+lines = subprocess.check_output(["git", "log", "--format=%H%x09%s", "-12"],
+                                cwd=src, text=True).splitlines()
+
+# release kind, from the tree discipline: a commit that ADDS a feature node
+# spec (features/**/<name>/<name>.md) ships new behaviour; else it's a fix
+def kind(sha):
+    added = subprocess.check_output(
+        ["git", "diff-tree", "-r", "--diff-filter=A", "--name-only",
+         "--no-commit-id", sha], cwd=src, text=True).splitlines()
+    for p in added:
+        if re.match(r"features/(?:.*/)?([^/]+)/\1\.md$", p):
+            return "feature"
+    return "fix"
+
+entries = []
+for i, line in enumerate(lines):
+    sha, subject = line.split("\t", 1)
+    entries.append({"build": count - i, "text": subject, "kind": kind(sha)})
+print(json.dumps(entries))
 PY
 
 rsync -a --delete \
