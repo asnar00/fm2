@@ -3,8 +3,8 @@ const feature_Install = {
   // (?browser=1 is an undocumented dev bypass, session-scoped.)
   redirect() {
     if (location.search.includes('browser=1')) sessionStorage.muonBrowser = '1';
-    const havePwa = typeof feature_Pwa !== 'undefined';
-    if (havePwa && feature_Pwa.phone() && !feature_Pwa.standalone()
+    const havePwa = typeof feature_Standalone !== 'undefined';
+    if (havePwa && feature_Standalone.phone() && !feature_Standalone.standalone()
         && !sessionStorage.muonBrowser) {
       location.replace('install.html');
       return true;

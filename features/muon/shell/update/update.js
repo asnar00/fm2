@@ -19,7 +19,7 @@ const feature_Update = {
     if (typeof feature_Diag !== 'undefined')
       feature_Diag.report({ launch: true, running: this.running,
         server: v || 'offline', authed: !!(who && who.authed),
-        pwa: typeof feature_Pwa !== 'undefined' && feature_Pwa.standalone(),
+        pwa: typeof feature_Standalone !== 'undefined' && feature_Standalone.standalone(),
         sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller),
         ua: navigator.userAgent.slice(0, 90) });
     if (v) {

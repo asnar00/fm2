@@ -1,5 +1,5 @@
-struct feature_JoinGate;
-impl feature_JoinGate {
+struct feature_Veil;
+impl feature_Veil {
     // stamp the applied snapshot: gate linearises after /join, so by the time
     // this runs the values are already in state. _joined is page-local and
     // never shipped (only explicit _send ops leave the instance).

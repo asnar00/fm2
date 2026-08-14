@@ -1,4 +1,4 @@
-const feature_Pwa = {
+const feature_Standalone = {
   standalone: () => matchMedia('(display-mode: standalone)').matches
     || navigator.standalone === true,
   phone: () => /iPhone|iPad|Android/.test(navigator.userAgent)

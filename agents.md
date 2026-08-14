@@ -78,6 +78,10 @@ question "did a request go nodeless?"
   code-bearing node MUST cite a real anchor — the linker fails otherwise;
   code-free grouping nodes order by their earliest child. Inspect with
   `fmlink.py <product> --chains`.
+- Node names are TREE-GLOBAL (fm.md "tree-global names", linker-enforced):
+  unique across the composed tree, self-describing without the path.
+  Implementation namespaces are flat — a duplicate JS `const feature_X` kills
+  every script on the page — so name the struct after the node's own name.
 - fmlink parses at regex level: one `feature_` struct per node; no commas
   inside fn parameter types; braces balanced everywhere including string
   literals; `existing.fn()` only calls the enclosing function's own chain.

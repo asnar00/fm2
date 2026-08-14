@@ -15,7 +15,7 @@ through the normal event loop. A fresh boot is just a maximally-stale replica;
 the same queued `Join` performs reconnect catch-up after offline, because the
 outbox holds it until the network returns. Snapshot application is
 last-write-wins at boot; presence and instance identity are named future
-refinements (fm-spec-2 #p21). Refined by `/gate` (first paint waits for the
+refinements (fm-spec-2 #p21). Refined by `/veil` (first paint waits for the
 snapshot, or times out and says so — #p29, #p31) and `/resume` (foreground
 return and network return are join moments too — #p31).
 

@@ -195,3 +195,7 @@ If a feature node resolves to multiple user prompts, the feature should be decom
 ### 4-6 children per feature
 
 Humans have difficulty holding more than 7 items in short-term memory; therefore, we cap the number of children at 6, and aim for 4. Nodes with higher numbers of children should be re-organised, grouping similar children together under a new sub-feature. The grouped node is allowed to skip a provenance prompt, and can instead just say that it was created in response to this rule.
+
+### tree-global names
+
+A feature's name should describe its function and be unique across the tree, i.e. we shouldn't have to know its parent feature names to understand what it does.

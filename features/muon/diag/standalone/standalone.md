@@ -1,4 +1,4 @@
-# pwa
+# standalone
 *reports say whether they came from the installed app or a browser*
 
 > (transcripts/2026-08-13-fm-spec.md#p48)

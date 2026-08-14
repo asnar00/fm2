@@ -1,3 +1,3 @@
-- [x] pwa
+- [x] standalone
 - [x] readout
 - [x] blackbox

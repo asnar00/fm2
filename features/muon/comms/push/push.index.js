@@ -2,7 +2,7 @@ const feature_Push = {
   // panel-side: offer enrolment asking the REAL subscription state, not a
   // cached flag (a stale flag once left this button showing)
   async offerEnrol() {
-    const standalone = typeof feature_Pwa !== 'undefined' && feature_Pwa.standalone();
+    const standalone = typeof feature_Standalone !== 'undefined' && feature_Standalone.standalone();
     let enrolled = !!localStorage.muonPush;
     if (!enrolled && 'PushManager' in window) {
       try {

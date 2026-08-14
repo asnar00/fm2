@@ -1,9 +1,9 @@
-const feature_JoinGate = {
+const feature_Veil = {
   joined: false,
   timer: null,
   reveal() {
     document.body.classList.add('fm-joined');
-    const veil = $('joinGate');
+    const veil = $('veil');
     if (veil) veil.remove();
   },
   inform() {
@@ -20,7 +20,7 @@ const feature_JoinGate = {
 };
 {
   const fm_veil = document.createElement('div');
-  fm_veil.id = 'joinGate';
+  fm_veil.id = 'veil';
   fm_veil.textContent = 'syncing…';
   document.body.appendChild(fm_veil);
 
@@ -31,17 +31,17 @@ const feature_JoinGate = {
     try {
       joined = !!JSON.parse(feature_Loop.state || '{}')._joined;
     } catch (e) {}
-    if (joined && !feature_JoinGate.joined) {
-      feature_JoinGate.joined = true;
-      feature_JoinGate.clearInform();
-      feature_JoinGate.reveal();
-    } else if (!feature_JoinGate.joined && !feature_JoinGate.timer) {
+    if (joined && !feature_Veil.joined) {
+      feature_Veil.joined = true;
+      feature_Veil.clearInform();
+      feature_Veil.reveal();
+    } else if (!feature_Veil.joined && !feature_Veil.timer) {
       // first apply = paint-readiness: the timeout budget starts here, not
       // at script load, so a slow wasm fetch doesn't eat it
-      feature_JoinGate.timer = setTimeout(() => {
-        if (!feature_JoinGate.joined) {
-          feature_JoinGate.reveal();
-          feature_JoinGate.inform();
+      feature_Veil.timer = setTimeout(() => {
+        if (!feature_Veil.joined) {
+          feature_Veil.reveal();
+          feature_Veil.inform();
         }
       }, 2000);
     }

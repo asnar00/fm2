@@ -804,6 +804,15 @@ def main():
 
     feature_dirs, excluded = [], []
     linearise(product_dir, feature_dirs, excluded, product_dir)
+    # tree-global names (fm.md): a node's name must be unique across the
+    # composed tree — implementation namespaces (structs, page consts) are
+    # flat, and a name should not need its path to mean something
+    seen_names = {}
+    for d in feature_dirs:
+        if d.name in seen_names:
+            fail(f"node name '{d.name}' used by both {seen_names[d.name]} and "
+                 f"{d.relative_to(product_dir)} — names are tree-global (fm.md)")
+        seen_names[d.name] = d.relative_to(product_dir)
     feature_dirs = chronologise(feature_dirs, product_dir)
     print("linearisation (provenance order):",
           " → ".join(str(d.relative_to(product_dir)) for d in feature_dirs))
