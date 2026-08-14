@@ -7,6 +7,9 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p42, draft-phase revision)
 > make tools quite small buttons with icons on them, and put them in a horizontal row (a "panel") down next to the little logo-button, across the bottom of the screen. That gives us the whole rest of the screen above it to hold display information. The "back" button can be a little "<" at the left of the tools panel.
 
+> (transcripts/2026-08-14-fm-spec-2.md#p43, draft-phase revision)
+> let's introduce some colour discipline for this first run - let's make it white on dark grey background (no outline), and black on light grey when selected?
+
 ## spec
 
 muon runs **tools**: each is a small icon button in a **toolbar** — a
@@ -47,4 +50,6 @@ the open tool's button is a no-op) and `tools_home` (the `‹`, close).
 button per registered tool, the open one marked `sel`.
 
 `tools.css` styles the toolbar (safe-area aware, clear of the corner stamp)
-and its buttons.
+and its buttons: white glyph on dark grey, black on light grey when selected,
+no outline. Emoji ignore CSS `color`, so icons are forced monochrome with a
+grayscale/brightness/invert filter on the icon span.

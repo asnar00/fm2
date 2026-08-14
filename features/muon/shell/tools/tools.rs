@@ -60,7 +60,7 @@ impl feature_Tools {
             let label = t["label"].as_str().unwrap_or(id);
             let sel = if open == id { " sel" } else { "" };
             bar.push_str(&format!(
-                "<div class=\"tool-button{}\" data-ev=\"tool_{}\" title=\"{}\">{}</div>",
+                "<div class=\"tool-button{}\" data-ev=\"tool_{}\" title=\"{}\"><span class=\"icon\">{}</span></div>",
                 sel, id, label, icon));
         }
         bar.push_str("</div>");

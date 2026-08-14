@@ -8,10 +8,17 @@
 .tool-button {
   width: 40px; height: 40px;
   display: flex; align-items: center; justify-content: center;
-  border: 1px solid currentColor; border-radius: 12px;
-  font-size: 19px; opacity: 0.55;
+  background: #3c3c3c; color: #fff;
+  border-radius: 12px;
+  font-size: 19px;
   cursor: pointer; user-select: none; -webkit-user-select: none;
 }
-.tool-button.sel { opacity: 1; }
-.tool-button:active { opacity: 1; }
-.tool-button.back { border: none; font-size: 22px; width: 24px; }
+.tool-button.sel { background: #d8d8d8; color: #000; }
+/* colour discipline: emoji icons render monochrome — white normally,
+   black when selected — via filters, since emoji ignore `color` */
+.tool-button .icon { filter: grayscale(1) brightness(0) invert(1); }
+.tool-button.sel .icon { filter: grayscale(1) brightness(0); }
+.tool-button.back {
+  background: none; color: inherit;
+  font-size: 22px; width: 24px; opacity: 0.6;
+}
