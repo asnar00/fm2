@@ -18,4 +18,4 @@ Tap the pill on any logged-in muon — phone, simulator, tab — and the count m
 
 ## code description
 
-`sync.rs` extends both halves. Its `update` /extension/ runs the chain first, then: a tap event appends `TapSync` to state's `_send`; an arriving `TapTotal` overwrites `tap_count` with the shared total. Its `handle_msg` /extension/ claims `TapSync`, bumps the file-backed global total, publishes `TapTotal` to all listeners, and returns the same `TapTotal` as the direct reply — so the tapper and the bystanders converge by different roads.
+`sync.rs` collapsed from ~60 lines to one `update` /extension/ the moment `/scope` existed: on a tap event, `Var::<u64>::global("tap_count").add_op(&mut s, 1)` ships the already-applied increment as an op on the global counter. Server keying, storage, broadcast and arrival are all `/scope`'s generic machinery — this node now contains exactly its intent and nothing else.

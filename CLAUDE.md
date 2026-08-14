@@ -18,3 +18,10 @@ live system.
 - Spec style: code descriptions in short paragraphs, one per thing described.
   Glossary terms backticked with a leading slash: `` `/term` ``.
 - shell is at the 6-child cap — its next child forces a regroup.
+
+## Verbatim libraries
+
+A node may carry `<name>.lib.rs`: full Rust (generics, traits, comma-bearing
+types) the linker emits as-is — no chains, no merging, provenance-commented,
+toggleable with the node. Use for library types like scope's `Var<T>`; the
+regex parser never sees these files, so its limits don't apply inside them.

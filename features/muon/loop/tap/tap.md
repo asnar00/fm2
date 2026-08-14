@@ -18,6 +18,4 @@ Tap the pill, watch it count. That's Rust handling your finger through the whole
 
 ## code description
 
-`tap.rs`: the `update` /extension/ delegates via `existing.update`, then increments `tap_count` when the event is its own (`ev == "tap"`); the `render` /extension/ appends the pill (`data-ev="tap"`) with the count-aware label.
-
-`tap.css` styles the pill.
+`tap.rs` counts through the lattice's bottom rung: `Var::<u64>::local("tap_count")` — `add` on a tap event, `get` in the render extension that draws the pill (`data-ev="tap"`). Local scope never leaves the device; `/sync` escalates the same key to shared.

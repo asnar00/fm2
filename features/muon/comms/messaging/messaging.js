@@ -55,7 +55,9 @@ const feature_Messaging = {
         if (!r.ok) throw new Error('wait ' + r.status);
         const b = await r.json();
         if (b.v) this.lastV = b.v;
-        if (b.msg && b.msg.type) feature_Loop.send(b.msg);
+        for (const m of (b.msgs || [])) {
+          if (m && m.type) feature_Loop.send(m);
+        }
       } catch (e) {
         await new Promise((res) => setTimeout(res, 3000));
       }

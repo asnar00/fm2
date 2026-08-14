@@ -182,7 +182,15 @@ class FeatureCode:
                 self.fragments.append({"file": page, "slot": slot,
                                        "text": frag.read_text(),
                                        "src": self.rel.replace("features/", "", 1)})
+        # verbatim library files: full Rust (generics, traits, helpers) the
+        # composition machinery doesn't touch — emitted as-is, per node
+        self.libs = []            # (src_rel, text)
+        for lib in sorted(feature_dir.glob("*.lib.rs")):
+            self.libs.append((str(lib.resolve().relative_to(REPO)),
+                              lib.read_text()))
         for rs in sorted(feature_dir.glob("*.rs")):
+            if rs.name.endswith(".lib.rs"):
+                continue
             self._parse(rs)
 
     def _parse(self, rs: Path):
@@ -389,6 +397,12 @@ def compose(features: list):
     out.emit("#![allow(non_camel_case_types, dead_code, non_snake_case, unused)]")
     out.emit("")
     merge_structs(features, out)
+    for feature in features:
+        for src, text in feature.libs:
+            out.emit(f"// ---- library: {src}")
+            for offset, line in enumerate(text.splitlines()):
+                out.emit(line, src, offset + 1)
+            out.emit("")
     chains = compose_features(features, out)
     out.emit("// ---- dispatchers (plain delegate / generated-trait multiple dispatch)")
     emit_dispatchers(chains, out)
