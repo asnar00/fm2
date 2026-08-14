@@ -232,6 +232,38 @@ containment (parent composes first) — so the ordering rule is
 (timestamp, containment, anchor-rider order), no order.md tiebreak needed
 so far.
 
+**TWO-PHASE FEATURE LIFECYCLE (transcripts/2026-08-14-fm-spec-2.md#p16) —
+resolves the depth question.**
+
+> One way to get around the depth issue is to have a "two-phase" approach to features. When we first create a feature, we'll expect a bunch of churn, and nobody else is using the feature, so it's safe to make big changes to it. Once we ship/publish and there's other people using the feature, that's when the feature should become immutable (except for refactoring). That means that a string of tweaks won't create big feature subtrees unless we decide they need to.
+
+**The reframe**: subfeature-per-refinement is a *compatibility* mechanism, not
+a history mechanism. History lives in transcripts and git; a refinement
+subtree exists so that *other consumers* can decline the change by toggling
+it. While nobody else uses a feature, a subtree serves no one — so the
+discipline was paying compatibility costs with zero consumers.
+
+**The lifecycle**: a **draft** feature churns in place — tweaks amend the
+node's own spec and code; provenance accumulates as a list of prompt
+citations in the spec (the reverse index already handles many-prompts-to-one-
+node as "coalesced"). **Publication** — the moment others depend on it — is
+the freeze point: the spec becomes the immutable contract; the implementation
+may still change *toward* the spec (bug fixes) or via behaviour-preserving
+refactoring (the existing rule, backed by tests); behaviour *changes* become
+subfeatures, individually toggleable, which is exactly when toggleability
+earns its keep. Prior art: semver's pre/post-1.0 line, applied at feature
+granularity.
+
+**Consequences**: (1) the one-prompt-per-node law refines to *one prompt per
+published change* — draft nodes may coalesce prompts; (2) absorb (collapsing
+a refinement stack) becomes mostly unnecessary, and where a draft grew
+internal structure, publish is the natural absorb point — squash before
+freezing; (3) this is also the sharing contract fm.md's intro promises: what
+you share is frozen, your later changes are additions the recipient can
+decline; (4) open: what marks publication concretely — a spec field, presence
+in another user's product, a version stamp? With one user today, everything
+is effectively draft, which is why depth pressure felt artificial.
+
 ## muon (the real feature space — started 2026-08-13, #p32)
 
 Shared infrastructure for all apps/tools: a Rust/wasm PWA with four base capabilities. Root node at `features/muon/`; apps will be subfeatures of muon; products = muon + an app subtree.
@@ -379,11 +411,11 @@ cheap insurance first, then the debt it protects, then doctrine. Tick as done.*
   header's ``session `<id>` `` line), telling you to pick a distinct --slug;
   same-session regeneration is unaffected. Motivated by the same-day collision
   that briefly clobbered the session-1 transcript (recovered from git).
-- [ ] **7. depth doctrine ("absorb")** — one-prompt-per-node stacks
-  refinements; the 4–6 cap fights breadth but nothing fights depth. Discuss
-  and record whether a sanctioned collapse of a refinement stack into its
-  parent exists, with provenance surviving via transcript citations rather
-  than tree shape. Doctrine conversation, not code — needs the author.
+- [x] **7. depth doctrine** — RESOLVED IN PRINCIPLE 2026-08-14 (fm-spec-2
+  #p16): the two-phase feature lifecycle — see "TWO-PHASE" below. Draft
+  features churn in place (no subtree growth from tweaks); publication is the
+  freeze point, after which changes become subfeatures. Absorb becomes mostly
+  unnecessary; where wanted, publish IS the natural absorb point.
 
 ## ideas parking lot
 
