@@ -18,6 +18,12 @@ impl feature_Tap {
         let base = existing.render(state.clone());
         let s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
+        // launcher-aware: when /tools owns the screen (key present), the
+        // counter only renders as the open "taps" tool; with no launcher the
+        // key is absent and the counter renders as it always did
+        if s["open_tool"].is_string() && s["open_tool"].as_str() != Some("taps") {
+            return base;
+        }
         let count = Var::<u64>::local("tap_count").get(&s);
         let label = if count == 0 {
             "tap".to_string()

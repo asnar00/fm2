@@ -1,0 +1,23 @@
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 14px;
+  padding: 18px;
+  width: min(92vw, 480px);
+  margin: 0 auto;
+}
+.tool-button {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid currentColor; border-radius: 20px;
+  opacity: 0.85; font-size: 15px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+.tool-button:active { opacity: 1; }
+.home-chip {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 10px);
+  left: calc(env(safe-area-inset-left) + 12px);
+  font-size: 14px; opacity: 0.6;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}

@@ -48,6 +48,59 @@ wait_filter); the VarJoin reply applies through the update chain, so joins
 are blackbox-visible and replay-safe. Offline boot leaves the Join queued —
 reconnect catch-up falls out free.
 
+**PLACES CONVERSATION (fm-spec-2 #p34–37): the app, the store, and graded
+derivation.** The real app (#p35): a spatial database of conversations and
+information — add + match, patchy network (canvassing), with agentic
+interrogation of the dataset that also works offline. What fell out:
+
+- **Posts are immutable, append-only facts** — no write conflicts; two
+  reports of one pothole are two true facts joined by an additive match-link.
+  Authority migration largely dissolves: a post is born true on its device;
+  the server is the *exchange*, not the owner. Mutable state (aggregates,
+  retractions-as-links) is the minority case.
+- **Replication = scope ∩ interest**, both as key-set subscriptions on the
+  existing audience machinery: scope (team.X — who MAY hear) intersected with
+  interest (tile.A..F — what this place cares about). Tiles behave like
+  ad-hoc groups: the group-membership rung and spatial subscription are
+  plausibly one design.
+- **Enrich at the exchange, consume at the edge**: heavy derived data
+  (corpus embeddings, tile digests) computed server-side at sync time and
+  replicated with the patch; the device does only light compute at use time
+  (query embedding, kNN). Derived stores: computed at a compute-rich place
+  from a source store, replicated like their source.
+- **GRADED DERIVATION (#p36–37) — the central pattern, user-named as the next
+  build.** Derived data declares *ranked rungs* (implementations via multiple
+  dispatch over resource types, best first), each with needs; the standing
+  rule: **run the best rung whose needs are reachable now (reachability has a
+  budget — the freshness-deadline principle generalised to places); stamp the
+  result with its rung; when a better rung comes into reach, re-derive and
+  upgrade in place.** Provisionality is honest metadata: never lie about
+  quality, the twin of never lying about freshness. One pattern covering:
+  transcription (server whisper / device / pending), agent synthesis (cloud /
+  local model / retrieval floor), embeddings, splat building — and join
+  itself (local state now, joined state moments later = graded derivation of
+  state).
+- Canonical worked example (#p36): dictaphone-style voter conversation —
+  stream audio up for live server transcription when bandwidth allows; fall
+  back to on-device (or pending) when not; the immutable audio replicates
+  later and the transcript *upgrades*. Even fully online the pattern applies:
+  per-chunk streaming text is the draft, whole-recording re-transcription is
+  the final.
+
+**MUON IS AN OS (fm-spec-2 #p41): tools on a launcher.** The muon/apps
+grouping question resolves with better vocabulary: muon runs **tools**
+(user's preferred term over "apps"), organised into **toolsets** (pages) when
+one screen overflows. The main screen is a launcher grid; which tool is open
+is per-instance Local state (navigation never syncs across devices). A tool
+registers on the `tools_list` chain from its own node. Discovery while
+building: **provenance ordering forces old features to register on new
+chains via new subfeatures** (tap predates the chain, so `tap/counter` does
+the registering — causality made visible in the tree), and the linker
+correctly refuses `counter` ticked with `tools` unticked: chain dependencies
+are real dependencies. First registered tool: taps. Next: transcribe
+(`loop/dictate` — the graded-derivation probe registers itself, being newer
+than the launcher).
+
 **RULE (fm.md "tree-global names", fm-spec-2 #p32–33): node names are unique
 across the tree and self-describing** — you shouldn't need the parent path to
 know what a node does. Grounds: implementation namespaces were always flat

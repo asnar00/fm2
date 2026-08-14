@@ -2,3 +2,4 @@
 - [x] update
 - [x] pwa
 - [x] panel
+- [x] tools
