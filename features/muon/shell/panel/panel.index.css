@@ -1,5 +1,5 @@
-#shade { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; }
-#panel { position: fixed; left: 50%;
+#shade { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; z-index: 10; }
+#panel { position: fixed; left: 50%; z-index: 11;
   bottom: max(14px, env(safe-area-inset-bottom));
   transform: translateX(-50%); width: min(92vw, 22rem); background: #101012;
   border: 1px solid #2e2e33; border-radius: 14px; padding: 14px 16px;
