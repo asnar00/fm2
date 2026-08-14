@@ -55,7 +55,7 @@ const feature_Dictate = {
     const id = 'rec-' + this.startedAt;
     const t = new Date(this.startedAt);
     const meta = {
-      id, t: this.startedAt,
+      id, t: this.startedAt, here: true,
       dur: Math.round((Date.now() - this.startedAt) / 1000),
       size: blob.size, mime: this.recorder.mimeType,
       label: t.getHours() + ':' + String(t.getMinutes()).padStart(2, '0'),
@@ -111,6 +111,7 @@ const feature_Dictate = {
     };
     const items = await this.list();
     items.sort((a, b) => a.t - b.t);
+    items.forEach((i) => { i.here = true; });   // locally stored = here
     feature_Loop.send({ type: 'RecList', data: { items } });
   },
 };

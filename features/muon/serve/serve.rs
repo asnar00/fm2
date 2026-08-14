@@ -3,6 +3,7 @@ pub struct request {
     pub path: String,
     pub cookie: String,
     pub body: String,
+    pub raw: Vec<u8>,
     pub tunnel: bool,
 }
 
@@ -63,15 +64,18 @@ impl feature_Serve {
                 content_length = t[15..].trim().parse().unwrap_or(0);
             }
         }
-        let mut body = String::new();
-        if content_length > 0 && content_length < 65536 {
+        // body arrives as raw bytes (binary-safe, e.g. audio uploads) with a
+        // lossy String view beside it for the JSON endpoints
+        let mut raw: Vec<u8> = Vec::new();
+        if content_length > 0 && content_length < 16 * 1024 * 1024 {
             let mut buf = vec![0u8; content_length];
             if reader.read_exact(&mut buf).is_ok() {
-                body = String::from_utf8_lossy(&buf).to_string();
+                raw = buf;
             }
         }
+        let body = String::from_utf8_lossy(&raw).to_string();
         request { method: method, path: clean_path(raw_path), cookie: cookie,
-                  body: body, tunnel: tunnel }
+                  body: body, raw: raw, tunnel: tunnel }
     }
 
     // "/x?q" -> "x"; "/" -> "index.html"; ".." refused (falls back to index)
