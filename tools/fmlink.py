@@ -239,8 +239,11 @@ class FeatureCode:
         self.fns = []             # dicts: name, params, ret, src, first, lines
         self.structs = []         # (struct_name, [(field, type, src_file, line)])
         assets = feature_dir / "assets"
-        self.assets = sorted(p for p in assets.iterdir()
-                             if p.is_file()) if assets.is_dir() else []
+        # (file, path relative to assets/) pairs — subdirectories are preserved
+        # into site/, so a node may own a whole asset tree (e.g. STT models)
+        self.assets = sorted(((p, p.relative_to(assets))
+                              for p in assets.rglob("*") if p.is_file()),
+                             key=lambda t: str(t[1])) if assets.is_dir() else []
         self.deps = {}            # cargo deps: name -> full spec line (verbatim)
         deps_file = feature_dir / "deps.toml"
         if deps_file.exists():
@@ -685,10 +688,15 @@ def build_places(product: str, places: list, base: Emitter, chains: dict,
     asset_files = [a for f in features for a in f.assets]
     if asset_files:
         site.mkdir(parents=True, exist_ok=True)
-        for a in asset_files:
-            (site / a.name).write_bytes(a.read_bytes())
-        print(f"  site/ assets: {', '.join(a.name for a in asset_files)}")
-    remove_stale_pages(site, {a.name for a in asset_files})
+        for a, rel in asset_files:
+            dest = site / rel
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(a.read_bytes())
+        top = [str(rel) for _, rel in asset_files if len(rel.parts) == 1]
+        trees = sorted({rel.parts[0] + "/" for _, rel in asset_files
+                        if len(rel.parts) > 1})
+        print(f"  site/ assets: {', '.join(top + trees)}")
+    remove_stale_pages(site, {str(rel) for _, rel in asset_files})
     compose_assets(site, features)
 
     print("build OK")

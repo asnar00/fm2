@@ -41,7 +41,19 @@ in the grid. Notes are stored on this device — nothing leaves it yet.
 `dictate.rs` owns the tool's state machine. `tools_list` registers
 `{dictate, 🎤}`. `update` claims: `dict_rec` (set `dict_recording`),
 `dict_stop` (clear it), `RecSaved` (append one metadata entry to
-`dict_files`), `RecList` (replace `dict_files` wholesale — the boot reseed).
+`dict_files`), `RecList` (replace `dict_files` wholesale — the boot reseed),
+and `Transcribed` (stamp a file with `transcript`/`t_rung`/`t_grade`).
+
+The transcription machinery (the #p36–39 plan, built): three slot chains
+`transcribe_local/server/api` — base implementations return "" (unreachable);
+each rung subfeature redefines its slot to "ready". The `transcribe()`
+scheduler runs after every `RecSaved`/`RecList`/`Transcribed`: it picks the
+highest-grade reachable rung (local 1, server 2, api 3), queues the first
+`here` file whose stamp is below that grade as `dict_transcribe` intent, and
+clears the intent when nothing needs work — with every rung unticked,
+behaviour is exactly as before. `dict_file_extra(file)` is the per-tile seam
+every grid routes through (this node's and `/mirror`'s replacement); its base
+renders the transcript, clipped and HTML-escaped, titled with its rung.
 `render`, when dictate is the open tool: the grid (one 🔊 icon + time label
 per file, newest last; the playing note inverts and pulses). `tool_controls`
 (the `/tools` chain, revised at #p48) puts the record/stop buttons in the

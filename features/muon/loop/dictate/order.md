@@ -1,1 +1,2 @@
 - [x] mirror
+- [x] phone

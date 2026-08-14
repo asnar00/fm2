@@ -538,6 +538,18 @@ cheap insurance first, then the debt it protects, then doctrine. Tick as done.*
   (`str(REPO_ROOT).replace("/", "-")`), the exact fix ftr's feature_common
   established for this bug class. Tooling fix, no node (per the taxonomy).
 
+- [ ] **9. stale asset *trees* in site/** — noticed 2026-08-15: fmlink now
+  copies asset subdirectories (needed for `stt/`), but `remove_stale_pages`
+  only covers composition-target pages — untick a feature with an asset tree
+  and its files linger in `build/site/` (and would rsync to the mini).
+  Cheap fix when it matters: track copied rel-paths per build and sweep.
+- [ ] **10. stt model download UX** — the ~130MB engine+model fetch happens
+  silently on first transcription; over the network-first service worker it
+  can also re-fetch per session when online. Wants: a cache-first sw rule
+  for `/stt/` (needs a seam in `/pwa`'s fetch handler) and a visible
+  "downloading speech model" state on the tile. Both are `/phone`
+  subfeature material once real-device behaviour is observed.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.

@@ -45,7 +45,9 @@ the id is sanitised. `handle_msg` claims `RecShared` (append to the sender's
 entries into `dict_files` (skipping ids already present, so the origin
 instance ignores its own echo; merged entries are `here: false`), and marks
 an entry `here: true` on `RecFetched`. `render_files` is redefined (replacing
-`/dictate`'s) to dim `here: false` tiles.
+`/dictate`'s) to dim `here: false` tiles; like the original, each tile routes
+through the `dict_file_extra` seam, so per-tile extras (transcripts) appear
+in both grids.
 
 `mirror.js` owns transport: it wraps `feature_Dictate.getBlob` so a missing
 blob fetches from `blob/<id>`, stores locally, and reports `RecFetched`;

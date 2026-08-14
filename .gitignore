@@ -1,2 +1,5 @@
 .DS_Store
 products/*/build/
+# fetched on-device STT artifacts (tools/fetch_stt.py) — recipe in git, binaries not
+features/muon/loop/dictate/phone/assets/stt/*
+!features/muon/loop/dictate/phone/assets/stt/engine.js

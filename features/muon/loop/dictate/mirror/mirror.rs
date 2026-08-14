@@ -157,8 +157,8 @@ impl feature_Mirror {
             if playing == id { cls.push_str(" playing"); }
             if absent { cls.push_str(" remote"); }
             grid.push_str(&format!(
-                "<div class=\"file-icon{}\" data-ev=\"dict_play_{}\"><span class=\"icon\">🔊</span><div class=\"file-label\">{}</div></div>",
-                cls, id, label));
+                "<div class=\"file-icon{}\" data-ev=\"dict_play_{}\"><span class=\"icon\">🔊</span><div class=\"file-label\">{}</div>{}</div>",
+                cls, id, label, dict_file_extra(f.to_string())));
         }
         grid.push_str("</div>");
         grid

@@ -33,3 +33,13 @@
   animation: rec-pulse 1.2s ease-in-out infinite;
 }
 @keyframes rec-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+/* transcript under a tile (the dict_file_extra seam's base output):
+   small, clipped to three lines, dimmer than the label */
+.file-text {
+  font-size: 9px; line-height: 1.25; color: #999;
+  max-width: 72px; margin-top: 2px;
+  display: -webkit-box; -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical; overflow: hidden;
+  text-align: left; word-break: break-word;
+}
