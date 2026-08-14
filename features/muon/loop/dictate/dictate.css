@@ -18,6 +18,13 @@
 }
 .file-icon .icon { filter: grayscale(1) brightness(0) invert(1); }
 .file-label { font-size: 10px; opacity: 0.7; color: #fff; }
+.file-icon { cursor: pointer; user-select: none; -webkit-user-select: none; }
+.file-icon.playing { background: #d8d8d8; }
+.file-icon.playing .icon {
+  filter: grayscale(1) brightness(0);
+  animation: rec-pulse 1.2s ease-in-out infinite;
+}
+.file-icon.playing .file-label { color: #000; }
 .tool-button.ctrl { font-size: 15px; position: relative; }
 .rec-dot {
   position: absolute; top: 5px; right: 5px;

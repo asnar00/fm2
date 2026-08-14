@@ -65,14 +65,40 @@ const feature_Dictate = {
     feature_Loop.send({ type: 'RecSaved', data: meta });
   },
 
-  // state-driven effects: the recorder follows dict_recording's edges
+  // state-driven effects: mic and speaker follow state's edges. During a
+  // /replay the state changes are re-enactment, not intent — no hardware.
   watch() {
-    const wanted = (() => {
-      try { return !!JSON.parse(feature_Loop.state || '{}').dict_recording; }
-      catch (e) { return false; }
-    })();
+    if (typeof feature_Replay !== 'undefined' && feature_Replay.active) return;
+    let s = {};
+    try { s = JSON.parse(feature_Loop.state || '{}'); } catch (e) {}
+    const wanted = !!s.dict_recording;
     if (wanted && !this.active) { this.active = true; this.start(); }
     if (!wanted && this.active) { this.active = false; this.stop(); }
+    this.watchPlay(s.dict_playing || '');
+  },
+
+  getBlob(id) {
+    return new Promise((res) => {
+      const rq = this.db.transaction('audio', 'readonly').objectStore('audio').get(id);
+      rq.onsuccess = () => res(rq.result);
+      rq.onerror = () => res(null);
+    });
+  },
+  playingId: '', audio: null,
+  watchPlay(want) {
+    if (want === this.playingId) return;
+    if (this.audio) { this.audio.pause(); this.audio = null; }
+    this.playingId = want;
+    if (!want) return;
+    this.getBlob(want).then((blob) => {
+      if (!blob || this.playingId !== want) return;
+      const url = URL.createObjectURL(blob);
+      const done = () => { URL.revokeObjectURL(url); feature_Loop.send({ type: 'PlayEnded' }); };
+      this.audio = new Audio(url);
+      this.audio.onended = done;
+      this.audio.onerror = done;
+      this.audio.play().catch(done); // state must not claim playback that isn't
+    });
   },
 
   async init() {

@@ -39,6 +39,21 @@ impl feature_Dictate {
             s["dict_files"] = e["data"]["items"].clone();
             return s.to_string();
         }
+        if t == "click" {
+            if let Some(id) = ev.strip_prefix("dict_play_") {
+                let current = s["dict_playing"].as_str().unwrap_or("").to_string();
+                s["dict_playing"] = if current == id {
+                    serde_json::json!("")   // tapping the playing note stops it
+                } else {
+                    serde_json::json!(id)
+                };
+                return s.to_string();
+            }
+        }
+        if t == "PlayEnded" {
+            s["dict_playing"] = serde_json::json!("");
+            return s.to_string();
+        }
         state
     }
 
@@ -73,12 +88,15 @@ impl feature_Dictate {
             .unwrap_or(serde_json::json!({}));
         let empty: Vec<serde_json::Value> = Vec::new();
         let files = s["dict_files"].as_array().unwrap_or(&empty);
+        let playing = s["dict_playing"].as_str().unwrap_or("").to_string();
         let mut grid = String::from("<div class=\"file-grid\">");
         for f in files {
+            let id = f["id"].as_str().unwrap_or("");
             let label = f["label"].as_str().unwrap_or("note");
+            let cls = if playing == id { " playing" } else { "" };
             grid.push_str(&format!(
-                "<div class=\"file-icon\"><span class=\"icon\">🎤</span><div class=\"file-label\">{}</div></div>",
-                label));
+                "<div class=\"file-icon{}\" data-ev=\"dict_play_{}\"><span class=\"icon\">🔊</span><div class=\"file-label\">{}</div></div>",
+                cls, id, label));
         }
         grid.push_str("</div>");
         grid

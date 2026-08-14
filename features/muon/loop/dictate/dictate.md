@@ -4,6 +4,9 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p46)
 > shall we implement record-to-local first? I'm thinking something like: tap dictate icon, we get a new tool panel with record, stop. recording creates a new file, which we visualise in a grid of file icons in the main area
 
+> (transcripts/2026-08-14-fm-spec-2.md#p49, draft-phase revision)
+> should we now add playback when we tap the file icon? also, let's change the icon we use for the file; something connoting "sound".
+
 ## spec
 
 The 🎤 tool. Open it: the display surface shows your recordings as a grid of
@@ -39,10 +42,15 @@ in the grid. Notes are stored on this device — nothing leaves it yet.
 `{dictate, 🎤}`. `update` claims: `dict_rec` (set `dict_recording`),
 `dict_stop` (clear it), `RecSaved` (append one metadata entry to
 `dict_files`), `RecList` (replace `dict_files` wholesale — the boot reseed).
-`render`, when dictate is the open tool: the grid (one 🎤 icon + time label
-per file, newest last). `tool_controls` (the `/tools` chain, revised at #p48)
-puts the record/stop buttons in the toolbar right of the mic: ● when idle,
-■ with the pulsing dot while recording.
+`render`, when dictate is the open tool: the grid (one 🔊 icon + time label
+per file, newest last; the playing note inverts and pulses). `tool_controls`
+(the `/tools` chain, revised at #p48) puts the record/stop buttons in the
+toolbar right of the mic: ● when idle, ■ with the pulsing dot while
+recording. Tapping a note plays it (`dict_play_<id>` → `dict_playing`);
+tapping the playing note — or `PlayEnded` from the page half — stops it.
+Playback follows state edges like recording does: the page half fetches the
+blob, plays it via an object URL, and reports the end; effects are skipped
+during `/replay` (re-enactment must touch no hardware).
 
 `dictate.js` is the hardware half: it opens IndexedDB (`muon-blobs`,
 store `audio`); wraps `feature_Loop.apply` to watch `dict_recording` —
