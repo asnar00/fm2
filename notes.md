@@ -1,6 +1,23 @@
 # notes
 *working notes on fm — discussion, ideas, open questions. (fm.md remains the user-authored source of truth; this doc is co-written and freely editable.)*
 
+## the spirit of the enterprise (#p125)
+
+> "it's not to build apps, per se, but it's to evolve our understanding of what 'feature modular architecture' could actually be, and why."
+
+This is a research project whose method is building. The apps (muon, the tap counter, whatever comes) are apparatus — probes that force the architecture to answer questions it could otherwise evade. A long gestation across multiple re-spins wasn't repeated failure to build a product; it was an inquiry iterating toward a sharp enough question. Success is measured in *understanding gained*, and the working tree is the lab notebook.
+
+What the inquiry has established so far (evidence: two days of practice):
+
+- **Composition can be one primitive.** Redefinition + `existing.fn()` dissolved annotations, methods, middleware, and framework registries alike. Every "we need a mechanism for X" so far has reduced to a chain, a fragment, or a message.
+- **The unit of intent can be the unit of code AND the unit of control.** One prompt → one node → its own toggleable implementation. When that holds, the tree is simultaneously spec, changelog, test surface, and product configurator; when it slipped, audits could repair it — the discipline is enforceable, not aspirational.
+- **Provenance can be first-class.** Every capability traces to the sentence that requested it. Software becomes a conversation with an audit trail — which, in the agent era, may be the point: when code is cheap to produce, *intent and structure* are the scarce assets worth engineering.
+- **Placement belongs to products, not code.** One placeless tree already yields a native server and a wasm client; single nodes own behaviour on both sides of the network; the same code could ship as standalone, thin-client, or fat-client. The full placed-data vocabulary is still ahead — it is the largest open question.
+- **Observability falls out of the architecture.** Explicit state + explicit events made recording, keyframing, replay, drive, and readout nearly free. They weren't features added to an app; they were properties the architecture already had, waiting to be surfaced.
+- **The instruments should be shaped like the subject.** The tree browser serves the tree; deploys narrate which nodes shipped; demo scripts are both demonstration and regression test. When the meta-work and the work share a shape, each improves the other.
+
+The open questions ARE the agenda: cross-cutting features, contexts and runtime dynamism, the placement/data vocabulary, typed message routing, extension chains for assets, chain semantics under regrouping, what happens at 1,000 nodes, multi-user permission. Each will be answered the same way — by building the smallest thing that forces the question, inside the discipline, with the answer recorded here.
+
 ## restatement (checking understanding)
 
 fm organises a codebase as a tree of features under `features/`, where each feature node modifies the behaviour of its parent. A *linker* composes selected features into executable *products* (under `products/`, expressed as symlink trees into `features/`). Composition happens at two levels:
