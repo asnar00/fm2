@@ -12,8 +12,9 @@ tree had to be repaired afterwards by audit.
 **1. Place the request in the tree — before touching any code.**
 Decide what the prompt is:
 - a **new capability** → a new feature node. Choose its parent by what it
-  extends; respect the 4–6 children cap (a regroup is itself a prompted event,
-  and moving subtrees can reorder extension chains — relink and test).
+  extends; respect the 4–6 children cap (a regroup is itself a prompted
+  event; since linearisation is provenance-ordered, regrouping never changes
+  behaviour — verify with a `--chains` diff anyway).
 - a **refinement or bug report** about an existing capability → a new
   *subfeature* of that node. One prompt per node, always; never fold a second
   request into an existing spec.
@@ -69,8 +70,14 @@ question "did a request go nodeless?"
 
 ## Mechanics reference
 
-- Chains: an extension must linearise AFTER its base — tree position bounds
-  what a node can extend.
+- Chains: composition order is PROVENANCE order (notes.md proposal 9) — a
+  node's position is the timestamp of the prompt its spec cites; newest is
+  outermost, globally. A node may extend any chain that existed when it was
+  written (causality bounds extension, not tree position). The tree carries
+  grouping and selection only: regrouping cannot rewire behaviour. Every
+  code-bearing node MUST cite a real anchor — the linker fails otherwise;
+  code-free grouping nodes order by their earliest child. Inspect with
+  `fmlink.py <product> --chains`.
 - fmlink parses at regex level: one `feature_` struct per node; no commas
   inside fn parameter types; braces balanced everywhere including string
   literals; `existing.fn()` only calls the enclosing function's own chain.

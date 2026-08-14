@@ -160,7 +160,28 @@ Original decision rationale (2026-08-13): computation lives in global functions,
 
 This supersedes the earlier "impl blocks on merged structs" idea — methods are dropped entirely. Constructors are just global functions; subfeatures extend construction via the same chains.
 
-### 9. provenance-ordered linearisation — USER-ENDORSED DIRECTION (2026-08-14)
+### 9. provenance-ordered linearisation — IMPLEMENTED (2026-08-14, same day)
+
+*Implementation (fm-spec-2 #p17):* fmlink now linearises by provenance
+timestamp — `chronologise()` reads every anchor time from transcripts/, takes
+each node's first spec citation as its position, ties resolve by
+(containment, path), and a code-free grouping node takes the earliest key in
+its subtree so a late regroup (e.g. shell/pwa, cited today) never displaces
+its older children. A code-bearing node without a citable anchor is now a
+LINK ERROR — provenance became load-bearing, which is the doctrine enforced
+mechanically. The migration diff matched the experiment's prediction exactly:
+only `route` and `update` rewired (plus the corresponding fragment slots),
+and both were verified commutative by inspection — every route member guards
+disjoint paths, every update member guards disjoint event types, all
+delegating via `existing` otherwise. All products build and run; hello_only's
+subtraction still works. The per-node "linearise before X" override remains
+unimplemented — add it the day chronology is wrong for a real node. fm.md's
+ordering section now differs from practice twice over (order.md as ordering;
+timestamp only as fallback) — noted in errata.
+
+Original proposal follows.
+
+### 9a. original proposal — USER-ENDORSED DIRECTION (2026-08-14)
 
 > (transcripts/2026-08-14-fm-spec-2.md#p9)
 > Hm, that's an interesting oversight on my part. It means regrouping features will change their ordering, which will obviously change behaviour […] I wonder if there's a way we can stabilise ordering even in the face of regrouping?
@@ -371,6 +392,11 @@ Known v0 limitations (deferred, not forgotten):
   products (shared-tree order.md is catalog + ordering, stays fully ticked; a
   product unticks via its own order.md override). The section may want to
   relocate that semantic to products.
+- *(added 2026-08-14, proposal 9)* **Ordering section** (~187): order.md is no
+  longer the composition order and the timestamp is no longer the fallback —
+  it's the rule. Composition order is the provenance timestamp of each node's
+  cited prompt; order.md is catalog + selection. The section would invert:
+  timestamps primary, order.md for grouping/selection only.
 
 ## hygiene todos (2026-08-14, from the fresh-eyes review)
 

@@ -3,8 +3,9 @@
 
 Pipeline:
   1. walk the product tree (symlinks into features/ or local overrides),
-     linearising depth-first with sibling order + include/exclude from each
-     node's order.md checklist
+     include/exclude from each node's order.md checklist, then linearise by
+     PROVENANCE TIME: each node's position is the timestamp of the prompt its
+     spec cites (tree = grouping + selection only; regrouping never rewires)
   2. parse each feature's .rs files: feature_X impls (functions, with full
      signatures) and plain structs (fields)
   3. chain functions by (name, all parameter types) — full-signature keying,
@@ -114,6 +115,89 @@ def linearise(directory: Path, out: list, excluded: list, root: Path):
             fail(f"{rel}/order.md includes '{name}' but the folder does not exist")
         out.append(directory / name)
         linearise(directory / name, out, excluded, root)
+
+
+# ------------------------------------------------------------- chronology
+# proposal 9 (notes.md): composition order is provenance order. Each node's
+# spec cites the prompt that caused it; the prompt's timestamp in transcripts/
+# is the node's position. The tree carries grouping and selection only —
+# regrouping can never rewire behaviour. "Newest is outermost", globally.
+
+CITE_RE = re.compile(r"transcripts/([\w.-]+\.md)#p(\d+)([a-z]?)")
+
+
+def read_anchor_times() -> dict:
+    """(transcript filename, prompt number, rider) -> 'YYYY-MM-DD HH:MM'."""
+    times = {}
+    for t in sorted((REPO / "transcripts").glob("*.md")):
+        for m in re.finditer(r"^### p(\d+)([a-z]?)\n\*([0-9: -]+)\*",
+                             t.read_text(), re.M):
+            times[(t.name, int(m.group(1)), m.group(2))] = m.group(3)
+    return times
+
+
+def node_key(directory: Path, times: dict):
+    """(timestamp, transcript, prompt number, rider) from the first provenance
+    citation in the node's spec; None if the spec cites nothing."""
+    real = directory.resolve()
+    spec = real / f"{real.name}.md"
+    if not spec.exists():
+        return None
+    m = CITE_RE.search(spec.read_text())
+    if not m:
+        return None
+    key = (m.group(1), int(m.group(2)), m.group(3))
+    if key not in times:
+        fail(f"{real.relative_to(REPO)}: spec cites {m.group(1)}#p{m.group(2)}"
+             f"{m.group(3)} but no such anchor exists in transcripts/")
+    return (times[key],) + key
+
+
+def contributes(directory: Path) -> bool:
+    """Does this node add composition material (code, fragments, assets,
+    deps)? Pure grouping nodes don't, and are ordered by their subtree."""
+    real = directory.resolve()
+    if (real / "assets").is_dir() or (real / "deps.toml").exists():
+        return True
+    return any(f.is_file() and (f.suffix == ".rs" or f.suffix[1:] in EXT_SLOT)
+               for f in real.iterdir())
+
+
+def chronologise(feature_dirs: list, root: Path) -> list:
+    """Sort the included nodes by provenance time. Ties (one prompt, several
+    nodes) resolve by containment (parent first) then path. A code-free
+    grouping node takes the earliest key in its subtree, so a late regroup
+    never displaces old children. A contributing node must cite an anchor;
+    a child citing an earlier prompt than its parent is a link error."""
+    times = read_anchor_times()
+    own = {}
+    for d in feature_dirs:
+        own[d] = node_key(d, times)
+        if own[d] is None and contributes(d):
+            fail(f"{d.resolve().relative_to(REPO)}: contributes code but its "
+                 f"spec cites no transcript anchor — chronological "
+                 f"linearisation needs provenance")
+    key = dict(own)
+    for d in sorted(feature_dirs, key=lambda p: -len(p.parts)):  # deepest first
+        if contributes(d) and own[d]:
+            continue
+        child_keys = [key[c] for c in feature_dirs
+                      if c.parent == d and key[c] is not None]
+        cands = [k for k in [own[d]] + child_keys if k is not None]
+        if not cands:
+            fail(f"{d.resolve().relative_to(REPO)}: no provenance anywhere in "
+                 f"its subtree")
+        key[d] = min(cands)
+    depth = {d: len(d.relative_to(root).parts) for d in feature_dirs}
+    ordered = sorted(feature_dirs,
+                     key=lambda d: (key[d], depth[d], str(d)))
+    pos = {d: i for i, d in enumerate(ordered)}
+    for d in feature_dirs:
+        if d.parent in pos and pos[d.parent] > pos[d]:
+            fail(f"{d.resolve().relative_to(REPO)} linearises before its own "
+                 f"parent — child provenance predates the parent's; fix the "
+                 f"citations")
+    return ordered
 
 
 # ------------------------------------------------------------------ rust parse
@@ -720,8 +804,9 @@ def main():
 
     feature_dirs, excluded = [], []
     linearise(product_dir, feature_dirs, excluded, product_dir)
-    print("linearisation:", " → ".join(str(d.relative_to(product_dir))
-                                       for d in feature_dirs))
+    feature_dirs = chronologise(feature_dirs, product_dir)
+    print("linearisation (provenance order):",
+          " → ".join(str(d.relative_to(product_dir)) for d in feature_dirs))
     for ex in excluded:
         print(f"  excluded (order.md unticked): {ex}")
 
