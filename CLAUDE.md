@@ -15,7 +15,9 @@ live system.
 
 ## Claude-specific operational notes
 
-- Documents: `notes.md` is co-written and freely editable; `transcripts/` is
+- Documents: `notes.md` is co-written and freely editable — agent-originated
+  observations and proposals go here; `ideas.md` is for the USER's passing
+  whims (date entries; don't seed it with your own ideas); `transcripts/` is
   regenerated via `tools/export_transcript.py` (run BEFORE citing a new `#pN`
   anchor, and at session end). Do not excavate pre-fm2 experiments; reading
   ftr for a specific proven mechanism, when pointed there, is fine.

@@ -313,8 +313,11 @@ def compose_features(features: list, out: Emitter) -> dict:
         out.emit("}")
         out.emit("")
         for fn in feature.fns:
-            chains[(fn["name"], tuple(fn["params"]))] = {
-                "head": feature.name, "params": fn["params"], "ret": fn["ret"]}
+            key = (fn["name"], tuple(fn["params"]))
+            members = chains[key]["members"] if key in chains else []
+            chains[key] = {"head": feature.name, "params": fn["params"],
+                           "ret": fn["ret"],
+                           "members": members + [feature.rel]}
     return chains
 
 
@@ -460,6 +463,18 @@ def with_entry(base: Emitter, chains: dict, place: dict) -> Emitter:
             out.emit(f"    fm_pack(feature_{ehead}::{event}(input))")
             out.emit("}")
     return out
+
+
+def print_chains(chains: dict):
+    """Dump chain topology: each chain key with its contributors in
+    linearisation order (innermost first, outermost last). Stable, sorted
+    output — diff it before/after a tree reorganisation to prove the regroup
+    did or didn't rewire behaviour."""
+    for (name, ptypes), info in sorted(chains.items()):
+        ret = f" -> {info['ret']}" if info["ret"] else ""
+        members = [m.replace("features/", "", 1) for m in info["members"]]
+        print(f"{sig_str(name, list(ptypes))}{ret}:")
+        print(f"  {' → '.join(members)}")
 
 
 # ------------------------------------------------------------------ build
@@ -654,6 +669,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("product", nargs="?", default="demo")
     ap.add_argument("--run", action="store_true", help="run the binary after building")
+    ap.add_argument("--chains", action="store_true",
+                    help="print chain topology and exit (no build)")
     args = ap.parse_args()
 
     product_dir = REPO / "products" / args.product
@@ -672,6 +689,9 @@ def main():
 
     features = [FeatureCode(d) for d in feature_dirs]
     base, chains = compose(features)
+    if args.chains:
+        print_chains(chains)
+        return
     places = read_places(product_dir)
     if places is None:
         build_legacy(args.product, base, chains, args.run)

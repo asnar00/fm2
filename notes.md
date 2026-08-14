@@ -16,6 +16,13 @@ What the inquiry has established so far (evidence: two days of practice):
 - **Observability falls out of the architecture.** Explicit state + explicit events made recording, keyframing, replay, drive, and readout nearly free. They weren't features added to an app; they were properties the architecture already had, waiting to be surfaced.
 - **The instruments should be shaped like the subject.** The tree browser serves the tree; deploys narrate which nodes shipped; demo scripts are both demonstration and regression test. When the meta-work and the work share a shape, each improves the other.
 
+**Framing candidate (2026-08-14, agent observation):** the doctrine's headline
+is user-controllable feature sets, but what two days of practice has actually
+demonstrated may be better named *provenance-modularity*: the unit of code is
+the unit of conversational intent, and the tree is the transcript's table of
+contents. The toggle test is what keeps that falsifiable. Offered as possible
+fm.md framing when the author next revises; not a decision.
+
 **The method, named (#p126):** the monolithic-code episode resolves under this frame — it was less a discipline failure than an articulation failure: the laws it "broke" were discovered by colliding with their absence, and nearly every principle now in force (tree owns its code, one prompt per node, shell-public-data-gated, honest checks, readout-over-pixels) was born as a repair. So the working method is the cycle: build → notice the wrongness → articulate the principle it reveals → encode it (laws, mechanisms, tools) → continue. Errors are experiments; the repair is the result. When something feels wrong, ask "what principle is trying to be born?"
 
 **CONVERGENCE (#p128): binary formats and Shared<T> are one question — typed, linker-generated state.** JSON currently earns its keep as observability (readable blackbox/readout/replay/wire); serde's format-agnosticism means binary is a swappable backend *once state is typed* — representation becomes a product policy (dev = JSON for the instruments, production/hot paths = postcard-style binary), at the cost of explicit schema-evolution discipline. `Shared<T>` is fm.md's day-one `@shared` variables realised as a policy type: the tap demo hand-rolled (~60 lines) exactly what the declaration should generate — outbox op, authoritative server copy, broadcast, merge. Staged path: (a) typed state — linker flat-merges feature-declared fields into one derived `State` struct (unlocks binary); (b) typed messages — the v2 signature-derived router; (c) policy types — `Local<T>`, `PerUser<T>` (=@user), `Shared<T>` (LWW register), `SharedCounter` (op-fold — the demo already proved registers lose concurrent increments; counters are op-based, quietly CRDT-shaped); (d) representation per product. This IS the placed-data vocabulary arriving as types; strongest candidate for the next probe: "make tap_count a declared shared variable and generate what we hand-wrote." Parser note: `Shared<u64>` fields parse today; comma-carrying generics in fields don't yet.
@@ -153,6 +160,78 @@ Original decision rationale (2026-08-13): computation lives in global functions,
 
 This supersedes the earlier "impl blocks on merged structs" idea — methods are dropped entirely. Constructors are just global functions; subfeatures extend construction via the same chains.
 
+### 9. provenance-ordered linearisation — USER-ENDORSED DIRECTION (2026-08-14)
+
+> (transcripts/2026-08-14-fm-spec-2.md#p9)
+> Hm, that's an interesting oversight on my part. It means regrouping features will change their ordering, which will obviously change behaviour […] I wonder if there's a way we can stabilise ordering even in the face of regrouping?
+
+**Problem.** Chain order = DFS position, so tree shape carries behavioural
+weight: a regroup can silently rewire who wraps whom. Proposal 2 noted the
+ambient version (cross-subtree order is traversal order, not chronology);
+regrouping is the acute version, and the 4–6 cap *forces* regroups.
+
+**Options considered:** (1) discipline + evidence — keep DFS, require regroups
+to show an empty chain-dump diff; stabilises by vigilance, and forbids regroups
+that should move things. (2) chain lockfile — a checked-in manifest of each
+chain's member order; behaviour regroup-proof by construction, but a second
+ordering artifact. (3) **linearise by provenance timestamp** — every node
+already carries the timestamp of its originating prompt; make that the
+composition order. The transcript becomes the true program order; the tree
+becomes a pure grouping/selection view with zero behavioural weight.
+
+**Decision leaning: option 3** (#p10). The user's rationale: composition is an
+agent's job, and in the long run humans won't read the tree much — a human
+wanting to understand the code is better served by an agent-produced ad-hoc
+tutorial or interactive session than by tree inspection. So the tree should be
+freely regroupable for whatever organisational purpose, with no behavioural
+consequence.
+
+**What falls out:** "newest is outermost" becomes globally true (restoring the
+original creation-time intent that DFS broke); the #p91 constraint ("tree
+position bounds what a node can extend") dissolves into causality — a node may
+extend anything that existed when it was written, which un-blocks cross-cutting
+extensions like serve/features → gate; order.md's role shrinks to catalog +
+selection, completing the #p132a trajectory; composition order = order of
+intent, the provenance-modularity thesis made mechanical.
+
+**Costs / open points:** chronology is occasionally wrong — needs a rare,
+explicit per-node override ("linearise before X") to replace today's implicit
+order.md editing; the linker must read timestamps from provenance anchors
+(transcripts record them under every #pN; grouping nodes are code-free so
+their skip-provenance allowance doesn't matter); tie-breaking within one
+prompt (multiple nodes from one request) needs a rule — anchor order, then
+order.md as tiebreak, is the obvious one. Migration: build the chain dump
+first, switch linearisation, diff — an empty diff proves the current tree
+already agrees with chronology; any non-empty diff is reviewed as a real
+(latent) behaviour difference.
+
+**Experiment run (2026-08-14, #p13 of fm-spec-2): DFS vs chronology on muon.**
+`fmlink.py --chains` built (prints every chain's contributors in linearisation
+order; stable sorted output for diffing). A scratch comparator resolved every
+muon node's provenance timestamp and checked the 8 multi-member chains:
+
+- **6 agree** with chronology already (handle, handle_msg, is_public, render,
+  send_sms, serve).
+- **route REWIRES**: diag (16:32) linearises after comms/messaging (21:49)
+  because the diag subtree sits later in the tree; chronology would move
+  diag's route link from position 6 to 3. Also *within* diag's own order.md,
+  readout (21:38) is listed before blackbox (21:13) — the tree is already
+  non-chronological inside a single node, so "order.md = creation order" has
+  in practice drifted.
+- **update REWIRES**: scope (08-14 07:52) sits innermost-but-one in DFS but is
+  the newest link; chronology would make it outermost (loop → tap → tap/sync
+  → scope).
+
+Both rewires look behaviourally commutative — route links dispatch on disjoint
+paths and delegate otherwise; update links dispatch on disjoint event types —
+which is why the divergence has been invisible. But "looks commutative" is
+exactly what migration must verify per chain, and the dump gives the review
+list. Tie-break data point: all same-timestamp ties in muon are parent/child
+pairs sharing one prompt (shell+logo #p38, loop+tap #p97), resolved by
+containment (parent composes first) — so the ordering rule is
+(timestamp, containment, anchor-rider order), no order.md tiebreak needed
+so far.
+
 ## muon (the real feature space — started 2026-08-13, #p32)
 
 Shared infrastructure for all apps/tools: a Rust/wasm PWA with four base capabilities. Root node at `features/muon/`; apps will be subfeatures of muon; products = muon + an app subtree.
@@ -256,6 +335,44 @@ Known v0 limitations (deferred, not forgotten):
 - Rust syntax: struct fields separate with `,` not `;`; `existing.main()` missing `;` (~43).
 - `some_fun` vs `some_func` (~166/174).
 
+## hygiene todos (2026-08-14, from the fresh-eyes review)
+
+*Repo-health items, distinct from the feature rungs in handover.md. Ordered:
+cheap insurance first, then the debt it protects, then doctrine. Tick as done.*
+
+- [x] **1. chain dump** — DONE 2026-08-14: `fmlink.py <product> --chains`
+  prints each chain key with its contributors in linearisation order and
+  exits; stable sorted output for diffing. First run fed the proposal-9
+  chronology experiment (see there: 6 of 8 muon chains already chronological;
+  route and update rewire).
+- [ ] **2. shell regroup** — shell is at the 6-child cap; its next child forces
+  a regroup. Do it deliberately (with the chain dump as before/after evidence)
+  rather than under pressure mid-feature.
+- [ ] **3. features-browser template migration** — the one genuine provenance
+  gap (#p9–#p22): drawers/place/tidy/fmdoc are spec-only pointers into
+  `tools/explorer.py` templates. Move the page templates into node assets so
+  the tree owns its code and the toggle promise holds there too.
+- [ ] **4. errata consolidation** — fold the ordering-section unchecking
+  semantic relocating to products (#p132a) into the "fm.md errata" section
+  above, so the author has one list when next editing. (Struct extension is
+  confirmed flat — doctrine and merge_structs agree; the sole vestige is the
+  one stale `colour.colour.r` conversion sentence already on the errata list.)
+- [ ] **5. lib/chain ratio** — a small metric (in audit_prompts.py or a
+  sibling script): verbatim `.lib.rs` lines vs chain lines per link. A steady
+  climb means typed code is escaping the composition model — the early-warning
+  gauge for when the regex parser must grow up (or the syn-based v1 arrives).
+- [ ] **6. export_transcript collision guard** — a second same-day session
+  with the same slug silently overwrites the first session's transcript
+  (happened 2026-08-14, recovered from git; sessions are now split by slug:
+  `-fm-spec-2`). The tool should refuse to overwrite a file whose session id
+  differs, or auto-suffix. Transcripts are the evidentiary record — the one
+  file class that must never be lossy.
+- [ ] **7. depth doctrine ("absorb")** — one-prompt-per-node stacks
+  refinements; the 4–6 cap fights breadth but nothing fights depth. Discuss
+  and record whether a sanctioned collapse of a refinement stack into its
+  parent exists, with provenance surviving via transcript citations rather
+  than tree shape. Doctrine conversation, not code — needs the author.
+
 ## ideas parking lot
 
-(empty — add freely)
+Superseded — passing whims now live in `ideas.md` at the repo root.
