@@ -2,3 +2,4 @@
 - [x] fresh
 - [x] honest
 - [x] watch
+- [x] auto

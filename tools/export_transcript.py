@@ -53,10 +53,23 @@ def is_prompt(entry: dict) -> bool:
     """True if this log entry is a real user prompt (not meta/tool/command noise)."""
     if entry.get("type") != "user" or entry.get("isMeta") or entry.get("isSidechain"):
         return False
+    if entry.get("isCompactSummary"):
+        return False  # harness context-compaction narration, not the user speaking
     content = entry.get("message", {}).get("content")
     if not isinstance(content, str):
         return False  # tool results arrive as content lists
     return bool(content.strip()) and not content.strip().startswith(NOISE_PREFIXES)
+
+
+def queued_prompt(entry: dict) -> str | None:
+    """Mid-turn user messages arrive as queued_command attachments, not user
+    entries; they are real prompts and get anchors at their delivery point."""
+    a = entry.get("attachment")
+    if entry.get("type") == "attachment" and isinstance(a, dict) and a.get("type") == "queued_command":
+        text = (a.get("prompt") or "").strip()
+        if text and not text.startswith(NOISE_PREFIXES):
+            return text
+    return None
 
 
 def assistant_texts(entry: dict) -> list[str]:
@@ -82,12 +95,21 @@ def export(session_path: Path, out_path: Path, title: str) -> int:
         "",
     ]
     prompt_n = 0
+    queued_n = 0  # mid-turn messages ride the current prompt: p42a, p42b — main numbering never shifts
     for entry in entries:
+        queued = queued_prompt(entry)
+        if queued is not None:
+            queued_n += 1
+            lines += [f"### p{prompt_n}{chr(96 + queued_n)}", f"*{fmt_time(entry['timestamp'])}*", ""]
+            lines += [f"> {line}" for line in queued.splitlines()]
+            lines.append("")
+            continue
         if is_prompt(entry):
             text = strip_system_reminders(entry["message"]["content"])
             if not text:
                 continue
             prompt_n += 1
+            queued_n = 0
             lines += [f"### p{prompt_n}", f"*{fmt_time(entry['timestamp'])}*", ""]
             lines += [f"> {line}" for line in text.splitlines()]
             lines.append("")

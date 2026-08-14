@@ -18,6 +18,11 @@ live system.
 - Spec style: code descriptions in short paragraphs, one per thing described.
   Glossary terms backticked with a leading slash: `` `/term` ``.
 - shell is at the 6-child cap — its next child forces a regroup.
+- **Selection lives in products, not the shared tree**: order.md in features/
+  stays fully ticked (it orders the catalog); switching a feature off is a
+  product-level order.md override (see products/hello_only). Transient
+  dev toggle-tests may flip the shared file but must restore it in the same
+  breath.
 
 ## Verbatim libraries
 
