@@ -151,6 +151,13 @@ def main():
     session = args.session or latest_session(PROJECT_LOG_DIR)
     date = datetime.fromtimestamp(session.stat().st_mtime).strftime("%Y-%m-%d")
     out_path = args.out / f"{date}-{args.slug}.md"
+    # a session spanning midnight must keep its filename — anchors are cited
+    # by path. If any transcript already records this session, write there.
+    for existing in sorted(args.out.glob(f"*-{args.slug}.md")):
+        m = re.search(r"session `([^`]+)`", existing.read_text()[:500])
+        if m and m.group(1) == session.stem:
+            out_path = existing
+            break
     if out_path.exists():
         m = re.search(r"session `([^`]+)`", out_path.read_text()[:500])
         if m and m.group(1) != session.stem:

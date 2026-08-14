@@ -1,2 +1,3 @@
 - [x] mirror
 - [x] phone
+- [x] transcript
