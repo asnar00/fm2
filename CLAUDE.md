@@ -5,6 +5,10 @@ It is the canonical development discipline (node placement → node first →
 implement inside the node → prove the toggle → ship); the laws and mechanics
 live there, not here. `fm.md` is the user-authored doctrine — never edit it.
 
+**Fresh session? Read `handover.md`** — current build, today's doctrine,
+tooling state, and the named next rungs. It is rewritten at each session
+end; trust it over older prose in notes.md when they disagree.
+
 **Building and shipping: see `deploy.md`** — build/run commands, what
 deploy.sh does, the mini, tunnel, state locations, and how to check on the
 live system.
