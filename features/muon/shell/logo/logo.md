@@ -4,6 +4,9 @@
 > (transcripts/2026-08-13-fm-spec.md#p38)
 > Let's do a little "hello muon" PWA that displays the nøøb logo "ᕦ(ツ)ᕤ"
 
+> (transcripts/2026-08-14-fm-spec-2.md#p46, draft-phase revision)
+> we can push the big logo back to grey so it reads as background
+
 ## spec
 
 Extends the `/shell` `render()` chain to display the nøøb logo `ᕦ(ツ)ᕤ`, centred, white on black, sized for a mobile screen. First light: proves the whole path — feature code → wasm → loader → screen — end to end.

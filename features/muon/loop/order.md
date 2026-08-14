@@ -1,2 +1,3 @@
 - [x] scope
 - [x] tap
+- [x] dictate

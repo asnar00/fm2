@@ -1,2 +1,2 @@
-.logo { font-size: 14vw; line-height: 1; user-select: none; }
+.logo { font-size: 14vw; line-height: 1; user-select: none; color: #555; }
 @media (min-width: 700px) { .logo { font-size: 98px; } }
