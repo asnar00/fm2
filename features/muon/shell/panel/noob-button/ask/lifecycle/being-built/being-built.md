@@ -8,9 +8,10 @@
 
 Between "proposed" and "in the next update" a request disappears into
 the builder's silence; this node fills that verse. Asks with
-`status: "building"` render as their own **being built** section —
-the awaiting-update grammar, directly below the awaiting block, above
-the plain requests — and when a build ships, the stamp flips to
+`status: "building"` render as their own section — directly
+below the awaiting block, above the plain requests, headerless and
+title-only with the description a tap away (#p39), the amber pill
+saying everything the old header said — and when a build ships, the stamp flips to
 `shipped`, the entry leaves this section, and the feature itself
 walks into the awaiting-update list by the standing machinery.
 

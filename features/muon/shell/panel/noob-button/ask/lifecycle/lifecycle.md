@@ -11,9 +11,10 @@ doctrine): a **requests** section, formatted like the awaiting-update
 section — header, chooser-style rows — showing the user's own asks
 that are still becoming: `asked` (filed, no proposal yet), `proposed`
 (paragraph approved, waiting for the builder), and later the fuller
-ladder (in progress, "!"/"?"). Each row is the ask's text with its
-proposal as the purpose line and its status where the build number
-would sit — the same visual grammar as everything else in the list.
+ladder (in progress, "!"/"?"). Each row is the ask's title with its
+status where the build number would sit, and the description one tap
+away (#p39: no headers, no inline prose — the feature-list grammar,
+exactly).
 Shipped requests leave the section: by then they are simply features,
 in the list proper, with the approved paragraph as their intro.
 
@@ -41,10 +42,11 @@ Ask on your phone, see it listed on your laptop.
 
 ## code description
 
-`lifecycle.index.js` renders `#requests` into `#changes`: a header and
-one `.crow`-grammar row per ask with status `asked` or `proposed`
-(newest first, status in the number slot, text bold, proposal as the
-purpose line). `mount()` wraps `feature_Chooser.mount` to place the
+`lifecycle.index.js` renders `#requests` into `#changes`: one
+`.crow`-grammar row per ask with status `asked` or `proposed` (newest
+first, status in the number slot, title bold); tapping a row toggles
+its `.cmore` expansion holding the proposal, expansion state kept in
+`open` across the re-renders. `mount()` wraps `feature_Chooser.mount` to place the
 section after `#awaiting` (or at the top), and a `feature_Loop.apply`
 wrap re-renders it on state change when the panel is showing — sync
 arrivals included. `lifecycle.index.css` styles the status stamp.

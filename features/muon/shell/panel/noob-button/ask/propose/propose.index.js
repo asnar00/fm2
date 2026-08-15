@@ -40,9 +40,10 @@ const feature_Propose = {
       ? feature_Birthplace.context() : {};
     feature_Loop.send({ type: 'Ask',
       data: Object.assign({ t: Date.now(), text, proposal }, ctx) });
+    // no confirmation prose (#p39): the request appearing in the list IS
+    // the confirmation — the send's own apply re-renders it instantly
     const box = $('askResults');
-    if (box) box.innerHTML =
-      '<div class="asknote">proposed — the builder will see it</div>';
+    if (box) box.innerHTML = '';
     const input = $('askText');
     if (input) input.value = '';
   },
