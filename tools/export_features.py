@@ -35,15 +35,18 @@ def all_paths(children, acc):
 
 
 def intro_of(feature) -> str:
-    """The spec's first prose paragraph (after the '## spec' heading) — the
-    chooser's show-me-more teaser."""
+    """The '## user' paragraph — the chooser's show-me-more teaser is read by
+    exactly the person that section is written for (#p73). Falls back to the
+    spec's first paragraph for nodes without one."""
     if not feature.spec.exists():
         return ""
     text = feature.spec.read_text()
-    m = re.search(r"^## spec\s*\n+(.+?)(?:\n\s*\n|\Z)", text, re.M | re.S)
-    if not m:
-        return ""
-    return " ".join(m.group(1).split())[:400]
+    for heading in ("user", "spec"):
+        m = re.search(r"^## " + heading + r"\s*\n+(.+?)(?:\n\s*\n|\Z)",
+                      text, re.M | re.S)
+        if m:
+            return " ".join(m.group(1).split())[:400]
+    return ""
 
 
 def purpose_of(feature) -> str:
