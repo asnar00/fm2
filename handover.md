@@ -1,9 +1,9 @@
 # handover
-*state of play for the next session — written 2026-08-15, end of day 3's marathon (transcripts/2026-08-14-fm-spec-3.md, 84 prompts, builds 91→114). Discipline in `agents.md`; ops in `deploy.md`; this file is only what's current.*
+*state of play for the next session — written 2026-08-15, end of day 3's marathon (transcripts/2026-08-14-fm-spec-3.md, 89 prompts, builds 91→120). Discipline in `agents.md`; ops in `deploy.md`; this file is only what's current.*
 
 ## where things stand
 
-Live: **build 114** at muon.nøøb.org, 77 nodes. The day in one line: dictate
+Live: **build 120** at muon.nøøb.org, 77 nodes. The day in one line: dictate
 learned to transcribe itself on the device, the nøøb button became the
 steering surface with the feature list living inside the system panel, and
 updates became one-reviewed-OK-for-the-whole-fleet.
@@ -38,9 +38,13 @@ The arcs, in order:
   section (pending features = live tree.json builds > running), one
   **update** button stamps `update_accepted` (user-scoped) → every instance
   applies on sync. One OK, fleet-wide.
-- **aesthetics**: ember 3400K-Dark categorical colours per tool (black icon
-  on colour, selected brightens via color-mix; `tool_colour` seam on /tools),
-  centred toolbar, dot-grid background (`logo/dots`). "It's got attitude."
+- **aesthetics + toolbar feel**: ember 3400K-Dark categorical colours per
+  tool (black icon on colour, selected brightens; `tool_colour` seam on
+  /tools), centred toolbar, dot-grid background (`logo/dots`). "It's got
+  attitude." Late churns (#p86-88): in a tool, the lit tool button owns the
+  LEFT edge and is itself the way back (the `‹` retired; tools_home stays
+  for programmatic use), controls centre in the free space (auto-margin
+  trick in ember.css — beware :first-of-type matches element TYPE).
 
 ## NEXT SESSION (in rough order of pull)
 
