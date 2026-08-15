@@ -4,3 +4,6 @@ products/*/build/
 features/muon/loop/dictate/phone/assets/stt/*
 !features/muon/loop/dictate/phone/assets/stt/engine.js
 tools/__pycache__/
+# fetched on-device find artifacts (tools/fetch_find.py) — recipe + pin in git, binaries not
+features/muon/loop/compute/semantic-find/assets/find/*
+!features/muon/loop/compute/semantic-find/assets/find/PINNED

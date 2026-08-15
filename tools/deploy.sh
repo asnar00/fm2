@@ -61,6 +61,14 @@ fi
 # the feature tree, statically rendered — served publicly at /features/
 python3 "$SRC/tools/export_features.py"
 
+# catalog embeddings for on-device semantic find (loop/compute/semantic-find);
+# skipped gracefully if the potion table hasn't been fetched on this machine
+if [ -f "$SRC/features/muon/loop/compute/semantic-find/assets/find/table.bin" ]; then
+  python3 "$SRC/tools/embed_catalog.py"
+else
+  echo "  NOTE: potion table absent (tools/fetch_find.py) — vectors.json not refreshed"
+fi
+
 # deploy stamp: the client compares this on launch and self-refreshes on change.
 # a plain increasing integer (the commit count — every release is a commit, so
 # this needs no counter file and still names an exact commit for debugging)
