@@ -8,7 +8,8 @@
 
 The panel anchored to the bottom of the screen sat on top of the
 toolbar — the surface that steers muon covering the surface that uses
-it. It ties to the top instead: below the safe-area inset (the notch),
+it. It ties to the top instead: **just below the nøøb button's row**
+(#p23 — the button that opened the panel stays visible above it),
 centred as before, growing downward, so the toolbar keeps its ground
 at the bottom of the screen. Everything inside the panel is untouched;
 only the anchor changes — untick this node and the panel drops back to
@@ -27,7 +28,8 @@ scrolls inside when content exceeds it.
 ## code description
 
 `top-tied.index.css` overrides `/panel`'s anchoring later in the
-cascade: `top: max(14px, env(safe-area-inset-top))`, `bottom: auto`,
-`max-height: calc(100dvh - 160px)` with `overflow-y: auto`. The
-max-height uses a plain constant rather than env() inside calc — the
-#p81-era height-calc trap. Nothing else.
+cascade: `top: calc(env(safe-area-inset-top, 0px) + 55px)` (the
+lozenge row's 12+33 plus a 10px gap), `bottom: auto`, `max-height:
+calc(100dvh - 200px)` with `overflow-y: auto`. The max-height uses a
+plain constant rather than env() inside calc — the #p81-era
+height-calc trap. Nothing else.

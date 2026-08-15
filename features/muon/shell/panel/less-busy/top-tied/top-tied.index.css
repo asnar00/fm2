@@ -1,9 +1,11 @@
 #panel {
-  top: max(14px, env(safe-area-inset-top));
+  /* just below the nøøb button's row (safe-top + 12 top + 33 tall + 10 gap):
+     the button that opened the panel stays visible above it */
+  top: calc(env(safe-area-inset-top, 0px) + 55px);
   bottom: auto;
   /* growing downward must stop short of the toolbar: bound the height and
      scroll inside. Plain calc — env() inside height calcs is the #p81-era
-     trap — with 160px covering the worst top inset plus the toolbar zone. */
-  max-height: calc(100dvh - 160px);
+     trap — with 200px covering the top tie plus the toolbar zone. */
+  max-height: calc(100dvh - 200px);
   overflow-y: auto;
 }
