@@ -934,6 +934,56 @@ cheap insurance first, then the debt it protects, then doctrine. Tick as done.*
   "downloading speech model" state on the tile. Both are `/phone`
   subfeature material once real-device behaviour is observed.
 
+## the ask–engineering gap, and privilege (2026-08-15 evening, fm-spec-2 #p12)
+
+Ash, after five field asks shipped in one evening: *"there's a gap between
+a user's request and the engineer's version of that; and different users
+should have different privileges. For instance, I could change the URL or
+name of the project, but one of my users shouldn't be able to do that. So
+there's 'information about users' we need to keep that gates their
+privilege."*
+
+Two observations, one seam.
+
+**The gap is already structural.** Every ask carries `text` (the user's
+verbatim words) and `proposal` (what will be enacted); today the proposal
+is the text echoed back, and the drafter-upgrade rung would make it the
+engineer's translation. Tonight showed the translation spectrum in
+miniature: "subtract 1 from the tap count" became a product-override
+re-tick; "the tooltip is wrong" became a documentation repair; "+25%"
+became literal CSS with the per-user-size generalisation parked in
+ideas.md. The translation step is where engineering judgment lives — and
+right now that judgment is supplied by the humans in the loop, nowhere
+codified.
+
+**Privilege gates the translation, per user.** The same words from
+different users should enact differently or not at all: "rename the
+project" from ash is the muon→miso rename; from a field user it must be
+refused (or become a request-to-the-owner). Pieces already in place:
+
+- `~/.miso-auth/users.json` is the out-of-tree user store — and the `_`
+  prefix on test users is already a primitive privilege bit (PINs to the
+  log, not SMS). Authority fields belong beside it, deploy-proof.
+- The feature tree offers a natural authority surface: a proposal's blast
+  radius is the set of nodes it touches (deploy already prints exactly
+  this per release), and a user's privilege can be expressed as the
+  subtrees their asks may reach — field users reach the tools they use,
+  admins reach shell/serve, the owner reaches identity itself (name, URL,
+  product). Enactment requires authority ⊇ blast radius.
+- Per-user ticks (the rung 3 done-ness bar) is the same shape of fact —
+  per-user information gating live behaviour — but preference, not
+  authority. Both are "information about users"; they should not be
+  conflated, only co-located.
+
+**Why now:** the human-supervised builder IS the privilege system today.
+The always-on flywheel removes that human, so the privilege model joins
+provenance in the doctrine-before-code bucket: a headless builder must be
+able to answer "may this user's ask touch these nodes?" before it stamps
+`building`. And the target app (trust-ring campaign tool) is itself built
+on graded trust — this is foundation, not plumbing.
+
+Not built tonight; recorded as the ruling-shaped conversation it is.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
