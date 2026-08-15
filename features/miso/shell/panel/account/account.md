@@ -10,7 +10,7 @@ The system panel joins the toolbar as a proper tool — **account**, the standar
 
 ## user
 
-Tap the 👤 button in the toolbar for everything administrative: who's logged in, what's changed, update, log out. The little logo in the corner still glows when an update is waiting — but the person button is where you go.
+The 👤 button is a placeholder for your user information — a profile page is coming. Everything administrative lives behind the nøøb button for now: who's logged in, what's changed, update, log out.
 
 ## glossary
 
@@ -25,3 +25,5 @@ Tap the 👤 button in the toolbar for everything administrative: who's logged i
 The seam itself belongs to `/panel` (created for this node, default behaviour unchanged): the button's click goes through `feature_Panel.buttonTap`, which defaults to `open()`.
 
 *(Revised by [noob-button](#miso/shell/panel/noob-button), #p58: the panel returned to the lozenge — the meta-button doctrine — and this tool's surface is empty, awaiting the profile page.)*
+
+*(User paragraph revised by a field ask, transcripts/2026-08-15-fm-spec-2.md#p4a: the old text still described the pre-noob-button panel, and the long-press card was faithfully showing it; the tooltip now says what the tool is — a placeholder for user information.)*
