@@ -1,3 +1,4 @@
 - [x] open-chip
 - [x] birthplace
 - [x] propose
+- [x] lifecycle

@@ -1,0 +1,4 @@
+#requests .lstatus { flex: 0 0 auto; width: auto; padding: 1px 7px;
+  border-radius: 999px; font-size: 10px; letter-spacing: .04em;
+  background: #3d3350; color: #cdb8f0; }
+#requests .lrow .cpurpose { display: block; }
