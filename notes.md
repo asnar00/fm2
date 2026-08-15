@@ -181,6 +181,37 @@ and — via `/source` — the code itself; the explorer tool and the queue view
 meet in the middle. Developer view and user consent UI were never
 different things, just different depths of the same tree.
 
+**THE NØØB BUTTON IS THE WHOLE GAME (fm-spec-3 #p70): an agent-powered IDE
+for end-user programming.** User-stated, near-verbatim: all the interesting
+stuff is in the nøøb button — and **stop calling things "meta"** (the word
+is irrevocably tainted by the unfortunate Mr Zuckerberg; vocabulary ruling —
+earlier notes entries keep their as-spoken wording, new prose says
+**steering**: the nøøb button *steers* muon, the toolbar *uses* muon, per
+the glossary line that already existed). The glimmerings: "how do I use
+this?" / "do xyz" / "I need xyz" — get the nøøb button right and it's not
+far off **an agent-powered IDE for end-user programming**.
+
+The three utterances map to machinery with names already: *"how do I use
+this?"* is the explanation surface — demos narrated at the asker's level
+(fm2 decision 2 + the show-me-how doctrine); *"do xyz"* is the agent
+driving existing tools (fm1's tool-call); *"I need xyz"* is the build
+ladder (#p53: surface existing → compose → build new; fm1's
+tool-construct). The IDE framing is exact, not loose: the "source" the end
+user programs is the feature tree (served at /features, provenance-anchored,
+tickable), the "compiler" is the fm loop itself, and the conversation IS
+the programming act — every ask becomes an anchor, every anchor a node,
+every node a shipped, toggleable capability with the asker's name on the
+founding quote. End-user programming where the program is the product's
+own evolution.
+
+Buildable first brick (proposed, not yet ruled on): the **ask inbox** —
+the nøøb button grows a prompt box; asks are stored per user and travel
+like all state; the dev loop reads the inbox at session start (deploy
+could print unaddressed asks like it prints nodeless-release warnings).
+The agent behind the button starts out being the dev-session agent on a
+delay; the ladder automates from there. The wish arrives with provenance
+born: field ask → transcript-grade quote → node.
+
 **MUON IS AN OS (fm-spec-2 #p41): tools on a launcher.** The muon/apps
 grouping question resolves with better vocabulary: muon runs **tools**
 (user's preferred term over "apps"), organised into **toolsets** (pages) when

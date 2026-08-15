@@ -1,0 +1,48 @@
+/* the chooser: the feature tree full screen, readable and tickable */
+#chooserView {
+  position: fixed; inset: 0; z-index: 22;
+  display: none; flex-direction: column;
+  background: #161619; color: #eee;
+  padding: calc(env(safe-area-inset-top, 0px) + 10px) 10px
+           calc(env(safe-area-inset-bottom, 0px) + 10px);
+}
+#chooserView .chead {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #9a9aa2; padding: 4px 4px 10px;
+}
+#chooserView .chead button {
+  background: none; border: none; color: #eee; font-size: 15px; padding: 4px 8px;
+}
+#chooserList { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.crow {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 2px 7px calc(var(--depth, 0) * 16px);
+  border-bottom: 1px solid #202026;
+  font-size: 13px; line-height: 1.35;
+}
+.crow.shaded { opacity: 0.38; }
+.carrow {
+  flex: none; width: 16px; text-align: center; color: #9a9aa2;
+  font-size: 15px; transition: transform 0.12s ease;
+}
+.carrow.open { transform: rotate(90deg); }
+.ctext { flex: 1; min-width: 0; }
+.cpurpose { color: #9a9aa2; font-size: 12px; }
+.ctick {
+  flex: none; width: 17px; height: 17px;
+  border: 1px solid #4a4a52; border-radius: 4px; background: #1c1c21;
+}
+.ctick.on { background: #9db7d8; border-color: #9db7d8; }
+.ctick.on::after {
+  content: "✓"; display: block; text-align: center;
+  color: #14141a; font-size: 12px; line-height: 17px;
+}
+/* the inline reader: the node's served page, with a way back to the tree */
+#chooserRead {
+  position: absolute; inset: 0; z-index: 23;
+  display: none; flex-direction: column;
+  background: #161619;
+  padding: calc(env(safe-area-inset-top, 0px) + 10px) 0 0;
+}
+#chooserFrame { flex: 1; border: none; width: 100%; background: #fff; }

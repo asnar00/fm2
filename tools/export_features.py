@@ -7,6 +7,7 @@ JS), so the deployed site serves the exact feature tree that built it.
 Run by deploy.sh after fmlink; served publicly at muon.nøøb.org/features/.
 """
 
+import json
 import re
 import shutil
 import sys
@@ -33,10 +34,35 @@ def all_paths(children, acc):
     return acc
 
 
+def purpose_of(feature) -> str:
+    """The spec's one-line italic purpose (line 2 by convention)."""
+    if not feature.spec.exists():
+        return ""
+    for line in feature.spec.read_text().splitlines()[:4]:
+        m = re.match(r"^\*(.+)\*\s*$", line.strip())
+        if m:
+            return m.group(1)
+    return ""
+
+
+def tree_json(children) -> list:
+    """The tree as data, for the in-app chooser (features/muon/shell/panel/
+    noob-button/chooser): name, path, purpose, children — order.md order."""
+    return [{
+        "name": f.name,
+        "path": f.path,
+        "purpose": purpose_of(f),
+        "children": tree_json(f.children),
+    } for f in children]
+
+
 def main():
-    paths = all_paths(explorer.load_children(explorer.FEATURES), [])
+    children = explorer.load_children(explorer.FEATURES)
+    paths = all_paths(children, [])
     if OUT.exists():
         shutil.rmtree(OUT)
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / "tree.json").write_text(json.dumps(tree_json(children)))
     for path in paths:
         page = relink(explorer.render_feature_page(path, ""))
         page_dir = OUT / path
