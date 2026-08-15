@@ -212,6 +212,29 @@ The agent behind the button starts out being the dev-session agent on a
 delay; the ladder automates from there. The wish arrives with provenance
 born: field ask → transcript-grade quote → node.
 
+**THE FEATURE LIST IS THE REQUEST LIFECYCLE (fm-spec-3 #p85, bedtime
+addendum).** User-stated, near-verbatim: the feature-update list is also
+the way to manage **requests-for-changes to the coding agent**. You ask
+for something; the agent PROPOSES — and the proposal is *the `## user`
+section of the prospective feature node* — you OK it, fire it off, and it
+appears in the feature list as **in progress** (maybe with an ETA; "!" /
+"?" marking a problem or a question needing you). "It's a very powerful
+view, this chronological feature view."
+
+What this completes: the one list then spans the whole arc of a feature's
+existence — **asked → proposed → OK'd → in progress → awaiting update →
+shipped → ticked** — one chronological surface, every line at some stage
+of becoming. And the proposal-as-user-paragraph is node-before-code
+extended one rung earlier: *user-approves-the-node-before-the-code* — the
+`## user` section, already written for exactly this reader (#p73),
+becomes the contract the build must honour; when the feature ships, the
+paragraph you approved IS its introduction in the list. The "?" state is
+the agent's questions riding the same surface (no separate chat needed for
+clarifications), and the ETA/"!" states are the freshness/honesty doctrine
+applied to work-in-flight: never lie about progress either. Pairs with the
+ask inbox above as its display half; the awaiting-update section (#p83)
+already demonstrates the pattern for the shipped end.
+
 **MUON IS AN OS (fm-spec-2 #p41): tools on a launcher.** The muon/apps
 grouping question resolves with better vocabulary: muon runs **tools**
 (user's preferred term over "apps"), organised into **toolsets** (pages) when

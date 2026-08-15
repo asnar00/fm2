@@ -61,7 +61,11 @@ The arcs, in order:
 4. **The nøøb surface's ask** (#p53/#p70 — agent-powered IDE for end-user
    programming): first brick is the **ask inbox** (prompt box; asks stored
    per user, travel via exchange; dev loop reads them; deploy warns on
-   unaddressed). Notes.md has the full doctrine + ladder.
+   unaddressed). Enriched at #p85 (bedtime): the feature list is the whole
+   REQUEST LIFECYCLE — ask → agent proposes (the proposal IS the
+   prospective node's `## user` paragraph, approved before build) → in
+   progress (ETA; "!"/"?" for problems/questions) → awaiting update →
+   shipped. Notes.md has the full doctrine + ladder.
 5. **Profile page** (account's social future, #p55) and **context
    sensitivity** for the panel/list (#p78 names it).
 6. **auto-policy vs one-OK reconciliation**: 'auto' still self-applies
