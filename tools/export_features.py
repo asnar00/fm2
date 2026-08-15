@@ -46,10 +46,15 @@ def build_numbers() -> dict:
 def latest_build(feature, build) -> int:
     """The most-recent release that touched this node's OWN files (#p82) —
     its spec, code and assets, excluding child-node subdirectories (children
-    carry their own numbers). The chooser and the release list speak the
-    same numbers; a feature's number moves forward as it evolves."""
+    carry their own numbers) and excluding order.md (#p41: gaining a child
+    edits the parent's order.md but changes nothing about the parent —
+    grouping bookkeeping must not bump builds, or every new leaf drags its
+    ancestor into the awaiting-update list). The chooser and the release
+    list speak the same numbers; a feature's number moves forward as it
+    evolves."""
     own = [str(p.relative_to(explorer.REPO))
-           for p in feature.dir.iterdir() if p.is_file()]
+           for p in feature.dir.iterdir()
+           if p.is_file() and p.name != "order.md"]
     assets = feature.dir / "assets"
     if assets.is_dir():
         own.append(str(assets.relative_to(explorer.REPO)))
