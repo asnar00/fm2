@@ -2,3 +2,4 @@
 - [x] place
 - [x] tidy
 - [x] fmdoc
+- [x] auto-export

@@ -178,6 +178,11 @@ def main():
         (page_dir / "index.html").write_text(page)
     # /features/ itself lands on fm.md — the founding document, as orientation
     (OUT / "index.html").write_text(relink(explorer.render_file_page("fm.md", "")))
+    # the bake's content fingerprint: held catalogs revalidate against this
+    # (serve/features/auto-export), so it moves only when the words do
+    import hashlib
+    (OUT / "stamp").write_text(
+        hashlib.sha256((OUT / "tree.json").read_bytes()).hexdigest()[:16])
     print(f"features exported: {len(paths)} nodes -> site/features/")
 
 
