@@ -125,7 +125,22 @@ The arcs, in order:
      flywheel needs the ask-store itself accepted as an anchor source
      by fmlink. That's a doctrine conversation with ash before code.
 
-3. **Drafter upgrade**: dev-session agent writes the proposal paragraph
+3. **LIVE TICKS, PER-USER** (#p56, ash: "for this to be really fully
+   done" — noted for next time): the feature tick-boxes must actually
+   enable/disable features at runtime, per user; unticking F disables
+   its whole subtree REGARDLESS of the children's own pattern, and
+   re-ticking F restores that pattern exactly. Half-truths already in
+   place: `feature_ticks` is user-scoped; absent-means-on with only
+   explicit choices stored means the children's pattern survives an
+   ancestor untick BY CONSTRUCTION (chooser.rs's comment says so);
+   `reflect()` already computes effective-off-via-ancestors (the
+   shading). Missing: ENFORCEMENT — ticks gating live behaviour. That
+   is the context manager, and it converges on the same re-linkable
+   chains mechanism hot-patching wants (notes.md, compute.md). Also
+   planned: a pretend second user to prove per-user divergence — gate
+   has `_test`/`_test2` machinery ready.
+
+4. **Drafter upgrade**: dev-session agent writes the proposal paragraph
    when online (same textarea, better prose) — the seam is
    `feature_Propose.draft`.
 3. **Lifecycle polish**: builder→user status channel is the broadcast
