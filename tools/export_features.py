@@ -10,6 +10,7 @@ Run by deploy.sh after fmlink; served publicly at muon.nøøb.org/features/.
 import json
 import re
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -32,6 +33,30 @@ def all_paths(children, acc):
         acc.append(feature.path)
         all_paths(feature.children, acc)
     return acc
+
+
+def build_of_specs() -> dict:
+    """spec path (repo-relative) -> the build number that introduced it.
+    Deploy's convention is build = commit count, so a node's build is the
+    count at the commit that first added its spec (#p77 — the chooser and
+    the release list speak the same numbers). Known limit, said honestly: a
+    later-renamed/regrouped node dates from its move (--no-renames records
+    the new path's Add), not its original name's birth."""
+    git = lambda *a: subprocess.run(("git",) + a, cwd=explorer.REPO,
+                                    capture_output=True, text=True).stdout
+    order = git("rev-list", "--reverse", "HEAD").split()
+    build = {h: i + 1 for i, h in enumerate(order)}
+    out = {}
+    blocks = git("log", "--reverse", "--diff-filter=A", "--name-only",
+                 "--no-renames", "--format=%x00%H").split("\x00")
+    for block in blocks:
+        lines = [l for l in block.splitlines() if l.strip()]
+        if not lines:
+            continue
+        commit, files = lines[0], lines[1:]
+        for f in files:
+            out.setdefault(f, build.get(commit, 0))
+    return out
 
 
 def intro_of(feature) -> str:
@@ -60,7 +85,7 @@ def purpose_of(feature) -> str:
     return ""
 
 
-def tree_json(children, times) -> list:
+def tree_json(children, times, builds) -> list:
     """The tree as data, for the in-app chooser (features/muon/shell/panel/
     noob-button/chooser): name, path, purpose, intro, provenance timestamp,
     children — order.md order. ts uses fmlink's provenance rule: a node's
@@ -69,15 +94,17 @@ def tree_json(children, times) -> list:
     import fmlink
     out = []
     for f in children:
-        kids = tree_json(f.children, times)
+        kids = tree_json(f.children, times, builds)
         key = fmlink.node_key(f.dir, times)
         ts = key[0] if key else min((k["ts"] for k in kids if k["ts"]), default="")
+        spec_rel = str(f.spec.relative_to(explorer.REPO))
         out.append({
             "name": f.name,
             "path": f.path,
             "purpose": purpose_of(f),
             "intro": intro_of(f),
             "ts": ts,
+            "build": builds.get(spec_rel, 0),
             "children": kids,
         })
     return out
@@ -91,7 +118,8 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     import fmlink
     (OUT / "tree.json").write_text(
-        json.dumps(tree_json(children, fmlink.read_anchor_times())))
+        json.dumps(tree_json(children, fmlink.read_anchor_times(),
+                             build_of_specs())))
     for path in paths:
         page = relink(explorer.render_feature_page(path, ""))
         page_dir = OUT / path

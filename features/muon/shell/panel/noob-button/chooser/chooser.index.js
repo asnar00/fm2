@@ -22,9 +22,9 @@ const feature_Chooser = {
       }
     };
     walk(tree, '');
-    // most recent first; the number IS provenance order (1 = newest)
+    // most recent first; the number shown is the BUILD that introduced the
+    // feature — the same number the release list speaks (#p77)
     this.flat.sort((a, b) => (a.ts < b.ts ? 1 : a.ts > b.ts ? -1 : a.path < b.path ? 1 : -1));
-    this.flat.forEach((n, i) => { n.num = i + 1; });
   },
 
   esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); },
@@ -42,7 +42,7 @@ const feature_Chooser = {
 
   row(n) {
     return '<div class="crow" data-path="' + n.path + '" id="crow-' + n.path.replace(/\//g, '-') + '">'
-      + '<span class="cnum">' + n.num + '</span>'
+      + '<span class="cnum">' + (n.build || '·') + '</span>'
       + '<div class="ctext"><b>' + n.name + '</b>'
       + (n.purpose ? ' <span class="cpurpose">' + this.esc(n.purpose) + '</span>' : '')
       + '</div>'
