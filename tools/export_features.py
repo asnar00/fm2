@@ -108,6 +108,28 @@ def tool_of(feature) -> str:
     return ""
 
 
+def subtools_of(feature) -> list:
+    """The toolbar controls this node registers, if any: a tool_controls
+    extension appending buttons whose data-ev is not a tool_ open event.
+    Ground truth for control->feature (the sub-tool twin of the #p54
+    mapping): long-press resolves a held control button to the node whose
+    documentation describes it. Formatted ids (containing {}) are dynamic
+    per-item buttons, not controls, and are skipped."""
+    import re as _re
+    evs = []
+    for rs in sorted(feature.dir.glob("*.rs")):
+        text = rs.read_text()
+        if "fn tool_controls" not in text:
+            continue
+        for m in _re.finditer(r'data-ev=\\"([^"\\]+)\\"', text):
+            ev = m.group(1)
+            if ev.startswith("tool_") or "{" in ev:
+                continue
+            if ev not in evs:
+                evs.append(ev)
+    return evs
+
+
 def tree_json(children, times, builds) -> list:
     """The tree as data, for the in-app chooser (features/miso/shell/panel/
     noob-button/chooser): name, path, purpose, intro, provenance timestamp,
@@ -132,6 +154,9 @@ def tree_json(children, times, builds) -> list:
         tool = tool_of(f)
         if tool:
             node["tool"] = tool
+        subtools = subtools_of(f)
+        if subtools:
+            node["subtools"] = subtools
         out.append(node)
     return out
 
