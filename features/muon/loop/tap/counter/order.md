@@ -1,1 +1,2 @@
 - [x] reset-taps
+- [x] double-taps
