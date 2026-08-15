@@ -86,7 +86,29 @@ The arcs, in order:
    `/compute`, feature-modular WGSL landing with it. notes.md has the
    T1–T3 map and the 10-15x / 20-60 tok/s numbers. The prize pays twice:
    whisper ~5-10x AND the FunctionGemma call-rung door.
-2. **Drafter upgrade**: dev-session agent writes the proposal paragraph
+2. **THE FLYWHEEL** (#p47a — ash: "a flywheel that's always on, that
+   creates subagents to build requests in parallel"). Half exists (the
+   1s monitor intake, stamp_ask status channel, the codified ritual).
+   The design, two stages:
+   - **In-session parallelism (adopt immediately)**: on each NEW
+     PROPOSED event, spawn a fork subagent in a WORKTREE (forks inherit
+     the whole discipline context); it runs the five-step loop on its
+     ask; the main session serialises integration — merge, single
+     deploy, stamp shipped. Parallel where subtrees don't collide;
+     serial at the deploy (one mini, one build line). Watch: two asks
+     targeting the same parent's order.md collide — integrate resolves.
+   - **Always-on (the real flywheel)**: a mini-resident builder. The
+     `claude` CLI is already installed there (2.1.56, not logged in);
+     the sanctioned route is an API key (`--bare -p`, per-token, ~$1-5/
+     month at this scale — subscription programmatic use is against
+     policy, researched #p31). A watcher on the mini invokes it per
+     ask; the human session becomes reviewer, not builder. OPEN
+     mechanism question first: provenance — field asks currently get
+     anchors by landing in a session transcript (#p40); a headless
+     flywheel needs the ask-store itself accepted as an anchor source
+     by fmlink. That's a doctrine conversation with ash before code.
+
+3. **Drafter upgrade**: dev-session agent writes the proposal paragraph
    when online (same textarea, better prose) — the seam is
    `feature_Propose.draft`.
 3. **Lifecycle polish**: builder→user status channel is the broadcast
