@@ -2,7 +2,9 @@
    when the list needs it, and the list scrolls within */
 #panel {
   display: flex; flex-direction: column;
-  max-height: calc(100% - env(safe-area-inset-top, 0px) - 16px);
+  /* dvh, not %+env-in-calc: the latter silently failed and let the sheet
+     poke past the top edge (measured 483px in a 469px viewport) */
+  max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 56px);
 }
 #changes.chooser-home {
   overflow-y: auto; -webkit-overflow-scrolling: touch;
