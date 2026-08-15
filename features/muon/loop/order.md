@@ -1,3 +1,4 @@
 - [x] scope
 - [x] tap
 - [x] dictate
+- [x] compute

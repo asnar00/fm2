@@ -655,7 +655,89 @@ reload avoidance. The ladder:
   linker mechanism. Parked as the research fork; when the context manager
   gets built, updates get hot-patching almost free.
 
-## tools (scaffolding — not feature-modular)
+**ON-DEVICE TOOL-FINDING (fm-spec day 4, #p9 research — surveyed, not
+ruled on).** The ask box's find step is word-overlap; ash wants instant
+semantic tool-finding on the phone, no network. Findings, sized against
+muon's stack (transformers.js + ort already aboard for whisper):
+
+1. **model2vec / potion-base-8M** (MinishLab): static embeddings — a
+   token→vector table + mean pooling, no transformer at runtime. ~8MB,
+   ~90% of MiniLM quality, tens of thousands of sentences/sec on one CPU
+   core. No official JS port, but the runtime is ~50 lines (tokenize,
+   gather, average, cosine) — verbatim-library territory, no ort needed,
+   instant even without webgpu. The deploy-side twin: embed the catalog
+   (tree.json name/purpose/intro) at deploy with the Python lib, ship
+   vectors beside tree.json; the device embeds only the query. Parity
+   between Python-embedded catalog and JS-embedded query needs a
+   test-vector check (weighting/PCA are baked into the stored table).
+2. **MiniLM-L6-v2 / bge-small q8 via transformers.js** (~25MB,
+   ~30–100ms/query in wasm): zero new machinery — same pipeline API as
+   whisper. The fallback if static-embedding quality disappoints.
+3. **FunctionGemma** (Google, Gemma 3 270M fine-tuned for function
+   calling, Dec 2025): browser-proven via transformers.js (official
+   Physics Playground / Mobile Actions demos run fully offline);
+   whisper-class download (~hundreds of MB q4). Not for finding — for
+   CALLING: "do x with y" → {tool, args}. The later rung, when asks
+   become parameterised commands.
+
+The ladder maps onto the ask ladder exactly: semantic find (1, instant,
+on-device) → tool call with args (3) → build new (the dev-agent inbox,
+live today — and once find is instant, the inbox's ~60s latency only
+ever applies to build-me asks, where minutes are inherent).
+
+**WebGPU addendum (#p10):** the speedup is real — 10–15x over wasm in
+browser benchmarks; Gemma-class models hit 20–60 tok/s typical, 255
+tok/s peak on an M4 (Xenova's demo, custom WebGPU kernels). FunctionGemma
+runs on webgpu via transformers.js today on desktop. On the iPhone the
+gate is not the GPU (iOS 26 ships WebGPU; haze proves it from wgpu on
+the same phone) but ort-web's jsep: beyond the known over-requested
+limits (haze's `required_limits: adapter.limits()` recipe, phone.md's
+named refinement), **onnxruntime issue #26827** reports WebKit 26 jsep
+builds pinning 400%+ CPU and 1–14GB memory AFTER inference, wasm mode
+included, ending in crashes — track it before betting the call rung on
+ort-webgpu-on-iOS. Escape routes if it stays sick: newer ort pins as
+they land; or the Rust-native path (burn's wgpu backend runs in-browser
+— muon owning its inference runtime instead of riding ort would be very
+fm, and haze already proves the wgpu half on target hardware). None of
+this touches the find rung: potion static embeddings are sub-ms on CPU,
+no gpu involved.
+
+**MUON COMPUTES FOR ITSELF (#p12 — doctrine, ash's words).** "Being able
+to implement anything we want (even potion-style search) into webgpu,
+without depending on anything else." One compute substrate, owned
+end-to-end: WGSL kernels as node-owned assets, dispatched by a thin
+page-JS driver — and the sharpening that makes it clean: WebGPU is a JS
+API, so the substrate needs NO wasm-bindgen, no burn, no ort, no
+framework; the zero-import law is untouched because the engine never
+enters client.wasm. The clamp-to-adapter-limits recipe (haze's) is baked
+in from birth, not patched in later. Tenancy ladder: proof kernel →
+potion find (ceremonially GPU, honestly CPU-trivial — the tap-counter of
+kernels) → mel/matmul tiles → whisper → FunctionGemma-class. Every
+kernel toggleable, provenance-anchored; absent-webgpu degrades to CPU
+per tenant. First brick: `loop/compute`, built 2026-08-15.
+
+**Roll-our-own, viewed rightly (#p11 — ash warm, not yet ruled → ruled
+at #p12: the sovereign path, hand-rolled, is the direction).** The
+grounded map, three tiers: **T1** — the potion static embedder in pure
+Rust inside client.wasm: no framework, no GPU, ~50 lines of math over a
+shipped token→vector table; deploy (Python model2vec) embeds the
+catalog, the wasm embeds queries; zero-import discipline untouched.
+This IS the instant find rung — rolling our own starts as a one-node
+build. **T2** — a wgpu inference runtime as a muon subsystem: burn is
+the vehicle (wgpu backend compiles WGSL, browser demos exist at
+MNIST/image scale; candle's webgpu still unready; whisper-burn is a
+stale native port — browser whisper on burn is pioneering, not
+assembly). Whisper is the first tenant (mel frontend, tokenizer,
+KV-cache decode — weeks of rungs, each a node). Architectural
+collision to design first: client.wasm's ZERO-IMPORT law vs wgpu's
+need for browser bindings — resolve as stt does today: the engine is a
+SECOND wasm beside the app, and doctrinally almost a *place* (GPU as
+resource in its inventory; the places vocabulary gets its first
+non-network tenant). **T3** — FunctionGemma-class on the same runtime;
+precedent says even hand-written WebGPU kernels are reachable (Gemma 4
+at 255 tok/s in-browser was Fable-5-written kernels). whisper.cpp's
+wasm port (CPU, ≤small models) noted as a pragmatic reference point,
+not the path.
 
 - `tools/export_transcript.py` — exports a Claude Code session log to `transcripts/<date>-<slug>.md` (verbatim prompts with stable `#pN` anchors + timestamps).
 - `tools/explorer.py` — three-pane *feature browser* at `http://localhost:8123`: feature tree | spec + code | transcript. The tree shows feature nodes only (ordered per `order.md`, which itself stays hidden; unticked features dimmed/struck). Clicking a feature renders its spec with the `.rs` implementation(s) beneath, and opens the transcript pane at the feature's provenance prompt — tree links carry the `#pN` fragment so the browser scrolls natively. Nodes with children expand/collapse via native `<details>` toggles (no JS); by default only the path to the selected feature is expanded. Fully server-rendered plain HTML, no client JS; agents can `curl /feature/<path>`, `/view/<repo-path>`, or `/raw/<repo-path>`. Python stdlib only, incl. a built-in markdown renderer covering the fm subset; bare provenance refs (`(transcripts/…#pN)`) are auto-linkified.
