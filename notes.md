@@ -742,6 +742,46 @@ not the path.
 - `tools/export_transcript.py` — exports a Claude Code session log to `transcripts/<date>-<slug>.md` (verbatim prompts with stable `#pN` anchors + timestamps).
 - `tools/explorer.py` — three-pane *feature browser* at `http://localhost:8123`: feature tree | spec + code | transcript. The tree shows feature nodes only (ordered per `order.md`, which itself stays hidden; unticked features dimmed/struck). Clicking a feature renders its spec with the `.rs` implementation(s) beneath, and opens the transcript pane at the feature's provenance prompt — tree links carry the `#pN` fragment so the browser scrolls natively. Nodes with children expand/collapse via native `<details>` toggles (no JS); by default only the path to the selected feature is expanded. Fully server-rendered plain HTML, no client JS; agents can `curl /feature/<path>`, `/view/<repo-path>`, or `/raw/<repo-path>`. Python stdlib only, incl. a built-in markdown renderer covering the fm subset; bare provenance refs (`(transcripts/…#pN)`) are auto-linkified.
 
+**FIRST TOOL BUILD, WAR-GAMED (#p27 — "reset taps"; design, not yet
+ruled).** The scenario: in the taps tool, ask "reset taps"; the system
+should know the context, draft a user-description, let ash edit/OK it,
+and fire — online or offline. Walked end to end, it decomposes:
+
+- **R1 context-carrying asks** (small): ask.rs stamps `open_tool` and
+  its resolved feature path into the filed ask — the wish arrives
+  knowing where it was born; the builder knows the parent node before
+  reading a word.
+- **R2 context bias in find** (small): a lineage bonus in semantic
+  scoring for the open tool — "reset" while inside taps outranks
+  global hits (#p78's context sensitivity, first cash-out).
+- **R3 the propose flow** (medium, THE key node): when the find can't
+  answer ("taps can't do that yet"), the ask box turns proposer: a
+  drafted `## user` paragraph in an editable box, OK files
+  `{status: "proposed", proposal, context}` through the outbox
+  (offline = queued fire; the flow is identical). Doctrine #p85 lands
+  here: the proposal IS the prospective node's user paragraph,
+  approved before code.
+- **R3's drafter is swappable, and starts DUMB**: a template
+  ("<tool> gains <capability>: <ask text made declarative>") gets 80%
+  of the way with zero model — the edit box is the intelligence in
+  the loop. Upgrades in place: dev-session agent when online (better
+  prose, same box); local net on the compute substrate when the
+  kernels grow up. FunctionGemma is tuned for calls, not prose — the
+  offline drafter eventually wants a small instruct model, which is
+  the T2/T3 climb, not a prerequisite. Do NOT gate the flow on the
+  net.
+- **R4 the build**: proposal arrives at the dev loop (the monitor
+  already watches asks) → node built FROM the approved paragraph →
+  ships → awaiting update → tick. Provenance: field ask → quote →
+  node, exactly as the doctrine dreamed.
+- **R5 lifecycle states on the feature list** (asked → proposed → in
+  progress → shipped) — the display half, already specified at #p85.
+- **The reset node itself**, when the game runs for real: a wrinkle
+  worth savouring — tap_count is sync-escalated (shared); "reset"
+  against a shared counter is a distributed op (the op-fold/CRDT note
+  from #p128 becomes concrete). The first user-built tool will touch
+  the deepest open question. Fitting.
+
 ## v0 linker — BUILT (2026-08-13)
 
 `tools/fmlink.py` (Python, ~250 lines, regex-level parsing — quick first pass; a Rust rewrite using `syn` is the obvious v1). Usage: `fmlink.py [product] [--run]`.

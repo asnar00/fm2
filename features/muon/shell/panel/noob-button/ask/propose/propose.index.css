@@ -1,0 +1,9 @@
+#proposeBox { margin-top: 8px; }
+#proposeBox .pdraft { color: #9a9aa2; font-size: 12.5px; margin-bottom: 6px; }
+#proposeBox textarea { width: 100%; box-sizing: border-box; font: inherit;
+  font-size: 13px; color: #fff; background: #1a1a1d; border: 1px solid #333;
+  border-radius: 9px; padding: 8px 10px; resize: vertical; }
+#proposeBox .prow { margin-top: 6px; }
+#panel #proposeBox .prow button { width: 100%; font: inherit; font-size: 14px;
+  padding: 8px 0; border-radius: 9px; border: 1px solid #fff;
+  background: #fff; color: #000; }

@@ -157,8 +157,10 @@ for line in sys.stdin:
     try: asks = json.loads(json.loads(line).get("v") or "[]")
     except Exception: continue
     for a in asks:
-        if a.get("status") == "asked":
-            print("  ASK awaiting the builder: \"%s\"" % a.get("text", ""))
+        if a.get("status") in ("asked", "proposed"):
+            where = (" (in %s)" % a["tool"]) if a.get("tool") else ""
+            print("  %s awaiting the builder: \"%s\"%s"
+                  % (a["status"].upper(), a.get("text", ""), where))
 ' || true
 
 echo "deployed — https://muon.nøøb.org"
