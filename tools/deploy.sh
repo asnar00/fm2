@@ -119,7 +119,7 @@ ssh "$HOST" '
 
 # the ask inbox: shipping without answering becomes visible at the moment of
 # shipping — print every user ask still status "asked" (see noob-button/ask)
-ssh "$HOST" 'cat /tmp/muon-vars/user.*.asks.json 2>/dev/null' | python3 -c '
+ssh "$HOST" 'find /tmp/muon-vars -name "user.*.asks.json" -exec cat {} + 2>/dev/null' | python3 -c '
 import json, sys
 for line in sys.stdin:
     line = line.strip()

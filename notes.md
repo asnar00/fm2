@@ -573,6 +573,42 @@ Open design questions (pre-code):
 
 **Spec style convention (2026-08-13):** code descriptions are written as short paragraphs — one per thing described (entry/extension points first, then mechanics, then helpers) — never a single dense block.
 
+**DAY 4: THE UPDATE LADDER, TOP TO BOTTOM (fm-spec #p2, 2026-08-15).** Ash's
+morning order — consent-once / review workflow / minimal disruption / agent
+hookup — became four nodes in one arc (builds 122–127), and settled these:
+
+- **Auto-vs-one-OK reconciled** (handover item 6, resolved): `/consent-once`
+  makes the user's acceptance the *only* key any apply path checks; `/auto`'s
+  self-apply stands down by redefinition, not deletion — untick consent-once
+  and the old behaviour returns. The acceptance mirrors to localStorage so a
+  sleeping device applies silently at next launch.
+- **Policy re-purposed**: with consent now consent-once's business, the
+  three-way picker governs only what the review pre-ticks (automatic =
+  proposed additions arrive ticked). OPEN: `fixes auto` and `ask me`
+  currently pre-tick identically — the picker may want to become two-way;
+  ash to rule.
+- **Draft-tick principle** (paid for in design, not blood): in the awaiting
+  review, an addition's tick must be a *draft* — local until **upgrade**
+  commits it — because the live `ftick_` event is a store-*toggle*; a purely
+  visual pre-tick overlay would invert the user's intent on first tap.
+- **changes.json is path-stamped** (#p54's cheap half, built): each entry
+  now carries `paths` (nodes touched) and `added` (nodes introduced); the
+  review workflow reads `added`, and the feature→tool mapping for context
+  sensitivity remains the unbuilt half.
+- **Seamless applies read their elders**: busyness (mic, speaker,
+  transcriber) is typeof-guarded reads *by the newest node* — causality
+  bounds extension, so the elders could never have extended a busy-chain
+  the young node declared. The stash/rehydrate pattern (whole loop state,
+  keyed by build, consumed once) survived a real update round-trip with
+  tool, counts and tasks intact.
+- **The ask inbox exists** (`noob-button/ask`, ladder grade one): find =
+  toolbar labels (open-chips) + tree name/purpose/intro overlap (chooser
+  rows, ticks stripped — results introduce, they don't configure); file =
+  user-scoped `asks` var → `/tmp/muon-vars/user.*.asks.json` on the mini →
+  deploy prints unaddressed asks beside its nodeless-release warning. Next
+  rungs stay as named: proposal-lifecycle states on the feature list; the
+  agent behind the box starts as the dev-session agent on a delay.
+
 ## tools (scaffolding — not feature-modular)
 
 - `tools/export_transcript.py` — exports a Claude Code session log to `transcripts/<date>-<slug>.md` (verbatim prompts with stable `#pN` anchors + timestamps).
