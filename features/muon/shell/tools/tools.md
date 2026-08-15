@@ -10,6 +10,9 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p43, draft-phase revision)
 > let's introduce some colour discipline for this first run - let's make it white on dark grey background (no outline), and black on light grey when selected?
 
+> (transcripts/2026-08-14-fm-spec-3.md#p88, revision)
+> ah - we don't need a separate "<" button to the left of the tool button we selected; just tap the tool button return.
+
 > (transcripts/2026-08-14-fm-spec-2.md#p48, draft-phase revision)
 > when we select dictate, the other tool icons (=taps) slide off to the left, the dictate icon slides to leftmost, and the rec/stop buttons are the new tools to the right of dictate - they don't sit above the toolbar.
 
@@ -18,8 +21,8 @@
 muon runs **tools**: each is a small icon button in a **toolbar** — a
 horizontal row across the bottom of the screen beside the corner build
 stamp — leaving the whole screen above as the display surface. Tapping a
-tool opens it in the display area; a small `‹` at the toolbar's left closes
-it. Which tool is open is per-instance state (`Var::<String>::local
+tool opens it in the display area; tapping the open tool's own button
+closes it again (#p88 — the `‹` back button is gone). Which tool is open is per-instance state (`Var::<String>::local
 ("open_tool")`) — navigation never syncs between devices. A tool registers
 `{id, label, icon}` (emoji icons for now) on the `tools_list` chain from its
 own node; features older than this chain register via a subfeature
@@ -30,7 +33,7 @@ is called a toolbar, not a panel — `/panel` is the system panel.)
 ## user
 
 Your tools sit as small icon buttons along the bottom of the screen. Tap one
-to open it above; tap `‹` to close. Adding or removing a feature from your
+to open it above; tap it again to close. Adding or removing a feature from your
 product adds or removes its button.
 
 ## glossary

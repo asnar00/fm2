@@ -46,7 +46,11 @@ impl feature_Tools {
             return s.to_string();
         }
         if let Some(id) = ev.strip_prefix("tool_") {
-            Var::<String>::local("open_tool").put(&mut s, &id.to_string());
+            // tapping the open tool's own button returns home (#p88 — no
+            // separate back button); tapping any other tool opens it
+            let open = Var::<String>::local("open_tool").get(&s);
+            let next = if open == id { String::new() } else { id.to_string() };
+            Var::<String>::local("open_tool").put(&mut s, &next);
             return s.to_string();
         }
         state
@@ -75,9 +79,6 @@ impl feature_Tools {
             let icon = t["icon"].as_str().unwrap_or("·");
             let label = t["label"].as_str().unwrap_or(id);
             let sel = if open == id { " sel" } else { "" };
-            if open == id {
-                bar.push_str("<div class=\"tool-button back\" data-ev=\"tools_home\">‹</div>");
-            }
             let colour = tool_colour(id.to_string());
             let tint = if colour.is_empty() {
                 String::new()
