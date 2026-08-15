@@ -1,0 +1,9 @@
+#panel {
+  top: max(14px, env(safe-area-inset-top));
+  bottom: auto;
+  /* growing downward must stop short of the toolbar: bound the height and
+     scroll inside. Plain calc — env() inside height calcs is the #p81-era
+     trap — with 160px covering the worst top inset plus the toolbar zone. */
+  max-height: calc(100dvh - 160px);
+  overflow-y: auto;
+}
