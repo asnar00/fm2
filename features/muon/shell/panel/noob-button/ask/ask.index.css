@@ -4,8 +4,10 @@
   background: #1a1a1d; border: 1px solid #333; border-radius: 9px;
   padding: 7px 10px; min-width: 0; }
 .askline input::placeholder { color: #6e6e76; }
-.askline button { flex: 0 0 auto; font: inherit; font-size: 14px;
-  padding: 7px 14px; border-radius: 9px; border: 1px solid #333;
+/* #panel-scoped to outrank the panel's own `#panel button {flex:1}` —
+   the ask button stays its natural size; the input takes the room */
+#panel .askline button { flex: 0 0 auto; font: inherit; font-size: 14px;
+  padding: 7px 8px; border-radius: 9px; border: 1px solid #333;
   background: #1a1a1d; color: #fff; }
 .askchips { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
 .askchip { padding: 4px 10px; border-radius: 999px; background: #d8d8d8;
