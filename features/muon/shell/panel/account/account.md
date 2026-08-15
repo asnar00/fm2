@@ -23,3 +23,5 @@ Tap the 👤 button in the toolbar for everything administrative: who's logged i
 `account.js` is the page half. It wraps `feature_Loop.apply` and watches the `open_tool` local var: on transition into `account` it calls `feature_Panel.open()`, on transition out, `feature_Panel.close()` (both typeof-guarded). It wraps `feature_Panel.close` so a shade-tap dismissal, when the account tool is still open, also sends `tools_home` — the wrap only fires while `open_tool` is `account`, so the close that follows the resulting state change cannot loop. It takes the corner button's seam (`feature_Panel.buttonTap = () => {}`): the tap is parked for the future agent interface.
 
 The seam itself belongs to `/panel` (created for this node, default behaviour unchanged): the button's click goes through `feature_Panel.buttonTap`, which defaults to `open()`.
+
+*(Revised by [noob-button](#muon/shell/panel/noob-button), #p58: the panel returned to the lozenge — the meta-button doctrine — and this tool's surface is empty, awaiting the profile page.)*
