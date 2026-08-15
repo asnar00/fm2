@@ -13,6 +13,9 @@ const feature_Update = {
   // extension point: may a newer build apply without asking? (a policy
   // feature may replace this; the base always consents)
   consented: async () => true,
+  // extension point: drop cached app files before an apply. The base drops
+  // everything; a feature may replace this with something more precise.
+  evict: async () => { try { await caches.delete('muon'); } catch (e) {} },
   async launch(who) {
     const v = await this.fetchVersion();
     this.server = v;
@@ -26,7 +29,7 @@ const feature_Update = {
       if (this.running !== 'first-run' && this.running !== v) {
         if (await this.consented(v)) {
           localStorage.muonVersion = v;
-          await caches.delete('muon');
+          await this.evict();
           location.reload();
           return;
         }

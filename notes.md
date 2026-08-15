@@ -609,6 +609,52 @@ hookup — became four nodes in one arc (builds 122–127), and settled these:
   rungs stay as named: proposal-lifecycle states on the feature list; the
   agent behind the box starts as the dev-session agent on a delay.
 
+**MINIMAL UPDATES (fm-spec day 4, #p5 discussion; ash ruled "all three" at
+#p6 — A and B BUILT, C's first rung BUILT, C's registry parked).**
+What shipped: **B** = fmlink `SPLIT_PAGES` (index.html's js/css fragments
+emitted as per-feature files under site/f/, referenced in document order —
+identical semantics, index.html 85KB → 5KB; f/ is swept each link, the
+first piece of hygiene #9; needed serve.rs to learn `text/css` — the site
+had never served a bare stylesheet). **A** = `review/delta` (deploy
+publishes hashes.json; evict = manifest diff; no-code delta ⇒ quiet apply,
+no reload; the evict seam refactored out of update/panel/review call
+sites). **C rung 1** = `review/patch` (wasm-only delta ⇒ live module swap,
+state untouched, one nudge render; safe mid-task). Hard-won test lesson:
+CDP `Runtime.evaluate` calls share the global lexical scope — a bare
+top-level `const` in one eval poisons every later eval with a silent
+redeclare throw; scope every scripted mutation in an IIFE. Original
+analysis follows.
+Ash asked: when a release is small, can we patch just what changed instead
+of upgrading the whole app? Measurement first: the whole composed client is
+~220KB (index.html 85KB + wasm 130KB + sw 2KB) — re-fetching *code* is
+nearly free. The real costs of the ritual are (1) `caches.delete('muon')`
+evicts the ONE cache, which also holds the ~133MB STT model (every update
+⇒ a silent model re-fetch on next transcription — notes hygiene #10's evil
+twin), and (2) every release reloads every client, even server-only
+releases that change nothing a client runs. So "patch functions" aims at
+the wrong 220KB; the minimal-update wins are eviction precision and
+reload avoidance. The ladder:
+
+- **A. Artifact-aware updates (recommended next)**: deploy exports a
+  `manifest.json` (site path → content hash). The apply ritual diffs old
+  vs new manifest and evicts only changed paths — the model survives every
+  update, and a release whose manifest is identical for the client (a
+  server-only fix) stamps the version *without touching the page at all*.
+  Rides the path-stamping we just built; scaffolding + one node.
+- **B. Split composition** (per-feature fragment files instead of one
+  composed index.html) so a feature change invalidates only its own file:
+  real linker work, marginal benefit at 85KB — parked until the app is big
+  enough to feel it.
+- **C. Hot patching / soft reload**: swapping the wasm in place with state
+  carried over is nearly buildable (seamless's stash already proved the
+  state carry); but true function-level patching of the JS needs
+  **re-linkable chains** — chains as a registry with indirection rather
+  than closures capturing `existing` — and that is the SAME missing
+  mechanism runtime feature-ticks need (the context manager: tick/untick
+  without reload). Minimal updates and the context manager converge on one
+  linker mechanism. Parked as the research fork; when the context manager
+  gets built, updates get hot-patching almost free.
+
 ## tools (scaffolding — not feature-modular)
 
 - `tools/export_transcript.py` — exports a Claude Code session log to `transcripts/<date>-<slug>.md` (verbatim prompts with stable `#pN` anchors + timestamps).

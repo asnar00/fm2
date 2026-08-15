@@ -1,3 +1,5 @@
 - [x] consent-once
 - [x] upgrade
 - [x] seamless
+- [x] delta
+- [x] patch

@@ -148,6 +148,7 @@ impl feature_Serve {
     fn content_type(path: String) -> &'static str {
         if path.ends_with(".html") { return "text/html; charset=utf-8"; }
         if path.ends_with(".js") { return "text/javascript"; }
+        if path.ends_with(".css") { return "text/css"; }
         if path.ends_with(".json") { return "application/manifest+json"; }
         if path.ends_with(".wasm") { return "application/wasm"; }
         if path.ends_with(".png") { return "image/png"; }

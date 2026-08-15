@@ -24,6 +24,7 @@ Usage: fmlink.py [product] [--run]      (product defaults to "demo")
 import argparse
 import json
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -40,6 +41,12 @@ FRAGMENT_PAGE = {"index": ["index.html"], "login": ["login.html"],
                  "install": ["install.html"], "sw": ["sw.js"],
                  "page": ["index.html", "login.html", "install.html"]}
 EXT_SLOT = {"css": "style", "js": "script", "html": "body"}
+# pages whose script/style fragments are emitted as per-feature FILES under
+# site/f/ (referenced at the slot marker) instead of inlined — so a release
+# invalidates only the fragments it touched (minimal updates, fm-spec #p6).
+# Classic scripts and stylesheets apply in document order: composition
+# semantics are identical to inlining.
+SPLIT_PAGES = {"index.html"}
 SLOT_MARKER = {"head": "<!-- fm:head -->", "style": "/* fm:style */",
                "body": "<!-- fm:body -->", "script": "// fm:script"}
 SLOT_COMMENT = {"head": "<!-- fm: {} -->", "style": "/* fm: {} */",
@@ -270,6 +277,7 @@ class FeatureCode:
             for page in FRAGMENT_PAGE[target]:
                 self.fragments.append({"file": page, "slot": slot,
                                        "text": frag.read_text(),
+                                       "name": frag.name,
                                        "required": target != "page",
                                        "src": self.rel.replace("features/", "", 1)})
         # verbatim library files: full Rust (generics, traits, helpers) the
@@ -723,6 +731,9 @@ def compose_assets(site: Path, features: list):
     for feature in features:
         for fr in feature.fragments:
             by_page.setdefault(fr["file"], []).append(fr)
+    # f/ is wholly linker-owned: sweep it so unticked features leave no
+    # stale fragment files behind
+    shutil.rmtree(site / "f", ignore_errors=True)
     for page, items in sorted(by_page.items()):
         path = site / page
         if not path.exists():
@@ -739,10 +750,29 @@ def compose_assets(site: Path, features: list):
             if slot_items and marker not in text:
                 fail(f"{page} has no '{marker}' slot (needed by {slot_items[0]['src']})")
             if marker in text:
-                blocks = "\n".join(
-                    SLOT_COMMENT[slot].format(i["src"]) + "\n" + i["text"].rstrip()
-                    for i in slot_items)
-                text = text.replace(marker, blocks)
+                if page in SPLIT_PAGES and slot in ("script", "style") and slot_items:
+                    # per-feature files: close the enclosing block, reference
+                    # each fragment in composition order, reopen the block
+                    fdir = site / "f"
+                    fdir.mkdir(exist_ok=True)
+                    tags = []
+                    for i in slot_items:
+                        (fdir / i["name"]).write_text(
+                            SLOT_COMMENT[slot].format(i["src"]) + "\n"
+                            + i["text"].rstrip() + "\n")
+                        tags.append(
+                            f'<script src="f/{i["name"]}"></script>'
+                            if slot == "script"
+                            else f'<link rel="stylesheet" href="f/{i["name"]}">')
+                    close, reopen = (("</script>", "<script>") if slot == "script"
+                                     else ("</style>", "<style>"))
+                    text = text.replace(
+                        marker, close + "\n" + "\n".join(tags) + "\n" + reopen)
+                else:
+                    blocks = "\n".join(
+                        SLOT_COMMENT[slot].format(i["src"]) + "\n" + i["text"].rstrip()
+                        for i in slot_items)
+                    text = text.replace(marker, blocks)
         path.write_text(text)
     composed = {p: i for p, i in by_page.items() if i}
     if composed:

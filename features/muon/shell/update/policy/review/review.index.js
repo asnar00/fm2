@@ -15,7 +15,8 @@ const feature_Review = {
     if (this.applying) return;
     this.applying = true;
     try { localStorage.muonVersion = String(build); } catch (e) {}
-    try { await caches.delete('muon'); } catch (e) {}
+    if (typeof feature_Update !== 'undefined') await feature_Update.evict();
+    else { try { await caches.delete('muon'); } catch (e) {} }
     location.reload();
   },
 

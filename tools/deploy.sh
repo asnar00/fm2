@@ -107,6 +107,28 @@ for i, line in enumerate(lines):
 print(json.dumps(entries))
 PY
 
+# the update delta's ground truth: a content hash per site file (see
+# review/delta). version/changes.json/hashes.json are always-fresh data, not
+# cached app files — excluded so a data-only release reads as "no change"
+python3 - "$SRC/products/muon/build/site" > "$SRC/products/muon/build/site/hashes.json" <<'PY'
+import hashlib, json, os, sys
+site = sys.argv[1]
+skip = {"version", "changes.json", "hashes.json", "replay.json"}
+hashes = {}
+for root, _, files in os.walk(site):
+    for f in files:
+        p = os.path.join(root, f)
+        rel = os.path.relpath(p, site)
+        if rel in skip or f == ".DS_Store":
+            continue
+        h = hashlib.sha1()
+        with open(p, "rb") as fh:
+            for chunk in iter(lambda: fh.read(1 << 20), b""):
+                h.update(chunk)
+        hashes[rel] = h.hexdigest()[:16]
+print(json.dumps(hashes, sort_keys=True))
+PY
+
 rsync -a --delete \
   "$SRC/products/muon/build/server/target/release/muon_server" \
   "$SRC/products/muon/build/site" \

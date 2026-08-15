@@ -51,6 +51,7 @@ $('logoutBtn').onclick = async () => {
 $('updateBtn').onclick = async () => {
   if (typeof feature_Update !== 'undefined' && feature_Update.server)
     localStorage.muonVersion = feature_Update.server;
-  await caches.delete('muon');
+  if (typeof feature_Update !== 'undefined') await feature_Update.evict();
+  else await caches.delete('muon');
   location.reload();
 };
