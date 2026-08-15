@@ -1,0 +1,5 @@
+#buildRow { display: flex; align-items: center; gap: 10px; margin: 6px 0 8px; }
+#buildRow #buildLine { flex: 1; margin: 0; }
+#panel #buildRow button { flex: 0 0 auto; font: inherit; font-size: 13px;
+  padding: 5px 14px; border-radius: 9px; border: 1px solid #333;
+  background: #1a1a1d; color: #fff; }
