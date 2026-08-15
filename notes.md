@@ -1026,6 +1026,20 @@ still wants a node per naming-change (provenance says the DECLARATION is
 a node; values are data); and what the ask pipeline shows for a
 parameter-set (instant "done" instead of building→shipped?).
 
+**The promotion rule** (#p18, ash: "when we ask to change eg toolbutton
+size *again*, you just find that feature and mod its state var"): a
+parameter earns its variable on the SECOND ask that touches it. First
+ask ships the literal constant — cheap, honest, no speculation. Second
+ask promotes: one real node declaring the tunable (name, type, default,
+scopes — the declaration is provenance-worthy), and from then on every
+value is data — find the owning feature, write the var, seconds not
+builds. The finding machinery already exists (semantic-find maps words
+to features; birthplace says where the asker stood); what's missing is
+only the declaration mechanism, and the scope-vs-authority ruling for
+who a repeat ask writes for (asker's per-user value or the global
+default). bigger-buttons is the standing first case: the next
+size-shaped ask triggers its promotion.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
