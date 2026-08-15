@@ -1,0 +1,4 @@
+/* fold only rows the chooser itself owns (direct children): #awaiting's
+   rows are nested in their own box and stay out front */
+.chooser-home.folded > .crow,
+.chooser-home.folded > .cmore { display: none; }
