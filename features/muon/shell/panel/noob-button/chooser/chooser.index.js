@@ -47,19 +47,22 @@ const feature_Chooser = {
       + '<div class="ctext"><b>' + n.name + '</b>'
       + (n.purpose ? ' <span class="cpurpose">' + this.esc(n.purpose) + '</span>' : '')
       + '</div>'
-      + (n.parent ? '<span class="cbtn" data-up="' + n.parent + '">‹</span>' : '<span class="cbtn none"></span>')
-      + '<span class="cbtn" data-more="' + n.path + '">+</span>'
       + '</div>'
       + '<div class="cmore" data-morebox="' + n.path + '" style="display:none"></div>';
   },
 
-  // the + expansion: tappable intro paragraph + child chips to drill down
+  // tap-the-line expansion: ‹ (up a level) beside the tappable user
+  // paragraph, child chips below to drill down
   more(path) {
     const box = document.querySelector('[data-morebox="' + path + '"]');
     if (box.style.display !== 'none') { box.style.display = 'none'; return; }
     const n = this.byPath[path];
     box.innerHTML =
-      (n.intro ? '<div class="cintro" data-read="' + n.path + '">' + this.esc(n.intro) + '</div>' : '')
+      '<div class="cintrorow">'
+      + (n.parent ? '<span class="cup" data-up="' + n.parent + '">‹</span>' : '')
+      + '<div class="cintro" data-read="' + n.path + '">'
+      + this.esc(n.intro || '(tap to read this feature’s page)') + '</div>'
+      + '</div>'
       + (n.children.length
         ? '<div class="cchips">' + n.children.map((c) =>
             '<span class="cchip" data-goto="' + c.path + '">' + c.name + '</span>').join('') + '</div>'
@@ -118,14 +121,15 @@ const feature_Chooser = {
   $('chooserDismiss').onclick = () => feature_Chooser.reader(false);
 
   fm_view.addEventListener('click', (e) => {
-    const more = e.target.closest('[data-more]');
-    if (more) { feature_Chooser.more(more.getAttribute('data-more')); return; }
+    if (e.target.closest('.ctick')) return; // the tick is the loop's business
     const up = e.target.closest('[data-up]');
     if (up) { feature_Chooser.goto(up.getAttribute('data-up')); return; }
     const chip = e.target.closest('[data-goto]');
     if (chip) { feature_Chooser.goto(chip.getAttribute('data-goto')); return; }
     const read = e.target.closest('[data-read]');
-    if (read) feature_Chooser.reader(read.getAttribute('data-read'));
+    if (read) { feature_Chooser.reader(read.getAttribute('data-read')); return; }
+    const row = e.target.closest('.crow[data-path]');
+    if (row) feature_Chooser.more(row.getAttribute('data-path'));
   });
 
   const fm_row = document.createElement('div');

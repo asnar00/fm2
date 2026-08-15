@@ -29,11 +29,11 @@
 }
 .ctext { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cpurpose { color: #9a9aa2; font-size: 12px; }
-.cbtn {
+.cintrorow { display: flex; align-items: flex-start; gap: 8px; }
+.cup {
   flex: none; width: 26px; height: 26px; text-align: center; line-height: 26px;
   color: #9a9aa2; font-size: 16px; border: 1px solid #2a2a31; border-radius: 6px;
 }
-.cbtn.none { border: none; }
 .ctick {
   flex: none; width: 17px; height: 17px;
   border: 1px solid #4a4a52; border-radius: 4px; background: #1c1c21;
@@ -43,9 +43,9 @@
   content: "✓"; display: block; text-align: center;
   color: #14141a; font-size: 12px; line-height: 17px;
 }
-/* the + expansion: intro paragraph (tap to read in full) + drill-down chips */
+/* tap-the-line expansion: ‹ beside the intro (tap intro to read in full) + drill-down chips */
 .cmore { padding: 4px 10px 10px 32px; border-bottom: 1px solid #202026; }
-.cintro { color: #c9c9d2; font-size: 12px; line-height: 1.5; }
+.cintro { flex: 1; color: #c9c9d2; font-size: 12px; line-height: 1.5; }
 .cchips { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
 .cchip {
   padding: 3px 10px; border-radius: 999px;
