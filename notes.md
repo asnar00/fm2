@@ -87,6 +87,83 @@ interrogation of the dataset that also works offline. What fell out:
   per-chunk streaming text is the draft, whole-recording re-transcription is
   the final.
 
+**THE TOOLBAR AND THE LOGO ARE ONE SYSTEM (fm-spec-3 #p53, end of day 3):
+have-now vs need-now.** User-stated, near-verbatim: the toolbar at the bottom
+and the logo-button at the top are connected. If the tool exists to do a job
+you need right now, chances are it's in the toolbar — *or rather, the app
+evolves things that way for you*. If you need a tool that isn't on your
+toolbar right now, you tap the logo at top right and get an **agent prompt
+input**. You say the thing you want to do. If the tool exists, it pops up,
+**introduces itself**, and adds itself to your toolbar. If not, the agent
+queues a **"build this tool" request**, gets to work, and comes back with an
+update when it's ready.
+
+What this connects (all already live, none of it coincidence): `/account`
+parked the logo tap *for the agent interface* — this is that interface's
+spec-in-waiting. "Introduces itself" is the demo/`show me how` doctrine
+becoming a tool's arrival ritual. "Comes back with an update" is the
+`/policy` + `/queue` channel — a built-tool announcement is just a release
+whose changes entry you already ticked in advance by asking for it. "The app
+evolves the toolbar for you" makes the toolbar per-user state (today
+`tools_list` is composition-global; per-user toolbars are context-manager
+territory, same plumbing as `update_ticks`). And the "build this tool" queue
+is the fm1 FMT vision — the kernel's surface is the agent; tool-call, then
+tool-construct — now with a concrete UI: one lozenge, top right. The full
+ladder (ask → surface existing → compose existing → build new) is graded
+derivation applied to capability itself.
+
+**THE NØØB BUTTON IS META-EVERYTHING (fm-spec-3 #p54): it controls how muon
+works; the rest is muon.** User-stated, near-verbatim ("nøøb button" is now
+ash's shorthand for the logo button — glossary-worthy when it lands). The
+tickable feature list should filter by the current tool: in taps, you see
+taps-related features only. That makes it **orthogonal to tools, not just
+another tool** — so it belongs on the nøøb button, not in the toolbar. The
+nøøb button becomes the reflective surface — feature choice, the agent
+prompt (#p53), how-muon-works — while the toolbar stays the operational
+surface: using muon vs steering muon, one lozenge for the meta-level.
+
+Implementation hooks, for when this becomes nodes: filter-by-tool needs a
+feature→tool mapping on changes entries — deploy already computes the
+touched node paths per release (it prints them), so stamping them into
+changes.json is nearly free, and "taps-related" = path-prefix match against
+the open tool's subtree. The queue view then takes an optional filter;
+opened from the nøøb surface inside a tool, it defaults to that tool's
+subtree.
+
+One honest tension to resolve when we get there: `/account` (#p46) moved
+the *panel* — who-you-are, updates, logout — INTO the toolbar as the 👤
+tool, and this doctrine reads all of that as meta ("how muon works"). If
+the meta-level consolidates under the nøøb button, account may migrate
+back — or split (identity stays a tool; feature-steering goes meta).
+Deliberately unresolved tonight; tick storage and the queue view carry
+over either way.
+
+**ACCOUNT IS A SOCIAL TOOL; THE TENSION RESOLVES (fm-spec-3 #p55).**
+User-stated, near-verbatim: account should be what it was originally
+intended for — **a super simple social network**. Everyone gets a page
+(*a post*), with whatever on it, connections to other people, group
+membership — the standard stuff, minimal and snappy. That's how ash wants
+it for "the app" we're building ("whatever that is"). And the split from
+#p54 lands cleanly: the nøøb button also creates user-scoped data, but it
+controls **your experience of muon**; account is a tool *in* muon.
+
+So the #p54 tension is resolved by division: 👤 stays in the toolbar and
+becomes the social surface (your page, people, groups); the system/meta
+freight it currently carries (updates, feature ticks, logout?) migrates to
+the nøøb button when the meta surface is built. Two loads, two buttons.
+
+The load-bearing phrase is "everyone gets a page **(post)**": a person's
+page is a post in the same store as everything else — the places doctrine's
+immutable post database reaching the social layer. One substrate carries
+the campaign app's geotagged posts AND profiles; "connections" are links
+between posts (the additive match-link pattern); "group membership" is the
+membership axis the scope machinery already models (audiences/rings). This
+is also microclub's original brief re-arriving on better foundations: the
+community noticeboard whose point is making the organisation's human face
+visible and drawing people into deeper involvement — groups, pages,
+connections — now as features over the post store rather than a bespoke
+app. Minimal and snappy is the spec: the standard stuff, nothing clever.
+
 **MUON IS AN OS (fm-spec-2 #p41): tools on a launcher.** The muon/apps
 grouping question resolves with better vocabulary: muon runs **tools**
 (user's preferred term over "apps"), organised into **toolsets** (pages) when

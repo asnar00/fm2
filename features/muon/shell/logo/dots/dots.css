@@ -1,0 +1,7 @@
+/* graph-paper ground: 1px mid-grey dots every 32px, on body so whole-DOM
+   swaps never disturb it */
+.logo { display: none; }
+body {
+  background-image: radial-gradient(circle, #555 0.5px, transparent 0.6px);
+  background-size: 32px 32px;
+}

@@ -13,6 +13,13 @@ impl feature_Tools {
         String::new()
     }
 
+    // the colour seam: what colour a tool's button wears (empty = the base
+    // monochrome discipline). A styling feature redefines this per tool id.
+    fn tool_colour(id: String) -> String {
+        let _ = id;
+        String::new()
+    }
+
     // launcher-mode marker: the key existing (even empty) means the toolbar
     // owns navigation; if this feature is unticked the key never appears and
     // tools render unconditionally as before.
@@ -71,9 +78,15 @@ impl feature_Tools {
             if open == id {
                 bar.push_str("<div class=\"tool-button back\" data-ev=\"tools_home\">‹</div>");
             }
+            let colour = tool_colour(id.to_string());
+            let tint = if colour.is_empty() {
+                String::new()
+            } else {
+                format!(" tinted\" style=\"--tool-colour:{}", colour)
+            };
             bar.push_str(&format!(
-                "<div class=\"tool-button{}\" data-ev=\"tool_{}\" title=\"{}\"><span class=\"icon\">{}</span></div>",
-                sel, id, label, icon));
+                "<div class=\"tool-button{}{}\" data-ev=\"tool_{}\" title=\"{}\"><span class=\"icon\">{}</span></div>",
+                sel, tint, id, label, icon));
         }
         if !open.is_empty() {
             bar.push_str(&tool_controls(state));

@@ -1,1 +1,2 @@
 - [x] raise
+- [x] dots

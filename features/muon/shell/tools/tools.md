@@ -55,6 +55,10 @@ the toolbar becomes the tool's control surface — `‹`, the open tool's icon
 nothing; the open tool redefines it to add its own buttons). Renders are
 whole-DOM swaps, so the "slide" is a mount animation on mode change.
 
+`tool_colour(id)` is the colour seam (base: empty — the monochrome
+discipline): a styling feature redefines it per tool id, and `render_toolbar`
+emits the colour as a `--tool-colour` custom property with a `tinted` class.
+
 `tools.css` styles the toolbar (safe-area aware, clear of the corner stamp)
 and its buttons: white glyph on dark grey, black on light grey when selected,
 no outline. Emoji ignore CSS `color`, so icons are forced monochrome with a

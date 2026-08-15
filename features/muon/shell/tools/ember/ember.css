@@ -1,0 +1,9 @@
+/* the ember experiment: black icons on categorical colour, centred row */
+.toolbar { justify-content: center; }
+.tool-button.tinted { background: var(--tool-colour); }
+/* black icon in both states (the base discipline inverts unselected icons) */
+.tool-button.tinted .icon { filter: grayscale(1) brightness(0); }
+/* the lit state: same hue, more light */
+.tool-button.sel.tinted {
+  background: color-mix(in srgb, var(--tool-colour) 62%, white);
+}
