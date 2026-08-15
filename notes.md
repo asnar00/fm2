@@ -1069,6 +1069,46 @@ and the rung-3 ticks enforcement keep converging on one mechanism: the
 context manager. Not built tonight; joins the tunables entry as
 doctrine awaiting its first case.
 
+## the builder is a feature-modular skillset (2026-08-15 evening, fm-spec-2 #p21)
+
+Ash, capping the evening's doctrine run: *"these sorts of ideas actually
+are agent instructions — so we need the equivalent of feature-modular
+agent instructions, just as we do for other languages. the part of our
+system that takes user requests and drafts and implements features, is
+itself a feature-modular 'skillset'."*
+
+The recursive move. Agent instructions become a composition language
+beside .rs/.js/.css: a node may carry an instruction fragment
+(`<name>.agent.md`, say), and the linker composes the working skillset
+the way it composes a page — a skeleton (the five-step loop is the
+obvious one) with fragments landing at slots, provenance-ordered,
+toggleable with their nodes. Untick a feature and the builder forgets
+how to serve it; regroup and nothing rewires (grouping is not
+behaviour, for instructions too).
+
+What this reframes: tonight's notes entries are fragments-in-waiting,
+each belonging to the node it governs — the promotion rule to the
+tunables declaration (when built), the rule-of-two-surface to the
+new-tools drawer, privilege-as-subtree-reach to `/gate`. notes.md has
+been the accumulator because the instructions had no nodes to live in.
+And agents.md is the monolith the skeleton comes from — the same
+starting point index.html was before SPLIT_PAGES. fm.md stays outside:
+constitution, not composition.
+
+Why it matters beyond tidiness: the flywheel. A mini-resident headless
+builder needs instructions from SOMEWHERE; composed-from-the-tree means
+the builder's discipline ships, versions, and rolls back exactly like
+the product — and a fork subagent building ask X could even receive the
+skillset composed for the subtree it's touching. The builder stops
+being outside the system: its behaviour gains provenance quotes,
+toggles, and the audit trail everything else already has.
+
+Open for ruling: the fragment extension and slot vocabulary; whether
+the composed skillset is per-product (products/miso/build/skillset.md)
+and whether the session loads it in place of agents.md; what the first
+decomposed instruction should be (the promotion rule is the natural
+candidate — it arrives WITH its node when tunables get built).
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
