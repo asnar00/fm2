@@ -9,9 +9,11 @@
 }
 
 /* open-tool layout (#p86): ‹ and the tool's own button own the left edge;
-   the tool's controls centre themselves in the space that remains. Auto
-   margins on the control group's ends override the centred launcher row;
-   launcher mode (no .back/.ctrl present) is untouched. */
-.tool-button.back { margin-left: 0; }
-.tool-button.ctrl:first-of-type { margin-left: auto; }
-.tool-button.ctrl:last-of-type { margin-right: auto; }
+   the tool's controls centre themselves in the space that remains. The
+   sel button's auto right-margin anchors ‹+tool left (controls or not);
+   with controls, the last one's auto right-margin makes two autos share
+   the free space — control group centred. (:first-of-type matched element
+   TYPE, not class, so v1 of this never fired — hence the fix.)
+   Launcher mode has no .sel/.ctrl and stays centred. */
+.tool-button.sel { margin-right: auto; }
+.toolbar .tool-button.ctrl:last-child { margin-right: auto; }
