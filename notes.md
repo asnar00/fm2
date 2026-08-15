@@ -984,6 +984,48 @@ on graded trust — this is foundation, not plumbing.
 
 Not built tonight; recorded as the ruling-shaped conversation it is.
 
+## tunables: the general form of the naive ask (2026-08-15 evening, fm-spec-2 #p17a)
+
+Ash, watching the evening's asks accumulate: *"each of these things are
+actually interpretable as 'make parameter X tunable using feature-scoped
+variable <blah> per-user / per-group / global'."*
+
+The evidence, in one night: +25% buttons = a `size` parameter (shipped as
+constant CSS); the button label "miso" and the placeholder
+"request"→"do something" = text parameters (shipped as constant fragments,
+the second churned once already); decrement's removal-and-return = a
+selection parameter (which per-user ticks ALREADY models as a user-scoped
+var). Every one shipped as a build because the parameter had no variable
+to live in.
+
+The engineered form: a feature declares its **tunables** — named,
+feature-scoped variables with a type, a default, and a scope
+(per-user / per-group / global). The machinery mostly exists: `Var<T>`
+in scope's lib, user-scoped and global vars in the var store
+(`user.X.feature_ticks`, `global.tap_count`), the broadcast file pushing
+var updates to open panels in ~0.5s.
+
+Three consequences worth their weight:
+
+1. **A whole class of asks stops needing builds.** "Bigger buttons" as a
+   var-write enacts in seconds, offline-queued, no deploy, no builder —
+   the drafter's translation step classifies an ask as parameter-set vs
+   build, and parameter-sets short-circuit the pipeline entirely.
+2. **Scope is where privilege bites** (joins #p12): setting your OWN
+   per-user value is self-service; setting a group's or the global
+   default requires authority. The tunable declaration names the scopes
+   it offers; the user record gates which scopes an asker may write.
+3. **Per-user ticks (rung 3) is the first tunable**, not a special case:
+   "feature on/off" is just a boolean tunable every feature carries
+   implicitly. The context-manager enforcement work and the tunables
+   design should be one mechanism, not two.
+
+Open questions for a ruling: where a tunable is declared (the node's spec?
+a `tunables:` stanza the linker reads?); whether a var-backed parameter
+still wants a node per naming-change (provenance says the DECLARATION is
+a node; values are data); and what the ask pipeline shows for a
+parameter-set (instant "done" instead of building→shipped?).
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
