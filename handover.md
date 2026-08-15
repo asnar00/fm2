@@ -3,10 +3,27 @@
 (transcripts/2026-08-15-fm-spec.md, 46 prompts, builds 120→155). Discipline
 in `agents.md`; ops in `deploy.md`; this file is only what's current.*
 
+## THE RENAME (#p50, post-pizza): muon is now MISO ("make it so")
+
+Everywhere: tree root features/miso, product products/miso (override
+structure rebuilt), crate miso_server, cookie miso_auth (devices
+re-login once), localStorage misoX keys (one-time migration shim in the
+shell skeleton copies muonX ->), IDB miso-blobs (legacy-origin local
+recordings orphaned — they live on the mini via mirror; named cost),
+mini dirs ~/miso, ~/.miso-auth, /tmp/miso-vars, /tmp/miso-broadcast,
+agent com.noob.miso, log /tmp/miso.log. Old state dirs KEPT as backups.
+**miso.nøøb.org is canonical; muon.nøøb.org still serves as a legacy
+alias** (installed devices keep working; retire whenever). Provenance
+quotes keep "muon" verbatim — history said what it said. Loose ends: a
+stray doubled CNAME (miso.xn--nb-lkaa.org.xn--nb-lkaa.org) deletable
+only in the Cloudflare dashboard; a pre-existing com.noob.miso-auditor
+agent on the mini (not ours, untouched); laptop dev auth copied to
+~/.miso-auth.
+
 ## where things stand
 
-Live: **build 155** at muon.nøøb.org, 102 nodes. The day in one line: the
-update pipeline became one-OK-and-deltas, muon grew its own WebGPU compute
+Live: **build 155** at miso.nøøb.org, 102 nodes. The day in one line: the
+update pipeline became one-OK-and-deltas, miso grew its own WebGPU compute
 substrate and an 8MB semantic find, and then **the loop closed** — five
 field asks travelled phone → proposal → build → awaiting-update → phone,
 including one removal. The app modifies its own tools from inside.
@@ -26,7 +43,7 @@ The arcs, in order:
   link); serve.rs learned `text/css` (browsers discard mistyped
   stylesheets); gate hotfix: `f/` + `hashes.json` joined the public shell
   list — logged-out visitors were briefly frozen (build 130, fixed 131).
-- **muon computes for itself** (#p12, doctrine in ash's words):
+- **miso computes for itself** (#p12, doctrine in ash's words):
   `loop/compute` — ~90 lines of page JS driving WebGPU, no ort/burn/
   bindgen, adapter-clamped limits from birth (haze's recipe), proof kernel
   0.7ms warm. First tenant `semantic-find`: potion-base-8M as int8 table
@@ -79,7 +96,7 @@ The arcs, in order:
    first: (a) the **ort shim experiment**: engine.js wraps
    `GPUAdapter.prototype.requestDevice` clamping requiredLimits to
    adapter.limits (haze's recipe; catches BOTH pinned bundles), clear the
-   `localStorage.muonSttDevice` failure memo, sim then device, watching
+   `localStorage.misoSttDevice` failure memo, sim then device, watching
    for onnxruntime **#26827** (WebKit-26 jsep: 400% CPU / 1-14GB after
    inference — if it bites, ort is off the table); (b) the **sovereign
    path**: mel spectrogram → matmul tiles → attention WGSL kernels on
@@ -119,7 +136,7 @@ The arcs, in order:
    mini, consent given in principle — confirm before installing) and
    persisting transcript stamps (RecList reseeds from IndexedDB, restarts
    re-transcribe).
-5. **Regroup pressure**: review, panel, muon root, shell/update all at
+5. **Regroup pressure**: review, panel, miso root, shell/update all at
    the 6-child cap; counter at 3 and growing by ask. The first regroup is
    itself a prompted event.
 
@@ -127,12 +144,12 @@ The arcs, in order:
 
 - **1s ask monitor** — re-arm each session (it dies with the session):
   persistent ssh to the mini, remote 1s loop over
-  `/tmp/muon-vars/user.*.asks.json`, local dedupe vs
+  `/tmp/miso-vars/user.*.asks.json`, local dedupe vs
   scratchpad/asks_seen.txt, fires on status asked|proposed with tool/at/
   proposal in the event. See the Monitor call in this transcript (#p28ff).
 - **tools/stamp_ask.py** `--text X --status building|shipped [--build N]
   [--local]` — updates the var store AND appends the per-user VarUpdate to
-  `/tmp/muon-broadcast.json` (the server's own publish file) → open
+  `/tmp/miso-broadcast.json` (the server's own publish file) → open
   panels update in ~0.5s. Named risk: two writers, one file.
 - **tools/fetch_find.py** — pins potion-base-8M → semantic-find/assets/
   find/ (gitignored except PINNED). **tools/potion_embed.py** — the
@@ -157,7 +174,7 @@ The arcs, in order:
   picker may want to become two-way, ash to rule.
 - **Draft ticks are drafts**: the live ftick event is a store-toggle; a
   visual overlay would invert intent — commit on the button only.
-- **Muon computes for itself** (#p12): WGSL kernels as node assets, thin
+- **Miso computes for itself** (#p12): WGSL kernels as node assets, thin
   JS driver, no dependencies; the zero-import law untouched because the
   engine never enters client.wasm.
 - **Specs are data**: quoted example phrases embed into the catalog and
@@ -172,22 +189,22 @@ The arcs, in order:
 
 ## small print
 
-- **products/muon/muon is no longer a symlink**: it's a real-dir override
-  path (real dirs muon→loop→tap→counter with glob-symlinked siblings and
+- **products/miso/miso is no longer a symlink**: it's a real-dir override
+  path (real dirs miso→loop→tap→counter with glob-symlinked siblings and
   a local counter/order.md unticking decrement-taps). The old single
   symlink meant writing "product order.md" wrote THROUGH into the shared
   tree — paid for at #p44. Unticked children may simply be absent from
   the local dir. hello_only remains the small exemplar.
-- Client localStorage keys grown today: muonAccepted (acceptance mirror),
-  muonHashes (delta baseline — seeded only when running==server),
-  muonStash (seamless, consumed once). caches.delete('muon') no longer
+- Client localStorage keys grown today: misoAccepted (acceptance mirror),
+  misoHashes (delta baseline — seeded only when running==server),
+  misoStash (seamless, consumed once). caches.delete('miso') no longer
   happens on updates (delta evicts precisely) — the STT model survives.
 - Dev server on 8095 runs the build-155 binary; _test login via PIN from
   /tmp/fm2-devserver.log; local traffic ungated. Headless Chrome may
   still be running on 9222 (scratchpad profile).
 - STT gaps unchanged from day 3 (silent 130MB fetch, >30s truncation, no
   transcript mirroring); ort-webgpu blocked on the shim experiment +
-  #26827; localStorage.muonSttDevice memoizes the wasm fallback.
+  #26827; localStorage.misoSttDevice memoizes the wasm fallback.
 - asks var grows unboundedly (shipped entries never pruned); fine at
   current scale, a lifecycle-archive rung eventually.
 - find/* is gated (data, not shell) — correct while ask sits behind

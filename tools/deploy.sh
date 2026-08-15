@@ -1,16 +1,16 @@
 #!/bin/sh
-# Deploy the muon product to the Mac mini (public at https://muon.nøøb.org via
-# cloudflare tunnel, ingress muon.xn--nb-lkaa.org -> localhost:8095).
+# Deploy the miso product to the Mac mini (public at https://miso.nøøb.org via
+# cloudflare tunnel, ingress miso.xn--nb-lkaa.org -> localhost:8095).
 #
-# Builds the muon product (fm linker: native server + wasm client + site/),
-# ships the server binary and site to ~/muon on the mini (both machines are
-# arm64 darwin, so the local build runs there), and restarts com.noob.muon.
+# Builds the miso product (fm linker: native server + wasm client + site/),
+# ships the server binary and site to ~/miso on the mini (both machines are
+# arm64 darwin, so the local build runs there), and restarts com.noob.miso.
 set -e
 SRC="$(cd "$(dirname "$0")/.." && pwd)"
 
-# the mini on the home LAN, else its public address; MUON_HOST overrides both
+# the mini on the home LAN, else its public address; MISO_HOST overrides both
 pick_host() {
-  [ -n "${MUON_HOST:-}" ] && { echo "$MUON_HOST"; return; }
+  [ -n "${MISO_HOST:-}" ] && { echo "$MISO_HOST"; return; }
   for h in microserver@microservers-Mac-mini.local microserver@185.96.221.52; do
     if ssh -o BatchMode=yes -o ConnectTimeout=5 "$h" true 2>/dev/null; then echo "$h"; return; fi
   done
@@ -28,10 +28,10 @@ fi
 HOST="$(pick_host)"
 echo "deploying to $HOST"
 
-python3 "$SRC/tools/fmlink.py" muon
+python3 "$SRC/tools/fmlink.py" miso
 
 # replay sessions are local-only test data — never ship one
-rm -f "$SRC/products/muon/build/site/replay.json"
+rm -f "$SRC/products/miso/build/site/replay.json"
 
 # the loader instantiates the wasm with ZERO imports — refuse to ship a build
 # that quietly grew import requirements (a dependency's wasm-bindgen glue once
@@ -41,12 +41,12 @@ const fs = require("fs");
 WebAssembly.instantiate(fs.readFileSync(process.argv[1]), {})
   .then(({instance}) => { if (!instance.exports.fm_entry) throw new Error("no fm_entry"); })
   .catch(e => { console.error("deploy: wasm smoke test FAILED:", e.message); process.exit(1); })
-' "$SRC/products/muon/build/site/client.wasm"
+' "$SRC/products/miso/build/site/client.wasm"
 
 # provenance visibility: which feature nodes does this release touch, and did
 # any capability ship without a node? informational — the judgment stays
 # human, but the omission becomes visible at the moment of shipping
-LIVE=$(curl -s --max-time 5 https://muon.xn--nb-lkaa.org/version 2>/dev/null | tr -cd '0-9')
+LIVE=$(curl -s --max-time 5 https://miso.xn--nb-lkaa.org/version 2>/dev/null | tr -cd '0-9')
 NOW=$(cd "$SRC" && git rev-list --count HEAD)
 if [ -n "$LIVE" ] && [ "$NOW" -gt "$LIVE" ] 2>/dev/null; then
   N=$((NOW - LIVE))
@@ -63,7 +63,7 @@ python3 "$SRC/tools/export_features.py"
 
 # catalog embeddings for on-device semantic find (loop/compute/semantic-find);
 # skipped gracefully if the potion table hasn't been fetched on this machine
-if [ -f "$SRC/features/muon/loop/compute/semantic-find/assets/find/table.bin" ]; then
+if [ -f "$SRC/features/miso/loop/compute/semantic-find/assets/find/table.bin" ]; then
   python3 "$SRC/tools/embed_catalog.py"
 else
   echo "  NOTE: potion table absent (tools/fetch_find.py) — vectors.json not refreshed"
@@ -72,11 +72,11 @@ fi
 # deploy stamp: the client compares this on launch and self-refreshes on change.
 # a plain increasing integer (the commit count — every release is a commit, so
 # this needs no counter file and still names an exact commit for debugging)
-(cd "$SRC" && git rev-list --count HEAD) > "$SRC/products/muon/build/site/version"
+(cd "$SRC" && git rev-list --count HEAD) > "$SRC/products/miso/build/site/version"
 
 # what's-changed list for the system panel: recent commit subjects, newest
 # first, each tagged with its build number (count minus offset)
-python3 - "$SRC" > "$SRC/products/muon/build/site/changes.json" <<'PY'
+python3 - "$SRC" > "$SRC/products/miso/build/site/changes.json" <<'PY'
 import json, re, subprocess, sys
 src = sys.argv[1]
 count = int(subprocess.check_output(["git", "rev-list", "--count", "HEAD"], cwd=src))
@@ -118,7 +118,7 @@ PY
 # the update delta's ground truth: a content hash per site file (see
 # review/delta). version/changes.json/hashes.json are always-fresh data, not
 # cached app files — excluded so a data-only release reads as "no change"
-python3 - "$SRC/products/muon/build/site" > "$SRC/products/muon/build/site/hashes.json" <<'PY'
+python3 - "$SRC/products/miso/build/site" > "$SRC/products/miso/build/site/hashes.json" <<'PY'
 import hashlib, json, os, sys
 site = sys.argv[1]
 skip = {"version", "changes.json", "hashes.json", "replay.json"}
@@ -138,18 +138,18 @@ print(json.dumps(hashes, sort_keys=True))
 PY
 
 rsync -a --delete \
-  "$SRC/products/muon/build/server/target/release/muon_server" \
-  "$SRC/products/muon/build/site" \
-  "$HOST:muon/"
+  "$SRC/products/miso/build/server/target/release/miso_server" \
+  "$SRC/products/miso/build/site" \
+  "$HOST:miso/"
 
 ssh "$HOST" '
-  launchctl kickstart -k "gui/$(id -u)/com.noob.muon" 2>/dev/null ||
-    launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.noob.muon.plist
+  launchctl kickstart -k "gui/$(id -u)/com.noob.miso" 2>/dev/null ||
+    launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.noob.miso.plist
 '
 
 # the ask inbox: shipping without answering becomes visible at the moment of
 # shipping — print every user ask still status "asked" (see noob-button/ask)
-ssh "$HOST" 'find /tmp/muon-vars -name "user.*.asks.json" -exec cat {} + 2>/dev/null' | python3 -c '
+ssh "$HOST" 'find /tmp/miso-vars -name "user.*.asks.json" -exec cat {} + 2>/dev/null' | python3 -c '
 import json, sys
 for line in sys.stdin:
     line = line.strip()
@@ -163,4 +163,4 @@ for line in sys.stdin:
                   % (a["status"].upper(), a.get("text", ""), where))
 ' || true
 
-echo "deployed — https://muon.nøøb.org"
+echo "deployed — https://miso.nøøb.org"

@@ -45,7 +45,7 @@ refactoring rule) — then extend it from the new node. If a mechanism is
 genuinely missing from the linker, say so and design it with the user rather
 than working around it.
 
-**4. Prove the toggle.** Build (`python3 tools/fmlink.py muon`), run the
+**4. Prove the toggle.** Build (`python3 tools/fmlink.py miso`), run the
 tests/flows the change touches, then untick the new node in `order.md`,
 relink, and confirm its code has left the composed output and nothing else
 broke. Re-tick. A feature that cannot be turned off is not a feature yet.

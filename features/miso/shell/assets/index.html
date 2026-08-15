@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>miso</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<!-- fm:head -->
+<style>
+  html, body { margin: 0; height: 100%; background: #000; color: #fff;
+    font: 16px -apple-system, system-ui, sans-serif; }
+  body { display: flex; align-items: center; justify-content: center; }
+  #app { text-align: center; }
+/* fm:style */
+</style>
+</head>
+<body>
+<div id="app"></div>
+<!-- fm:body -->
+<script>
+const $ = (id) => document.getElementById(id);
+const fm_b64uToBuf = (s) => Uint8Array.from(
+  atob(s.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
+const fm_bufToB64u = (b) => btoa(String.fromCharCode(...new Uint8Array(b)))
+  .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+// muon -> miso (#p50): one-time key migration so devices on the legacy
+// origin keep their stamps and identity through the rename
+for (const k of Object.keys(localStorage)) {
+  if (k.startsWith('muon') && !('miso' + k.slice(4) in localStorage)) {
+    localStorage['miso' + k.slice(4)] = localStorage[k];
+  }
+}
+if ('caches' in window) caches.delete('muon');
+// fm:script
+
+// ---- the loader flow (shell): each step consults optional features and
+// carries on gracefully when one is unticked
+(async () => {
+  try {
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+    if (typeof feature_Install !== 'undefined' && feature_Install.redirect()) return;
+    let who = null;
+    if (typeof feature_Gate !== 'undefined') {
+      who = await feature_Gate.whoami();
+      if (feature_Gate.redirectIfLoggedOut(who)) return;
+    }
+    if (typeof feature_Panel !== 'undefined') feature_Panel.lastWho = who;
+    if (typeof feature_Loop !== 'undefined') await feature_Loop.boot();
+    if (typeof feature_Update !== 'undefined') await feature_Update.launch(who);
+  } catch (e) {
+    if (typeof feature_Diag !== 'undefined')
+      feature_Diag.report({ error: 'loader: ' + (e && e.message ? e.message : String(e)) });
+  }
+})();
+</script>
+</body>
+</html>

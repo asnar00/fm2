@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Embed text with muon's own potion table (see tools/fetch_find.py) —
+"""Embed text with miso's own potion table (see tools/fetch_find.py) —
 the deploy-side twin of semantic-find.index.js's embedder. Both read the
 same int8 table and implement the same BERT WordPiece walk, so catalog
 vectors (embedded here at deploy) and query vectors (embedded on the
@@ -15,7 +15,7 @@ import unicodedata
 from pathlib import Path
 
 FIND = (Path(__file__).resolve().parent.parent
-        / "features/muon/loop/compute/semantic-find/assets/find")
+        / "features/miso/loop/compute/semantic-find/assets/find")
 
 _state = None
 

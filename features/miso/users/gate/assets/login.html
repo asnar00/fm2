@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>miso</title>
+<meta name="theme-color" content="#000000">
+<!-- fm:head -->
+<style>
+  html, body { margin: 0; min-height: 100vh; background: #000; color: #fff;
+    font: 16px/1.5 -apple-system, system-ui, sans-serif; }
+  body { display: grid; place-items: center; }
+  main { text-align: center; padding: 2rem; }
+  .logo { font-size: 17vw; line-height: 1.1; user-select: none; }
+  @media (min-width: 700px) { .logo { font-size: 90px; } }
+  p { color: #999; margin: .6rem 0 1.6rem; }
+  input { font-size: 1.3rem; text-align: center; background: #111; color: #fff;
+    border: 1px solid #333; border-radius: 10px; padding: .6rem .9rem;
+    width: 15rem; outline: none; }
+  input:focus { border-color: #888; }
+  button { font-size: 1.05rem; margin-top: 1rem; background: #fff; color: #000;
+    border: 0; border-radius: 10px; padding: .6rem 1.6rem; cursor: pointer; }
+  #err { color: #e66; min-height: 1.5em; margin-top: .8rem; }
+  .hide { display: none; }
+/* fm:style */
+</style>
+</head>
+<body>
+<main>
+  <div class="logo">ᕦ(ツ)ᕤ</div>
+  <p id="hint">enter your phone number</p>
+  <form id="phoneStep">
+    <input id="phone" type="tel" autocomplete="tel" placeholder="+44 7…" autofocus>
+    <br><button>send code</button>
+  </form>
+  <form id="pinStep" class="hide">
+    <input id="pin" inputmode="numeric" maxlength="4" pattern="[0-9]*"
+           placeholder="····" autocomplete="one-time-code">
+  </form>
+  <!-- fm:body -->
+  <div id="err"></div>
+</main>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const fm_b64uToBuf = (s) => Uint8Array.from(
+    atob(s.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
+  const fm_bufToB64u = (b) => btoa(String.fromCharCode(...new Uint8Array(b)))
+    .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const post = (url, body) => fetch(url, { method: "POST",
+    headers: { "content-type": "application/json" }, body: JSON.stringify(body) })
+    .then(async (r) => ({ ok: r.ok, ...(await r.json().catch(() => ({}))) }))
+    .catch(() => ({ ok: false, error: "server unreachable — try again in a moment" }));
+  let phone = "";
+  $("phoneStep").onsubmit = async (e) => {
+    e.preventDefault(); $("err").textContent = "";
+    phone = $("phone").value;
+    const r = await post("/auth/request", { phone });
+    if (!r.ok) { $("err").textContent = r.error || "something went wrong"; return; }
+    $("phoneStep").classList.add("hide"); $("pinStep").classList.remove("hide");
+    $("hint").textContent = "enter the 4-digit code we texted you";
+    $("pin").focus();
+  };
+  // iOS autofill (or the Go key) SUBMITS the pin form — a navigation that tears
+  // the page down mid-verify and discards the Set-Cookie. both routes go
+  // through verify(), and the form never navigates.
+  let busy = false;
+  const verify = async () => {
+    if (busy || $("pin").value.length !== 4) return;
+    busy = true; $("err").textContent = "checking…";
+    const r = await post("/auth/verify", { phone, pin: $("pin").value });
+    busy = false;
+    if (r.ok) {
+      const who = await fetch("/auth/whoami", { cache: "no-store" })
+        .then((x) => x.json()).catch(() => null);
+      if (who && who.authed) {
+        if (typeof feature_Enrol !== "undefined") await feature_Enrol.run();
+        location.replace("/?in=" + Date.now());
+        return;
+      }
+      $("err").textContent = "logged in, but this browser did not keep the cookie";
+      return;
+    }
+    $("err").textContent = r.error || "wrong code";
+    $("pin").value = ""; $("pin").focus();
+  };
+  $("pinStep").onsubmit = (e) => { e.preventDefault(); verify(); };
+  $("pin").oninput = verify;
+// fm:script
+</script>
+</body>
+</html>

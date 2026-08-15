@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Fetch the pinned potion-base-8M static-embedding artifacts and convert
-them into muon's own on-device format (see loop/compute/semantic-find):
+them into miso's own on-device format (see loop/compute/semantic-find):
 
   vocab.json   token strings in row order (WordPiece, ## continuations)
   table.bin    int8 token->vector table, row-major [29528 x 256]
@@ -20,7 +20,7 @@ import urllib.request
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-DEST = REPO / "features/muon/loop/compute/semantic-find/assets/find"
+DEST = REPO / "features/miso/loop/compute/semantic-find/assets/find"
 HF = "https://huggingface.co/minishlab/potion-base-8M/resolve/main/"
 
 

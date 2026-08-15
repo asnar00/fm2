@@ -7,8 +7,8 @@
 // debugging (it caught the env()-in-calc height bug and the display:flex
 // boot leak that headless-wasm tests cannot see).
 //
-// Usage: start the dev server (products/muon/build: ./server/target/release/
-// muon_server > /tmp/fm2-devserver.log), start Chrome:
+// Usage: start the dev server (products/miso/build: ./server/target/release/
+// miso_server > /tmp/fm2-devserver.log), start Chrome:
 //   chrome --headless=new --remote-debugging-port=9222 --user-data-dir=/tmp/x about:blank
 // then: node tools/panel_drive.js
 const CHROME_HTTP = 'http://127.0.0.1:9222';

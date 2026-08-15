@@ -2,7 +2,7 @@
 """Embed the exported feature catalog for on-device semantic find.
 
 Reads site/features/tree.json (written by export_features.py), embeds each
-node's name + purpose + intro with muon's own potion table
+node's name + purpose + intro with miso's own potion table
 (tools/potion_embed.py — the same table the device reads), and writes
 site/features/vectors.json: {"dims": N, "vecs": {path: [floats…]}}.
 Deploy runs this after the tree export; the device embeds only queries."""
@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import potion_embed  # noqa: E402
 
 REPO = Path(__file__).resolve().parent.parent
-SITE = REPO / "products/muon/build/site"
+SITE = REPO / "products/miso/build/site"
 
 # quoted spans in spec prose are EXAMPLE QUERIES ("record a voice note") —
 # embed them and the documenting node becomes a magnet for its own example,

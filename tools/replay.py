@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Stand a recorded muon session up in a test browser and replay it.
+"""Stand a recorded miso session up in a test browser and replay it.
 
 Pulls blackbox batches off the mini over ssh, assembles the chosen window into
-site/replay.json (local only — deploy removes it), makes sure the local muon
+site/replay.json (local only — deploy removes it), makes sure the local miso
 server is running (localhost is ungated: no login in the test browser), and
 opens the app with ?replay=1 — in a booted iPhone simulator with --simulator,
 else the default browser.
@@ -18,12 +18,12 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-BUILD = REPO / "products" / "muon" / "build"
+BUILD = REPO / "products" / "miso" / "build"
 MINI = "microserver@microservers-Mac-mini.local"
 
 
 def pull_batches():
-    raw = subprocess.run(["ssh", MINI, "cat /tmp/muon-blackbox.log 2>/dev/null"],
+    raw = subprocess.run(["ssh", MINI, "cat /tmp/miso-blackbox.log 2>/dev/null"],
                          capture_output=True, text=True).stdout
     for line in raw.splitlines():
         parts = line.split(" ", 2)
@@ -62,14 +62,14 @@ def ensure_server():
         return
     except OSError:
         pass
-    binary = BUILD / "server" / "target" / "release" / "muon_server"
+    binary = BUILD / "server" / "target" / "release" / "miso_server"
     if not binary.exists():
-        raise SystemExit("no local build — run: python3 tools/fmlink.py muon")
+        raise SystemExit("no local build — run: python3 tools/fmlink.py miso")
     subprocess.Popen([binary], cwd=BUILD,
-                     stdout=open("/tmp/muon-replay-server.log", "w"),
+                     stdout=open("/tmp/miso-replay-server.log", "w"),
                      stderr=subprocess.STDOUT)
     time.sleep(0.6)
-    print("local muon server started (logs: /tmp/muon-replay-server.log)")
+    print("local miso server started (logs: /tmp/miso-replay-server.log)")
 
 
 def open_target(url: str, simulator: bool):

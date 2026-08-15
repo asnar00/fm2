@@ -2,7 +2,7 @@
 """Fetch the on-device transcription artifacts for /loop/dictate/phone.
 
 The repo carries the recipe, not the binaries: this script populates
-features/muon/loop/dictate/phone/assets/stt/ (gitignored except engine.js)
+features/miso/loop/dictate/phone/assets/stt/ (gitignored except engine.js)
 with pinned versions of
   - transformers.js (from the npm registry tarball, exact version), and its
     onnxruntime wasm/mjs backends;
@@ -29,7 +29,7 @@ MODEL_ONNX = ["onnx/encoder_model_q4.onnx",
               "onnx/decoder_model_merged_q4.onnx"]
 
 REPO = Path(__file__).resolve().parent.parent
-STT = REPO / "features/muon/loop/dictate/phone/assets/stt"
+STT = REPO / "features/miso/loop/dictate/phone/assets/stt"
 
 
 def fetch(url: str) -> bytes:

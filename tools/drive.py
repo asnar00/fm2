@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Drive a live muon page: single pokes, or scripted demos with assertions.
+"""Drive a live miso page: single pokes, or scripted demos with assertions.
 
 Usage:
   drive.py tap '#build'                     click any element
@@ -23,11 +23,11 @@ import sys
 import time
 import urllib.request
 
-# --base https://muon.xn--nb-lkaa.org and --cookie "muon_auth=..." (or env
-# MUON_BASE / MUON_COOKIE) drive an instance through the tunnel, which gates
+# --base https://miso.xn--nb-lkaa.org and --cookie "miso_auth=..." (or env
+# MISO_BASE / MISO_COOKIE) drive an instance through the tunnel, which gates
 # the drive/readout endpoints
-BASE = os.environ.get("MUON_BASE", "http://localhost:8095")
-COOKIE = os.environ.get("MUON_COOKIE", "")
+BASE = os.environ.get("MISO_BASE", "http://localhost:8095")
+COOKIE = os.environ.get("MISO_COOKIE", "")
 
 
 def request(path, body=None):

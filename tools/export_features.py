@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Static export of the feature browser into the muon site.
+"""Static export of the feature browser into the miso site.
 
 Renders every feature node with the explorer's own server-side renderer into
 site/features/<path>/index.html (tree | spec + code | transcript, no client
 JS), so the deployed site serves the exact feature tree that built it.
-Run by deploy.sh after fmlink; served publicly at muon.nøøb.org/features/.
+Run by deploy.sh after fmlink; served publicly at miso.nøøb.org/features/.
 """
 
 import json
@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 import explorer
 
-OUT = explorer.REPO / "products" / "muon" / "build" / "site" / "features"
+OUT = explorer.REPO / "products" / "miso" / "build" / "site" / "features"
 
 
 def relink(html: str) -> str:
@@ -109,7 +109,7 @@ def tool_of(feature) -> str:
 
 
 def tree_json(children, times, builds) -> list:
-    """The tree as data, for the in-app chooser (features/muon/shell/panel/
+    """The tree as data, for the in-app chooser (features/miso/shell/panel/
     noob-button/chooser): name, path, purpose, intro, provenance timestamp,
     children — order.md order. ts uses fmlink's provenance rule: a node's
     time is its cited prompt's; a citation-less grouping node inherits its

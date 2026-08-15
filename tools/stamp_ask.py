@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Stamp an ask's lifecycle status from the builder's bench, LIVE.
 
-Updates matching entries in the muon var store (user.*.asks.json) and
+Updates matching entries in the miso var store (user.*.asks.json) and
 appends a per-user VarUpdate to the server's broadcast file — the same
 file `publish` writes and every client long-polls — so open panels see
 the status change within a beat, no relaunch (see
@@ -24,7 +24,7 @@ MINI = "microserver@microservers-Mac-mini.local"
 REMOTE = r'''
 import glob, json, sys
 text, status, build = sys.argv[1], sys.argv[2], sys.argv[3]
-for f in glob.glob("/tmp/muon-vars/user.*.asks.json"):
+for f in glob.glob("/tmp/miso-vars/user.*.asks.json"):
     d = json.load(open(f))
     asks = json.loads(d.get("v") or "[]")
     hit = False
@@ -39,7 +39,7 @@ for f in glob.glob("/tmp/muon-vars/user.*.asks.json"):
     value = json.dumps(asks)
     open(f, "w").write(json.dumps({"v": value}))
     tag = f.split("/")[-1][5:-10]
-    bf = "/tmp/muon-broadcast.json"
+    bf = "/tmp/miso-broadcast.json"
     try:
         b = json.load(open(bf))
     except Exception:
