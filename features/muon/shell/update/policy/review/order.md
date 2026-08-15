@@ -1,1 +1,2 @@
 - [x] consent-once
+- [x] upgrade

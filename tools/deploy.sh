@@ -76,20 +76,34 @@ lines = subprocess.check_output(["git", "log", "--format=%H%x09%s", "-12"],
                                 cwd=src, text=True).splitlines()
 
 # release kind, from the tree discipline: a commit that ADDS a feature node
-# spec (features/**/<name>/<name>.md) ships new behaviour; else it's a fix
-def kind(sha):
-    added = subprocess.check_output(
-        ["git", "diff-tree", "-r", "--diff-filter=A", "--name-only",
-         "--no-commit-id", sha], cwd=src, text=True).splitlines()
-    for p in added:
-        if re.match(r"features/(?:.*/)?([^/]+)/\1\.md$", p):
-            return "feature"
-    return "fix"
+# spec (features/**/<name>/<name>.md) ships new behaviour; else it's a fix.
+# paths = feature node dirs the commit touched, added = node specs it added
+# (both features/-relative, the same paths tree.json speaks) — the review
+# workflow reads these to badge and pre-tick proposed additions (#p54, #p2)
+def touched(sha, filt):
+    args = ["git", "diff-tree", "-r", "--name-only", "--no-commit-id"]
+    if filt:
+        args.append("--diff-filter=" + filt)
+    return subprocess.check_output(args + [sha], cwd=src, text=True).splitlines()
+
+def node_paths(files):
+    out = set()
+    for p in files:
+        m = re.match(r"features/((?:[^/]+/)*[^/]+)/[^/]+$", p)
+        if m:
+            out.add(m.group(1))
+    return sorted(out)
 
 entries = []
 for i, line in enumerate(lines):
     sha, subject = line.split("\t", 1)
-    entries.append({"build": count - i, "text": subject, "kind": kind(sha)})
+    added = [re.match(r"features/(.*)/[^/]+$", p).group(1)
+             for p in touched(sha, "A")
+             if re.match(r"features/(?:.*/)?([^/]+)/\1\.md$", p)]
+    entries.append({"build": count - i, "text": subject,
+                    "kind": "feature" if added else "fix",
+                    "paths": node_paths(touched(sha, None)),
+                    "added": sorted(added)})
 print(json.dumps(entries))
 PY
 
