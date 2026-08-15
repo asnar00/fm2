@@ -37,4 +37,6 @@ wraps `feature_Chooser.goto` to unfold before the original scrolls.
 nested inside their own box and so stay visible, the paid-for #p81
 lesson (never touch another feature's show/hide) observed: the panel's
 own lifecycle is untouched, only rows this node's parent owns are
-folded.
+folded. A folded box also surrenders `/chooser`'s min-height budget
+(#p16), so the panel shows no reserved blank between the build line
+and the policy row until something is actually there.

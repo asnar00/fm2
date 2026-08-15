@@ -2,3 +2,6 @@
    rows are nested in their own box and stay out front */
 .chooser-home.folded > .crow,
 .chooser-home.folded > .cmore { display: none; }
+/* a folded list surrenders its height budget too: the box sizes to what
+   is actually showing (the awaiting section, or nothing at all) */
+#changes.chooser-home.folded { min-height: 0; margin: 0; }
