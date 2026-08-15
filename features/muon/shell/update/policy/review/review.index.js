@@ -1,0 +1,92 @@
+const feature_Review = {
+  applying: false,
+
+  running() {
+    return typeof feature_Update !== 'undefined'
+      ? parseInt(feature_Update.running, 10) || 0 : 0;
+  },
+  server() {
+    return typeof feature_Update !== 'undefined'
+      ? parseInt(feature_Update.server, 10) || 0 : 0;
+  },
+
+  // the version-stamp + cache-clear + reload ritual (the panel button's move)
+  async apply(build) {
+    if (this.applying) return;
+    this.applying = true;
+    try { localStorage.muonVersion = String(build); } catch (e) {}
+    try { await caches.delete('muon'); } catch (e) {}
+    location.reload();
+  },
+
+  // the awaiting section: pending features from the server's LIVE tree —
+  // any node whose build exceeds what's running here
+  async section() {
+    const running = this.running();
+    const server = this.server();
+    const box = $('changes');
+    const old = document.getElementById('awaiting');
+    if (old) old.remove();
+    const upBtn = $('updateBtn');
+    if (server <= running || !box || !box.classList.contains('chooser-home')) {
+      return; // up to date (or list absent): the plain button's world
+    }
+    const tree = await fetch('features/tree.json', { cache: 'no-store' })
+      .then((r) => r.ok ? r.json() : null).catch(() => null);
+    if (!tree) return; // degrade honestly to the standing update button
+    if (upBtn) upBtn.style.display = 'none';
+    const pending = [];
+    const walk = (ns, parent) => {
+      for (const n of ns) {
+        n.parent = parent;
+        if (n.build > running) pending.push(n);
+        walk(n.children, n.path);
+      }
+    };
+    walk(tree, '');
+    pending.sort((a, b) => b.build - a.build || (a.path < b.path ? -1 : 1));
+    const rows = (typeof feature_Chooser !== 'undefined' && pending.length)
+      ? pending.map((n) => { feature_Chooser.byPath[n.path] = n; return feature_Chooser.row(n); }).join('')
+      : '';
+    const sect = document.createElement('div');
+    sect.id = 'awaiting';
+    sect.innerHTML =
+      '<div class="awhead">awaiting update — build ' + server
+      + (server > running + 1 ? ' (' + (server - running) + ' releases)' : '') + '</div>'
+      + rows
+      + '<div class="awrow"><button id="acceptBtn">update</button></div>';
+    box.prepend(sect);
+    document.getElementById('acceptBtn').onclick = () => {
+      feature_Loop.send({ type: 'AcceptUpdate', data: { build: server } });
+      feature_Review.apply(server);
+    };
+    if (typeof feature_Chooser !== 'undefined') feature_Chooser.reflect();
+  },
+
+  // the one OK arriving over sync: an acceptance newer than what's running
+  watch() {
+    if (typeof feature_Replay !== 'undefined' && feature_Replay.active) return;
+    let s = {};
+    try { s = JSON.parse(feature_Loop.state || '{}'); } catch (e) {}
+    const accepted = parseInt(s.update_accepted || '0', 10) || 0;
+    const running = this.running();
+    if (accepted > running && running > 0 && this.server() >= accepted) {
+      this.apply(accepted);
+    }
+  },
+};
+{
+  // ride the chooser's mount: the awaiting section tops the feature list
+  if (typeof feature_Chooser !== 'undefined') {
+    const fm_reviewMount = feature_Chooser.mount.bind(feature_Chooser);
+    feature_Chooser.mount = async function () {
+      await fm_reviewMount();
+      await feature_Review.section();
+    };
+  }
+  const fm_reviewApply = feature_Loop.apply;
+  feature_Loop.apply = function (p) {
+    fm_reviewApply.call(this, p);
+    feature_Review.watch();
+  };
+}
