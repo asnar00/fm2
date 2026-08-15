@@ -116,4 +116,19 @@ ssh "$HOST" '
   launchctl kickstart -k "gui/$(id -u)/com.noob.muon" 2>/dev/null ||
     launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.noob.muon.plist
 '
+
+# the ask inbox: shipping without answering becomes visible at the moment of
+# shipping — print every user ask still status "asked" (see noob-button/ask)
+ssh "$HOST" 'cat /tmp/muon-vars/user.*.asks.json 2>/dev/null' | python3 -c '
+import json, sys
+for line in sys.stdin:
+    line = line.strip()
+    if not line: continue
+    try: asks = json.loads(json.loads(line).get("v") or "[]")
+    except Exception: continue
+    for a in asks:
+        if a.get("status") == "asked":
+            print("  ASK awaiting the builder: \"%s\"" % a.get("text", ""))
+' || true
+
 echo "deployed — https://muon.nøøb.org"
