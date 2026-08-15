@@ -801,6 +801,19 @@ the button is still a person-shaped session on a delay — the ladder's
 next rungs (drafter upgrades, the local net, runtime ticks) now have a
 working loop to land in.
 
+**MUON → MISO (#p50, 2026-08-15, post-pizza).** Renamed everywhere:
+"make it so" — ash's name-in-waiting for a self-modifying toolkit, which
+is what this became the day the loop closed. Mechanics: quote lines kept
+verbatim (history said "muon"); localStorage keys migrate via a one-time
+shim in the shell skeleton; the cookie rename logs devices out once; IDB
+recordings on the legacy origin are orphaned (blobs safe on the mini);
+miso.nøøb.org canonical, muon.nøøb.org a legacy alias until retired; old
+state dirs kept as backups. Lessons paid for: .gitignore paths don't
+rename themselves (130MB of model briefly entered a commit — caught by
+GitHub, history rewound before push); a product-dir symlink means "the
+product's order.md" can silently be the SHARED order.md (the override
+structure must be real dirs, learned at #p44, relearned gently here).
+
 ## v0 linker — BUILT (2026-08-13)
 
 `tools/fmlink.py` (Python, ~250 lines, regex-level parsing — quick first pass; a Rust rewrite using `syn` is the obvious v1). Usage: `fmlink.py [product] [--run]`.
