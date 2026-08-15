@@ -1,135 +1,175 @@
 # handover
-*state of play for the next session — written 2026-08-15, end of day 3's marathon (transcripts/2026-08-14-fm-spec-3.md, 89 prompts, builds 91→120). Discipline in `agents.md`; ops in `deploy.md`; this file is only what's current.*
+*state of play for the next session — written 2026-08-15, end of day 4
+(transcripts/2026-08-15-fm-spec.md, 46 prompts, builds 120→155). Discipline
+in `agents.md`; ops in `deploy.md`; this file is only what's current.*
 
 ## where things stand
 
-Live: **build 120** at muon.nøøb.org, 77 nodes. The day in one line: dictate
-learned to transcribe itself on the device, the nøøb button became the
-steering surface with the feature list living inside the system panel, and
-updates became one-reviewed-OK-for-the-whole-fleet.
+Live: **build 155** at muon.nøøb.org, 102 nodes. The day in one line: the
+update pipeline became one-OK-and-deltas, muon grew its own WebGPU compute
+substrate and an 8MB semantic find, and then **the loop closed** — five
+field asks travelled phone → proposal → build → awaiting-update → phone,
+including one removal. The app modifies its own tools from inside.
 
 The arcs, in order:
-- **account / noob-button**: the panel moved into the toolbar as the 👤 tool
-  (#p46), then the doctrine matured and it moved back (#p58): the lozenge
-  (top-right since #p49) is the **nøøb button** — it *steers* muon; the
-  toolbar *uses* muon ("meta" is banned vocabulary, #p70). 👤 remains, empty,
-  awaiting the **profile page** (account = super-simple social network,
-  #p55 — everyone gets a page *(post)*, connections, groups).
-- **transcription, phone rung** (`dictate/phone`, #p47): whisper-tiny q4 via
-  transformers.js, self-hosted under /stt/ (pinned by `tools/fetch_stt.py`),
-  main-thread engine (ort won't init in a worker), webgpu probed then
-  wasm-fallback-with-fresh-module (v4 memoizes failures — see the five
-  hard-won facts in phone.md's code description). Field-verified: "the
-  first message recorded on the dictaford". Scheduler + slots live in
-  dictate.rs; `transcript` (tap a playing note → scrollable panel) and
-  `transcript/honest-panel` (waiting/transcribing/failed states, err
-  stamped as `t_err`) complete the loop.
-- **the chooser** (`noob-button/chooser`, #p71–#p82, nine prompts of draft
-  churn): the feature list IS the system panel's centrepiece — one line per
-  feature, newest first, numbered by **the latest build that touched it**
-  (computed from git at export; `tree.json` carries name/purpose/intro(=
-  `## user` para)/ts/build), tap-line expands intro + child chips, `‹` up,
-  intro-tap opens the served node page in-place, tick per node path
-  (`feature_ticks`, user-scoped, inert until the context manager). Panel:
-  who → list (height-capped, scrolls) → policy → logout; `source` unticked;
-  `queue` composed but dormant (entry stood down, signposted).
-- **review** (`policy/review`, #p83 — the doctrine reversal in ash's words):
-  when the server is ahead, the list opens with an **awaiting update**
-  section (pending features = live tree.json builds > running), one
-  **update** button stamps `update_accepted` (user-scoped) → every instance
-  applies on sync. One OK, fleet-wide.
-- **aesthetics + toolbar feel**: ember 3400K-Dark categorical colours per
-  tool (black icon on colour, selected brightens; `tool_colour` seam on
-  /tools), centred toolbar, dot-grid background (`logo/dots`). "It's got
-  attitude." Late churns (#p86-88): in a tool, the lit tool button owns the
-  LEFT edge and is itself the way back (the `‹` retired; tools_home stays
-  for programmatic use), controls centre in the free space (auto-margin
-  trick in ember.css — beware :first-of-type matches element TYPE).
+- **the update ladder** (#p2, morning): `review` now has six children and
+  sits AT the cap — `consent-once` (acceptance is the ONLY key; auto's
+  self-apply stood down by redefinition), `upgrade` (additions badged
+  `new`, pre-ticked by policy, DRAFT ticks committed only on the button),
+  `seamless` (busy tasks defer the apply; whole-state stash/rehydrate),
+  `delta` (deploy ships `hashes.json`; evict only the diff; no-code delta
+  = quiet apply, no reload), `patch` (wasm-only delta hot-swaps the module
+  live, state untouched), `live-panel` (an open panel re-renders when news
+  arrives or a quiet apply lands).
+- **minimal updates** (#p6): fmlink `SPLIT_PAGES` emits index.html's js/css
+  as per-feature files under `f/` (85KB → 5KB skeleton; f/ swept each
+  link); serve.rs learned `text/css` (browsers discard mistyped
+  stylesheets); gate hotfix: `f/` + `hashes.json` joined the public shell
+  list — logged-out visitors were briefly frozen (build 130, fixed 131).
+- **muon computes for itself** (#p12, doctrine in ash's words):
+  `loop/compute` — ~90 lines of page JS driving WebGPU, no ort/burn/
+  bindgen, adapter-clamped limits from birth (haze's recipe), proof kernel
+  0.7ms warm. First tenant `semantic-find`: potion-base-8M as int8 table
+  (7.5MB, fetch_find.py pins it), WordPiece+mean embedder mirrored in
+  Python (tools/potion_embed.py) and JS with **measured parity 5e-7**;
+  deploy embeds the catalog (embed_catalog.py → features/vectors.json,
+  QUOTED SPANS STRIPPED — spec examples were outranking their subjects);
+  the device embeds only queries; GPU cosine with CPU fallback (CPU wins
+  at 87 entries — the kernel is ceremonial by design). Feature-modular
+  WGSL (chains in shaders) is NAMED in compute.md, to build when the
+  speech pipeline arrives.
+- **the ask pipeline** (#p27 war-game → #p30 go): `ask/birthplace` (asks
+  carry `tool` + `at`), `semantic-find/context-bias` (+0.08 for the open
+  tool's family), `ask/propose` (editable draft = the ask verbatim, #p33;
+  OK fires {text, proposal, context} through the outbox — offline = queued
+  fire), `ask/lifecycle` + `being-built` (requests ride the feature list:
+  status pill in the number slot, tap-to-expand, headerless #p39),
+  `ask/open-chip` + `tools-first` (results ARE tools: open chip + the
+  registering feature's readout; bystanders drop; no-tool asks keep the
+  reading path). Tool ground truth: export_features stamps `tool:` per
+  registering node; `tools_catalog` state var replaced DOM-scraping (the
+  toolbar only renders the open tool in open mode — view, not truth).
+- **THE LOOP CLOSED**: reset-taps (#p27→field ask, toolbar sub-tool via
+  tool_controls after the #p32 correction), double-taps (#p33's own
+  example, asked for in earnest), decrement-taps (#p40 — **first node
+  whose founding quote is the field ask itself**; the event got its own
+  transcript anchor), decrement REMOVED by ask (= product override; see
+  small print for the structure), updates picker tucked behind the
+  features button (#p44a; #p81 law kept via an owned container). Builder
+  ritual: stamp `building` (live to the panel via the broadcast file) →
+  build → deploy → stamp `shipped --build N`.
+- **panel calm** (#p14/#p15): ask box first, build line under it,
+  awaiting/building/requests, policy (now tucked), features button
+  folding the 100-row list (fold surrenders the height budget), who+logout
+  sharing the last row, panel top-tied BELOW the nøøb button's row with a
+  height bound. Plus `chooser/build-order` (list strictly descending by
+  shown build) and `tools/steady` (toolbar slide plays only on mode
+  change).
 
-## NEXT SESSION (in rough order of pull)
+## NEXT SESSION (ash's pick: whisper on webgpu first)
 
-1. **Transcription server rung** (`dictate/server`): whisper.cpp + small
-   model on the mini, invoked as subprocess on blobs already there (mirror
-   uploads them). Consent given in principle — **confirm before installing**.
-   The scheduler's upgrade logic is already live: grade-2 results replace
-   grade-1 stamps in place ("dictaford" → "dictaphone" is the demo).
-   While there: **persist transcript stamps** (currently in loop state only —
-   RecList reseeds from IndexedDB on boot, so every restart re-transcribes).
-2. **`final` rung**: external batch API — **OPEN: provider is ash's pick**;
-   key goes in the mini's `~/.agent-config.json` (the Vonage pattern).
-3. **ort-webgpu on iOS** (named refinement in phone.md): the GPU is fine
-   (haze proves it on the same phone); ort's jsep requests more than Safari
-   grants — haze's recipe is `required_limits: adapter.limits()`
-   (ftr repo, haze/src/renderer.rs:536-556). Prize ~5-10x; clear the
-   localStorage.muonSttDevice pin when it lands.
-4. **The nøøb surface's ask** (#p53/#p70 — agent-powered IDE for end-user
-   programming): first brick is the **ask inbox** (prompt box; asks stored
-   per user, travel via exchange; dev loop reads them; deploy warns on
-   unaddressed). Enriched at #p85 (bedtime): the feature list is the whole
-   REQUEST LIFECYCLE — ask → agent proposes (the proposal IS the
-   prospective node's `## user` paragraph, approved before build) → in
-   progress (ETA; "!"/"?" for problems/questions) → awaiting update →
-   shipped. Notes.md has the full doctrine + ladder.
-5. **Profile page** (account's social future, #p55) and **context
-   sensitivity** for the panel/list (#p78 names it).
-6. **auto-policy vs one-OK reconciliation**: 'auto' still self-applies
-   without review; the doctrine now says one OK always — decide with ash.
+0. **IN THE INBOX, status proposed** (arrived as the handover was being
+   written, t=1786816107134): "A long press on a tool button should pop
+   up a tooltip with user documentation" — no birthplace tool (filed
+   from the launcher). Stamp `building` on pickup; the tooltip content
+   is ready-made (tree.json intros; the registering node's `## user`
+   para); mind iOS long-press vs the click-delegation in loop.js.
 
-## today's doctrine additions (all in notes.md)
-
-- **The nøøb button steers muon; the toolbar uses muon** — "meta" is retired
-  (tainted; #p70). The button's destiny: "how do I use this?" / "do xyz" /
-  "I need xyz" — an agent-powered IDE for end-user programming; the ladder
-  (surface existing → compose → build) is graded derivation over capability.
-- **The queue wants to be a tree → it became one** (#p59→#p71): reader and
-  consent surface are one tree at two depths; ticks-on-nodes are a
-  user-scoped order.md.
-- **Account is a social tool** (#p55): page-as-post unifies with the places
-  doctrine; the system freight moved to the nøøb button.
-- **One OK, fleet-wide** (#p83): per-device consent was the chore, not
-  consent itself.
-- **Never touch another feature's show/hide lifecycle from a stylesheet**
-  (#p81, paid for): chooser's `#panel{display:flex}` leaked the sheet at
-  boot and broke sizing.
+1. **Whisper on the substrate** — the climb begins. Two probes, cheapest
+   first: (a) the **ort shim experiment**: engine.js wraps
+   `GPUAdapter.prototype.requestDevice` clamping requiredLimits to
+   adapter.limits (haze's recipe; catches BOTH pinned bundles), clear the
+   `localStorage.muonSttDevice` failure memo, sim then device, watching
+   for onnxruntime **#26827** (WebKit-26 jsep: 400% CPU / 1-14GB after
+   inference — if it bites, ort is off the table); (b) the **sovereign
+   path**: mel spectrogram → matmul tiles → attention WGSL kernels on
+   `/compute`, feature-modular WGSL landing with it. notes.md has the
+   T1–T3 map and the 10-15x / 20-60 tok/s numbers. The prize pays twice:
+   whisper ~5-10x AND the FunctionGemma call-rung door.
+2. **Drafter upgrade**: dev-session agent writes the proposal paragraph
+   when online (same textarea, better prose) — the seam is
+   `feature_Propose.draft`.
+3. **Lifecycle polish**: builder→user status channel is the broadcast
+   file (works mid-session); asks store on-device still shows stale
+   status until relaunch when stamps happen while an instance is closed.
+   "!"/"?" states and ETA remain unbuilt (#p85).
+4. **Still pending from day 3**: `dictate/server` (whisper.cpp on the
+   mini, consent given in principle — confirm before installing) and
+   persisting transcript stamps (RecList reseeds from IndexedDB, restarts
+   re-transcribe).
+5. **Regroup pressure**: review, panel, muon root, shell/update all at
+   the 6-child cap; counter at 3 and growing by ask. The first regroup is
+   itself a prompted event.
 
 ## tooling state
 
-- **`tools/panel_drive.js`** — NEW: full-stack CDP rig driving the real app
-  (real login via _test PIN from the server log, real taps, DOM asserts).
-  Caught two bugs headless-wasm tests can't see. Chrome + dev server needed;
-  usage in its header.
-- `tools/export_features.py` — exports `tree.json` (name/path/purpose/
-  intro/ts/build) beside the static pages; latest-build via git (children
-  excluded from a node's own files).
-- `tools/fetch_stt.py` — pinned STT artifacts (transformers 4.2.0, ort
-  1.26.0-dev..., whisper-tiny.en q4 @ pinned sha) into phone/assets/stt/
-  (gitignored except engine.js).
-- `tools/export_transcript.py` — two bugs fixed: log dir now derived from
-  repo path (was hardcoded one segment short — wrong-project exports), and
-  a session keeps its transcript filename across midnight (was forking by
-  mtime date).
-- Headless-wasm test pattern still the workhorse; the sim (`xcrun simctl`
-  iPhone 17 Pro, iOS 26) + beacon-server pattern verified the STT engine
-  end-to-end (real speech via `say` → correct transcript).
+- **1s ask monitor** — re-arm each session (it dies with the session):
+  persistent ssh to the mini, remote 1s loop over
+  `/tmp/muon-vars/user.*.asks.json`, local dedupe vs
+  scratchpad/asks_seen.txt, fires on status asked|proposed with tool/at/
+  proposal in the event. See the Monitor call in this transcript (#p28ff).
+- **tools/stamp_ask.py** `--text X --status building|shipped [--build N]
+  [--local]` — updates the var store AND appends the per-user VarUpdate to
+  `/tmp/muon-broadcast.json` (the server's own publish file) → open
+  panels update in ~0.5s. Named risk: two writers, one file.
+- **tools/fetch_find.py** — pins potion-base-8M → semantic-find/assets/
+  find/ (gitignored except PINNED). **tools/potion_embed.py** — the
+  Python twin embedder. **tools/embed_catalog.py** — runs in deploy after
+  the tree export.
+- **deploy.sh** additions: hashes.json (content hash per site file,
+  data files excluded), changes.json now carries `paths` + `added` per
+  build, prints unaddressed asks (asked|proposed) after shipping.
+- **export_features.py**: stamps `tool:` on registering nodes; order.md
+  no longer bumps a parent's build (#p41).
+- CDP testing lessons, paid for: `Runtime.evaluate` calls share the
+  global lexical scope — bare top-level `const` in one eval silently
+  breaks all later evals (IIFE everything); the toolbar DOM is view not
+  truth; restore reopens the last tool so blind toolbar clicks toggle
+  wrong; headless Chrome needs `--enable-unsafe-webgpu --use-angle=metal`
+  for the compute tests.
+
+## today's doctrine additions (all in notes.md, day-4 entries)
+
+- **One OK always** (auto-vs-review resolved); policy now means
+  "what the review pre-ticks"; fixes-auto vs ask-me currently identical —
+  picker may want to become two-way, ash to rule.
+- **Draft ticks are drafts**: the live ftick event is a store-toggle; a
+  visual overlay would invert intent — commit on the button only.
+- **Muon computes for itself** (#p12): WGSL kernels as node assets, thin
+  JS driver, no dependencies; the zero-import law untouched because the
+  engine never enters client.wasm.
+- **Specs are data**: quoted example phrases embed into the catalog and
+  magnetise their own documentation — stripped at embed time (learned
+  twice).
+- **A parent doesn't age when it gains a child** (order.md excluded from
+  build stamps) and **an update never lists nothing** (release-line rows
+  for scaffolding builds).
+- **In the panel, overrides must carry the #panel id** or silently lose
+  the cascade (paid for twice in one hour).
+- **THE LOOP CLOSED** entry: what the magic decomposes into.
 
 ## small print
 
-- Laptop dev server on 8095 runs the build-114 binary (log:
-  /tmp/fm2-devserver.log); local traffic is ungated (gate passes !tunnel);
-  _test/_test2 users in ~/.muon-auth/users.json. Sim shut down.
-- STT gaps deliberate (notes.md #10): ~130MB model fetch is silent and can
-  re-fetch per online session (wants a cache-first sw rule via a /pwa seam
-  + a "downloading model" state); >30s notes truncate; transcripts don't
-  mirror between devices.
-- notes.md hygiene #9: fmlink copies asset *trees* but never sweeps stale
-  ones from site/ when their feature unticks.
-- shell/update still at the 6-child cap (policy's children took tonight's
-  growth); muon root at 6 — next root child forces a regroup.
-- The queue node is dormant-but-composed; update_ticks (by build) and
-  feature_ticks (by path) are separate stores, both inert until the context
-  manager; `update_accepted` joined them tonight (review).
-- changes.json path-stamping (#p54, feature→tool mapping for a context-
-  sensitive list) remains cheap and unbuilt; deploy already computes the
-  paths.
-- ideas.md holds: ember palettes (spent tonight), plus whatever the morning
-  brings. "There's a million ideas, but they'll keep." — #p84
+- **products/muon/muon is no longer a symlink**: it's a real-dir override
+  path (real dirs muon→loop→tap→counter with glob-symlinked siblings and
+  a local counter/order.md unticking decrement-taps). The old single
+  symlink meant writing "product order.md" wrote THROUGH into the shared
+  tree — paid for at #p44. Unticked children may simply be absent from
+  the local dir. hello_only remains the small exemplar.
+- Client localStorage keys grown today: muonAccepted (acceptance mirror),
+  muonHashes (delta baseline — seeded only when running==server),
+  muonStash (seamless, consumed once). caches.delete('muon') no longer
+  happens on updates (delta evicts precisely) — the STT model survives.
+- Dev server on 8095 runs the build-155 binary; _test login via PIN from
+  /tmp/fm2-devserver.log; local traffic ungated. Headless Chrome may
+  still be running on 9222 (scratchpad profile).
+- STT gaps unchanged from day 3 (silent 130MB fetch, >30s truncation, no
+  transcript mirroring); ort-webgpu blocked on the shim experiment +
+  #26827; localStorage.muonSttDevice memoizes the wasm fallback.
+- asks var grows unboundedly (shipped entries never pruned); fine at
+  current scale, a lifecycle-archive rung eventually.
+- find/* is gated (data, not shell) — correct while ask sits behind
+  login; revisit if ask ever goes public.
+- ideas.md: ember palettes (spent), panel reorder (#p14 — BUILT same
+  day). notes.md hygiene items #9/#10 still open (stale asset sweep
+  beyond f/, stt cache-first sw rule).
