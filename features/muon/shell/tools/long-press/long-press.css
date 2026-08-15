@@ -1,0 +1,5 @@
+#toolCard { position: fixed; z-index: 30; max-width: min(78vw, 20rem);
+  background: #17171a; border: 1px solid #3a3a3f; border-radius: 10px;
+  padding: 9px 12px; font-size: 13px; color: #ccc; line-height: 1.4; }
+#toolCard b { color: #fff; }
+#toolCard .tcintro { margin-top: 4px; color: #9a9aa2; font-size: 12.5px; }

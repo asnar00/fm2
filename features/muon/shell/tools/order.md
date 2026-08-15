@@ -1,3 +1,4 @@
 - [x] restore
 - [x] ember
 - [x] steady
+- [x] long-press
