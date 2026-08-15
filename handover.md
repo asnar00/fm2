@@ -1,229 +1,163 @@
 # handover
-*state of play for the next session — written 2026-08-15, end of day 4
-(transcripts/2026-08-15-fm-spec.md, 46 prompts, builds 120→155). Discipline
-in `agents.md`; ops in `deploy.md`; this file is only what's current.*
+*state of play for the next session — written late 2026-08-15, end of the
+evening session (transcripts/2026-08-15-fm-spec-2.md, 22 prompts, builds
+162→175). Discipline in `agents.md`; ops in `deploy.md`; this file is only
+what's current.*
 
-## THE RENAME (#p50, post-pizza): muon is now MISO ("make it so")
+## THE HEADLINE: the loop ran all evening
 
-Everywhere: tree root features/miso, product products/miso (override
-structure rebuilt), crate miso_server, cookie miso_auth (devices
-re-login once), localStorage misoX keys (one-time migration shim in the
-shell skeleton copies muonX ->), IDB miso-blobs (legacy-origin local
-recordings orphaned — they live on the mini via mirror; named cost),
-mini dirs ~/miso, ~/.miso-auth, /tmp/miso-vars, /tmp/miso-broadcast,
-agent com.noob.miso, log /tmp/miso.log. Old state dirs KEPT as backups.
-**miso.nøøb.org is canonical; muon.nøøb.org still serves as a legacy
-alias** (installed devices keep working; retire whenever). Provenance
-quotes keep "muon" verbatim — history said what it said. Loose ends: a
-stray doubled CNAME (miso.xn--nb-lkaa.org.xn--nb-lkaa.org) deletable
-only in the Cloudflare dashboard; a pre-existing com.noob.miso-auditor
-agent on the mini (not ours, untouched); laptop dev auth copied to
-~/.miso-auth.
+Seven field asks travelled phone → inbox → node → build → phone in one
+sitting, each one stamped building/shipped live to the panel:
 
-## where things stand
+- **decrement restored** (165) — "subtract 1 if >0" arrived by ask; the
+  removal had been a product override, so the restore was the symmetric
+  re-tick + symlink in products/miso. Selection changes stay nodeless.
+- **sub-tool-cards** (166) — long-press cards extend to control buttons
+  (reset, ×2, −1, record). Ground truth: `export_features.py` now stamps
+  `subtools` (the control's data-ev ids) per registering node — the
+  sub-tool twin of the `tool:` stamp. The node wraps
+  `feature_LongPress.contentFor` and arms the parent's own timer state.
+- **honest 👤 tooltip** (167) — the card was right, the account node's
+  `## user` para was stale (pre-noob-button prose). Doc repair in place
+  with a cited revision note; no node (code-free subfeatures are illegal).
+- **fresh-catalog** (168) — 167 shipped as a data-only delta = quiet
+  apply = no reload, and the chooser's memoized catalog outlived it (ash
+  hit this live: "still showing the old tooltip"). New chooser subfeature
+  wraps `feature_Delta.quiet`, forgets flat/byPath before live-panel
+  re-renders. The wasm `patch` path shares quiet's ending, so it's covered.
+- **bigger-buttons** (170) — +25%: 40→50px squares, 19→24px icons, back
+  chevron in proportion. Pure CSS override node under shell/tools.
+- **miso-button** (173) — the ask button says **miso**: type a wish,
+  press the name, make it so.
+- **request-box** (174, churned to 175) — the placeholder became
+  "request", then same-evening wordsmithing landed on **"do something"**
+  (revised in place; two-phase lifecycle blesses draft churn). Box and
+  button now read *do something → miso*.
 
-Live: **build 155** at miso.nøøb.org, 102 nodes. The day in one line: the
-update pipeline became one-OK-and-deltas, miso grew its own WebGPU compute
-substrate and an 8MB semantic find, and then **the loop closed** — five
-field asks travelled phone → proposal → build → awaiting-update → phone,
-including one removal. The app modifies its own tools from inside.
+Plus one typed design ask that became a node:
 
-The arcs, in order:
-- **the update ladder** (#p2, morning): `review` now has six children and
-  sits AT the cap — `consent-once` (acceptance is the ONLY key; auto's
-  self-apply stood down by redefinition), `upgrade` (additions badged
-  `new`, pre-ticked by policy, DRAFT ticks committed only on the button),
-  `seamless` (busy tasks defer the apply; whole-state stash/rehydrate),
-  `delta` (deploy ships `hashes.json`; evict only the diff; no-code delta
-  = quiet apply, no reload), `patch` (wasm-only delta hot-swaps the module
-  live, state untouched), `live-panel` (an open panel re-renders when news
-  arrives or a quiet apply lands).
-- **minimal updates** (#p6): fmlink `SPLIT_PAGES` emits index.html's js/css
-  as per-feature files under `f/` (85KB → 5KB skeleton; f/ swept each
-  link); serve.rs learned `text/css` (browsers discard mistyped
-  stylesheets); gate hotfix: `f/` + `hashes.json` joined the public shell
-  list — logged-out visitors were briefly frozen (build 130, fixed 131).
-- **miso computes for itself** (#p12, doctrine in ash's words):
-  `loop/compute` — ~90 lines of page JS driving WebGPU, no ort/burn/
-  bindgen, adapter-clamped limits from birth (haze's recipe), proof kernel
-  0.7ms warm. First tenant `semantic-find`: potion-base-8M as int8 table
-  (7.5MB, fetch_find.py pins it), WordPiece+mean embedder mirrored in
-  Python (tools/potion_embed.py) and JS with **measured parity 5e-7**;
-  deploy embeds the catalog (embed_catalog.py → features/vectors.json,
-  QUOTED SPANS STRIPPED — spec examples were outranking their subjects);
-  the device embeds only queries; GPU cosine with CPU fallback (CPU wins
-  at 87 entries — the kernel is ceremonial by design). Feature-modular
-  WGSL (chains in shaders) is NAMED in compute.md, to build when the
-  speech pipeline arrives.
-- **the ask pipeline** (#p27 war-game → #p30 go): `ask/birthplace` (asks
-  carry `tool` + `at`), `semantic-find/context-bias` (+0.08 for the open
-  tool's family), `ask/propose` (editable draft = the ask verbatim, #p33;
-  OK fires {text, proposal, context} through the outbox — offline = queued
-  fire), `ask/lifecycle` + `being-built` (requests ride the feature list:
-  status pill in the number slot, tap-to-expand, headerless #p39),
-  `ask/open-chip` + `tools-first` (results ARE tools: open chip + the
-  registering feature's readout; bystanders drop; no-tool asks keep the
-  reading path). Tool ground truth: export_features stamps `tool:` per
-  registering node; `tools_catalog` state var replaced DOM-scraping (the
-  toolbar only renders the open tool in open mode — view, not truth).
-- **THE LOOP CLOSED**: reset-taps (#p27→field ask, toolbar sub-tool via
-  tool_controls after the #p32 correction), double-taps (#p33's own
-  example, asked for in earnest), decrement-taps (#p40 — **first node
-  whose founding quote is the field ask itself**; the event got its own
-  transcript anchor), decrement REMOVED by ask (= product override; see
-  small print for the structure), updates picker tucked behind the
-  features button (#p44a; #p81 law kept via an owned container). Builder
-  ritual: stamp `building` (live to the panel via the broadcast file) →
-  build → deploy → stamp `shipped --build N`.
-- **panel calm** (#p14/#p15): ask box first, build line under it,
-  awaiting/building/requests, policy (now tucked), features button
-  folding the 100-row list (fold surrenders the height budget), who+logout
-  sharing the last row, panel top-tied BELOW the nøøb button's row with a
-  height bound. Plus `chooser/build-order` (list strictly descending by
-  shown build) and `tools/steady` (toolbar slide plays only on mode
-  change).
+- **auto-export** (169, serve/features) — "change a node's text file and
+  it auto-updates everywhere". Server half: any `features/*` request
+  compares newest source mtime against the baked tree.json and re-runs
+  the export first (~4.5s, once per edit; mini has no sources so the
+  deploy bake stays the truth there). Device half: export writes a
+  `stamp` (tree.json content hash); the chooser's held catalog
+  revalidates against it on every read — words reach phones without
+  reload, apply, or deploy. PAID-FOR LESSON: route paths arrive
+  slash-stripped (`clean_path`) — match `features/`, not `/features`.
+  Named risks (both dev-only, self-healing next read): racing re-exports
+  can 404 momentarily; threads can pair a mid-export tree with a
+  mismatched stamp, deferring the refetch one read.
 
-## NEXT SESSION (ash's pick: whisper on webgpu first)
+Live: **build 175** at miso.nøøb.org, 110 nodes. (171/172 were doc-only
+commits — build = commit count.)
 
-0. **IN THE INBOX, status proposed** (arrived as the handover was being
-   written, t=1786816107134): "A long press on a tool button should pop
-   up a tooltip with user documentation" — no birthplace tool (filed
-   from the launcher). Stamp `building` on pickup; the tooltip content
-   is ready-made (tree.json intros; the registering node's `## user`
-   para); mind iOS long-press vs the click-delegation in loop.js.
+## THE DOCTRINE RUN (all in notes.md, all anchored, fm-spec-2)
 
-1. **Whisper on the substrate** — the climb begins. Two probes, cheapest
-   first: (a) the **ort shim experiment**: engine.js wraps
-   `GPUAdapter.prototype.requestDevice` clamping requiredLimits to
-   adapter.limits (haze's recipe; catches BOTH pinned bundles), clear the
-   `localStorage.misoSttDevice` failure memo, sim then device, watching
-   for onnxruntime **#26827** (WebKit-26 jsep: 400% CPU / 1-14GB after
-   inference — if it bites, ort is off the table); (b) the **sovereign
-   path**: mel spectrogram → matmul tiles → attention WGSL kernels on
-   `/compute`, feature-modular WGSL landing with it. notes.md has the
-   T1–T3 map and the 10-15x / 20-60 tok/s numbers. The prize pays twice:
-   whisper ~5-10x AND the FunctionGemma call-rung door.
-2. **THE FLYWHEEL** (#p47a — ash: "a flywheel that's always on, that
-   creates subagents to build requests in parallel"). Half exists (the
-   1s monitor intake, stamp_ask status channel, the codified ritual).
-   The design, two stages:
-   - **In-session parallelism (adopt immediately)**: on each NEW
-     PROPOSED event, spawn a fork subagent in a WORKTREE (forks inherit
-     the whole discipline context); it runs the five-step loop on its
-     ask; the main session serialises integration — merge, single
-     deploy, stamp shipped. Parallel where subtrees don't collide;
-     serial at the deploy (one mini, one build line). Watch: two asks
-     targeting the same parent's order.md collide — integrate resolves.
-   - **Always-on (the real flywheel)**: a mini-resident builder. The
-     `claude` CLI is already installed there (2.1.56, not logged in);
-     the sanctioned route is an API key (`--bare -p`, per-token, ~$1-5/
-     month at this scale — subscription programmatic use is against
-     policy, researched #p31). A watcher on the mini invokes it per
-     ask; the human session becomes reviewer, not builder. OPEN
-     mechanism question first: provenance — field asks currently get
-     anchors by landing in a session transcript (#p40); a headless
-     flywheel needs the ask-store itself accepted as an anchor source
-     by fmlink. That's a doctrine conversation with ash before code.
+The evening's asks kept generalising; five entries landed, converging:
 
-3. **LIVE TICKS, PER-USER** (#p56, ash: "for this to be really fully
-   done" — noted for next time): the feature tick-boxes must actually
-   enable/disable features at runtime, per user; unticking F disables
-   its whole subtree REGARDLESS of the children's own pattern, and
-   re-ticking F restores that pattern exactly. Half-truths already in
-   place: `feature_ticks` is user-scoped; absent-means-on with only
-   explicit choices stored means the children's pattern survives an
-   ancestor untick BY CONSTRUCTION (chooser.rs's comment says so);
-   `reflect()` already computes effective-off-via-ancestors (the
-   shading). Missing: ENFORCEMENT — ticks gating live behaviour. That
-   is the context manager, and it converges on the same re-linkable
-   chains mechanism hot-patching wants (notes.md, compute.md). Also
-   planned: a pretend second user to prove per-user divergence — gate
-   has `_test`/`_test2` machinery ready.
+1. **the ask–engineering gap + privilege** (#p12): text vs proposal is
+   where translation lives; authority = subtree reach (blast radius ⊆
+   asker's privilege); user records in ~/.miso-auth/users.json (the `_`
+   prefix is already a privilege bit). Gates the headless flywheel.
+2. **tunables** (#p17a): every naive ask is "make parameter X tunable at
+   scope per-user/per-group/global". Var<T>, the var store, and the
+   broadcast channel already exist; parameter-set asks could skip builds.
+3. **the promotion rule** (#p18): a parameter earns its variable on the
+   SECOND ask that touches it. First ask ships the literal constant; the
+   declaration (name/type/default/scopes) is the one node; values are
+   data forever after. bigger-buttons is the standing first case — the
+   next size-shaped ask triggers its promotion.
+4. **rule of two, surface side** (#p20): a tool earns its TOOLBAR slot on
+   the second show of intent; until then it's usable from the ask
+   surface (open-chip) and held in a "new tools" drawer. Naturally
+   per-user — toolbar membership as a user-scoped selection var.
+5. **the builder is a feature-modular skillset** (#p21): agent
+   instructions become a composition language (`<name>.agent.md`
+   fragments, skeleton + slots, provenance-ordered, toggleable).
+   Tonight's entries are fragments-in-waiting for the nodes they govern;
+   agents.md is the monolith the skeleton comes from (index.html before
+   SPLIT_PAGES); fm.md stays constitution. The flywheel's headless
+   builder would receive its composed skillset like devices receive
+   index.html.
 
-4. **Drafter upgrade**: dev-session agent writes the proposal paragraph
-   when online (same textarea, better prose) — the seam is
-   `feature_Propose.draft`.
-3. **Lifecycle polish**: builder→user status channel is the broadcast
-   file (works mid-session); asks store on-device still shows stale
-   status until relaunch when stamps happen while an instance is closed.
-   "!"/"?" states and ETA remain unbuilt (#p85).
-4. **Still pending from day 3**: `dictate/server` (whisper.cpp on the
-   mini, consent given in principle — confirm before installing) and
-   persisting transcript stamps (RecList reseeds from IndexedDB, restarts
-   re-transcribe).
-5. **Regroup pressure**: review, panel, miso root, shell/update all at
-   the 6-child cap; counter at 3 and growing by ask. The first regroup is
-   itself a prompted event.
+Entries 2–4 + per-user ticks all converge on ONE mechanism: the context
+manager (rung 3 below).
+
+**Rulings queued for ash**: where a tunable is declared (linker-read
+stanza?); whose scope a repeat ask writes (asker's per-user vs global
+default); what graduates a tool from the new-tools drawer (second ask vs
+first real use); skillset fragment extension + slot vocabulary, and
+whether the composed skillset replaces agents.md as what a session loads.
+
+## NEXT SESSION
+
+0. **Transcript mirroring** (#p22, field-confirmed): ash's first real
+   test recording transcribed ON the iPhone (the on-device STT path
+   works in the field!) but the transcript never reached the laptop —
+   /mirror moves audio only, and the laptop reseeds from IndexedDB and
+   re-transcribes. Shape: transcripts join the mirrored record
+   (/mirror or /transcript subfeature); /phone's better-replaces-rough
+   rule decides collisions. Also still open from day 3: persisting
+   transcript stamps, silent 130MB model fetch, >30s truncation.
+1. **Whisper on webgpu** — unchanged standing rung: (a) ort shim
+   experiment (clamp requiredLimits to adapter.limits; clear
+   localStorage.misoSttDevice; watch onnxruntime #26827), or (b) the
+   sovereign path (mel → matmul → attention WGSL on /compute,
+   feature-modular WGSL lands with it). notes.md has the T1–T3 map.
+2. **THE FLYWHEEL** — in-session parallelism (fork subagents in
+   worktrees per ask, main session serialises integrate/deploy/stamp)
+   ready to adopt; always-on mini builder still blocked on the
+   provenance ruling (ask-store as anchor source) AND now the privilege
+   doctrine (#p12) — both doctrine-before-code.
+3. **Per-user ticks / THE CONTEXT MANAGER** — the convergence point:
+   ticks enforcement (untick gates live behaviour, ancestor patterns
+   survive), tunables, and the new-tools drawer are one mechanism.
+   `feature_ticks` is user-scoped, absent-means-on; `reflect()` already
+   shades; enforcement is what's missing. `_test`/`_test2` machinery
+   ready for the two-user divergence proof.
+4. **Regroup pressure**: `ask` joined the at-cap list (open-chip,
+   birthplace, propose, lifecycle, miso-button, request-box) — its next
+   child forces a regroup; miso-button + request-box are natural
+   "wording" group candidates. Also still at cap: review, panel, miso
+   root, shell/update. counter at 4.
+5. ideas.md gained: bigger-buttons → per-user "size" var (the promotion
+   rule's first target, with the naive-asks lesson attached).
 
 ## tooling state
 
-- **1s ask monitor** — re-arm each session (it dies with the session):
-  persistent ssh to the mini, remote 1s loop over
-  `/tmp/miso-vars/user.*.asks.json`, local dedupe vs
-  scratchpad/asks_seen.txt, fires on status asked|proposed with tool/at/
-  proposal in the event. See the Monitor call in this transcript (#p28ff).
-- **tools/stamp_ask.py** `--text X --status building|shipped [--build N]
-  [--local]` — updates the var store AND appends the per-user VarUpdate to
-  `/tmp/miso-broadcast.json` (the server's own publish file) → open
-  panels update in ~0.5s. Named risk: two writers, one file.
-- **tools/fetch_find.py** — pins potion-base-8M → semantic-find/assets/
-  find/ (gitignored except PINNED). **tools/potion_embed.py** — the
-  Python twin embedder. **tools/embed_catalog.py** — runs in deploy after
-  the tree export.
-- **deploy.sh** additions: hashes.json (content hash per site file,
-  data files excluded), changes.json now carries `paths` + `added` per
-  build, prints unaddressed asks (asked|proposed) after shipping.
-- **export_features.py**: stamps `tool:` on registering nodes; order.md
-  no longer bumps a parent's build (#p41).
-- CDP testing lessons, paid for: `Runtime.evaluate` calls share the
-  global lexical scope — bare top-level `const` in one eval silently
-  breaks all later evals (IIFE everything); the toolbar DOM is view not
-  truth; restore reopens the last tool so blind toolbar clicks toggle
-  wrong; headless Chrome needs `--enable-unsafe-webgpu --use-angle=metal`
-  for the compute tests.
-
-## today's doctrine additions (all in notes.md, day-4 entries)
-
-- **One OK always** (auto-vs-review resolved); policy now means
-  "what the review pre-ticks"; fixes-auto vs ask-me currently identical —
-  picker may want to become two-way, ash to rule.
-- **Draft ticks are drafts**: the live ftick event is a store-toggle; a
-  visual overlay would invert intent — commit on the button only.
-- **Miso computes for itself** (#p12): WGSL kernels as node assets, thin
-  JS driver, no dependencies; the zero-import law untouched because the
-  engine never enters client.wasm.
-- **Specs are data**: quoted example phrases embed into the catalog and
-  magnetise their own documentation — stripped at embed time (learned
-  twice).
-- **A parent doesn't age when it gains a child** (order.md excluded from
-  build stamps) and **an update never lists nothing** (release-line rows
-  for scaffolding builds).
-- **In the panel, overrides must carry the #panel id** or silently lose
-  the cascade (paid for twice in one hour).
-- **THE LOOP CLOSED** entry: what the magic decomposes into.
+- **1s ask monitor** — re-arm each session (scratchpad is
+  session-specific, so recreate `ask_filter.py`): persistent ssh to the
+  mini streaming `/tmp/miso-vars/user.*.asks.json` once a second, local
+  python dedupe on t:status against a seen-file, fires on
+  asked|proposed. **Wrap the ssh in a `while true` reconnect loop** —
+  lid-sleep kills the stream otherwise (learned twice tonight). An ask
+  fires twice: `asked` (pre-OK, no birthplace) then `proposed` (OK'd,
+  with tool/at) — act on `proposed`.
+- **tools/stamp_ask.py** `--text X --status building|shipped [--build N]`
+  — unchanged, used seven times tonight; open panels update in ~0.5s.
+- **export_features.py**: now stamps `subtools` (control data-ev ids per
+  tool_controls-bearing node) and writes `site/features/stamp`
+  (tree.json content hash) after export.
+- **export_transcript.py**: same-day sessions need distinct slugs (the
+  collision guard refuses politely) — tonight is `fm-spec-2`.
+- Dev server on 8095 runs the build-175 binary from products/miso/build
+  (auto-export ACTIVE locally: editing features/** re-exports on the
+  next /features request). Headless Chrome lives on 9222; CDP lessons
+  from day 4 still apply (IIFE everything; toolbar renders only the
+  open tool in open mode — go home before pressing launcher buttons;
+  restore reopens the last tool).
 
 ## small print
 
-- **products/miso/miso is no longer a symlink**: it's a real-dir override
-  path (real dirs miso→loop→tap→counter with glob-symlinked siblings and
-  a local counter/order.md unticking decrement-taps). The old single
-  symlink meant writing "product order.md" wrote THROUGH into the shared
-  tree — paid for at #p44. Unticked children may simply be absent from
-  the local dir. hello_only remains the small exemplar.
-- Client localStorage keys grown today: misoAccepted (acceptance mirror),
-  misoHashes (delta baseline — seeded only when running==server),
-  misoStash (seamless, consumed once). caches.delete('miso') no longer
-  happens on updates (delta evicts precisely) — the STT model survives.
-- Dev server on 8095 runs the build-155 binary; _test login via PIN from
-  /tmp/fm2-devserver.log; local traffic ungated. Headless Chrome may
-  still be running on 9222 (scratchpad profile).
-- STT gaps unchanged from day 3 (silent 130MB fetch, >30s truncation, no
-  transcript mirroring); ort-webgpu blocked on the shim experiment +
-  #26827; localStorage.misoSttDevice memoizes the wasm fallback.
-- asks var grows unboundedly (shipped entries never pruned); fine at
-  current scale, a lifecycle-archive rung eventually.
-- find/* is gated (data, not shell) — correct while ask sits behind
-  login; revisit if ask ever goes public.
-- ideas.md: ember palettes (spent), panel reorder (#p14 — BUILT same
-  day). notes.md hygiene items #9/#10 still open (stale asset sweep
-  beyond f/, stt cache-first sw rule).
+- fresh-catalog + auto-export overlap benignly: quiet applies forget
+  the catalog; every read revalidates the stamp anyway. Old builds
+  without the stamp file 404 and behave as before (fetch guarded).
+- request-box holds "do something" under its founding name — revised in
+  place per the two-phase draft-churn rule, revision note cites #p17.
+- The account node's ## user para now describes the placeholder truth;
+  its second revision footnote cites the field ask (#p4a).
+- asks var still grows unboundedly (11 entries, all shipped); the
+  lifecycle-archive rung remains someday-material.
+- notes.md hygiene items #9 (stale asset trees) and #10 (stt cache-first
+  sw rule + download UX) still open; #10 now has field evidence.
