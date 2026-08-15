@@ -1109,6 +1109,22 @@ and whether the session loads it in place of agents.md; what the first
 decomposed instruction should be (the promotion rule is the natural
 candidate — it arrives WITH its node when tunables get built).
 
+## field observation for tomorrow: transcripts don't mirror (2026-08-15 late, fm-spec-2 #p22)
+
+Ash's first real test recording: transcription happened ON THE IPHONE
+(the on-device whisper path worked in the field — worth celebrating),
+but the transcript did not propagate to the laptop. This is the known
+day-3 gap ("no transcript mirroring") now confirmed by field use:
+`/mirror` moves the AUDIO between instances, and each instance
+re-transcribes locally — but the laptop reseeds RecList from IndexedDB
+and restarts re-transcribe (the other day-3 pending item), and a
+transcript made on one device never rides the mirror. Tomorrow's shape,
+probably: transcripts join the mirrored record (a `/mirror` or
+`/transcript` subfeature), so the phone's words appear under the
+laptop's tile the way the audio already does — with the better-server-
+transcript-replaces-rough rule already specced in `/phone` deciding
+collisions.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
