@@ -43,10 +43,10 @@ const feature_Chooser = {
   row(n) {
     return '<div class="crow" data-path="' + n.path + '" id="crow-' + n.path.replace(/\//g, '-') + '">'
       + '<span class="cnum">' + n.num + '</span>'
-      + '<div class="ctick" data-ev="ftick_' + n.path + '"></div>'
       + '<div class="ctext"><b>' + n.name + '</b>'
       + (n.purpose ? ' <span class="cpurpose">' + this.esc(n.purpose) + '</span>' : '')
       + '</div>'
+      + '<div class="ctick" data-ev="ftick_' + n.path + '"></div>'
       + '</div>'
       + '<div class="cmore" data-morebox="' + n.path + '" style="display:none"></div>';
   },

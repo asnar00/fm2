@@ -25,7 +25,8 @@
 .crow.cflash { background: #23282f; transition: background 0.8s ease; }
 .cnum {
   flex: none; min-width: 22px; text-align: right;
-  color: #6a6a74; font-size: 11px; font-variant-numeric: tabular-nums;
+  color: #eee; font-weight: 700; font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
 .ctext { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cpurpose { color: #9a9aa2; font-size: 12px; }
