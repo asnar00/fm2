@@ -16,7 +16,11 @@ runtime because none is needed.
 
 The work splits by where the data lives. **Deploy embeds the catalog**:
 `tools/embed_catalog.py` runs after the tree export, embedding each
-node's name+purpose+intro with the Python twin of the device's embedder
+node's name+purpose+intro — with **quoted spans stripped first**: a
+quoted phrase in spec prose is an example query, and embedding it makes
+the documenting node a magnet for its own example, outranking the
+feature the example points at (learned twice on day 4) — with the
+Python twin of the device's embedder
 (`tools/potion_embed.py`) — both read the same table and walk the same
 WordPiece, so the two sides agree by construction, not by hope — and
 ships `features/vectors.json`. **The device embeds only the query**,
