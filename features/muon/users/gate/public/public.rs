@@ -7,7 +7,8 @@ impl feature_Public {
         if path == "index.html" || path == "sw.js" || path == "client.wasm"
             || path == "manifest.json" || path == "login.html"
             || path == "install.html" || path == "version"
-            || path == "changes.json" || path.starts_with("icon-")
+            || path == "changes.json" || path == "hashes.json"
+            || path.starts_with("f/") || path.starts_with("icon-")
             || path == "features" || path.starts_with("features/") {
             return true;
         }
