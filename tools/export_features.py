@@ -35,28 +35,30 @@ def all_paths(children, acc):
     return acc
 
 
-def build_of_specs() -> dict:
-    """spec path (repo-relative) -> the build number that introduced it.
-    Deploy's convention is build = commit count, so a node's build is the
-    count at the commit that first added its spec (#p77 — the chooser and
-    the release list speak the same numbers). Known limit, said honestly: a
-    later-renamed/regrouped node dates from its move (--no-renames records
-    the new path's Add), not its original name's birth."""
-    git = lambda *a: subprocess.run(("git",) + a, cwd=explorer.REPO,
-                                    capture_output=True, text=True).stdout
-    order = git("rev-list", "--reverse", "HEAD").split()
-    build = {h: i + 1 for i, h in enumerate(order)}
-    out = {}
-    blocks = git("log", "--reverse", "--diff-filter=A", "--name-only",
-                 "--no-renames", "--format=%x00%H").split("\x00")
-    for block in blocks:
-        lines = [l for l in block.splitlines() if l.strip()]
-        if not lines:
-            continue
-        commit, files = lines[0], lines[1:]
-        for f in files:
-            out.setdefault(f, build.get(commit, 0))
-    return out
+def build_numbers() -> dict:
+    """commit hash -> build number (deploy's convention: build = commit count)."""
+    order = subprocess.run(("git", "rev-list", "--reverse", "HEAD"),
+                           cwd=explorer.REPO, capture_output=True,
+                           text=True).stdout.split()
+    return {h: i + 1 for i, h in enumerate(order)}
+
+
+def latest_build(feature, build) -> int:
+    """The most-recent release that touched this node's OWN files (#p82) —
+    its spec, code and assets, excluding child-node subdirectories (children
+    carry their own numbers). The chooser and the release list speak the
+    same numbers; a feature's number moves forward as it evolves."""
+    own = [str(p.relative_to(explorer.REPO))
+           for p in feature.dir.iterdir() if p.is_file()]
+    assets = feature.dir / "assets"
+    if assets.is_dir():
+        own.append(str(assets.relative_to(explorer.REPO)))
+    if not own:
+        return 0
+    h = subprocess.run(("git", "log", "-1", "--format=%H", "--") + tuple(own),
+                       cwd=explorer.REPO, capture_output=True,
+                       text=True).stdout.strip()
+    return build.get(h, 0)
 
 
 def intro_of(feature) -> str:
@@ -97,14 +99,13 @@ def tree_json(children, times, builds) -> list:
         kids = tree_json(f.children, times, builds)
         key = fmlink.node_key(f.dir, times)
         ts = key[0] if key else min((k["ts"] for k in kids if k["ts"]), default="")
-        spec_rel = str(f.spec.relative_to(explorer.REPO))
         out.append({
             "name": f.name,
             "path": f.path,
             "purpose": purpose_of(f),
             "intro": intro_of(f),
             "ts": ts,
-            "build": builds.get(spec_rel, 0),
+            "build": latest_build(f, builds),
             "children": kids,
         })
     return out
@@ -119,7 +120,7 @@ def main():
     import fmlink
     (OUT / "tree.json").write_text(
         json.dumps(tree_json(children, fmlink.read_anchor_times(),
-                             build_of_specs())))
+                             build_numbers())))
     for path in paths:
         page = relink(explorer.render_feature_page(path, ""))
         page_dir = OUT / path
