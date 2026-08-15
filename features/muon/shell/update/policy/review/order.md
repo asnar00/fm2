@@ -3,3 +3,4 @@
 - [x] seamless
 - [x] delta
 - [x] patch
+- [x] live-panel
