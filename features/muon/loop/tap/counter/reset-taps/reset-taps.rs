@@ -14,18 +14,15 @@ impl feature_ResetTaps {
         s.to_string()
     }
 
-    fn render(state: String) -> String {
-        let base = existing.render(state.clone());
+    // a sub-tool of taps: the reset control rides the toolbar while the
+    // taps tool is open, the way record rides dictate
+    fn tool_controls(state: String) -> String {
+        let prev = existing.tool_controls(state.clone());
         let s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
-        // the pill's own visibility condition, and only with something to reset
-        if s["open_tool"].is_string() && s["open_tool"].as_str() != Some("taps") {
-            return base;
+        if s["open_tool"].as_str().unwrap_or("") != "taps" {
+            return prev;
         }
-        let count = Var::<u64>::local("tap_count").get(&s);
-        if count == 0 {
-            return base;
-        }
-        format!("{}<div class=\"tap reset\" data-ev=\"tap_reset\">reset</div>", base)
+        format!("{}<div class=\"tool-button ctrl\" data-ev=\"tap_reset\" title=\"reset\">\u{21ba}</div>", prev)
     }
 }
