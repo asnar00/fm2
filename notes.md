@@ -782,6 +782,25 @@ and fire — online or offline. Walked end to end, it decomposes:
   from #p128 becomes concrete). The first user-built tool will touch
   the deepest open question. Fitting.
 
+**THE LOOP CLOSED (2026-08-15, end of day 4 — ash: "I think we built
+something super cool here. There's something magic about being able to
+modify tools from within the app itself.")** Five field asks travelled
+the full lifecycle today, phone to phone: reset (built), double
+(built), decrement (built, then removed by ask — removal = product
+override, the node keeps its story), and the updates picker relocated.
+The magic decomposes into things fm already believed: the ask box as
+the programming surface (#p53's IDE glimmering, real); the proposal as
+the contract (#p85 — the approved paragraph IS the shipped intro,
+verbatim); provenance born in the field (#p40: the first node whose
+founding quote is the wish as it reached the builder); one-second
+build-side latency (the broadcast file doubling as the builder→user
+channel); and the update doctrine carrying the answer back for one OK.
+What made it feel like magic is that no part of it is: every link was
+a node, every node toggleable, every wish traceable. The agent behind
+the button is still a person-shaped session on a delay — the ladder's
+next rungs (drafter upgrades, the local net, runtime ticks) now have a
+working loop to land in.
+
 ## v0 linker — BUILT (2026-08-13)
 
 `tools/fmlink.py` (Python, ~250 lines, regex-level parsing — quick first pass; a Rust rewrite using `syn` is the obvious v1). Usage: `fmlink.py [product] [--run]`.
