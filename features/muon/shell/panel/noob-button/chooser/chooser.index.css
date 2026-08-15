@@ -1,14 +1,12 @@
-/* the chooser lives in the panel (#p78): the sheet stretches toward the top
-   when the list needs it, and the list scrolls within */
-#panel {
-  display: flex; flex-direction: column;
-  /* dvh, not %+env-in-calc: the latter silently failed and let the sheet
-     poke past the top edge (measured 483px in a 469px viewport) */
-  max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 56px);
-}
+/* the chooser lives in the panel (#p78, sized per #p81): the panel's own
+   show/hide lifecycle is never touched — restyling #panel's display once
+   made the sheet visible at boot and broke its sizing. The LIST gets a
+   fixed height budget and scrolls inside it; the sheet stays content-sized:
+   who-line, list, policy, logout. */
 #changes.chooser-home {
   overflow-y: auto; -webkit-overflow-scrolling: touch;
-  flex: 1; min-height: 0;
+  max-height: calc(100dvh - 340px);
+  min-height: 120px;
   margin: 4px 0 2px;
 }
 .crow {
