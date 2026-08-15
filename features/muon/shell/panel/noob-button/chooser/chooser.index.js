@@ -1,5 +1,5 @@
 const feature_Chooser = {
-  open: false, flat: null, byPath: null,
+  flat: null, byPath: null,
 
   ticks() {
     try {
@@ -23,20 +23,38 @@ const feature_Chooser = {
     };
     walk(tree, '');
     // most recent first; the number shown is the BUILD that introduced the
-    // feature — the same number the release list speaks (#p77)
+    // feature — the same number the release list spoke (#p77)
     this.flat.sort((a, b) => (a.ts < b.ts ? 1 : a.ts > b.ts ? -1 : a.path < b.path ? 1 : -1));
   },
 
   esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); },
 
-  async show() {
-    this.open = true;
-    $('chooserView').style.display = 'flex';
-    this.reader(false);
+  // the panel's seam calls this: the feature list lives under the who-line
+  // (#p78 — the version teaser replaced; the sheet stretches to fit)
+  async mount() {
+    const box = $('changes');
+    if (!box) return;
+    box.classList.add('chooser-home');
+    box.onclick = null; // the old full-queue tap (if composed) stands down
+    box.classList.remove('expandable');
     await this.load();
-    $('chooserList').innerHTML = this.flat.length
+    box.innerHTML = this.flat.length
       ? this.flat.map((n) => this.row(n)).join('')
       : '<div class="crow">no tree exported yet — deploy publishes it</div>';
+    if (!box.dataset.chooserWired) {
+      box.dataset.chooserWired = '1';
+      box.addEventListener('click', (e) => {
+        if (e.target.closest('.ctick')) return; // the tick is the loop's business
+        const up = e.target.closest('[data-up]');
+        if (up) { feature_Chooser.goto(up.getAttribute('data-up')); return; }
+        const chip = e.target.closest('[data-goto]');
+        if (chip) { feature_Chooser.goto(chip.getAttribute('data-goto')); return; }
+        const read = e.target.closest('[data-read]');
+        if (read) { feature_Chooser.reader(read.getAttribute('data-read')); return; }
+        const row = e.target.closest('.crow[data-path]');
+        if (row) feature_Chooser.more(row.getAttribute('data-path'));
+      });
+    }
     this.reflect();
   },
 
@@ -81,9 +99,10 @@ const feature_Chooser = {
   },
 
   reflect() {
-    if (!this.open) return;
+    const list = $('changes');
+    if (!list || !list.classList.contains('chooser-home')) return;
     const t = this.ticks();
-    for (const row of document.querySelectorAll('#chooserList .crow')) {
+    for (const row of list.querySelectorAll('.crow')) {
       const path = row.getAttribute('data-path');
       if (!path) continue;
       const parts = path.split('/');
@@ -96,47 +115,20 @@ const feature_Chooser = {
     }
   },
 
-  // the full node page, in place; ✕ dismisses back to the list
+  // the full node page, in place over everything; ✕ dismisses
   reader(path) {
     $('chooserRead').style.display = path ? 'flex' : 'none';
     $('chooserFrame').src = path ? 'features/' + path + '/' : 'about:blank';
   },
-
-  hide() {
-    this.open = false;
-    $('chooserView').style.display = 'none';
-  },
 };
 {
-  const fm_view = document.createElement('div');
-  fm_view.id = 'chooserView';
-  fm_view.innerHTML = '<div class="chead"><span>features</span>'
-    + '<button id="chooserClose">✕</button></div>'
-    + '<div id="chooserList"></div>'
-    + '<div id="chooserRead"><div class="chead"><span></span>'
+  const fm_read = document.createElement('div');
+  fm_read.id = 'chooserRead';
+  fm_read.innerHTML = '<div class="chead"><span></span>'
     + '<button id="chooserDismiss">✕</button></div>'
-    + '<iframe id="chooserFrame"></iframe></div>';
-  document.body.appendChild(fm_view);
-  $('chooserClose').onclick = () => feature_Chooser.hide();
+    + '<iframe id="chooserFrame"></iframe>';
+  document.body.appendChild(fm_read);
   $('chooserDismiss').onclick = () => feature_Chooser.reader(false);
-
-  fm_view.addEventListener('click', (e) => {
-    if (e.target.closest('.ctick')) return; // the tick is the loop's business
-    const up = e.target.closest('[data-up]');
-    if (up) { feature_Chooser.goto(up.getAttribute('data-up')); return; }
-    const chip = e.target.closest('[data-goto]');
-    if (chip) { feature_Chooser.goto(chip.getAttribute('data-goto')); return; }
-    const read = e.target.closest('[data-read]');
-    if (read) { feature_Chooser.reader(read.getAttribute('data-read')); return; }
-    const row = e.target.closest('.crow[data-path]');
-    if (row) feature_Chooser.more(row.getAttribute('data-path'));
-  });
-
-  const fm_row = document.createElement('div');
-  fm_row.className = 'row';
-  fm_row.innerHTML = '<button id="chooserBtn">features</button>';
-  $('panel').insertBefore(fm_row, $('logoutBtn').closest('.row'));
-  $('chooserBtn').onclick = () => { feature_Panel.close(); feature_Chooser.show(); };
 
   const fm_chooserApply = feature_Loop.apply;
   feature_Loop.apply = function (p) {

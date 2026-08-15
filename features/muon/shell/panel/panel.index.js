@@ -18,11 +18,18 @@ const feature_Panel = {
     if (typeof feature_Passkey !== 'undefined') feature_Passkey.offerEnrol();
     if (typeof feature_Push !== 'undefined') feature_Push.offerEnrol();
 
-    const changes = await fetch('changes.json', { cache: 'no-store' })
-      .then((r) => r.ok ? r.json() : []).catch(() => []);
-    $('changes').innerHTML = changes.slice(0, 6).map((c) =>
-      '<div class="change"><b>' + c.build + '</b> '
-      + String(c.text).replace(/</g, '&lt;') + '</div>').join('');
+    // seam: what fills the area under the who-line. A newer feature may
+    // claim it (the chooser mounts the feature list); the default is the
+    // recent-changes teaser, so unticking the occupant restores it.
+    if (typeof feature_Chooser !== 'undefined' && feature_Chooser.mount) {
+      await feature_Chooser.mount();
+    } else {
+      const changes = await fetch('changes.json', { cache: 'no-store' })
+        .then((r) => r.ok ? r.json() : []).catch(() => []);
+      $('changes').innerHTML = changes.slice(0, 6).map((c) =>
+        '<div class="change"><b>' + c.build + '</b> '
+        + String(c.text).replace(/</g, '&lt;') + '</div>').join('');
+    }
     $('shade').style.display = 'block';
     $('panel').style.display = 'block';
   },

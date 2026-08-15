@@ -20,4 +20,4 @@ Tap the logo lozenge in the corner. Everything administrative lives there: see w
 
 This node owns the panel's markup (`panel.index.html`: shade, sheet, who-line, changes list, enrolment and update/logout rows), its styling (`panel.index.css`), and `panel.index.js` — `feature_Panel.open/close`, which re-checks the build live via `feature_Watch`, words the status via `feature_Honest`, and invites `feature_Passkey`/`feature_Push` to offer enrolment; plus the logout and update button handlers. All references are typeof-guarded, so sibling features can be unticked freely.
 
-The corner button's tap goes through a seam, `feature_Panel.buttonTap`, defaulting to `open()`; `/account` redefines it (and owns the panel's toolbar life).
+The corner button's tap goes through a seam, `feature_Panel.buttonTap`, defaulting to `open()`; `/account` redefines it (and owns the panel's toolbar life). The area under the who-line goes through a second seam: `open()` offers it to `feature_Chooser.mount` when present (the feature list, #p78), else fills it with the recent-changes teaser — the default behaviour, restored by unticking the occupant.

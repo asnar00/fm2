@@ -4,6 +4,8 @@
 > (transcripts/2026-08-14-fm-spec-3.md#p50)
 > in the updates queue view: let's expand that to cover the full screen, make the list of feature updates scrollable, and put a user-fillable tickbox next to each one [or gray out the tickbox if it's a static feature]. For now, we don't need to do anything with the tick values other than store them associated with that user; later, we can plug them into the context manager. Does that make sense?
 
+*(Revised by [chooser](#muon/shell/panel/noob-button/chooser), #p78: the feature list now occupies the panel area whose tap opened this view, and carries the same build numbers per feature — this node stays composed (tick storage and the view remain) but its entry point stands down while the chooser is ticked.)*
+
 ## spec
 
 The panel's six-entry changes teaser gains a full view: tap it and the whole queue opens full screen — every changes.json entry, newest first, scrollable, with a tickbox per entry. `feature` entries are tickable and default ticked; `fix` entries are grayed and permanently ticked — a fix is not a choice, the same reading `/policy` gives them. (True static/dynamic markers per node arrive with the context manager; release kind is the honest v0 proxy.) Ticks are stored per user and follow them across devices — `update_ticks`, a user-scoped var like `update_policy` beside it — and are deliberately inert for now: this node stores choice, it does not yet act on it. The first half of `/policy`'s named refinement ("fine-grained per-feature consent"); the context manager plugs in later.
