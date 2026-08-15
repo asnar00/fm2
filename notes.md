@@ -164,6 +164,23 @@ visible and drawing people into deeper involvement — groups, pages,
 connections — now as features over the post store rather than a bespoke
 app. Minimal and snappy is the spec: the standard stuff, nothing clever.
 
+**THE QUEUE WANTS TO BE A TREE (fm-spec-3 #p59, queued thought).**
+User-stated: the tickable feature-list view could and perhaps should be a
+**tree view** — which hints at a different approach to a feature tree
+viewer; maybe the queue view evolves toward that, integrating with the
+"source code view" button (`/panel/source`, which opens `/features/`).
+
+The convergence this names: the queue's chronological release list and the
+served feature tree are two views of the same structure, and per-feature
+consent ticked *on the tree* is literally the user's own `order.md` — the
+checkbox vocabulary the repo already uses for composition, become
+user-scoped runtime data. Ticks by build (today) then roll up to ticks by
+node (path-stamped changes entries, #p54's mapping, make each release a
+delta on the tree). End state: one tree surface serving reader, chooser,
+and — via `/source` — the code itself; the explorer tool and the queue view
+meet in the middle. Developer view and user consent UI were never
+different things, just different depths of the same tree.
+
 **MUON IS AN OS (fm-spec-2 #p41): tools on a launcher.** The muon/apps
 grouping question resolves with better vocabulary: muon runs **tools**
 (user's preferred term over "apps"), organised into **toolsets** (pages) when
