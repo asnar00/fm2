@@ -46,9 +46,20 @@ const feature_Review = {
     };
     walk(tree, '');
     pending.sort((a, b) => b.build - a.build || (a.path < b.path ? -1 : 1));
-    const rows = (typeof feature_Chooser !== 'undefined' && pending.length)
+    let rows = (typeof feature_Chooser !== 'undefined' && pending.length)
       ? pending.map((n) => { feature_Chooser.byPath[n.path] = n; return feature_Chooser.row(n); }).join('')
       : '';
+    // a pending build no feature row represents (scaffolding, fixes outside
+    // the tree) still shows its release line — an update never lists nothing
+    const covered = new Set(pending.map((n) => n.build));
+    const changes = await fetch('changes.json', { cache: 'no-store' })
+      .then((r) => r.ok ? r.json() : []).catch(() => []);
+    rows += changes
+      .filter((c) => c.build > running && c.build <= server && !covered.has(c.build))
+      .map((c) => '<div class="crow"><span class="cnum">' + c.build + '</span>'
+        + '<div class="ctext"><span class="cpurpose">'
+        + String(c.text).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        + '</span></div></div>').join('');
     const sect = document.createElement('div');
     sect.id = 'awaiting';
     sect.innerHTML =
