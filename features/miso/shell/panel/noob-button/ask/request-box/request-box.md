@@ -1,5 +1,5 @@
 # request-box
-*the ask box invites a request, in one word*
+*the ask box invites you to do something*
 
 > (transcripts/2026-08-15-fm-spec-2.md#p15)
 > NEW ASK [proposed] … [in taps @ miso/loop/tap/counter] :: 'Instead of “ask miso…” let’s say “request”'
@@ -7,16 +7,16 @@
 
 ## spec
 
-The ask box's placeholder reads **request** — one word, where "ask
-miso — find a tool, or wish for one" used to explain at length. It
-aligns the box with the panel's own vocabulary (the lifecycle rows are
-requests) and stops repeating the app's name next to a button that now
-says it. Taken literally per the ask: the whole placeholder is the one
-word, the calm-panel taste applied to prose.
+The ask box's placeholder reads **do something** — playful and
+imperative, where "ask miso — find a tool, or wish for one" used to
+explain at length. It stops repeating the app's name next to a button
+that now says it, and pairs with that button as what → do: *do
+something → miso*. The whole placeholder is the phrase, the calm-panel
+taste applied to prose.
 
 ## user
 
-The box says **request** — type what you want, press miso.
+The box says **do something** — type what you want, press miso.
 
 ## glossary
 
@@ -29,3 +29,9 @@ same late-fragment move as `miso-button` beside it: the parent built
 the row already, this runs after (provenance order), one attribute
 assignment, guarded on the input existing. Unticked, the parent's
 longer placeholder returns.
+
+*(Revised in place, transcripts/2026-08-15-fm-spec-2.md#p17 — a
+same-evening wordsmithing pass, churn the two-phase lifecycle blesses:
+"request" became "do something" after a hunt for a word between
+request and command landed on neither. The node keeps its founding
+name; the box holds the phrase.)*
