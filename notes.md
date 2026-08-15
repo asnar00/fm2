@@ -1040,6 +1040,35 @@ who a repeat ask writes for (asker's per-user value or the global
 default). bigger-buttons is the standing first case: the next
 size-shaped ask triggers its promotion.
 
+## the rule of two, surface side: new tools wait to be asked twice (2026-08-15 evening, fm-spec-2 #p20)
+
+Ash: *"if the user asks to do something, we don't give them the tool
+straight away. Instead, we hold it in a 'new tools' section; and if the
+user asks again, we introduce them to the tool. This prevents us
+cluttering up toolspace with things that aren't really necessary."*
+
+The promotion rule's twin. Building side (#p18): a parameter earns its
+variable on the second ask. Surface side (this): a tool earns its
+TOOLBAR SLOT on the second show of intent. Same instinct both times —
+the first signal buys existence, repetition buys prominence.
+
+The tension to respect: the asker DID ask, so the capability must not
+feel withheld. Resolution from pieces already shipped: when an ask
+ships, the open-chip in the ask results already hands the asker the
+tool right there, and the lifecycle row records it. So "introduction"
+means usable immediately from the ask surface; the toolbar gains it on
+the second ask — or the first real use, whichever signal we trust. The
+"new tools" section is the holding pen in between: likely a drawer in
+the panel beside the features list, badged the way `upgrade` already
+badges additions `new`.
+
+Naturally per-user: the tool ships globally; each user's toolbar grows
+only on their own repeated intent. That is per-user ticks again —
+toolbar membership as a user-scoped selection var — so this, tunables,
+and the rung-3 ticks enforcement keep converging on one mechanism: the
+context manager. Not built tonight; joins the tunables entry as
+doctrine awaiting its first case.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
