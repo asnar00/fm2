@@ -34,6 +34,18 @@ def all_paths(children, acc):
     return acc
 
 
+def intro_of(feature) -> str:
+    """The spec's first prose paragraph (after the '## spec' heading) — the
+    chooser's show-me-more teaser."""
+    if not feature.spec.exists():
+        return ""
+    text = feature.spec.read_text()
+    m = re.search(r"^## spec\s*\n+(.+?)(?:\n\s*\n|\Z)", text, re.M | re.S)
+    if not m:
+        return ""
+    return " ".join(m.group(1).split())[:400]
+
+
 def purpose_of(feature) -> str:
     """The spec's one-line italic purpose (line 2 by convention)."""
     if not feature.spec.exists():
@@ -45,15 +57,27 @@ def purpose_of(feature) -> str:
     return ""
 
 
-def tree_json(children) -> list:
+def tree_json(children, times) -> list:
     """The tree as data, for the in-app chooser (features/muon/shell/panel/
-    noob-button/chooser): name, path, purpose, children — order.md order."""
-    return [{
-        "name": f.name,
-        "path": f.path,
-        "purpose": purpose_of(f),
-        "children": tree_json(f.children),
-    } for f in children]
+    noob-button/chooser): name, path, purpose, intro, provenance timestamp,
+    children — order.md order. ts uses fmlink's provenance rule: a node's
+    time is its cited prompt's; a citation-less grouping node inherits its
+    earliest child's."""
+    import fmlink
+    out = []
+    for f in children:
+        kids = tree_json(f.children, times)
+        key = fmlink.node_key(f.dir, times)
+        ts = key[0] if key else min((k["ts"] for k in kids if k["ts"]), default="")
+        out.append({
+            "name": f.name,
+            "path": f.path,
+            "purpose": purpose_of(f),
+            "intro": intro_of(f),
+            "ts": ts,
+            "children": kids,
+        })
+    return out
 
 
 def main():
@@ -62,7 +86,9 @@ def main():
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "tree.json").write_text(json.dumps(tree_json(children)))
+    import fmlink
+    (OUT / "tree.json").write_text(
+        json.dumps(tree_json(children, fmlink.read_anchor_times())))
     for path in paths:
         page = relink(explorer.render_feature_page(path, ""))
         page_dir = OUT / path

@@ -1,5 +1,5 @@
 const feature_Chooser = {
-  open: false, tree: null,
+  open: false, flat: null, byPath: null,
 
   ticks() {
     try {
@@ -9,58 +9,94 @@ const feature_Chooser = {
     } catch (e) { return {}; }
   },
 
+  async load() {
+    if (this.flat) return;
+    const tree = await fetch('features/tree.json', { cache: 'no-store' })
+      .then((r) => r.ok ? r.json() : []).catch(() => []);
+    this.flat = []; this.byPath = {};
+    const walk = (nodes, parent) => {
+      for (const n of nodes) {
+        n.parent = parent;
+        this.flat.push(n); this.byPath[n.path] = n;
+        walk(n.children, n.path);
+      }
+    };
+    walk(tree, '');
+    // most recent first; the number IS provenance order (1 = newest)
+    this.flat.sort((a, b) => (a.ts < b.ts ? 1 : a.ts > b.ts ? -1 : a.path < b.path ? 1 : -1));
+    this.flat.forEach((n, i) => { n.num = i + 1; });
+  },
+
+  esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); },
+
   async show() {
     this.open = true;
     $('chooserView').style.display = 'flex';
     this.reader(false);
-    if (!this.tree) {
-      this.tree = await fetch('features/tree.json', { cache: 'no-store' })
-        .then((r) => r.ok ? r.json() : []).catch(() => []);
-    }
-    $('chooserList').innerHTML = this.tree.length
-      ? this.rows(this.tree, 0)
+    await this.load();
+    $('chooserList').innerHTML = this.flat.length
+      ? this.flat.map((n) => this.row(n)).join('')
       : '<div class="crow">no tree exported yet — deploy publishes it</div>';
     this.reflect();
   },
 
-  rows(nodes, depth) {
-    return nodes.map((n) => {
-      const kids = n.children && n.children.length;
-      const arrow = kids
-        ? '<span class="carrow" data-cpath="' + n.path + '">›</span>'
-        : '<span class="carrow leaf"></span>';
-      return '<div class="crow" data-path="' + n.path + '" style="--depth:' + depth + '">'
-        + arrow
-        + '<div class="ctick" data-ev="ftick_' + n.path + '"></div>'
-        + '<div class="ctext" data-read="' + n.path + '"><b>' + n.name + '</b>'
-        + (n.purpose ? ' <span class="cpurpose">' + n.purpose.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</span>' : '')
-        + '</div></div>'
-        + (kids ? '<div class="ckids" data-kids="' + n.path + '" style="display:none">'
-                  + this.rows(n.children, depth + 1) + '</div>' : '');
-    }).join('');
+  row(n) {
+    return '<div class="crow" data-path="' + n.path + '" id="crow-' + n.path.replace(/\//g, '-') + '">'
+      + '<span class="cnum">' + n.num + '</span>'
+      + '<div class="ctick" data-ev="ftick_' + n.path + '"></div>'
+      + '<div class="ctext"><b>' + n.name + '</b>'
+      + (n.purpose ? ' <span class="cpurpose">' + this.esc(n.purpose) + '</span>' : '')
+      + '</div>'
+      + (n.parent ? '<span class="cbtn" data-up="' + n.parent + '">‹</span>' : '<span class="cbtn none"></span>')
+      + '<span class="cbtn" data-more="' + n.path + '">+</span>'
+      + '</div>'
+      + '<div class="cmore" data-morebox="' + n.path + '" style="display:none"></div>';
   },
 
-  // effective state: a row is shaded when any ancestor (or itself) is unticked
+  // the + expansion: tappable intro paragraph + child chips to drill down
+  more(path) {
+    const box = document.querySelector('[data-morebox="' + path + '"]');
+    if (box.style.display !== 'none') { box.style.display = 'none'; return; }
+    const n = this.byPath[path];
+    box.innerHTML =
+      (n.intro ? '<div class="cintro" data-read="' + n.path + '">' + this.esc(n.intro) + '</div>' : '')
+      + (n.children.length
+        ? '<div class="cchips">' + n.children.map((c) =>
+            '<span class="cchip" data-goto="' + c.path + '">' + c.name + '</span>').join('') + '</div>'
+        : '');
+    box.style.display = 'block';
+  },
+
+  goto(path) {
+    const row = document.getElementById('crow-' + path.replace(/\//g, '-'));
+    if (!row) return;
+    row.scrollIntoView({ block: 'center' });
+    row.classList.add('cflash');
+    setTimeout(() => row.classList.remove('cflash'), 900);
+    const box = document.querySelector('[data-morebox="' + path + '"]');
+    if (box && box.style.display === 'none') this.more(path);
+  },
+
   reflect() {
     if (!this.open) return;
     const t = this.ticks();
     for (const row of document.querySelectorAll('#chooserList .crow')) {
       const path = row.getAttribute('data-path');
+      if (!path) continue;
       const parts = path.split('/');
-      let selfOn = t[path] !== false;
       let effOn = true;
       for (let i = 1; i <= parts.length; i++) {
         if (t[parts.slice(0, i).join('/')] === false) { effOn = false; break; }
       }
-      row.querySelector('.ctick').classList.toggle('on', selfOn);
+      row.querySelector('.ctick').classList.toggle('on', t[path] !== false);
       row.classList.toggle('shaded', !effOn);
     }
   },
 
+  // the full node page, in place; ✕ dismisses back to the list
   reader(path) {
     $('chooserRead').style.display = path ? 'flex' : 'none';
-    if (path) $('chooserFrame').src = 'features/' + path + '/';
-    else $('chooserFrame').src = 'about:blank';
+    $('chooserFrame').src = path ? 'features/' + path + '/' : 'about:blank';
   },
 
   hide() {
@@ -74,25 +110,22 @@ const feature_Chooser = {
   fm_view.innerHTML = '<div class="chead"><span>features</span>'
     + '<button id="chooserClose">✕</button></div>'
     + '<div id="chooserList"></div>'
-    + '<div id="chooserRead"><div class="chead">'
-    + '<button id="chooserBack">‹ tree</button></div>'
+    + '<div id="chooserRead"><div class="chead"><span></span>'
+    + '<button id="chooserDismiss">✕</button></div>'
     + '<iframe id="chooserFrame"></iframe></div>';
   document.body.appendChild(fm_view);
   $('chooserClose').onclick = () => feature_Chooser.hide();
-  $('chooserBack').onclick = () => feature_Chooser.reader(false);
+  $('chooserDismiss').onclick = () => feature_Chooser.reader(false);
 
-  // expand/collapse and read taps (ticks ride data-ev to the loop as usual)
   fm_view.addEventListener('click', (e) => {
-    const a = e.target.closest('[data-cpath]');
-    if (a) {
-      const kids = fm_view.querySelector('[data-kids="' + a.getAttribute('data-cpath') + '"]');
-      const openNow = kids.style.display !== 'none';
-      kids.style.display = openNow ? 'none' : 'block';
-      a.classList.toggle('open', !openNow);
-      return;
-    }
-    const r = e.target.closest('[data-read]');
-    if (r) feature_Chooser.reader(r.getAttribute('data-read'));
+    const more = e.target.closest('[data-more]');
+    if (more) { feature_Chooser.more(more.getAttribute('data-more')); return; }
+    const up = e.target.closest('[data-up]');
+    if (up) { feature_Chooser.goto(up.getAttribute('data-up')); return; }
+    const chip = e.target.closest('[data-goto]');
+    if (chip) { feature_Chooser.goto(chip.getAttribute('data-goto')); return; }
+    const read = e.target.closest('[data-read]');
+    if (read) feature_Chooser.reader(read.getAttribute('data-read'));
   });
 
   const fm_row = document.createElement('div');
