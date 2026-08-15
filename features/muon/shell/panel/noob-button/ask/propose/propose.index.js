@@ -1,13 +1,10 @@
 const feature_Propose = {
   pending: null, // an ask text parked by file(), waiting for the editor
 
+  // the draft is the ask, stated plainly — the birthplace travels as data,
+  // so the prose needn't repeat it (#p33: no "gains a new ability" filler)
   draft(text) {
-    const ctx = typeof feature_Birthplace !== 'undefined'
-      ? feature_Birthplace.context() : {};
-    return ctx.tool
-      ? 'The ' + ctx.tool + ' tool gains a new ability: ' + text
-        + '. It appears in the tool and does exactly that.'
-      : 'muon gains a new ability: ' + text + '. It does exactly that.';
+    return text;
   },
 
   editor(text) {

@@ -12,9 +12,11 @@ specification. When an ask heads for the builder — the **send to the
 builder** button, or nothing having matched at all — the box opens an
 editor holding a **drafted user-description**: the prospective node's
 `## user` paragraph (#p85's doctrine: the proposal IS that paragraph,
-approved before code). The draft starts deliberately dumb — a template
-naming the birthplace tool and your words — because the edit box is
-the intelligence in the loop: rewrite it until it says what you mean,
+approved before code). The draft is the ask itself, stated plainly —
+no "gains a new ability" ceremony (#p33: the description should
+concisely say what the tool does, and the birthplace already travels
+as data) — because the edit box is the intelligence in the loop:
+rewrite it until it says what you mean,
 press **propose**, and the ask files with your approved paragraph,
 `status: "proposed"`, and its birthplace.
 
