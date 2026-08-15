@@ -65,6 +65,6 @@ absent or declines.
 
 The wrap on `feature_Ask.features` rebuilds the query from the words
 `/ask` passes, embeds, scores, and returns the top three entries above
-0.3 cosine; assets not yet ready (the load is kicked, not awaited) or
+0.28 cosine (non-matches sit at 0.1–0.2; matches at 0.3–0.6); assets not yet ready (the load is kicked, not awaited) or
 zero hits above threshold fall through to the original word-overlap
 scorer.

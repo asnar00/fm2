@@ -9,15 +9,23 @@ const feature_Ask = {
     return meaty.length ? meaty : all;
   },
 
-  // find, grade one: tools already on the toolbar, by label words
+  // the composed tool catalog, from state (the toolbar's DOM only shows the
+  // open tool in open mode — it is view, not truth); DOM as the fallback
+  catalog() {
+    try {
+      const s = JSON.parse(feature_Loop.state || '{}');
+      const list = JSON.parse(s.tools_catalog || '[]');
+      if (Array.isArray(list) && list.length)
+        return list.map((t) => ({ ev: 'tool_' + t.id, label: t.label || t.id }));
+    } catch (e) {}
+    return [...document.querySelectorAll('[data-ev^="tool_"]')]
+      .map((b) => ({ ev: b.getAttribute('data-ev'), label: b.getAttribute('title') || '' }));
+  },
+
+  // find, grade one: tools that exist here, by label words
   tools(words) {
-    const out = [];
-    for (const b of document.querySelectorAll('[data-ev^="tool_"]')) {
-      const label = b.getAttribute('title') || '';
-      if (this.norm(label).some((w) => words.includes(w)))
-        out.push({ ev: b.getAttribute('data-ev'), label });
-    }
-    return out;
+    return this.catalog()
+      .filter((t) => this.norm(t.label).some((w) => words.includes(w)));
   },
 
   // find, grade one: features in the tree, by name/purpose/intro overlap

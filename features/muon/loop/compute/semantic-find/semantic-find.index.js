@@ -123,7 +123,7 @@ const feature_SemanticFind = {
         const scores = await sf.score(sf.embed(words.join(' ')));
         const hits = [];
         for (let m = 0; m < sf.paths.length; m++) {
-          if (scores[m] >= 0.3) hits.push({ m, s: scores[m] });
+          if (scores[m] >= 0.28) hits.push({ m, s: scores[m] });
         }
         hits.sort((a, b) => b.s - a.s);
         const nodes = hits.slice(0, 3)

@@ -87,6 +87,22 @@ def purpose_of(feature) -> str:
     return ""
 
 
+def tool_of(feature) -> str:
+    """The toolbar tool this node registers, if any: a tools_list extension
+    pushing {"id": "X", ...} in one of the node's .rs files. Ground truth for
+    feature->tool (the #p54 mapping): the ask surface uses it to turn found
+    features into open-the-tool buttons."""
+    import re as _re
+    for rs in sorted(feature.dir.glob("*.rs")):
+        text = rs.read_text()
+        if "fn tools_list" not in text:
+            continue
+        m = _re.search(r'"id"\s*:\s*"([^"]+)"', text)
+        if m:
+            return m.group(1)
+    return ""
+
+
 def tree_json(children, times, builds) -> list:
     """The tree as data, for the in-app chooser (features/muon/shell/panel/
     noob-button/chooser): name, path, purpose, intro, provenance timestamp,
@@ -99,7 +115,7 @@ def tree_json(children, times, builds) -> list:
         kids = tree_json(f.children, times, builds)
         key = fmlink.node_key(f.dir, times)
         ts = key[0] if key else min((k["ts"] for k in kids if k["ts"]), default="")
-        out.append({
+        node = {
             "name": f.name,
             "path": f.path,
             "purpose": purpose_of(f),
@@ -107,7 +123,11 @@ def tree_json(children, times, builds) -> list:
             "ts": ts,
             "build": latest_build(f, builds),
             "children": kids,
-        })
+        }
+        tool = tool_of(f)
+        if tool:
+            node["tool"] = tool
+        out.append(node)
     return out
 
 

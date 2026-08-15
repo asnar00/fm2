@@ -28,6 +28,11 @@ impl feature_Tools {
         let mut s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
         Var::<String>::local("open_tool").put(&mut s, &String::new());
+        // the composed catalog as data: which tools exist here, whatever the
+        // toolbar happens to be showing (the page reads this — the DOM only
+        // renders the open tool's button in open mode)
+        let catalog = tools_list(s.to_string());
+        Var::<String>::local("tools_catalog").put(&mut s, &catalog);
         s.to_string()
     }
 

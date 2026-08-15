@@ -55,10 +55,12 @@ to the user-scoped `asks` var — a JSON list in a string var, the
 user's instances, persistence on the server.
 
 `ask.index.js` inserts the ask row (input + **ask** button) into the
-panel above the feature list. Submit runs `find()`: toolbar hits come
-from the live DOM (`[data-ev^="tool_"]`, matching the query against
-each button's label words) and render as open-chips that send the
-tool's own event and dismiss the panel; tree hits come from
+panel above the feature list. Submit runs `find()`: tool hits come
+from the composed catalog (`catalog()` reads the `tools_catalog` state
+var `/tools` stamps at init — the toolbar's DOM renders only the open
+tool in open mode, so it falls back to the DOM only when state offers
+nothing) and render as open-chips that send the tool's own event and
+dismiss the panel; tree hits come from
 `feature_Chooser.load()`'s flat list (typeof-guarded — without the
 chooser there are simply no tree results), scored by word overlap
 against name, purpose and intro, top three rendered via
