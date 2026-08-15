@@ -3,3 +3,4 @@
 - [x] propose
 - [x] lifecycle
 - [x] miso-button
+- [x] request-box
