@@ -1,12 +1,15 @@
 # ember
 *an aesthetic experiment: each tool wears a colour from the ember 3400K Dark palette*
 
+> (transcripts/2026-08-14-fm-spec-3.md#p86, draft-phase revision)
+> What would actually be better is that the "<" and dictaford button would sit off to the left of the toolbar, kind of "owning" the toolbar space; and the rec button would then sit in the center of that area.
+
 > (transcripts/2026-08-14-fm-spec-3.md#p56)
 > OK: let's try this: let's assign each tool a colour from the first palette in that readme - and let's center the toolbar buttons horizontally. The appearance should be black icon on coloured background; light up the selected one (brighten the colour). I just want to see what aesthetic effect it has.
 
 ## spec
 
-A deliberate look-and-see (the ideas.md ember note, cashed in): every tool button takes a colour from the first palette in the ember readme — 3400K Dark's six categorical colours, redshift-safe by construction — as **black icon on coloured background**, the selected tool lit by brightening its own colour rather than swapping to grey. The toolbar's buttons centre horizontally. Known tools get stable assignments (taps → blue, dictate → amber, account → teal); a tool this feature has never met picks deterministically from the remaining palette by name, so new tools arrive coloured without touching this node. The back chevron and tool-contributed controls (record/stop) keep the base monochrome look — colour marks *tools*, not controls. Untick to restore the white-on-grey discipline exactly.
+A deliberate look-and-see (the ideas.md ember note, cashed in): every tool button takes a colour from the first palette in the ember readme — 3400K Dark's six categorical colours, redshift-safe by construction — as **black icon on coloured background**, the selected tool lit by brightening its own colour rather than swapping to grey. The toolbar's buttons centre horizontally; in open-tool mode (#p86), the `‹` and the tool's own button sit at the left edge — the tool owns the bar — and its controls centre in the remaining space. Known tools get stable assignments (taps → blue, dictate → amber, account → teal); a tool this feature has never met picks deterministically from the remaining palette by name, so new tools arrive coloured without touching this node. The back chevron and tool-contributed controls (record/stop) keep the base monochrome look — colour marks *tools*, not controls. Untick to restore the white-on-grey discipline exactly.
 
 ## user
 

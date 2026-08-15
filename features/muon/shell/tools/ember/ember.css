@@ -7,3 +7,11 @@
 .tool-button.sel.tinted {
   background: color-mix(in srgb, var(--tool-colour) 62%, white);
 }
+
+/* open-tool layout (#p86): ‹ and the tool's own button own the left edge;
+   the tool's controls centre themselves in the space that remains. Auto
+   margins on the control group's ends override the centred launcher row;
+   launcher mode (no .back/.ctrl present) is untouched. */
+.tool-button.back { margin-left: 0; }
+.tool-button.ctrl:first-of-type { margin-left: auto; }
+.tool-button.ctrl:last-of-type { margin-right: auto; }
