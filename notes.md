@@ -1397,6 +1397,70 @@ ceiling, invisibly. (`shot.py` now exists in the session scratchpad — CDP
   something each node re-invents.
 - **The screenshot in the loop**, so the bar is checkable.
 
+### The remedies — what to build before that ask is attempted again
+
+Ash (#p40): *"write up the lessons and some proposed remedies - those are
+the features we need to build before we try that ask again."* Sized and
+ordered; the first three are general quality foundations, the fourth is the
+map's specific prerequisite.
+
+**R1 — `/shell/look`: the palette and scale, named once.** *(small; do
+first)*
+The evidence is worse than the map incident suggested: **52 distinct
+colours** across the tree's CSS, including six near-identical greys
+(`#333`, `#3a3a3f`, `#3c3c3c`, `#26262c`, `#23282f`, `#1a1a1d`) and colour
+that had already drifted in unnoticed — a blue (`#9db7d8`, `#48628a`) and a
+green (`#9fdba4`) predate the map entirely. The map's blue marker was not
+an aberration; it was the same disease with a witness.
+Declare the app's ink, paper, dim, line and accent as tokens on `:root`,
+exactly as `--tool-size` was named by the promotion rule, and let nodes
+derive. Migration is eventual, not mandatory: declare now, convert each
+node as it is next touched. What this buys is not tidiness — it is that
+*"does this look like miso"* becomes a question with an answer, and
+inventing a colour becomes a visible act rather than a silent one.
+
+**R2 — `tools/look.py`: the visual smoke sheet.** *(small)*
+`tools/shot.py` now takes one picture; the missing piece is taking *all* of
+them without being asked. One command that drives the app through its
+standard surfaces — home, each tool open, the panel open, the feature list
+— and writes a contact sheet. Then "look at what you ship" costs one
+command instead of a bespoke rig each time, which is the difference between
+a discipline and an intention. Deploy could refuse a release touching CSS
+whose sheet has not been regenerated; worth trying, easy to make naggy.
+
+**R3 — the visual bar, written down.** *(small; a doc, not a node)*
+What a miso surface is: black ground, monochrome, restrained, `#d8d8d8` the
+brightest note, information louder than decoration. Derived by *reading the
+ask history* — "brighter dots", "halve the spacing", "match the icon size",
+"no extraneous labels" — which is a style guide already written by the
+person who has to look at it. Belongs beside R1 so the tokens have stated
+intent rather than only values.
+
+**R4 — map data we author: the ask's actual prerequisite.** *(large; plan
+it like `sovereign.md`, do not improvise it)*
+The failure was reaching for a raster basemap and then arguing with it.
+Raster tiles are somebody's finished opinion; what the ask needed was
+**vector tiles plus our own style**, so "buildings and streets, no company
+names" is a rule we write rather than a basemap we hunt for. Three rungs:
+a vector source (self-hosted extracts, or a source whose licence permits
+restyling), a renderer (canvas first, `/compute` WGSL later — the same
+sovereignty argument as speech), and a style we author. **The tile proxy,
+cache, Web Mercator projection and country outlines from the deleted tool
+are all reusable from git** — that hour was not wasted, it was just
+sequenced wrong.
+
+**R5 — `withdrawn` in the ask lifecycle.** *(small)*
+Four asks still read *shipped*, with build numbers, for a tool that no
+longer exists. The lifecycle has no way to say a feature was delivered and
+then taken back, so the panel is currently lying to the person who asked.
+Directly caused by today, and the fix is a `/ask/lifecycle` subfeature plus
+a `--status withdrawn` in `stamp_ask.py`.
+
+**The gate.** The map ask becomes attemptable again when R1 exists (so it
+can look like miso), R2 exists (so we can see whether it does), and R4 has
+its first rung (so we can say what is drawn). R3 and R5 are cheap and
+should not wait for any of it.
+
 ### One real bug the investigation surfaced, worth keeping
 
 Tile URLs carried no style name, while the server cache did. So a style
