@@ -5,6 +5,12 @@
 > after upgrade, the app is still showing the old tooltip
 > *(the tooltip fix had shipped as a data-only delta; the device applied it quietly and kept answering from the catalog it had already read)*
 
+## user
+
+When an update arrives silently, the little documentation cards and the
+features list speak the new build's words right away — not the ones the
+app happened to have read earlier.
+
 ## spec
 
 The chooser reads `features/tree.json` once per page and holds the flat
@@ -18,12 +24,6 @@ lands, this feature makes the chooser forget its held catalog before
 anything re-renders; the next reader fetches the build it is actually
 running. Applies that reload were never affected — a reload empties
 memory by itself.
-
-## user
-
-When an update arrives silently, the little documentation cards and the
-features list speak the new build's words right away — not the ones the
-app happened to have read earlier.
 
 ## glossary
 

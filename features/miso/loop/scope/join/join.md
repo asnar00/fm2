@@ -4,6 +4,11 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p22)
 > yeah - the next muon update should let me restart an instance and have it start at the same nTaps as the others
 
+## user
+
+Nothing to operate: restart an instance (or come back online) and it shows
+the same shared values as everyone else, without waiting for someone to act.
+
 ## spec
 
 Vars previously converged on writes only: a restarted instance booted with
@@ -18,11 +23,6 @@ last-write-wins at boot; presence and instance identity are named future
 refinements (fm-spec-2 #p21). Refined by `/veil` (first paint waits for the
 snapshot, or times out and says so — #p29, #p31) and `/resume` (foreground
 return and network return are join moments too — #p31).
-
-## user
-
-Nothing to operate: restart an instance (or come back online) and it shows
-the same shared values as everyone else, without waiting for someone to act.
 
 ## glossary
 

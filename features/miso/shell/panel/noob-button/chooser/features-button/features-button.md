@@ -5,6 +5,12 @@
 > actually yeah let's do those now.
 > *(the mod, from #p14: "…and then a 'features' button that opens the long feature list. That'll make things less busy.")*
 
+## user
+
+The panel shows the long feature list only when you ask: tap
+**features** to browse everything, tap again to put it away. An update
+waiting for review still appears right at the top, list folded or not.
+
 ## spec
 
 The feature list is the panel's deepest surface but not its most
@@ -17,12 +23,6 @@ same container and stays visible while the list is folded — the panel
 leads with what needs deciding, not with everything that exists.
 A drill-down from an awaiting row's child chips unfolds the list first,
 so `goto` always lands somewhere visible.
-
-## user
-
-The panel shows the long feature list only when you ask: tap
-**features** to browse everything, tap again to put it away. An update
-waiting for review still appears right at the top, list folded or not.
 
 ## code description
 

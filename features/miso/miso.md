@@ -5,13 +5,13 @@
 > so next is a collection of work I want to call "muon" : it's shared infrastructure for all "apps" / "tools" I want to build. The base of it is: it's a Progressive Web App (PWA) written in rust/wasm, that has a few useful features: 1) works even when there's no internet (using a local server cache); 2) has authentication and users built in; 3) has always-on black-box and reproducibility to catch errors; 4) supports feature management through a simple UI.
 > *(renamed at 2026-08-15-fm-spec.md#p50: "I want to rename muon to miso ('make it so') - a name I had hanging around for a self-modifying toolkit, which muon has become.")*
 
-## spec
-
-Root of the shared infrastructure feature space. Miso is a Progressive Web App written in Rust/wasm, providing four base capabilities to every app built on it: offline operation, built-in authentication and users, always-on black-box recording with reproducible replay, and feature management through a simple UI. Apps are built as subfeatures of miso; products compose miso plus an app subtree.
-
 ## user
 
 Miso lives at miso.nøøb.org. On a phone you install it to the home screen (the browser only ever shows install instructions); first login is a texted code, after which Face ID and update notifications set themselves up automatically. The app works offline, keeps itself on the latest build, and announces deploys by notification. The logo lozenge bottom-right opens the /system panel/: who you are, what's changed, log out, update.
+
+## spec
+
+Root of the shared infrastructure feature space. Miso is a Progressive Web App written in Rust/wasm, providing four base capabilities to every app built on it: offline operation, built-in authentication and users, always-on black-box recording with reproducible replay, and feature management through a simple UI. Apps are built as subfeatures of miso; products compose miso plus an app subtree.
 
 ## glossary
 

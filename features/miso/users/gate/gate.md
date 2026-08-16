@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p39)
 > How about user login?
 
-## spec
-
-Extends the `/serve` route chain: `/auth/request`, `/auth/verify` and `/auth/whoami` answer everywhere; the app shell and the feature tree (`/features/`, statically exported at deploy — a deliberately public, shareable artefact) are served without login; all other traffic that arrived through the cloudflare tunnel (cloudflared always stamps `cf-connecting-ip`) needs a valid session cookie or receives the login page with status 401 (`no-store` — Safari reuses cached 401s). Local/LAN requests hit the port directly, carry no tunnel header, and pass ungated — the dev loop stays frictionless.
-
 ## user
 
 Visiting miso.nøøb.org logged out shows the login screen: phone number → texted code → in, for a year on that device. On the LAN there is no login.
+
+## spec
+
+Extends the `/serve` route chain: `/auth/request`, `/auth/verify` and `/auth/whoami` answer everywhere; the app shell and the feature tree (`/features/`, statically exported at deploy — a deliberately public, shareable artefact) are served without login; all other traffic that arrived through the cloudflare tunnel (cloudflared always stamps `cf-connecting-ip`) needs a valid session cookie or receives the login page with status 401 (`no-store` — Safari reuses cached 401s). Local/LAN requests hit the port directly, carry no tunnel header, and pass ungated — the dev loop stays frictionless.
 
 ## glossary
 

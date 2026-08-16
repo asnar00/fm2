@@ -4,6 +4,12 @@
 > (transcripts/2026-08-15-fm-spec.md#p12)
 > I very much like the idea of being able to implement anything we want (even potion-style search) into webgpu, without depending on anything else.
 
+## user
+
+Nothing to see yet — this is miso growing the organ it will think with.
+When tools start answering instantly on your phone with the network
+off, this is what's underneath.
+
 ## spec
 
 Miso grows its own compute substrate. Not a framework adopted, not a
@@ -39,12 +45,6 @@ pipeline stages, provenance comments in generated shader source, and
 the toggle test diffing both the composed WGSL and its outputs. To be
 built when the first multi-feature kernel arrives (the speech
 pipeline), not speculatively.
-
-## user
-
-Nothing to see yet — this is miso growing the organ it will think with.
-When tools start answering instantly on your phone with the network
-off, this is what's underneath.
 
 ## glossary
 

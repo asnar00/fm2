@@ -4,6 +4,10 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p41)
 > we'd have a tool called "transcribe" which is a button on the main muon screen (a bit like the iphone's app launcher)
 
+## user
+
+The launcher shows a **taps** button; the shared counter lives inside it.
+
 ## spec
 
 With `/tools` owning the main screen, the tap counter becomes miso's first
@@ -13,10 +17,6 @@ older feature registers on a newer chain through a new subfeature — causality
 made visible in the tree. (`/tap` itself gained a launcher-aware gate: it
 renders only as the open tool when the launcher is present, and renders as
 always when it isn't.)
-
-## user
-
-The launcher shows a **taps** button; the shared counter lives inside it.
 
 ## glossary
 

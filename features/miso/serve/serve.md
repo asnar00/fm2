@@ -7,13 +7,13 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p50, draft-phase revision)
 > `request` now carries the raw body bytes (binary-safe, 16MB cap) beside the lossy String view — added for `/mirror`'s audio uploads.
 
-## spec
-
-Serves the built site directory (`site/`, relative to the working directory) over HTTP on port 8095, using only the Rust standard library — no crates. GET requests map to files under `site/`; `/` serves `index.html`; paths containing `..` are refused; unknown paths get 404. `Cache-Control: no-cache` lets the service worker own caching. Runs as the entry of the `server` place in the miso product; cloudflare tunnel maps miso.nøøb.org to this port on the mini.
-
 ## user
 
 Run the server place binary from the product build directory (so `site/` resolves); browse to the port or the tunnel hostname.
+
+## spec
+
+Serves the built site directory (`site/`, relative to the working directory) over HTTP on port 8095, using only the Rust standard library — no crates. GET requests map to files under `site/`; `/` serves `index.html`; paths containing `..` are refused; unknown paths get 404. `Cache-Control: no-cache` lets the service worker own caching. Runs as the entry of the `server` place in the miso product; cloudflare tunnel maps miso.nøøb.org to this port on the mini.
 
 ## glossary
 

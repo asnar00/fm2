@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p13)
 > Let's build v0 linker. Any way you like, quick and dirty for the first pass is fine.
 
-## spec
-
-From the fm.md worked example: defines the `colour` struct with `r`, `g`, `b` channels (`f32`) and `add(colour, colour)` for componentwise addition. Exists to exercise the linker's `/flat struct merge` and `/multiple dispatch`; subfeatures add fields to `colour` and extend its `add` chain.
-
 ## user
 
 For agents: declare values as `colour` and access channels directly (`col.r`). Fields added by subfeatures are equally direct (`col.a`).
+
+## spec
+
+From the fm.md worked example: defines the `colour` struct with `r`, `g`, `b` channels (`f32`) and `add(colour, colour)` for componentwise addition. Exists to exercise the linker's `/flat struct merge` and `/multiple dispatch`; subfeatures add fields to `colour` and extend its `add` chain.
 
 ## glossary
 

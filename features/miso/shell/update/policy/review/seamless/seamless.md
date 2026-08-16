@@ -4,6 +4,13 @@
 > (transcripts/2026-08-15-fm-spec.md#p2)
 > 3) minimal disruption upgrade [retains system state / place / tasks underway]
 
+## user
+
+Updating never barges in: if you're recording, listening, or a note is
+still transcribing, the update waits for the task to finish. And when
+it lands, you're back exactly where you were — same tool, same counts,
+same tasks — not at a fresh front door.
+
 ## spec
 
 Applying a build is a reload, and a reload today interrupts whatever the
@@ -28,13 +35,6 @@ the screen shows the resumed state, open tool included (`/restore` sees
 the place already open and stands down). The stash is consumed once;
 a stash for any other build is discarded. `/join`'s later arrival
 still wins for user-scoped state — convergence is unchanged.
-
-## user
-
-Updating never barges in: if you're recording, listening, or a note is
-still transcribing, the update waits for the task to finish. And when
-it lands, you're back exactly where you were — same tool, same counts,
-same tasks — not at a fresh front door.
 
 ## glossary
 

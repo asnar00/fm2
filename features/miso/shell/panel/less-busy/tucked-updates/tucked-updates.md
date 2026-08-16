@@ -5,6 +5,12 @@
 > PROPOSAL: Let's move the "updates:" radio into the "features" list behind the features button
 > *(a field ask, filed 2026-08-15 on muon build 154)*
 
+## user
+
+The updates setting now lives inside the features list: tap
+**features**, and the automatic / fixes auto / ask me choice is right
+at the top. The panel keeps only what changes day to day.
+
 ## spec
 
 The updates policy picker is a set-and-forget control, so it leaves
@@ -19,12 +25,6 @@ The #p81 law is kept the honest way: the picker's row is moved inside
 a container **this node owns** (`#tucked`), and it is that container's
 display this node manages from JS — `/policy`'s own row is never
 show/hidden by a foreign stylesheet.
-
-## user
-
-The updates setting now lives inside the features list: tap
-**features**, and the automatic / fixes auto / ask me choice is right
-at the top. The panel keeps only what changes day to day.
 
 ## glossary
 

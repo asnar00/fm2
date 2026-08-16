@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p47)
 > I just got a capital M instead of the logo - maybe some issue with deploy
 
-## spec
-
-iOS takes the icon from whatever page is showing when the user adds to home screen; a page without `apple-touch-icon` links produces a generated monogram tile ("M", from the title). The login page was such a page. Rule: every user-visible page carries the full head — icon links, manifest, theme colour — because any of them can be the install point.
-
 ## user
 
 Whichever screen you install from, the tile is the logo.
+
+## spec
+
+iOS takes the icon from whatever page is showing when the user adds to home screen; a page without `apple-touch-icon` links produces a generated monogram tile ("M", from the title). The login page was such a page. Rule: every user-visible page carries the full head — icon links, manifest, theme colour — because any of them can be the install point.
 
 ## glossary
 

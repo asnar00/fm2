@@ -9,6 +9,16 @@
 > (transcripts/2026-08-16-fm-spec.md#p4a, the ruling's rider)
 > (I think we'll come back to that later when we enact per-user privileges)
 
+## user
+
+The tickboxes in your feature list now mean it: untick a feature and it
+switches off for you — its buttons leave your toolbar, its behaviour
+stops, on all your devices, within moments and without an update. Tick it
+back and it returns just as fast. Nobody else's app changes: your ticks
+are yours. Unticking something that contains other things switches off
+the whole family. Careful with the feature list itself — untick that and
+you've hidden the very switch that brings things back.
+
 ## spec
 
 The enforcement the chooser has been waiting for (`/chooser`: ticks are
@@ -57,16 +67,6 @@ principle applied to its nervous system.
 Unticking THIS node removes the hook from the composition, and with it
 every gate the linker would have emitted: ticks return to
 stored-not-enforced, exactly the standing behaviour.
-
-## user
-
-The tickboxes in your feature list now mean it: untick a feature and it
-switches off for you — its buttons leave your toolbar, its behaviour
-stops, on all your devices, within moments and without an update. Tick it
-back and it returns just as fast. Nobody else's app changes: your ticks
-are yours. Unticking something that contains other things switches off
-the whole family. Careful with the feature list itself — untick that and
-you've hidden the very switch that brings things back.
 
 ## glossary
 

@@ -133,13 +133,14 @@ The spec has a standard format, as follows:
     > (reference to user prompt/request in agent conversation transcript)
     > actual user prompt/request that triggered this feature
 
-    ## spec
-    
-    up to 100 words describing what the feature needs to do, written for agents. This should define the problem to be solved, and the functionality introduced to solve it.
 
     ## user
 
-    up to 300 words describing to the user how they should use the functionality, if applicable. If we're talking about a library function, the "user" is the agent writing the code; otherwise, it should be written at a level that the user understands, assuming they understand all the terms introduced by parent features.
+    up to 100 words describing to the user how they should use the functionality, if applicable. If we're talking about a library function, the "user" is the agent writing the code; otherwise, it should be written at a level that the user understands, assuming they understand all the terms introduced by parent features.
+
+    ## spec
+    
+    up to 500 words describing what the feature needs to do, written for agents. This should define the problem to be solved, and the functionality introduced to solve it.
 
     ## glossary
     

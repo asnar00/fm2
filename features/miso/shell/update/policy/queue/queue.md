@@ -6,13 +6,13 @@
 
 *(Revised by [chooser](#miso/shell/panel/noob-button/chooser), #p78: the feature list now occupies the panel area whose tap opened this view, and carries the same build numbers per feature — this node stays composed (tick storage and the view remain) but its entry point stands down while the chooser is ticked.)*
 
-## spec
-
-The panel's six-entry changes teaser gains a full view: tap it and the whole queue opens full screen — every changes.json entry, newest first, scrollable, with a tickbox per entry. `feature` entries are tickable and default ticked; `fix` entries are grayed and permanently ticked — a fix is not a choice, the same reading `/policy` gives them. (True static/dynamic markers per node arrive with the context manager; release kind is the honest v0 proxy.) Ticks are stored per user and follow them across devices — `update_ticks`, a user-scoped var like `update_policy` beside it — and are deliberately inert for now: this node stores choice, it does not yet act on it. The first half of `/policy`'s named refinement ("fine-grained per-feature consent"); the context manager plugs in later.
-
 ## user
 
 Tap the changes list in the system panel and it expands to fill the screen — every update that ever shipped, scrollable. Each new-behaviour update has a tickbox that's yours: untick the ones you'd rather not have. (For now miso just remembers your choices — they'll start steering what runs in a coming update. Fixes are always on.) Your ticks follow you to all your devices. ✕ closes the view.
+
+## spec
+
+The panel's six-entry changes teaser gains a full view: tap it and the whole queue opens full screen — every changes.json entry, newest first, scrollable, with a tickbox per entry. `feature` entries are tickable and default ticked; `fix` entries are grayed and permanently ticked — a fix is not a choice, the same reading `/policy` gives them. (True static/dynamic markers per node arrive with the context manager; release kind is the honest v0 proxy.) Ticks are stored per user and follow them across devices — `update_ticks`, a user-scoped var like `update_policy` beside it — and are deliberately inert for now: this node stores choice, it does not yet act on it. The first half of `/policy`'s named refinement ("fine-grained per-feature consent"); the context manager plugs in later.
 
 ## glossary
 

@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p29)
 > let's implement full-signature dispatch in the linker
 
-## spec
-
-Extends `main` to add two `colour`s and two `vec2`s through the shared name `add`, proving `/multiple dispatch` routes each call to its own chain (colour addition includes /alpha/'s `/extension`), and that operator glue makes `v1 + v2` work.
-
 ## user
 
 With this feature included, the demo prints the colour sum (with alpha channel), the vector sum, and an operator-form vector sum after the greetings.
+
+## spec
+
+Extends `main` to add two `colour`s and two `vec2`s through the shared name `add`, proving `/multiple dispatch` routes each call to its own chain (colour addition includes /alpha/'s `/extension`), and that operator glue makes `v1 + v2` work.
 
 ## glossary
 

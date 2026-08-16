@@ -4,6 +4,11 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p14)
 > go for it :-)
 
+## user
+
+Browse the children: home-screen icons (`/icon`), the install wall
+(`/install`), and standalone chrome (`/pinned`).
+
 ## spec
 
 Grouping node, created under the 4–6 children rule: shell stood at six
@@ -13,11 +18,6 @@ identity), `/install` (the add-to-home-screen wall browsers see), `/pinned`
 (standalone-app chrome). The three were contiguous in shell's order, so the
 grouping preserves linearisation exactly — verified by an fmlink `--chains`
 diff before and after. Contributes no code.
-
-## user
-
-Browse the children: home-screen icons (`/icon`), the install wall
-(`/install`), and standalone chrome (`/pinned`).
 
 ## glossary
 

@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p110)
 > let's talk about messaging :-)
 
-## spec
-
-Miso's one crossing point. Client-side: features *send* by appending type-tagged messages (`{type, data}`) to the `_send` key of `/loop` state — sending is data, purity is preserved, the drain moves them into a persistent outbox (localStorage) flushed to `POST /msg` in order (interval-while-visible, on reconnect, immediately on drain); offline, messages simply wait. Server-side: one cookie-gated endpoint feeds the **`handle_msg(msg) -> reply` extension chain** — each feature claims its own type tags, delegating the rest to `existing`; the base answers `{}`. Replies ride the HTTP response back and enter the update chain as ordinary events — receiving needs no new machinery. **Identity**: the endpoint stamps the cookie-proven sender into each message as `_from` before the chain runs — handlers key user-scoped data by it and cannot be lied to by the payload. **Broadcast**: server features `publish(audience, msg)` into a versioned, capped entry list; every client holds a long-poll open (`POST /msg/wait {since}`, ~25s cycles, needs `/threads`) and receives **only the entries its identity may hear** — `global` plus its own `user.<me>` — so scoped values cannot leak between users; arrivals inject as events. Replay-aware throughout: a ghost neither sends nor listens. Deferred deliberately: typed-struct routing (a v2 linker generation over `handle(T)` chains — tags are the future type names), WebSockets (a faster transport for the same shapes), delivery ids/exactly-once, and per-user or per-session scoping of broadcasts.
-
 ## user
 
 For agents building features: to send, append `{type: "YourTag", data: {…}}` to state's `_send` in an update extension; to serve it, extend `handle_msg`, claim your tag, return a reply (or `{}`); to react to replies or broadcasts, handle them in `update` — they arrive as events. Offline behaviour is inherited, not written.
+
+## spec
+
+Miso's one crossing point. Client-side: features *send* by appending type-tagged messages (`{type, data}`) to the `_send` key of `/loop` state — sending is data, purity is preserved, the drain moves them into a persistent outbox (localStorage) flushed to `POST /msg` in order (interval-while-visible, on reconnect, immediately on drain); offline, messages simply wait. Server-side: one cookie-gated endpoint feeds the **`handle_msg(msg) -> reply` extension chain** — each feature claims its own type tags, delegating the rest to `existing`; the base answers `{}`. Replies ride the HTTP response back and enter the update chain as ordinary events — receiving needs no new machinery. **Identity**: the endpoint stamps the cookie-proven sender into each message as `_from` before the chain runs — handlers key user-scoped data by it and cannot be lied to by the payload. **Broadcast**: server features `publish(audience, msg)` into a versioned, capped entry list; every client holds a long-poll open (`POST /msg/wait {since}`, ~25s cycles, needs `/threads`) and receives **only the entries its identity may hear** — `global` plus its own `user.<me>` — so scoped values cannot leak between users; arrivals inject as events. Replay-aware throughout: a ghost neither sends nor listens. Deferred deliberately: typed-struct routing (a v2 linker generation over `handle(T)` chains — tags are the future type names), WebSockets (a faster transport for the same shapes), delivery ids/exactly-once, and per-user or per-session scoping of broadcasts.
 
 ## glossary
 

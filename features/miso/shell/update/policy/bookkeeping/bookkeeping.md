@@ -4,6 +4,12 @@
 > (transcripts/2026-08-16-fm-spec.md#p3)
 > I notice the update contains "new releases" that aren't actually fixes or changes, stuff like "handover:" and "notes:" - those shouldn't appear in the release item list.
 
+## user
+
+The update review now lists only things that actually changed: features and
+fixes. Notes-to-self, diary entries and session records no longer appear as
+"releases" — they were never updates to your app in the first place.
+
 ## spec
 
 The release classifier (specced at `/policy`: releases classify themselves
@@ -20,12 +26,6 @@ touching `features/`, `products/`, or `tools/` keeps its existing
 classification: scaffolding and out-of-tree fixes still show their release
 line (`/review`'s "an update never lists nothing" stands — for commits that
 did something).
-
-## user
-
-The update review now lists only things that actually changed: features and
-fixes. Notes-to-self, diary entries and session records no longer appear as
-"releases" — they were never updates to your app in the first place.
 
 ## glossary
 

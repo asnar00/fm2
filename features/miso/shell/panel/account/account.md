@@ -4,13 +4,13 @@
 > (transcripts/2026-08-14-fm-spec-3.md#p46)
 > ok so: I just had a thought. The current "update" page (logged in as, etc) should have its own tool button in the tool-tray, instead of being driven off the little icon button. *but* let's keep the icon button, I want to use it later as an agent interface. Let's use a standard icon that people use for login (I guess a "person" silhouette?)
 
-## spec
-
-The system panel joins the toolbar as a proper tool — **account**, the standard person silhouette (👤) — instead of hanging off the corner logo button. Opening the account tool opens the `/panel` sheet; leaving it (the `‹`, or another tool) closes the sheet; dismissing the sheet by tapping the shade also leaves the tool, so toolbar state never lies about what's open. The corner logo button stays — `/watch`'s update pulse still lives there — but its tap is *reserved*: it will become the agent interface, and until that exists it does nothing while this feature is on. Untick this feature and the logo button opens the panel again, exactly as before.
-
 ## user
 
 The 👤 button is a placeholder for your user information — a profile page is coming. Everything administrative lives behind the nøøb button for now: who's logged in, what's changed, update, log out.
+
+## spec
+
+The system panel joins the toolbar as a proper tool — **account**, the standard person silhouette (👤) — instead of hanging off the corner logo button. Opening the account tool opens the `/panel` sheet; leaving it (the `‹`, or another tool) closes the sheet; dismissing the sheet by tapping the shade also leaves the tool, so toolbar state never lies about what's open. The corner logo button stays — `/watch`'s update pulse still lives there — but its tap is *reserved*: it will become the agent interface, and until that exists it does nothing while this feature is on. Untick this feature and the logo button opens the panel again, exactly as before.
 
 ## glossary
 

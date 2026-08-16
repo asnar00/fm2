@@ -7,6 +7,12 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p49, draft-phase revision)
 > should we now add playback when we tap the file icon? also, let's change the icon we use for the file; something connoting "sound".
 
+## user
+
+Tap 🎤 in the toolbar. Tap the record button and talk (first use asks for
+microphone permission); tap stop when done. Each note appears as a file icon
+in the grid. Notes are stored on this device — nothing leaves it yet.
+
 ## spec
 
 The 🎤 tool. Open it: the display surface shows your recordings as a grid of
@@ -21,12 +27,6 @@ microphone. Metadata reseeds from IndexedDB on boot (`RecList`) — recordings
 survive restarts. Named next steps (the graded-derivation plan, #p36–39):
 streaming/catch-up upload to the exchange, then the three transcribe rungs
 as subfeatures.
-
-## user
-
-Tap 🎤 in the toolbar. Tap the record button and talk (first use asks for
-microphone permission); tap stop when done. Each note appears as a file icon
-in the grid. Notes are stored on this device — nothing leaves it yet.
 
 ## glossary
 

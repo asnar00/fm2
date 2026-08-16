@@ -4,6 +4,11 @@
 > (transcripts/2026-08-15-fm-spec.md#p3)
 > For some reason I'm seeing release numbers out of order in the list: 124, then 125, then 126. I'd prefer it if release numbers start at highest and strictly go downwards.
 
+## user
+
+The feature list counts straight down — the biggest release number at
+the top, never a smaller number above a bigger one.
+
 ## spec
 
 `/chooser` sorts by provenance timestamp but *displays* each feature's
@@ -13,11 +18,6 @@ four builds, shown as 124, 125, 126, 122). The number the eye reads is
 the order the list must keep: sort by build, highest first, strictly
 descending; equal builds fall back to newest provenance, then path, so
 the order stays stable.
-
-## user
-
-The feature list counts straight down — the biggest release number at
-the top, never a smaller number above a bigger one.
 
 ## code description
 

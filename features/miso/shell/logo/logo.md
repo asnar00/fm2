@@ -7,13 +7,13 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p46, draft-phase revision)
 > we can push the big logo back to grey so it reads as background
 
-## spec
-
-Extends the `/shell` `render()` chain to display the nøøb logo `ᕦ(ツ)ᕤ`, centred, white on black, sized for a mobile screen. First light: proves the whole path — feature code → wasm → loader → screen — end to end.
-
 ## user
 
 Open the app: you should see `ᕦ(ツ)ᕤ` in the middle of a black screen.
+
+## spec
+
+Extends the `/shell` `render()` chain to display the nøøb logo `ᕦ(ツ)ᕤ`, centred, white on black, sized for a mobile screen. First light: proves the whole path — feature code → wasm → loader → screen — end to end.
 
 ## glossary
 

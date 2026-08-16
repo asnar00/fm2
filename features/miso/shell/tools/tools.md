@@ -16,6 +16,12 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p48, draft-phase revision)
 > when we select dictate, the other tool icons (=taps) slide off to the left, the dictate icon slides to leftmost, and the rec/stop buttons are the new tools to the right of dictate - they don't sit above the toolbar.
 
+## user
+
+Your tools sit as small icon buttons along the bottom of the screen. Tap one
+to open it above; tap it again to close. Adding or removing a feature from your
+product adds or removes its button.
+
 ## spec
 
 miso runs **tools**: each is a small icon button in a **toolbar** — a
@@ -29,12 +35,6 @@ own node; features older than this chain register via a subfeature
 (provenance ordering: you can only extend what existed when you were
 written). Toolsets (pages of tools) arrive when the row overflows. (The row
 is called a toolbar, not a panel — `/panel` is the system panel.)
-
-## user
-
-Your tools sit as small icon buttons along the bottom of the screen. Tap one
-to open it above; tap it again to close. Adding or removing a feature from your
-product adds or removes its button.
 
 ## glossary
 

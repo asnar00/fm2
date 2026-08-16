@@ -4,6 +4,14 @@
 > (transcripts/2026-08-16-fm-spec.md#p2)
 > yeah, I think I'd like to first fix the distribution issue with the transcript
 
+## user
+
+Record a note on your phone and let it transcribe. Open miso on your laptop:
+the note's words are already under its tile — no waiting for the laptop to
+work them out again. Wherever a transcript is made, every logged-in instance
+gets it; the "local draft" stamp travels with the words, and better versions
+still replace rougher ones everywhere when higher rungs arrive.
+
 ## spec
 
 The field found the gap (notes.md, fm-spec-2 #p22): the phone transcribed a
@@ -26,14 +34,6 @@ Catch-up is the same two-speed doctrine as `/mirror`: the boot `RecIndex`
 reply arrives with words already stamped on its items, which also repairs the
 day-3 reseed loss — `RecList` wipes the stamps, the next catch-up restores
 them, and the laptop stops re-deriving what the phone already said.
-
-## user
-
-Record a note on your phone and let it transcribe. Open miso on your laptop:
-the note's words are already under its tile — no waiting for the laptop to
-work them out again. Wherever a transcript is made, every logged-in instance
-gets it; the "local draft" stamp travels with the words, and better versions
-still replace rougher ones everywhere when higher rungs arrive.
 
 ## glossary
 

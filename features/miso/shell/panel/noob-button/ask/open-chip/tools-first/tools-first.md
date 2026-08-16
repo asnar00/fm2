@@ -4,6 +4,13 @@
 > (transcripts/2026-08-15-fm-spec.md#p24)
 > when I typed in "record audio" I got the "open dictate" - but 1) I didn't get the dictate feature readout, so I can't check whether it's the right thing; and 2) it's showing mirror, open-chip and ask, which aren't tools, so really they shouldn't appear in the results at all
 
+## user
+
+Ask for a thing and you get tools: the button that opens each one, and
+its description right there so you can check it does what you meant.
+Only when nothing can do it directly do the explanatory feature pages
+step in.
+
 ## spec
 
 The finder's results were raw semantic hits — whichever features'
@@ -23,13 +30,6 @@ The one honest exception: an ask that resolves to **no tool at all**
 falls back to the plain feature rows, because for capability questions
 ("control which updates arrive") the reading path is the answer, and
 showing nothing would file a wish for something that exists.
-
-## user
-
-Ask for a thing and you get tools: the button that opens each one, and
-its description right there so you can check it does what you meant.
-Only when nothing can do it directly do the explanatory feature pages
-step in.
 
 ## glossary
 

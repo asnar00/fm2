@@ -5,6 +5,11 @@
 > NEW ASK [proposed] … [in taps @ miso/loop/tap/counter] :: 'I’d like to see tooltips on sub-tools as well as top level tools'
 > *(a field ask whose arrival is its own anchor, filed from inside the taps tool on 2026-08-15, miso build 165)*
 
+## user
+
+Hold your finger on the little buttons inside a tool — like reset or
+−1 in taps — and the same card explains what each one does.
+
 ## spec
 
 The long-press tool card extends to sub-tools: hold any control button
@@ -21,11 +26,6 @@ extension appends buttons (the control's `data-ev` ids, the sub-tool
 twin of the `tool:` stamp), and the card looks the held button's id up
 in the chooser's catalog. Without the catalog, the card degrades to
 the button's `title`, as the parent does.
-
-## user
-
-Hold your finger on the little buttons inside a tool — like reset or
-−1 in taps — and the same card explains what each one does.
 
 ## glossary
 

@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p13)
 > Let's build v0 linker. Any way you like, quick and dirty for the first pass is fine.
 
-## spec
-
-Subfeature of `/hello`, from the fm.md worked example. Extends `main` to print `Goodbye...` after the greeting. Exists to exercise the linker's `/extension` chain: the redefined `main` calls the previous definition via `existing.main()`.
-
 ## user
 
 With this feature included, the demo prints `Goodbye...` as its last line. Untick it in `hello/order.md` to remove the farewell.
+
+## spec
+
+Subfeature of `/hello`, from the fm.md worked example. Extends `main` to print `Goodbye...` after the greeting. Exists to exercise the linker's `/extension` chain: the redefined `main` calls the previous definition via `existing.main()`.
 
 ## glossary
 

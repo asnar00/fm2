@@ -4,6 +4,14 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p25)
 > There should be three update policies: 1) automatic everything; 2) automatic bugfixes, interface-breaking changes by consent (with optional fine-grained control); 3) everything by consent.
 
+## user
+
+Open the system panel: the "updates" row offers **automatic** (everything
+applies by itself), **fixes auto** (bug fixes apply by themselves; anything
+with new behaviour pulses the corner handle and waits for you to press
+update), and **ask me** (nothing applies without the button). Your choice
+follows you to all your devices.
+
 ## spec
 
 The update policy is the user's, not the product's: a user-scoped var
@@ -20,14 +28,6 @@ the switch happens (mid-session auto-reload, launch stamping) — the freshness
 cache is not a hard version pin. Fine-grained per-feature consent is a named
 refinement awaiting runtime contexts (dark-shipped nodes gated by consent
 vars).
-
-## user
-
-Open the system panel: the "updates" row offers **automatic** (everything
-applies by itself), **fixes auto** (bug fixes apply by themselves; anything
-with new behaviour pulses the corner handle and waits for you to press
-update), and **ask me** (nothing applies without the button). Your choice
-follows you to all your devices.
 
 ## glossary
 

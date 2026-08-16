@@ -4,6 +4,14 @@
 > (transcripts/2026-08-15-fm-spec.md#p2)
 > 2) update workflow (review proposed feature additions auto-ticked by policy, press "upgrade" button
 
+## user
+
+When an update is waiting, brand-new features in it are marked **new**.
+Whether they arrive ticked is your updates setting: on **automatic**
+they're on unless you untick them; on the other settings they wait for
+your tick. Press **upgrade** once and your choices are kept and every
+device you own takes the build.
+
 ## spec
 
 The awaiting update section becomes a real review: rows that are
@@ -32,14 +40,6 @@ doesn't cover degrade honestly: their rows just keep today's behaviour.
 its picker now answers only this pre-ticking question. That `fixes
 auto` and `ask me` currently pre-tick identically is recorded as an open
 question for the picker's future shape.
-
-## user
-
-When an update is waiting, brand-new features in it are marked **new**.
-Whether they arrive ticked is your updates setting: on **automatic**
-they're on unless you untick them; on the other settings they wait for
-your tick. Press **upgrade** once and your choices are kept and every
-device you own takes the build.
 
 ## glossary
 

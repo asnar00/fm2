@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p104)
 > I think replay would be nice. Ideally, we could take any session and stand it up in a test browser (ooh, maybe even a proper iphone simulator running the pwa), and then replay user events with the proper timing.
 
-## spec
-
-Turns a /blackbox/ recording back into a live session. With `?replay=1`, the app seeds its state from the best /keyframe/ at-or-before the window's first event, then dispatches each recorded event through the `/loop` loop at its original inter-event delay (`&speed=` scales time). Recording pauses during replay so a playback never records itself; the login redirect is suppressed (a replay is not a user session); a REPLAY badge marks the screen. The scaffolding launcher (`tools/replay.py`) pulls a user's batches off the mini over ssh, assembles the window into `/replay.json`, ensures the local server is running (localhost is ungated by design — no login needed in the test browser), and opens the URL — in a booted iPhone simulator when Xcode provides one, else the default browser. Replay covers the event-loop surface; as more of miso moves into `/loop`, replay coverage grows with it.
-
 ## user
 
 `python3 tools/replay.py` — your latest recorded phone session opens on the laptop and re-performs itself, tap for tap, pause for pause. `--simulator` stands it up in an iPhone simulator; `--speed 4` hurries it along; `--minutes 10` picks the window.
+
+## spec
+
+Turns a /blackbox/ recording back into a live session. With `?replay=1`, the app seeds its state from the best /keyframe/ at-or-before the window's first event, then dispatches each recorded event through the `/loop` loop at its original inter-event delay (`&speed=` scales time). Recording pauses during replay so a playback never records itself; the login redirect is suppressed (a replay is not a user session); a REPLAY badge marks the screen. The scaffolding launcher (`tools/replay.py`) pulls a user's batches off the mini over ssh, assembles the window into `/replay.json`, ensures the local server is running (localhost is ungated by design — no login needed in the test browser), and opens the URL — in a booted iPhone simulator when Xcode provides one, else the default browser. Replay covers the event-loop surface; as more of miso moves into `/loop`, replay coverage grows with it.
 
 ## glossary
 

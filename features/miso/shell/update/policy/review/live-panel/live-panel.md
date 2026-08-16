@@ -4,6 +4,13 @@
 > (transcripts/2026-08-15-fm-spec.md#p22)
 > One tweak: if the noob panel is open when an upgrade arrives, it should automatically update its contents to reflect the new update.
 
+## user
+
+Leave the panel open and updates walk in as they happen: a new build
+shows up as an awaiting entry the minute it ships, and the build line
+flips to up-to-date on its own. No closing and reopening to see the
+news.
+
 ## spec
 
 The panel's update freight — the build line, the awaiting section, the
@@ -18,13 +25,6 @@ block, and re-dresses through `/upgrade`, whose session-local draft
 ticks survive re-rendering by design — and `/less-busy`'s build line.
 A closed panel costs nothing: the refresh only fires when the panel is
 showing, and only when the server build actually changed.
-
-## user
-
-Leave the panel open and updates walk in as they happen: a new build
-shows up as an awaiting entry the minute it ships, and the build line
-flips to up-to-date on its own. No closing and reopening to see the
-news.
 
 ## code description
 

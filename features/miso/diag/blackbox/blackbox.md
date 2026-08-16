@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p100)
 > Remember though: we want blackbox to work even when not connected to the internet; so if we're connected, events should travel to the server, but they should also always go into some kind of rotating log (to avoid memory blowouts, maybe a few minutes in duration).
 
-## spec
-
-The always-on flight recorder, offline-first by design. Every turn of the `/loop` loop appends a lean `{t, event}` delta to a **rotating local log** (localStorage): bounded by age (last 5 minutes) and count (500 entries). Full state lives in a keyframes array — boot state is keyframe zero, `/keyframes` adds periodic ones — trimmed so the newest keyframe at-or-before the window start always survives: the retained window is always replayable, with no unbounded growth, ever, connected or not. When the network permits, unsent entries **also** ship to the server in batches (every 10s while visible, on regaining connectivity, and on page-hide with a keepalive request); the send watermark survives restarts, so a session that ended offline — or crashed — ships its final minutes on the next launch. The server half (same node) ingests batches, cookie-gated, into a size-rotated log on the mini.
-
 ## user
 
 Nothing to do. Your recent interactions are always recoverable for debugging: the last few minutes live on the device even with no signal, and reach the server whenever a connection exists. Tap-by-tap replay of a problem is possible from either copy.
+
+## spec
+
+The always-on flight recorder, offline-first by design. Every turn of the `/loop` loop appends a lean `{t, event}` delta to a **rotating local log** (localStorage): bounded by age (last 5 minutes) and count (500 entries). Full state lives in a keyframes array — boot state is keyframe zero, `/keyframes` adds periodic ones — trimmed so the newest keyframe at-or-before the window start always survives: the retained window is always replayable, with no unbounded growth, ever, connected or not. When the network permits, unsent entries **also** ship to the server in batches (every 10s while visible, on regaining connectivity, and on page-hide with a keepalive request); the send watermark survives restarts, so a session that ended offline — or crashed — ships its final minutes on the next launch. The server half (same node) ingests batches, cookie-gated, into a size-rotated log on the mini.
 
 ## glossary
 

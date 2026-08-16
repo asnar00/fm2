@@ -4,6 +4,13 @@
 > (transcripts/2026-08-15-fm-spec.md#p6)
 > let's do all three :-)
 
+## user
+
+Updates only download what actually changed — a small fix costs a few
+kilobytes, not the whole app, and never re-costs the big speech model.
+And when a release only touches the server, your device just notes the
+new build number: no reload, nothing to wait for.
+
 ## spec
 
 The apply ritual's eviction was a sledgehammer — `caches.delete('miso')`
@@ -32,13 +39,6 @@ update button all become delta-precise together. Pairs with the split
 composition (fmlink `SPLIT_PAGES`, same prompt): per-feature fragment
 files mean a typical release's delta is a few small files, not the
 whole app.
-
-## user
-
-Updates only download what actually changed — a small fix costs a few
-kilobytes, not the whole app, and never re-costs the big speech model.
-And when a release only touches the server, your device just notes the
-new build number: no reload, nothing to wait for.
 
 ## glossary
 

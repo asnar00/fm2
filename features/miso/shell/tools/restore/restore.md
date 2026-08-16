@@ -4,13 +4,13 @@
 > (transcripts/2026-08-14-fm-spec-3.md#p46a)
 > also, let's make each instance remember its state (which tool we're in, basically) so that if I restart the instance, I come back to where I was when I shut it down
 
-## spec
-
-Which tool is open is per-instance state (`/tools`); this feature makes it survive the instance restarting. Every change to the open tool is remembered on the device; at boot, if a tool was open when the instance last ran, it is reopened — by sending the same event a tap would send, so the tool's own opening behaviour (and any other feature watching) runs identically. Restore is honest about absence: a remembered tool that is no longer in the composition (its feature unticked, its button gone) is not reopened — the instance boots to the launcher rather than into a ghost. Remembering the launcher ("no tool open") is state too.
-
 ## user
 
 Restart the app and it opens where you were — in dictate if you were in dictate, the launcher if you'd gone home. Nothing to set up.
+
+## spec
+
+Which tool is open is per-instance state (`/tools`); this feature makes it survive the instance restarting. Every change to the open tool is remembered on the device; at boot, if a tool was open when the instance last ran, it is reopened — by sending the same event a tap would send, so the tool's own opening behaviour (and any other feature watching) runs identically. Restore is honest about absence: a remembered tool that is no longer in the composition (its feature unticked, its button gone) is not reopened — the instance boots to the launcher rather than into a ghost. Remembering the launcher ("no tool open") is state too.
 
 ## glossary
 

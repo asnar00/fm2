@@ -5,6 +5,10 @@
 > PROPOSAL: put the build readout and feature button on one line
 > *(a field ask, filed 2026-08-15 on muon build 157)*
 
+## user
+
+put the build readout and feature button on one line
+
 ## spec
 
 The build line and the **features** button were two rows saying small
@@ -14,10 +18,6 @@ button keeps every behaviour it had (folding, unfolding, the tucked
 updates picker riding along); the readout keeps its writer
 (`/less-busy`'s refresh finds it moved, not recreated). If either
 half is absent from the composition, the other keeps the line alone.
-
-## user
-
-put the build readout and feature button on one line
 
 ## glossary
 

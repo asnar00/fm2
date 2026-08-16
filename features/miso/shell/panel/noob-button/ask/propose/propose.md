@@ -5,6 +5,14 @@
 > 2) it should write me a user-description for the tool, let me edit or OK it, and then fire it. And that needs to happen whether we're connected to the server or not
 > *(fired at #p30)*
 
+## user
+
+Ask for something miso can't do yet and it answers with a short
+description of what it *would* do — in words meant for you. Fix the
+words until they're right, hit **propose**, and that exact paragraph
+goes to the builder as the contract for what gets built. Works with no
+signal; it sends itself when you're back.
+
 ## spec
 
 Filing a wish was fire-and-forget; now it is a small act of
@@ -25,14 +33,6 @@ fire rides the durable outbox — a proposal made in a tunnel lands when
 the network returns. The drafter is a seam, not a commitment: the
 dev-session agent (online) or a local model on `/compute` (someday)
 can replace the template without the flow noticing.
-
-## user
-
-Ask for something miso can't do yet and it answers with a short
-description of what it *would* do — in words meant for you. Fix the
-words until they're right, hit **propose**, and that exact paragraph
-goes to the builder as the contract for what gets built. Works with no
-signal; it sends itself when you're back.
 
 ## glossary
 

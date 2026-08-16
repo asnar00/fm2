@@ -5,6 +5,12 @@
 > The system should be smart enough to know 1) that I'm in the tap tool right now, so my request probably pertains to it
 > *(fired at #p30: "OK let's do it")*
 
+## user
+
+When you ask for something while using a tool, miso remembers which
+tool you were in — so what you asked for lands with the builder
+already knowing what it's probably about.
+
 ## spec
 
 A wish made inside a tool is probably about that tool. This node makes
@@ -14,12 +20,6 @@ feature path (`at`) — so the builder knows the probable parent node
 before reading a word, and the wish arrives with its provenance
 already placed in the tree. Asked from the launcher, an ask carries
 nothing extra — absence stays honest.
-
-## user
-
-When you ask for something while using a tool, miso remembers which
-tool you were in — so what you asked for lands with the builder
-already knowing what it's probably about.
 
 ## glossary
 
