@@ -1,2 +1,0 @@
-- [x] country-icon
-- [x] quiet-tiles

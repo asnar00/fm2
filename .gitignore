@@ -7,6 +7,3 @@ tools/__pycache__/
 # fetched on-device find artifacts (tools/fetch_find.py) — recipe + pin in git, binaries not
 features/miso/loop/compute/semantic-find/assets/find/*
 !features/miso/loop/compute/semantic-find/assets/find/PINNED
-
-# vendored country outlines (tools/fetch_countries.py) — recipe in git, data not
-features/miso/loop/map/country-icon/assets/geo/*

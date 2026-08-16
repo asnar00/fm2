@@ -3,4 +3,3 @@
 - [x] dictate
 - [x] compute
 - [x] context-manager
-- [x] map
