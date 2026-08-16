@@ -3,7 +3,7 @@
 
 Writes the user-scoped `feature_log` var in the mini's var store and
 publishes it, so an open instance picks it up on its next long-poll — about
-half a second. See features/miso/diag/journal.
+half a second. See features/miso/diag/logging.
 
   tools/set_log.py --on miso/loop/dictate      # hear the recorder and everything under it
   tools/set_log.py --off miso/loop/dictate

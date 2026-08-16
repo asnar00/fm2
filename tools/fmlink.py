@@ -401,7 +401,7 @@ def log_paths(text: str, path: str) -> str:
     """`fm_log(…)` -> `fm_log_at("<node path>", …)`. The author writes what
     happened; the linker says who said it, so a log line can never claim the
     wrong feature and never drifts when a node is regrouped
-    (features/miso/diag/journal)."""
+    (features/miso/diag/logging)."""
     return re.sub(r"\bfm_log\s*\(", 'fm_log_at("' + path + '", ', text)
 
 

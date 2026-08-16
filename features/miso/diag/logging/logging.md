@@ -1,4 +1,4 @@
-# journal
+# logging
 *features say what they are doing — but only the ones you have asked to hear*
 
 > (transcripts/2026-08-16-fm-spec.md#p23)
@@ -67,28 +67,28 @@ logging spreads through the tree.
 
 ## glossary
 
-- **journal**: what a feature says about its own working, when switched on.
+- **log line**: what a feature says about its own working, when switched on.
 - **switched on**: this node's path, or an ancestor of it, marked true in
   the user's `feature_log`.
 
 ## code description
 
-`journal.lib.rs` (verbatim library) holds two thread-locals: the paths
-switched on for this user, and the lines gathered so far. `fm_journal_arm`
+`logging.lib.rs` (verbatim library) holds two thread-locals: the paths
+switched on for this user, and the lines gathered so far. `fm_log_arm`
 refreshes the first from state (parsed properly, since it runs once per
-turn rather than once per call); `fm_journal_on` does the prefix walk;
+turn rather than once per call); `fm_log_on` does the prefix walk;
 `fm_log_at(path, msg)` — what `fm_log(msg)` is rewritten into — appends
-when on and returns immediately when not; `fm_journal_drain` empties the
+when on and returns immediately when not; `fm_log_drain` empties the
 buffer.
 
-`journal.rs` extends `on_event`, the whole-turn chain: arm the switches
+`logging.rs` extends `on_event`, the whole-turn chain: arm the switches
 from the incoming state, let the chain run and log as it goes, then append
 whatever was gathered to the outgoing state as `_log` — the route `_send`
 already uses for outbound messages, which keeps `client.wasm`'s
 zero-import law untouched and needs no signature change anywhere in the
 tree.
 
-`journal.js` drains `_log` on every apply (deleting it, so state never
+`logging.js` drains `_log` on every apply (deleting it, so state never
 grows), prints to the console, and pushes each line into `/blackbox`'s
 entries with the `/instance` id attached. It also defines the page-side
 `fm_log_at`, which does its own on-check against `feature_log` in state.

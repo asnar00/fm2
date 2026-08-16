@@ -1,7 +1,7 @@
 // the page half of per-feature logging: drain what the Rust turn gathered,
 // and provide the call the linker rewrites page-side logging into. Lines go
 // to the console and ride /blackbox to the mini. (#p23)
-const feature_Journal = {
+const feature_Logging = {
   // which paths are switched on for this user (absent means off)
   on(path) {
     try {
@@ -46,7 +46,7 @@ const feature_Journal = {
 
 // what `fm_log(...)` becomes in page fragments; the linker supplies the path
 function fm_log_at(path) {
-  if (!feature_Journal.on(path)) return;
+  if (!feature_Logging.on(path)) return;
   const parts = [];
   for (let i = 1; i < arguments.length; i++) {
     const a = arguments[i];
@@ -54,12 +54,12 @@ function fm_log_at(path) {
       try { return JSON.stringify(a); } catch (e) { return String(a); }
     })());
   }
-  feature_Journal.emit(path, parts.join(' '));
+  feature_Logging.emit(path, parts.join(' '));
 }
 {
   const fm_jApply = feature_Loop.apply;
   feature_Loop.apply = function (p) {
     fm_jApply.call(this, p);
-    feature_Journal.drain();
+    feature_Logging.drain();
   };
 }

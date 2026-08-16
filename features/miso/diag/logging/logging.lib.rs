@@ -1,6 +1,6 @@
 // per-feature logging: a feature says what it is doing, and is heard only
 // when switched on. The path comes from the linker, never from the author.
-// verbatim library — full Rust, outside the chain machinery. See journal.md.
+// verbatim library — full Rust, outside the chain machinery. See logging.md.
 
 thread_local! {
     // paths switched on for this user, refreshed once per turn
@@ -13,7 +13,7 @@ thread_local! {
 
 /// arm the turn: read which node paths this user has switched on.
 /// Parsed properly (not scanned) — this runs once per event, not per call.
-pub fn fm_journal_arm(state: &str) {
+pub fn fm_log_arm(state: &str) {
     let s: serde_json::Value = serde_json::from_str(state)
         .unwrap_or(serde_json::json!({}));
     let raw = s["feature_log"].as_str().unwrap_or("");
@@ -32,7 +32,7 @@ pub fn fm_journal_arm(state: &str) {
 
 /// is this node — or an ancestor of it — switched on? Absent means off,
 /// the mirror image of /context-manager's ticks.
-pub fn fm_journal_on(path: &str) -> bool {
+pub fn fm_log_on(path: &str) -> bool {
     FM_LOG_ON.with(|c| c.borrow().iter().any(|p| {
         path == p
             || (path.len() > p.len()
@@ -43,13 +43,13 @@ pub fn fm_journal_on(path: &str) -> bool {
 
 /// what `fm_log(msg)` becomes: the linker supplies the path
 pub fn fm_log_at(path: &str, msg: String) {
-    if !fm_journal_on(path) {
+    if !fm_log_on(path) {
         return;
     }
     FM_LOG_BUF.with(|c| c.borrow_mut().push(
         serde_json::json!({ "p": path, "m": msg })));
 }
 
-pub fn fm_journal_drain() -> Vec<serde_json::Value> {
+pub fn fm_log_drain() -> Vec<serde_json::Value> {
     FM_LOG_BUF.with(|c| c.borrow_mut().drain(..).collect())
 }

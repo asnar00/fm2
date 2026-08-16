@@ -32,7 +32,7 @@ already carried by the cookie.
 
 Scope kept small on purpose: this node mints the id and puts it on
 `/diag`'s reports, which is where the question was actually asked.
-Everything else that will want it — `/journal`'s log lines, `/blackbox`'s
+Everything else that will want it — `/logging`'s log lines, `/blackbox`'s
 batches — reads it from here rather than minting its own.
 
 ## glossary
