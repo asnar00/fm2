@@ -1252,6 +1252,45 @@ tree.
 5. **Instance id visible to the user?** (It would make "which device is
    misbehaving" answerable in the panel, not just in my terminal.)
 
+## the flywheel's two rulings, settled in the field (2026-08-16, asks#1786892582635)
+
+An ask arrived mid-session — *"set the background grid size to match the
+tool icon size, and center it around screen center"* — and settled two
+things that had been queued since the 15th.
+
+**Ruling 1: never come back to ask.** Ash, on being asked how to cite it:
+*"when an ask comes in, the user expects a feature in the next update. So
+you must never ask me about it here - just build using your best
+judgement, document properly in the feature node, and ship."* Now in
+agents.md. The asker is a user waiting for their feature, not a
+collaborator in a design conversation; a question aimed back at the chat
+is a broken promise. Judgement belongs in the node's spec, where the
+asker can read it.
+
+**Ruling 2: the ask store is a provenance source.** The blocker named in
+the 15th's handover, hit for real: fmlink refuses a code-bearing node that
+cites no anchor, and an ask reaching the builder through the ask store has
+no `transcripts/…#pN`. Settled by taking the judgement rather than
+deferring it — **a field ask is provenance in its own right**, and a
+better record than a chat message quoting one: it is the human's actual
+request, timestamped to the millisecond, carrying its own recorded OK.
+Specs cite `asks#<t>`; the linker reads the node's position straight from
+the id, since the id *is* the timestamp. Known gap:
+`tools/audit_prompts.py` still inverts only transcript citations, so
+ask-cited nodes read as uncited in that audit until it learns the form.
+
+**And the promotion rule's first case landed with it** (#p18). The ask was
+size-shaped, which `ideas.md` had named as `/bigger-buttons`' trigger —
+and it turned out to be a stronger trigger than a plain resize, because
+two features now had to agree on one number, which is exactly the
+duplication the rule exists to prevent. `/tools` now *names* its two sizes
+and derives its own rules from them; `/bigger-buttons` *sets* those names
+instead of restating rules; `/aligned-grid` reads them. Proven by toggle:
+untick `/bigger-buttons` and the background grid drops to 40px along with
+the buttons. What was promoted is the **name** — one declaration, several
+consumers. Binding that name to a per-user var, so size is tunable without
+a build, is the next rung and waits for an ask that wants it.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.

@@ -78,6 +78,15 @@ question "did a request go nodeless?"
   code-bearing node MUST cite a real anchor — the linker fails otherwise;
   code-free grouping nodes order by their earliest child. Inspect with
   `fmlink.py <product> --chains`.
+- **Field asks are provenance too.** An ask filed from a device reaches the
+  builder through the ask store, not the session log, so it has no
+  `transcripts/…#pN` anchor. Cite it as `asks#<t>` — the ask's filing
+  timestamp, which is both its stable id and its position (the linker reads
+  the time straight from the id; no lookup). Quote the ask text beneath the
+  citation as transcript-cited nodes do. **When an ask arrives, build it and
+  ship it — never come back to the user to ask about it**: the asker is
+  expecting the feature in the next update. Use judgement, and document the
+  judgement in the node.
 - Node names are TREE-GLOBAL (fm.md "tree-global names", linker-enforced):
   unique across the composed tree, self-describing without the path.
   Implementation namespaces are flat — a duplicate JS `const feature_X` kills

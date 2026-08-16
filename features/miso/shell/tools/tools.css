@@ -5,12 +5,16 @@
   right: calc(env(safe-area-inset-right) + 84px); /* clear of the corner stamp */
   display: flex; align-items: center; gap: 8px;
 }
+/* the toolbar's two sizes, named once so anything that must agree with the
+   buttons can derive from them rather than repeat them (revised for
+   /aligned-grid, asks#1786892582635 — behaviour identical) */
+:root { --tool-size: 40px; --tool-icon: 19px; }
 .tool-button {
-  width: 40px; height: 40px;
+  width: var(--tool-size); height: var(--tool-size);
   display: flex; align-items: center; justify-content: center;
   background: #3c3c3c; color: #fff;
   border-radius: 12px;
-  font-size: 19px;
+  font-size: var(--tool-icon);
   cursor: pointer; user-select: none; -webkit-user-select: none;
 }
 .tool-button.sel { background: #d8d8d8; color: #000; }

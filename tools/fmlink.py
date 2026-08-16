@@ -22,6 +22,7 @@ Usage: fmlink.py [product] [--run]      (product defaults to "demo")
 """
 
 import argparse
+import datetime
 import json
 import re
 import shutil
@@ -132,6 +133,14 @@ def linearise(directory: Path, out: list, excluded: list, root: Path):
 
 CITE_RE = re.compile(r"transcripts/([\w.-]+\.md)#p(\d+)([a-z]?)")
 
+# a field ask is a human prompt too, and a better provenance record than a
+# chat message quoting one: it carries its own OK and its own stable id (the
+# millisecond it was filed). Asks reach the builder through the ask store,
+# not the session log, so they cite `asks#<t>` — the id IS the timestamp, so
+# the node's position needs no lookup. (notes.md, the flywheel's provenance
+# ruling; first used by shell/logo/dots/aligned-grid.)
+ASK_CITE_RE = re.compile(r"\basks#(\d{13})\b")
+
 
 def read_anchor_times() -> dict:
     """(transcript filename, prompt number, rider) -> 'YYYY-MM-DD HH:MM'."""
@@ -150,7 +159,17 @@ def node_key(directory: Path, times: dict):
     spec = real / f"{real.name}.md"
     if not spec.exists():
         return None
-    m = CITE_RE.search(spec.read_text())
+    text = spec.read_text()
+    m = CITE_RE.search(text)
+    ask = ASK_CITE_RE.search(text)
+    # whichever provenance the spec cites FIRST is the node's position
+    if ask and (not m or ask.start() < m.start()):
+        ms = int(ask.group(1))
+        stamp = datetime.datetime.fromtimestamp(ms / 1000)
+        if not 2020 <= stamp.year <= 2100:
+            fail(f"{real.relative_to(REPO)}: asks#{ms} is not a plausible "
+                 f"filing time ({stamp.year})")
+        return (stamp.strftime("%Y-%m-%d %H:%M"), "asks", ms, "")
     if not m:
         return None
     key = (m.group(1), int(m.group(2)), m.group(3))

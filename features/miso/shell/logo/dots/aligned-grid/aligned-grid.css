@@ -1,0 +1,8 @@
+/* the graph paper agrees with the toolbar: one grid cell per tool button,
+   and the tiling centred, so a dot sits exactly at the middle of the screen
+   and the grid is symmetric about it. Size comes from /tools' named value,
+   never a repeated literal. */
+body {
+  background-size: var(--tool-size) var(--tool-size);
+  background-position: center;
+}
