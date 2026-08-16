@@ -2,3 +2,4 @@
 - [x] tap
 - [x] dictate
 - [x] compute
+- [x] context-manager

@@ -387,7 +387,43 @@ def rewrite_existing(text: str, fn: dict, key: tuple, heads: dict, feature) -> s
     return re.sub(r"existing\s*\.\s*(\w+)\s*\(", sub, text)
 
 
-def compose_features(features: list, out: Emitter) -> dict:
+def tick_gate(fn, feature, heads, key, trusted):
+    """The context manager's runtime gate line, or None. Chain-EXTENDING fns
+    whose first parameter is `state: String` fall through to the previous
+    link when the owning node's path crosses an explicit per-user untick —
+    the same skip compose-time unticking performs, at runtime (see
+    features/miso/loop/context-manager). Chain starters are the seams
+    themselves and stay ungated; so do fns that don't carry loop state."""
+    if key not in heads:
+        return None
+    header = " ".join(fn["lines"])
+    m = re.search(r"fn\s+" + re.escape(fn["name"]) + r"\s*\(([^)]*)\)", header)
+    if not m:
+        return None
+    names = [p.split(":", 1)[0].strip()
+             for p in m.group(1).split(",") if ":" in p]
+    if not names or names[0] != "state" or fn["params"][0] != "String":
+        return None
+    # tick keys are shared-tree node paths: strip the features/ root, or a
+    # product tree's products/<name>/ root (materialised override dirs)
+    path = feature.rel
+    if path.startswith("features/"):
+        path = path[len("features/"):]
+    else:
+        m2 = re.match(r"products/[^/]+/(.*)$", path)
+        if m2:
+            path = m2.group(1)
+    # the hook node's trusted base (trusted.md): subtrees that deliver the
+    # ticks var itself stay ungated — gating them would freeze the map
+    if any(path == t or path.startswith(t + "/") for t in trusted):
+        return None
+    args = ", ".join(names)
+    return (f'        if fm_unticked(&state, "{path}") '
+            f'{{ return feature_{heads[key]}::{fn["name"]}({args}); }}')
+
+
+def compose_features(features: list, out: Emitter, gated: bool = False,
+                     trusted: list = []) -> dict:
     """Emit feature impl blocks; return chains keyed by (name, param types)."""
     chains = {}   # key -> {"head": feature struct name, "params": [...], "ret": str}
     for feature in features:
@@ -405,9 +441,13 @@ def compose_features(features: list, out: Emitter) -> dict:
                      f"from '{chains[key]['ret']}' to '{fn['ret']}' in {feature.rel}"
                      f" — all links of a chain must agree")
             heads = {k: v["head"] for k, v in chains.items()}
+            gate = tick_gate(fn, feature, heads, key, trusted) if gated else None
             for offset, text in enumerate(fn["lines"]):
                 out.emit(rewrite_existing(text, fn, key, heads, feature),
                          fn["src"], fn["first"] + offset)
+                if gate and "{" in text:
+                    out.emit(gate)
+                    gate = None
         out.emit("}")
         out.emit("")
         for fn in feature.fns:
@@ -504,7 +544,20 @@ def compose(features: list):
             for offset, line in enumerate(text.splitlines()):
                 out.emit(line, src, offset + 1)
             out.emit("")
-    chains = compose_features(features, out)
+    # the context manager's hook: its presence in a composed verbatim lib
+    # switches on runtime tick gates; without it the output is unchanged.
+    # the hook node may declare a trusted base (trusted.md) of subtrees
+    # that stay ungated — the machinery that delivers the ticks var
+    gated = False
+    trusted = []
+    for f in features:
+        if any("fn fm_unticked" in text for _, text in f.libs):
+            gated = True
+            tm = f.dir / "trusted.md"
+            if tm.exists():
+                trusted += [m.group(1) for m in
+                            re.finditer(r"^-\s*(\S+)", tm.read_text(), re.M)]
+    chains = compose_features(features, out, gated, trusted)
     out.emit("// ---- dispatchers (plain delegate / generated-trait multiple dispatch)")
     emit_dispatchers(chains, out)
     return out, chains
