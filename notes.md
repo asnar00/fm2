@@ -1334,6 +1334,78 @@ suggest against *another* node's subtree (the `/dictate` engine suggesting
 a `/compute` rung); and does a shipped suggestion keep its line, becoming
 an ordinary feature row, or vanish and reappear as one.
 
+## quality: the map was withdrawn, and what it taught (2026-08-16, fm-spec #p36–39)
+
+The map tool shipped in four builds across an hour, satisfied every ask
+literally, passed every toggle test — and was withdrawn, because it looked
+bad. Ash: *"This was a poor quality ship. Image is blown out, doesn't feel
+'good'. How can we do better? I'd like to grope towards some basic
+principles that deliver quality, rather than blame."* Then: *"delete the
+map tool. We need to do some foundational work before we're ready for a
+request like that."* Deleted at build 208; the work survives in git if it
+is ever wanted.
+
+**The root failure was structural, not careless: nothing ever looked at
+it.** Every check answered *did the mechanism work* — 25 tiles loaded, the
+filter applied, the chain resolved to the override. None answered *is this
+good*. There was no way to take a screenshot, so the test that could be run
+silently replaced the test that mattered. Tooling absence becomes a quality
+ceiling, invisibly. (`shot.py` now exists in the session scratchpad — CDP
+`Page.captureScreenshot`, whole viewport or one element. It belongs in
+`tools/` properly.)
+
+### The principles, as far as they go
+
+1. **See what you ship.** Anything with a visual result gets rendered and
+   looked at before it goes. "It loaded" is not "it looks right".
+2. **Self-criticism as a step, not a mood** (ash, #p37a): before shipping,
+   look at the thing and ask *is this good enough?* The bar moves over
+   time; the discipline is asking at all. It belongs in the five-step loop
+   beside "prove the toggle" — proving it works and judging it good are
+   different acts, and only one of them was being done.
+3. **Choose a source that gives you what you want; don't hack a filter over
+   one that doesn't** (ash, #p38). The map's tiles came with baked-in
+   labels, so a style was swapped — correct. But the swapped style was too
+   dark, so a `brightness(1.75)` was piled on top, which clipped the
+   brightest elements (pavement dashes) into glare while leaving buildings
+   near-black: the information hierarchy inverted, decoration louder than
+   substance. **A filter working hard to correct an asset is a smell.** The
+   real answer was a source that lets us say what to draw — vector tiles we
+   style ourselves, which is exactly the foundational work not yet done.
+4. **Read the user's aesthetic from their ask history** (ash, #p37b). It was
+   all there and unread: *"make the dots brighter"*, *"halve the dot
+   spacing"*, *"match the tool icon size"*, *"no extraneous labels"* — plus
+   a shell that is black, monochrome, restrained, with `#d8d8d8` as its
+   brightest note. The map arrived with a **blue** marker and a blue
+   accuracy disc, the only colour in the entire app, imported unthinkingly
+   from every other map anyone has seen. Nobody asked for miso to look like
+   Google Maps. The ask history is a style guide that is already written.
+5. **A premature yes is worse than a considered wait.** Four builds went out
+   before the foundations existed. Shipping the ask is right (agents.md's
+   law above the laws) — but *foundations first* and *ship the ask* only
+   conflict when the foundation is genuinely missing, and then the honest
+   answer is to say so, not to ship something that technically answers.
+
+### What the foundations actually are, before a map is attempted again
+
+- **Tiles we control.** Vector tiles plus our own style, so "buildings and
+  streets, no commercial names" is a rule we write rather than a basemap we
+  hunt for. This is the same sovereignty argument as `sovereign.md`, and it
+  should be planned the same way rather than improvised.
+- **A visual bar.** What does a miso surface look like? Monochrome, dark,
+  quiet, `#d8d8d8` at the top of the range. Written down, it stops being
+  something each node re-invents.
+- **The screenshot in the loop**, so the bar is checkable.
+
+### One real bug the investigation surfaced, worth keeping
+
+Tile URLs carried no style name, while the server cache did. So a style
+change would have been invisible to anyone holding week-old cached tiles —
+and it fooled this very investigation for two rounds, showing a "light"
+basemap that was the old dark one inverted. **When a resource's content
+depends on a parameter, that parameter belongs in its URL.** Applies to any
+future tile, model, or asset route.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.

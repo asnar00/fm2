@@ -50,6 +50,15 @@ tests/flows the change touches, then untick the new node in `order.md`,
 relink, and confirm its code has left the composed output and nothing else
 broke. Re-tick. A feature that cannot be turned off is not a feature yet.
 
+**4a. Look at it, and ask if it is good enough.** Proving a thing works and
+judging it good are different acts; only the first is a test. Anything with
+a visual result gets rendered and *looked at* before it ships — a screenshot
+of the real surface, not a description of it. Then the question, out loud:
+*is this good enough?* The bar moves over time; asking at all is the
+discipline. Two things that repeatedly answer "no": a filter working hard to
+correct an asset (choose a source that gives you what you want instead), and
+a surface that ignores what the user's own ask history says they like.
+
 **5. Finish the node, then ship.** Complete the code description (short
 paragraphs, one per thing: entry/extension points first, then mechanics, then
 helpers). Commit with a user-readable subject — commit subjects are the
