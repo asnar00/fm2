@@ -1161,6 +1161,97 @@ one being node placement (reusable math under `/compute`, the model
 under `/dictate`), which reads against compute.md's letter that tenants
 carry their own kernels.
 
+## per-feature logging, switchable at runtime (2026-08-16, fm-spec #p23–24a)
+
+Ash, after a day in which nearly every question became an archaeology
+expedition: *"I feel like we need more pervasive logging as part of the
+black box. A lot of these questions devolve to 'what actually ran and
+what did it return'"* — and the shape: *"logging statements are
+pervasive, but enabled at runtime on a per feature basis. So if we're
+working on transcription, we enable logging for transcription and have
+at it, then silence it once we're done (except for basic stuff)"*. Plus
+(#p24a): **device IDs**.
+
+**Why now: the promotion rule fires (#p18).** `/engine-receipts` was
+built this afternoon as one feature's private telemetry, and its own spec
+names the general form as "deliberately not built". This is the second
+ask for the same mechanism, so the parameter earns its variable: build
+the general form, and let receipts become a thin user of it.
+
+The day's evidence for the need, all of it real: the phone transcribed
+and we could not tell whether the GPU had run it; a failure arrived that
+we could not attribute to a device; a picker vanished and only a
+DOM-by-DOM reproduction found it; an OOM appeared whose cause was
+arithmetic nobody had done. Every one of those is "what actually ran and
+what did it return".
+
+### The shape
+
+**1. The call site is free of bookkeeping.** `log(...)` in Rust and in
+JS fragments, with **the linker injecting the node path**, exactly as it
+already injects node paths for `/context-manager`'s tick gates. Nobody
+hand-writes a path, so nothing drifts when a node is regrouped. For JS,
+composition injects a `FM_PATH` constant per fragment; for Rust, the
+existing rewriting pass covers it.
+
+**2. The switch is the context manager wearing a different hat.** A
+user-scoped `feature_log` var mapping node path → level, with the same
+prefix semantics ticks already use: enable `miso/loop/dictate` and
+everything beneath it speaks. **Absent means off** — the mirror image of
+`feature_ticks`, where absent means on. Levels: `always` (the few events
+a feature emits regardless — the "basic stuff" ash wants left on) and
+`verbose` (everything, on demand). Two levels until a third is missed.
+
+This is #p17a's prediction landing exactly: ticks, tunables and logging
+are one mechanism with three defaults.
+
+**3. The transport already exists.** `/blackbox` batches, bounds by age
+and count, survives offline, ships on visibility/reconnect/page-hide with
+a keepalive request, and the server half ingests into a size-rotated log
+on the mini. Log lines become another entry kind beside the event deltas
+— which also means **they replay with the events**, which is precisely
+the "what ran and what did it return" story, reconstructable after the
+fact. Console in dev; nothing new for delivery.
+
+**4. The control has two ends.** On the device, the chooser already
+lists every feature with a tick — logging is a second control on the same
+line (the `/sub-tool-cards` long-press idiom). From the terminal, the
+urgent one: a `tools/` script writes the user-scoped var and the existing
+broadcast reaches the device in ~0.5s. **Turn on transcription logging on
+ash's phone from my terminal, watch it, turn it off** — that is the
+capability this whole day lacked.
+
+**5. Instance identity (#p24a).** A short, stable, per-install id in
+localStorage, carried by every diag report, blackbox batch and log line.
+Today's stopgap was to add `ua` to receipts (build 193), which cannot
+distinguish two iPhones and is verbose in every line. The tree already
+says *instances* (`/mirror`, `/scope`), so the vocabulary exists: call it
+an **instance id**. Losing it when storage is cleared is honest — it is a
+new instance.
+
+**Cost when off** is a prefix check against a small cached list, using
+the same thread-local cache `/context-manager` already established. The
+zero-import law is untouched: Rust `log()` accumulates into a
+thread-local that the wasm entry drains into state, the way `_send`
+already carries outbound messages — no signature changes anywhere in the
+tree.
+
+### Rulings wanted
+
+1. **Privacy, the load-bearing one.** Log lines can carry user content —
+   transcripts, ask text, names. Receipts set the precedent (`chars`,
+   never the words). Is that the rule everywhere (log shape, never
+   content), or may verbose logging carry content when a user explicitly
+   enables it on their own device?
+2. **Does verbose ship to the server by default**, or is remote delivery
+   a separate opt-in from local capture? (Battery, bandwidth, and 1
+   above.)
+3. **Two levels or a number?**
+4. **Does `/engine-receipts` get subsumed** into the general mechanism,
+   or stay as a specialised node that uses it?
+5. **Instance id visible to the user?** (It would make "which device is
+   misbehaving" answerable in the panel, not just in my terminal.)
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
