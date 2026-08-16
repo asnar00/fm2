@@ -72,9 +72,19 @@ async function run(e, audio) {
   return text.trim();
 }
 
+// seam: an optional taming module may prepare the ground before the device
+// probe — clamping the GPU request, retiring a stale pin (see /tamed-request).
+// A missing module (that node unticked) is the standing absence-is-off state.
+async function tame() {
+  try {
+    (await import('./tame.js')).prepare();
+  } catch (e) { /* absent or declined: the engine behaves as it always did */ }
+}
+
 // 16kHz mono float PCM in, text out; throws with a device-tagged message.
 // `force` (tests only) overrides the device probe for the first build.
 export async function transcribe(audio, force) {
+  await tame();
   const device = force || await pickDevice();
   try {
     if (!engine) engine = await build(device, '');

@@ -757,7 +757,22 @@ def build_places(product: str, places: list, base: Emitter, chains: dict,
         trees = sorted({rel.parts[0] + "/" for _, rel in asset_files
                         if len(rel.parts) > 1})
         print(f"  site/ assets: {', '.join(top + trees)}")
-    remove_stale_pages(site, {str(rel) for _, rel in asset_files})
+    # sweep assets a previous build copied whose owner is now excluded —
+    # only files this linker itself placed are ever deleted (notes.md
+    # hygiene #9: stale asset trees lingered after an untick)
+    manifest = build_dir / "asset-manifest.json"
+    current = {str(rel) for _, rel in asset_files}
+    try:
+        previous = set(json.loads(manifest.read_text()))
+    except (OSError, ValueError):
+        previous = set()
+    for rel in sorted(previous - current):
+        stale = site / rel
+        if stale.exists():
+            stale.unlink()
+            print(f"  removed stale site/{rel} (asset owner not in this composition)")
+    manifest.write_text(json.dumps(sorted(current)))
+    remove_stale_pages(site, current)
     compose_assets(site, features)
 
     print("build OK")

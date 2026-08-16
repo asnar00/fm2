@@ -133,7 +133,6 @@ The spec has a standard format, as follows:
     > (reference to user prompt/request in agent conversation transcript)
     > actual user prompt/request that triggered this feature
 
-
     ## user
 
     up to 100 words describing to the user how they should use the functionality, if applicable. If we're talking about a library function, the "user" is the agent writing the code; otherwise, it should be written at a level that the user understands, assuming they understand all the terms introduced by parent features.

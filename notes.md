@@ -922,11 +922,13 @@ cheap insurance first, then the debt it protects, then doctrine. Tick as done.*
   (`str(REPO_ROOT).replace("/", "-")`), the exact fix ftr's feature_common
   established for this bug class. Tooling fix, no node (per the taxonomy).
 
-- [ ] **9. stale asset *trees* in site/** — noticed 2026-08-15: fmlink now
-  copies asset subdirectories (needed for `stt/`), but `remove_stale_pages`
-  only covers composition-target pages — untick a feature with an asset tree
-  and its files linger in `build/site/` (and would rsync to the mini).
-  Cheap fix when it matters: track copied rel-paths per build and sweep.
+- [x] **9. stale asset *trees* in site/** — DONE 2026-08-16 (it mattered:
+  `/tamed-request`'s toggle proof failed against a lingering `tame.js`, the
+  exact predicted failure). fmlink now writes `build/asset-manifest.json`
+  (the rel-paths it copied) and sweeps previous-but-not-current entries each
+  build — only files the linker itself placed are ever deleted. Bootstrap
+  caveat: files stale from before the manifest existed need one
+  tick→build→untick→build cycle (or a hand-delete) to clear.
 - [ ] **10. stt model download UX** — the ~130MB engine+model fetch happens
   silently on first transcription; over the network-first service worker it
   can also re-fetch per session when online. Wants: a cache-first sw rule
