@@ -41,15 +41,30 @@ impl feature_Map {
         existing.route(r)
     }
 
+    // the three things a tile style is: where the cache keeps it, where it
+    // comes from, and who must be credited for it. A style change redefines
+    // all three together, and the cache never mixes them up.
+    fn tile_style() -> String {
+        "osm".to_string()
+    }
+
+    fn tile_url(z: u32, x: i64, y: i64) -> String {
+        format!("https://tile.openstreetmap.org/{}/{}/{}.png", z, x, y)
+    }
+
+    fn tile_credit() -> String {
+        "&copy; OpenStreetMap".to_string()
+    }
+
     fn tile_response(z: u32, x: i64, y: i64) -> response {
-        let dir = format!("{}/{}/{}", tile_root(), z, x);
+        let dir = format!("{}/{}/{}/{}", tile_root(), tile_style(), z, x);
         let file = format!("{}/{}.png", dir, y);
         if let Ok(bytes) = std::fs::read(file.clone()) {
             return tile_bytes(bytes);
         }
-        // TLS is curl's problem, not ours (the /vonage idiom). OSM asks for
-        // an honest User-Agent; a cached tile is never fetched twice.
-        let url = format!("https://tile.openstreetmap.org/{}/{}/{}.png", z, x, y);
+        // TLS is curl's problem, not ours (the /vonage idiom). The source
+        // asks for an honest User-Agent; a cached tile is never refetched.
+        let url = tile_url(z, x, y);
         let out = std::process::Command::new("curl")
             .arg("-s")
             .arg("--max-time").arg("8")
@@ -212,8 +227,8 @@ impl feature_Map {
         format!("<div class=\"map-view\"><div class=\"map-field\">{}\
             <div class=\"map-acc\" style=\"width:{:.0}px;height:{:.0}px\"></div>\
             <div class=\"map-me\"></div></div>\
-            <div class=\"map-read\">{:.5}, {:.5} &middot; &plusmn;{} &middot; \
-            &copy; OpenStreetMap</div></div>",
-            tiles, disc, disc, lat, lon, map_metres(acc))
+            <div class=\"map-read\">{:.5}, {:.5} &middot; &plusmn;{} &middot; {}\
+            </div></div>",
+            tiles, disc, disc, lat, lon, map_metres(acc), tile_credit())
     }
 }
