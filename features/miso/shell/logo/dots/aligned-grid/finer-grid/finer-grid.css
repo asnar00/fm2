@@ -1,0 +1,5 @@
+/* half the toolbar's size — derived, not a literal, so the paper still
+   follows the buttons wherever they go */
+body {
+  background-size: calc(var(--tool-size) / 2) calc(var(--tool-size) / 2);
+}
