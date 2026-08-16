@@ -1,0 +1,8 @@
+/* the country sits where the emoji did, filling the button's icon box —
+   /tools' monochrome filter turns it into a silhouette for free */
+.cc {
+  display: block;
+  width: 1.1em; height: 1.1em;
+  color: #fff;
+}
+.cc svg { display: block; width: 100%; height: 100%; }
