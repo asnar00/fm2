@@ -1,1 +1,2 @@
 - [x] aligned-grid
+- [x] brighter-dots

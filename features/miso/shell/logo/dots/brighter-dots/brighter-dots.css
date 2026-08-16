@@ -1,0 +1,5 @@
+/* brighter than /dots' #555, same dot shape and soft edge — a clear step
+   up while staying a quiet ground rather than a foreground pattern */
+body {
+  background-image: radial-gradient(circle, #8a8a8a 0.5px, transparent 0.6px);
+}
