@@ -57,6 +57,18 @@ changelog and the push-notification text. Deploy prints the feature nodes a
 release touches and warns on nodeless releases: treat that warning as the
 question "did a request go nodeless?"
 
+## The law above the laws
+
+**Deliver what the user asked for. Doctrine compliance is eventual, not
+mandatory.** (2026-08-16, after the map tool shipped a position readout
+instead of a map because imagery would have meant a third-party
+dependency.) Ash: *"the user actually asked for a map — that's what we
+should deliver. The doctrine is never as important as what the user
+requested."* The purity concern is usually real, and usually answerable
+with an hour's work rather than a refusal — proxy it, cache it, vendor it,
+own it. Ship the ask; converge on the doctrine after. A node that honours
+every law and not the request has failed.
+
 ## The laws (violations get repaired by audit — cheaper to obey)
 
 - **One prompt per node**; refinements become subfeatures.

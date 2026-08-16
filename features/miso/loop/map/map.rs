@@ -10,8 +10,72 @@ impl feature_Map {
         list.to_string()
     }
 
-    // intent lives in state; the page half watches open_tool and drives the
-    // sensor, reporting readings back as events (the /dictate pattern)
+    // ---- server half: tiles come through miso, and stay here once fetched
+
+    fn tile_root() -> String {
+        format!("{}/.miso-tiles", std::env::var("HOME").unwrap_or(".".to_string()))
+    }
+
+    fn route(r: request) -> response {
+        let p = r.path.clone();
+        if let Some(rest) = p.strip_prefix("tiles/") {
+            if !msg_guarded(&r) {
+                return json_response(401, "{\"ok\":false,\"error\":\"log in first\"}".to_string());
+            }
+            let name = rest.trim_end_matches(".png").to_string();
+            let parts: Vec<&str> = name.split('/').collect();
+            if parts.len() != 3 {
+                return json_response(400, "{\"ok\":false}".to_string());
+            }
+            let z: u32 = parts[0].parse().unwrap_or(99);
+            let x: i64 = parts[1].parse().unwrap_or(-1);
+            let y: i64 = parts[2].parse().unwrap_or(-1);
+            // the path is rebuilt from parsed integers, never from the
+            // request text, so there is nothing to traverse with
+            let n: i64 = 1 << z.min(30);
+            if z > 19 || x < 0 || y < 0 || x >= n || y >= n {
+                return json_response(400, "{\"ok\":false,\"error\":\"no such tile\"}".to_string());
+            }
+            return tile_response(z, x, y);
+        }
+        existing.route(r)
+    }
+
+    fn tile_response(z: u32, x: i64, y: i64) -> response {
+        let dir = format!("{}/{}/{}", tile_root(), z, x);
+        let file = format!("{}/{}.png", dir, y);
+        if let Ok(bytes) = std::fs::read(file.clone()) {
+            return tile_bytes(bytes);
+        }
+        // TLS is curl's problem, not ours (the /vonage idiom). OSM asks for
+        // an honest User-Agent; a cached tile is never fetched twice.
+        let url = format!("https://tile.openstreetmap.org/{}/{}/{}.png", z, x, y);
+        let out = std::process::Command::new("curl")
+            .arg("-s")
+            .arg("--max-time").arg("8")
+            .arg("-A").arg("miso/1.0 (personal instance; https://miso.xn--nb-lkaa.org)")
+            .arg(url)
+            .output();
+        let bytes = match out {
+            Ok(o) => o.stdout,
+            Err(_) => Vec::new(),
+        };
+        if bytes.len() < 100 {
+            return json_response(502, "{\"ok\":false,\"error\":\"tile unavailable\"}".to_string());
+        }
+        let _ = std::fs::create_dir_all(dir);
+        let _ = std::fs::write(file, &bytes);
+        tile_bytes(bytes)
+    }
+
+    fn tile_bytes(bytes: Vec<u8>) -> response {
+        response { status: 200, ctype: "image/png".to_string(), body: bytes,
+                   set_cookie: String::new(),
+                   cache: "public, max-age=604800".to_string() }
+    }
+
+    // ---- client half: intent is the tool being open; readings are events
+
     fn update(state: String, event: String) -> String {
         let state = existing.update(state, event.clone());
         let e: serde_json::Value = serde_json::from_str(&event)
@@ -60,22 +124,42 @@ impl feature_Map {
         format!("{}<div class=\"tool-button ctrl\" data-ev=\"map_again\">⟳</div>", prev)
     }
 
-    // the ground distance from the centre to the outer ring: the first step
-    // that comfortably contains the fix's own uncertainty, so the picture is
-    // always usefully filled and never claims more precision than we have
-    fn map_span(acc: f64) -> f64 {
-        let steps = [25.0, 50.0, 100.0, 250.0, 500.0, 1000.0];
-        for step in steps.iter() {
-            if acc * 2.0 <= *step {
-                return *step;
-            }
+    // ---- web mercator: the standard slippy-map projection, ~20 lines of it
+
+    fn map_zoom(acc: f64) -> u32 {
+        if acc <= 20.0 {
+            return 18;
         }
-        1000.0
+        if acc <= 50.0 {
+            return 17;
+        }
+        if acc <= 150.0 {
+            return 16;
+        }
+        if acc <= 400.0 {
+            return 15;
+        }
+        14
+    }
+
+    fn map_tile_x(lon: f64, z: u32) -> f64 {
+        (lon + 180.0) / 360.0 * (2.0_f64).powi(z as i32)
+    }
+
+    fn map_tile_y(lat: f64, z: u32) -> f64 {
+        let r = lat.to_radians();
+        let v = (r.tan() + 1.0 / r.cos()).ln();
+        (1.0 - v / std::f64::consts::PI) / 2.0 * (2.0_f64).powi(z as i32)
+    }
+
+    // metres per screen pixel, which is what makes the accuracy disc honest
+    fn map_mpp(lat: f64, z: u32) -> f64 {
+        156543.033928 * lat.to_radians().cos() / (2.0_f64).powi(z as i32)
     }
 
     fn map_metres(m: f64) -> String {
         if m >= 1000.0 {
-            return format!("{:.0} km", m / 1000.0);
+            return format!("{:.1} km", m / 1000.0);
         }
         format!("{:.0} m", m)
     }
@@ -97,22 +181,39 @@ impl feature_Map {
         let lat = fix["lat"].as_f64().unwrap_or(0.0);
         let lon = fix["lon"].as_f64().unwrap_or(0.0);
         let acc = fix["acc"].as_f64().unwrap_or(0.0);
-        let span = map_span(acc);
-        // the accuracy disc shares the rings' scale, so the drawing is
-        // internally consistent: one number sets every radius on screen
-        let mut disc = acc / span * 100.0;
-        if disc > 100.0 {
-            disc = 100.0;
+        let z = map_zoom(acc);
+        let fx = map_tile_x(lon, z);
+        let fy = map_tile_y(lat, z);
+        let tx = fx.floor();
+        let ty = fy.floor();
+        // where our point sits inside its own tile, in pixels
+        let ox = (fx - tx) * 256.0;
+        let oy = (fy - ty) * 256.0;
+        let mut tiles = String::new();
+        let mut dy: i64 = -2;
+        while dy <= 2 {
+            let mut dx: i64 = -2;
+            while dx <= 2 {
+                let left = (dx as f64) * 256.0 - ox;
+                let top = (dy as f64) * 256.0 - oy;
+                tiles.push_str(&format!(
+                    "<img class=\"map-tile\" src=\"tiles/{}/{}/{}.png\" \
+                     style=\"left:calc(50% + {:.0}px);top:calc(50% + {:.0}px)\">",
+                    z, (tx as i64) + dx, (ty as i64) + dy, left, top));
+                dx = dx + 1;
+            }
+            dy = dy + 1;
         }
-        format!("<div class=\"map-view\"><div class=\"map-field\">\
-            <div class=\"map-north\">N</div>\
-            <div class=\"map-ring r3\"><span>{}</span></div>\
-            <div class=\"map-ring r2\"><span>{}</span></div>\
-            <div class=\"map-ring r1\"><span>{}</span></div>\
-            <div class=\"map-acc\" style=\"width:{:.1}%;height:{:.1}%\"></div>\
+        let mpp = map_mpp(lat, z);
+        let mut disc = if mpp > 0.0 { 2.0 * acc / mpp } else { 0.0 };
+        if disc > 900.0 {
+            disc = 900.0;
+        }
+        format!("<div class=\"map-view\"><div class=\"map-field\">{}\
+            <div class=\"map-acc\" style=\"width:{:.0}px;height:{:.0}px\"></div>\
             <div class=\"map-me\"></div></div>\
-            <div class=\"map-read\">{:.5}, {:.5} &middot; &plusmn;{}</div></div>",
-            map_metres(span), map_metres(span * 2.0 / 3.0), map_metres(span / 3.0),
-            disc, disc, lat, lon, map_metres(acc))
+            <div class=\"map-read\">{:.5}, {:.5} &middot; &plusmn;{} &middot; \
+            &copy; OpenStreetMap</div></div>",
+            tiles, disc, disc, lat, lon, map_metres(acc))
     }
 }
