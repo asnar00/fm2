@@ -2,3 +2,4 @@
 - [x] readout
 - [x] blackbox
 - [x] instance
+- [x] journal

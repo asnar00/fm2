@@ -387,6 +387,24 @@ def rewrite_existing(text: str, fn: dict, key: tuple, heads: dict, feature) -> s
     return re.sub(r"existing\s*\.\s*(\w+)\s*\(", sub, text)
 
 
+def node_path(rel: str) -> str:
+    """A node's tree-global path: the shared-tree address a per-user map keys
+    on. Strips the features/ root, or a product tree's products/<name>/ root
+    (materialised override dirs)."""
+    if rel.startswith("features/"):
+        return rel[len("features/"):]
+    m = re.match(r"products/[^/]+/(.*)$", rel)
+    return m.group(1) if m else rel
+
+
+def log_paths(text: str, path: str) -> str:
+    """`fm_log(…)` -> `fm_log_at("<node path>", …)`. The author writes what
+    happened; the linker says who said it, so a log line can never claim the
+    wrong feature and never drifts when a node is regrouped
+    (features/miso/diag/journal)."""
+    return re.sub(r"\bfm_log\s*\(", 'fm_log_at("' + path + '", ', text)
+
+
 def tick_gate(fn, feature, heads, key, trusted):
     """The context manager's runtime gate line, or None. Chain-EXTENDING fns
     whose first parameter is `state: String` fall through to the previous
@@ -404,15 +422,7 @@ def tick_gate(fn, feature, heads, key, trusted):
              for p in m.group(1).split(",") if ":" in p]
     if not names or names[0] != "state" or fn["params"][0] != "String":
         return None
-    # tick keys are shared-tree node paths: strip the features/ root, or a
-    # product tree's products/<name>/ root (materialised override dirs)
-    path = feature.rel
-    if path.startswith("features/"):
-        path = path[len("features/"):]
-    else:
-        m2 = re.match(r"products/[^/]+/(.*)$", path)
-        if m2:
-            path = m2.group(1)
+    path = node_path(feature.rel)
     # the hook node's trusted base (trusted.md): subtrees that deliver the
     # ticks var itself stay ungated — gating them would freeze the map
     if any(path == t or path.startswith(t + "/") for t in trusted):
@@ -442,8 +452,11 @@ def compose_features(features: list, out: Emitter, gated: bool = False,
                      f" — all links of a chain must agree")
             heads = {k: v["head"] for k, v in chains.items()}
             gate = tick_gate(fn, feature, heads, key, trusted) if gated else None
+            fpath = node_path(feature.rel)
             for offset, text in enumerate(fn["lines"]):
-                out.emit(rewrite_existing(text, fn, key, heads, feature),
+                out.emit(log_paths(
+                             rewrite_existing(text, fn, key, heads, feature),
+                             fpath),
                          fn["src"], fn["first"] + offset)
                 if gate and "{" in text:
                     out.emit(gate)
@@ -797,7 +810,11 @@ def compose_assets(site: Path, features: list):
     Toggling a feature off in order.md genuinely removes its fragments."""
     by_page = {}
     for feature in features:
+        fpath = node_path(feature.rel)
         for fr in feature.fragments:
+            # page-side logging gets its node path the same way chain code
+            # does — from the linker, never from the author
+            fr["text"] = log_paths(fr["text"], fpath)
             by_page.setdefault(fr["file"], []).append(fr)
     # f/ is wholly linker-owned: sweep it so unticked features leave no
     # stale fragment files behind
