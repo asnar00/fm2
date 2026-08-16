@@ -35,7 +35,9 @@ const feature_EngineReceipts = {
         self.report({ stt: 'done', id, device, ms,
                       dur: f.dur || 0, chars: text.length,
                       ok: !f.t_err && text.length > 0,
-                      err: String(f.t_err || '').slice(0, 160) });
+                      // the whole stamp: a double failure names two causes,
+                      // and clipping loses the second (field-found, #p14)
+                      err: String(f.t_err || '').slice(0, 400) });
       }
     };
   },

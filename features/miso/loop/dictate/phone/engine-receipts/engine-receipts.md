@@ -73,3 +73,8 @@ the file's `transcript` gives `chars`, its `dur` the audio length, and
 
 `running` is read from `feature_Update.running`, typeof-guarded — the
 build stamp that makes every receipt self-locating.
+
+*(Draft-phase revision, #p14: the error field clipped at 160 characters,
+which in its first real failure severed the second half of a two-cause
+message — `/phone` reports webgpu's failure and wasm's in one string. Now
+400, still inside `/diag`'s 2KB cap.)*

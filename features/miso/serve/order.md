@@ -1,2 +1,3 @@
 - [x] features
 - [x] threads
+- [x] module-mime
