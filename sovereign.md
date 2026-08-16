@@ -297,6 +297,117 @@ grind, but they are *our* grind: every failure is a line we wrote.
 
 ---
 
+---
+
+## 11. Research log — platform reality (2026-08-16, #p17–18)
+
+*Gathered before rung 1, because most of §§5–9 was written from memory
+and priors. These are the load-bearing verified findings. A full revision
+of the sections above is due once the model survey lands. Warning from
+the research: a large fraction of 2026 search results on this topic are
+AI-generated SEO pages recycling wrong numbers — everything below is
+traced to a primary source.*
+
+**Real time is the whole point (#p17).** The use case is ambient: while a
+conversation happens, transcribe continuously, semantic-search the
+on-phone database, and surface talking points as bullets — *"state of the
+roads round here is terrible"* → road-management facts, instantly. Two
+consequences the design must absorb:
+
+- **Retrieval tolerates error; it does not tolerate latency.** A wrong
+  word barely moves an embedding — "rhodes" still finds road facts — so
+  we can spend accuracy on speed in a way dictation never could. This is
+  a much weaker requirement than a verbatim transcript, and it should be
+  exploited deliberately.
+- **The retrieval half already exists.** `/semantic-find` embeds and
+  scores on-device with our own WGSL kernel. The missing half is
+  streaming ASR feeding it. This is one rung, not two systems.
+
+**The model choice probably isn't whisper.** Whisper's full-attention
+encoder makes time-to-first-token grow with prefix length, which is the
+structural reason streaming whisper is awkward — chunked approaches land
+at ~3.3s ([Whisper-Streaming, ACL 2023](https://aclanthology.org/2023.ijcnlp-demo.3.pdf)).
+**Moonshine v2** ([arXiv 2602.12241](https://arxiv.org/abs/2602.12241),
+Feb 2026) is purpose-built for this envelope: sliding-window attention
+(bounded TTFT regardless of utterance length), **no positional
+embeddings in the encoder at all**, 50Hz features giving **80ms
+algorithmic lookahead**, and encoder states emitted *provisional* then
+*finalized* as right-context arrives. Tiny is 33.6M params at 12.0% avg
+WER; response latency 50ms on M3 (5.8× faster than Whisper Tiny).
+Explicitly targets sub-1GB edge devices. For a hand-written-kernel
+project the structural wins matter even more than the numbers: fixed
+shapes, no KV-length-dependent recompiles, and a *tiny* fixed-size
+attention kernel instead of a 1500×1500 one. Nobody has published a
+browser/WebGPU deployment — that would be ours to do.
+
+**iOS platform constraints, verified.**
+
+- WebGPU ships **enabled by default on iOS 26+** ([WebKit](https://webkit.org/blog/16993/news-from-wwdc25-web-technology-coming-this-fall-in-safari-26-beta/),
+  [caniuse](https://caniuse.com/webgpu)); on 17.4–18.7 it exists but is
+  flag-disabled. Compute included. `shader-f16` supported, and Apple
+  *recommends* f16 storage to avoid memory-pressure termination
+  ([WWDC25 s236](https://developer.apple.com/videos/play/wwdc2025/236/)).
+  **Subgroups are not in shipping Safari** (STP 249 only) — do not design
+  around them.
+- **The real ceiling is ~500MB of Safari tab memory**, not buffer limits
+  ([Llamas on the Web, arXiv 2605.20706](https://arxiv.org/html/2605.20706v1)).
+  The widely-quoted "256MB on iPhone" table is from a 2021 Metal issue
+  and is not current WebGPU behaviour. **Measure `adapter.limits` on the
+  real device** — every public number is stale or invented.
+- **f16 accumulation gives incoherent output on Apple GPUs.** Store f16,
+  accumulate f32 (same source).
+- **Dispatch overhead is ~32µs on Safari/Metal**
+  ([arXiv 2604.02344](https://arxiv.org/html/2604.02344v1)), and at
+  batch=1 it dominates everything regardless of kernel quality — one
+  study cut dispatches 876→564 for +53% throughput. **Dispatch count is
+  the primary design variable**, ahead of kernel quality. Notably,
+  elementwise fusion buys nothing on Metal; fuse at the tiled-GEMM level.
+- **~17% of fp32 peak** is the realistic WGSL matmul ceiling without
+  subgroups, via manual unrolling and 8×8 per-thread tiles
+  ([nuss-and-bolts](https://www.nuss-and-bolts.com/p/optimizing-a-webgpu-matmul-kernel)).
+  Keep workgroup memory ≤16KB of the 32KB/core budget or occupancy
+  collapses; workgroup size a multiple of 32.
+- **WGSL has no preprocessor.** Both prior hand-written-WGSL projects
+  (Ratchet, Llamas-on-the-Web) independently built their own and manually
+  unrolled. Our feature-modular WGSL rung (§8 rung 2) is therefore not a
+  luxury — it is the thing everyone else discovered they needed.
+- **No push constants, no buffer aliasing** (so no in-place ops; plan
+  ping-pong buffers), no bf16/u8/u16.
+- **Cache API is capped ~50MB on iOS** — weights must live in **OPFS**,
+  streamed to GPU through ~1MB staging buffers, never materialised in the
+  heap. And **origin data is evicted after 7 days without interaction**
+  ([WebKit storage policy](https://webkit.org/blog/14403/updates-to-storage-policy/)):
+  a PWA unopened for a week re-downloads its model. That is a product
+  fact, not just an engineering one.
+- **ort was never going to work here.** onnxruntime-web's WebGPU has
+  never officially supported iOS ([#22776](https://github.com/microsoft/onnxruntime/issues/22776)),
+  and its JSEP path pins CPU at 400% and leaks to 14GB on WebKit 26,
+  killing the process ([#26827](https://github.com/microsoft/onnxruntime/issues/26827)).
+  The sovereign turn was the correct call on the evidence.
+
+**The audio-capture blocker, which is a product decision (#p17).**
+iOS suspends Web Audio the moment the screen locks or Safari
+backgrounds, and **there is no PWA workaround** — no background-audio
+entitlement exists for web content. Ambient listening with the phone in
+a pocket **requires a native shell** (Capacitor/WKWebView with the audio
+background mode). For the canvassing case the phone is likely in hand
+with the bullets on screen, so foreground-only may be entirely
+acceptable — but this must be decided deliberately, early, because it
+changes what miso *is*. Also: capture at the hardware's 48kHz and
+resample to 16k ourselves (requesting 16k in getUserMedia can silently
+yield no audio on iOS), do no DSP in the AudioWorklet's 128-frame
+quantum, and note SharedArrayBuffer needs COOP/COEP headers — plan the
+serving headers now, retrofitting is painful.
+
+**Two prior projects worth reading before rung 1:** Ratchet (Rust +
+hand-written WGSL, WebGPU-only, quantization first-class — the closest
+architectural cousin, and its [V1 RFC](https://github.com/huggingface/ratchet/discussions/187)
+is an honest post-mortem) and parakeet.js, which runs **encoder on
+WebGPU, decoder on WASM** — a pragmatic split that dodges the batch=1
+dispatch-overhead problem entirely, and one we should seriously consider.
+
+---
+
 *Companion reading: `notes.md`'s T1–T3 map (the original three-tier
 plan), `compute.md` (the driver and its named WGSL-composition future),
 `semantic-find.md` (the pattern this whole document generalises), and
