@@ -1291,6 +1291,49 @@ the buttons. What was promoted is the **name** — one declaration, several
 consumers. Binding that name to a per-user var, so size is tunable without
 a build, is the next rung and waits for an ask that wants it.
 
+## the tickbox that commissions: suggested subfeatures (2026-08-16, fm-spec #p35a)
+
+Ash, watching a tool ship with its limits named in the spec where nobody
+would ever read them: *"ship minimal function, but anticipate subfeatures,
+and consider how you'd build them. It would be great to suggest a laundry
+list of subfeatures to the user, let them tick the ones they want once the
+first one has shipped. Can be part of an 'intro new feature / tool'
+workflow."* Noted for later, with the design as far as it goes.
+
+**The move underneath it is new: a tickbox that commissions a build.**
+Every tick in miso today enables or disables something that already
+exists — `feature_ticks` steers composition, `/review`'s awaiting section
+steers an update. A suggested subfeature is a line for something that does
+*not* exist, and ticking it doesn't switch anything on: **it files an
+ask**. The builder proposes, the user chooses, and the flywheel starts
+without anybody typing a wish. That closes a real gap — asks presently
+require the user to think of the thing and find the words, which is the
+slowest part of the loop and the part that most needs the app's help.
+
+**Most of the surface exists.** `/chooser` already renders tickable
+feature lines with intros and build numbers; `/review` already prepends a
+section of not-yet-yours features to that same list. "Suggested" is a
+third section in the same idiom, with the tick meaning *commission* rather
+than *enable*, and a build number that hasn't happened yet. The distinction
+must be visible — a promise and a fact should never look alike.
+
+**Where the suggestions come from.** The honest source is the spec: this
+session's nodes already end with named limits — `/map` names panning,
+antimeridian wrapping and offline vendoring; `/country-icon` names the
+border imprecision; `/logging` names the levels it deferred. Today those
+are prose an asker never sees. A `## suggested` section (or a stanza the
+export reads) would carry them into the tree export, and the chooser would
+render them. Then "anticipate subfeatures, consider how you'd build them"
+becomes a documented obligation of writing a node, not a private habit —
+and the cost of thinking ahead is paid once, by the person best placed to
+pay it.
+
+**Open questions for the build:** does ticking file the ask immediately or
+gather a batch; does a suggestion expire if never ticked; may the builder
+suggest against *another* node's subtree (the `/dictate` engine suggesting
+a `/compute` rung); and does a shipped suggestion keep its line, becoming
+an ordinary feature row, or vanish and reappear as one.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
