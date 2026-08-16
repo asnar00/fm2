@@ -78,3 +78,9 @@ build stamp that makes every receipt self-locating.
 which in its first real failure severed the second half of a two-cause
 message — `/phone` reports webgpu's failure and wasm's in one string. Now
 400, still inside `/diag`'s 2KB cap.)*
+
+*(Draft-phase revision, #p20: receipts carry `ua`, as launch reports
+already did. Without it a receipt cannot be attributed to a device, and
+reading one meant correlating timestamps against launch lines — the exact
+guessing this node was built to end. Found the first time two devices
+failed within the same second.)*

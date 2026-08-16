@@ -5,7 +5,10 @@ const feature_EngineReceipts = {
     if (typeof feature_Diag === 'undefined') return;
     const running = typeof feature_Update !== 'undefined'
       ? feature_Update.running : '?';
-    feature_Diag.report({ ...data, running });
+    // say WHICH device: a receipt that can't be attributed sends you
+    // guessing from timestamps, which is the habit this node exists to
+    // end (field-found, #p20 — launch reports carry ua, receipts didn't)
+    feature_Diag.report({ ...data, running, ua: navigator.userAgent.slice(0, 90) });
   },
 
   fileOf(id) {
