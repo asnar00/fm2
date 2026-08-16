@@ -29,11 +29,17 @@ for f in glob.glob("/tmp/miso-vars/user.*.asks.json"):
     asks = json.loads(d.get("v") or "[]")
     hit = False
     for a in asks:
-        if text.lower() in str(a.get("text", "")).lower() and a.get("status") != status:
-            a["status"] = status
-            if build != "-":
-                a["build"] = int(build)
-            hit = True
+        if text.lower() not in str(a.get("text", "")).lower():
+            continue
+        # a re-ship corrects the build even when the status is already right:
+        # an ask delivered twice should name the build that actually has it
+        want_build = build != "-" and a.get("build") != int(build)
+        if a.get("status") == status and not want_build:
+            continue
+        a["status"] = status
+        if build != "-":
+            a["build"] = int(build)
+        hit = True
     if not hit:
         continue
     value = json.dumps(asks)
