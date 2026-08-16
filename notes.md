@@ -1127,6 +1127,40 @@ laptop's tile the way the audio already does — with the better-server-
 transcript-replaces-rough rule already specced in `/phone` deciding
 collisions.
 
+## the sovereign turn: ort is being removed (2026-08-16, fm-spec #p15–16)
+
+The T2 rung mapped on day 2 has been taken deliberately. Ash, after the
+shim experiment's third failure in a row: *"let's remove the ort
+dependency and stand up our own sovereign webgpu runner, then get
+whisper working on it. It'll be a heavy lift but SO much more
+satisfying."*
+
+The ledger that decided it. Two days spent on ort produced: a device
+request iOS refuses (`/tamed-request`), a `webgpuInit is not a function`
+that was really a MIME type (`/module-mime`), a memoized-failure trap, a
+q8 kernel bug, a tokenizer that vanishes when a path has a scheme, and a
+26MB binary nobody here can read. None of it reusable. Meanwhile
+`/compute` and `/semantic-find` — both ours — went in clean and ran on
+the first phone we tried.
+
+The plan lives in **`sovereign.md`** at the repo root: four layers (GPU-
+resident tensors → the WGSL op library → whisper's graph → the
+`/dictate` rung), an eleven-rung ladder with a numeric acceptance test
+per rung, and the verification discipline that makes it survivable — a
+numpy twin (`tools/whisper_ref.py`) dumping golden tensors at every
+boundary, because a transformer that is subtly wrong produces fluent
+nonsense and timing tells you nothing.
+
+Two structural commitments worth repeating here: **ort stays a reachable
+rung until the last one**, so the app never stops transcribing mid-climb;
+and **feature-modular WGSL finally has its first real user**, which is
+exactly the condition `compute.md` set for building it.
+
+Five rulings are queued for ash in `sovereign.md` §10 — the load-bearing
+one being node placement (reusable math under `/compute`, the model
+under `/dictate`), which reads against compute.md's letter that tenants
+carry their own kernels.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.

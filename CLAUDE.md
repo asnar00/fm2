@@ -9,6 +9,12 @@ live there, not here. `fm.md` is the user-authored doctrine — never edit it.
 tooling state, and the named next rungs. It is rewritten at each session
 end; trust it over older prose in notes.md when they disagree.
 
+**Building the sovereign runtime? Read `sovereign.md`** — the plan for
+replacing onnxruntime with our own WebGPU kernels and putting whisper on
+them: layers, node placement, the rung ladder with its acceptance tests,
+and the numpy-twin verification discipline. A living plan, freely
+editable; open rulings sit in its §10.
+
 **Building and shipping: see `deploy.md`** — build/run commands, what
 deploy.sh does, the mini, tunnel, state locations, and how to check on the
 live system.
