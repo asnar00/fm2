@@ -1,6 +1,10 @@
 const feature_Review = {
   applying: false,
 
+  // seam: which changes.json entries deserve a release line (base: all of
+  // them); a later feature may refuse kinds without touching this file
+  releaseWorthy(c) { return !!c; },
+
   running() {
     return typeof feature_Update !== 'undefined'
       ? parseInt(feature_Update.running, 10) || 0 : 0;
@@ -55,7 +59,8 @@ const feature_Review = {
     const changes = await fetch('changes.json', { cache: 'no-store' })
       .then((r) => r.ok ? r.json() : []).catch(() => []);
     rows += changes
-      .filter((c) => c.build > running && c.build <= server && !covered.has(c.build))
+      .filter((c) => c.build > running && c.build <= server && !covered.has(c.build)
+        && this.releaseWorthy(c))
       .map((c) => '<div class="crow"><span class="cnum">' + c.build + '</span>'
         + '<div class="ctext"><span class="cpurpose">'
         + String(c.text).replace(/&/g, '&amp;').replace(/</g, '&lt;')

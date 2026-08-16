@@ -102,15 +102,23 @@ def node_paths(files):
             out.add(m.group(1))
     return sorted(out)
 
+# a commit whose every touched file is repo bookkeeping (root markdown,
+# transcripts) changed nothing on any device: kind "docs" — counted in the
+# build number, skipped by the release list (/policy/bookkeeping, #p3)
+def is_docs(files):
+    return bool(files) and all(re.match(r"transcripts/|[^/]+\.md$", p)
+                               for p in files)
+
 entries = []
 for i, line in enumerate(lines):
     sha, subject = line.split("\t", 1)
+    files = touched(sha, None)
     added = [re.match(r"features/(.*)/[^/]+$", p).group(1)
              for p in touched(sha, "A")
              if re.match(r"features/(?:.*/)?([^/]+)/\1\.md$", p)]
-    entries.append({"build": count - i, "text": subject,
-                    "kind": "feature" if added else "fix",
-                    "paths": node_paths(touched(sha, None)),
+    kind = "feature" if added else ("docs" if is_docs(files) else "fix")
+    entries.append({"build": count - i, "text": subject, "kind": kind,
+                    "paths": node_paths(files),
                     "added": sorted(added)})
 print(json.dumps(entries))
 PY
