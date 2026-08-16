@@ -81,6 +81,12 @@ async function tame() {
   } catch (e) { /* absent or declined: the engine behaves as it always did */ }
 }
 
+// seam: which device the built engine actually runs on (null before the
+// first build). Read by /engine-receipts; absence of a reader costs nothing.
+export function lastDevice() {
+  return engine ? engine.device : null;
+}
+
 // 16kHz mono float PCM in, text out; throws with a device-tagged message.
 // `force` (tests only) overrides the device probe for the first build.
 export async function transcribe(audio, force) {
