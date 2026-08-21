@@ -95,7 +95,13 @@ every law and not the request has failed.
   node's position is the timestamp of the prompt its spec cites; newest is
   outermost, globally. A node may extend any chain that existed when it was
   written (causality bounds extension, not tree position). The tree carries
-  grouping and selection only: regrouping cannot rewire behaviour. Every
+  grouping and selection only: regrouping cannot rewire behaviour — whose
+  precise invariant is COMPOSITION ORDER (ruled 2026-08-21, hybrid #p46,
+  when the context ladder gave every node an implicit `enabled` var):
+  a regroup may add a grouping node's own vars to the world (a group's
+  enabled flag is a feature — a per-user switch for a whole family) and
+  may reroute enablement conjunctions through the new parent, but the
+  chains must not move and defaults must leave behaviour unchanged. Every
   code-bearing node MUST cite a real anchor — the linker fails otherwise;
   code-free grouping nodes order by their earliest child. Inspect with
   `fmlink.py <product> --chains`.
