@@ -147,6 +147,20 @@ ssh "$HOST" '
     launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.noob.miso.plist
 '
 
+# one server per state directory (6a's ruling). The refusal itself lives at
+# boot, where a second process actually appears — features/miso/loop/context/
+# remember/sole-tenant claims ~/.miso-context and refuses to start if another
+# live miso holds it. Deploy asserts the OUTCOME: more than one server on the
+# mini means the release just restarted one of two, which no release should
+# hide. Read-only, and never fatal to a deploy.
+live=$(ssh "$HOST" 'pgrep -x miso_server | wc -l' 2>/dev/null | tr -d ' ' || echo 0)
+if [ "${live:-0}" -gt 1 ]; then
+  echo "  WARNING: $live miso_server processes are live on $HOST."
+  echo "  One state directory, one server: the extra one is not serving the"
+  echo "  tunnel, and both are writing ~/.miso-context. Stop it, or give it its"
+  echo "  own MISO_CONTEXT_DIR."
+fi
+
 # the ask inbox: shipping without answering becomes visible at the moment of
 # shipping — print every user ask still status "asked" (see noob-button/ask)
 ssh "$HOST" 'find /tmp/miso-vars -name "user.*.asks.json" -exec cat {} + 2>/dev/null' | python3 -c '
