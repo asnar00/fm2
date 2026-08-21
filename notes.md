@@ -1648,6 +1648,15 @@ changing only what it claims):
    eras. From this rung, loop/context stops being optional for migrated
    features — untick becomes a loud link failure, and the byte-identical
    baseline era ends, by design.
+7c. the context join (added 2026-08-21 when worker 2 measured the hole):
+   migrated user-scoped vars drop out of `/join`'s snapshot — a fresh
+   device learns them only from the shared 50-entry broadcast backlog,
+   and a flooded backlog hands it defaults (a user who chose "ask me"
+   would get automatic updates on a new phone). The fix is the exact
+   VarJoin analogue: on join, the server sends the user's present
+   context values (and the global layer's) as id-bearing ops the client
+   applies between turns — dedupe-safe, boundary-safe. Rules before
+   rung 8 may claim absorption complete.
 8. absorption complete: SyncVar has zero callers and is deleted; the
    chooser's tickboxes drive `enabled` — instant, per-user, work
    preserved. DONE = untick a feature in the chooser, it is off for you
