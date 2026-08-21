@@ -1,0 +1,11 @@
+/* nothing to undo: present, so the row keeps its shape, and visibly not
+   offering anything. The shading is the chooser's, borrowed — a control that
+   cannot act reads as shaded rather than missing. */
+.tool-button.ctrl.dim { opacity: 0.32; cursor: default; }
+
+/* this node puts a SIXTH chip in a row that fitted five. On a 390px phone the
+   bar has 296px between its insets, and six 50px buttons with 8px gaps want
+   340: flexbox takes the difference out of their width. Letting the height
+   follow keeps them squares rather than rectangles, and the whole squeeze
+   goes away with this node. */
+.toolbar .tool-button { height: auto; aspect-ratio: 1; }

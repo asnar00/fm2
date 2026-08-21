@@ -1865,6 +1865,23 @@ these six are parked, each with its reason and revisit trigger:
    mid-boot edit invisible — recorded as the boundary law working, a
    design note rather than a residual.
 
+10. **Undo's stack does not survive a reload** (undo worker, asks#1787346956331):
+    it is thread-local in wasm memory, so a refresh empties it and the button
+    is dimmed until the next edit. Persisting it means choosing a home — a
+    `device`-scoped var does not persist server-side either — so it is
+    explicitly unbuilt rather than half-built. Revisit: if anyone asks to undo
+    something from before a reload.
+11. **An inverse op that errors is silent** (same): a step whose var has left
+    the composition, or whose prior no longer deserialises, spends the step and
+    changes nothing. Right shape for a button, wrong shape for a diagnosis.
+    Revisit: the first time it happens to anybody.
+12. **Undo is one level deep by design** (same): the ask asked for
+    undo-then-undo-to-redo, so the inverse is itself recorded and pressing
+    twice oscillates rather than walking further back. The ten-step stack is
+    what lets several tools' histories coexist and what bounds memory, not a
+    depth of history the button can reach. Revisit: when someone asks to go
+    back further, which is a different ask and would need a redo stack.
+
 THE CAMPAIGN CLOSED 2026-08-21, build 238: every residual from the
 contexts ladder and its own assignments is fixed (isolation, fragment
 obedience, coverage report, same-door, sole-tenant, unmixed, nested
@@ -1996,6 +2013,52 @@ keeping is mostly about measurement.
   documents what the bug would have been (an inner begin re-freezing from
   live, an inner end clearing the outer view) and it took one rig route to
   show both, before and after.
+
+## the late link's ops: a trap every node newer than /converge falls into (2026-08-21, undo worker)
+
+Found while building `shell/tools/undo` (asks#1787346956331), measured on the
+two-instance rig, and worth a rung of its own.
+
+`/converge`'s `update` link drains the op outbox into `state["_send"]`, and
+`/payload`'s re-freezes the shared layer before the paint. Both were written
+when they were the outermost links on `update`. They are not any more:
+composition order is provenance order, so every node authored after them —
+`chooser/enforced`, `tap/counter/square-taps`, and now `tools/undo` — wraps
+them. **An op minted by one of those links is minted after the drain and
+after the re-freeze**, so it neither reaches the wire nor the frame until
+some later event happens to flush the outbox.
+
+This is not hypothetical. `/square-taps` shipped with it two hours before
+undo was built. Measured with undo unticked: three taps, then n² — the count
+stays at 3 on the device that pressed it, and the second instance never hears
+about the square at all until something else happens. With undo ticked (it
+calls `ctx_ship_ops`, `ctx_stamp_outbox` and `context_layer_begin` at the true
+end of the turn) the square shows in the frame the finger caused and the
+other device has it a moment later. So the defect is real, and it is
+currently masked by whichever node happens to be newest.
+
+The honest fix is not "the newest node pays for everyone" — that is what is
+in the tree today and it evaporates the moment `tools/undo` is unticked or a
+newer node arrives that does not know to do it. The turn's end has to belong
+to the turn, not to a link: either `edit`'s `on_event` (the one wrapper that
+genuinely closes the client turn, and already the home of
+`context_turn_end`) takes over shipping and re-freezing, or the update chain
+gains an explicit last-word hook beneath the extension point, as edit.md's
+own risk section already anticipated for `route`. Either way it is a
+`/converge` + `/payload` prompt, small, and it should happen before the next
+node with a fresh anchor edits a var.
+
+**Related, found in passing and NOT fixed here:** `/payload`'s `update` link
+calls `context_turn_begin()` without a matching end. The depth counter added
+by `edit/first-turn` makes that a no-op re-freeze and leaves the depth one
+higher after every event, so the client's own frozen view is taken once at
+the first event and never retaken — the boundary law holds only because
+`edit_context`'s read-your-own-writes mirror keeps that view current. The
+layer half of `/payload`'s re-freeze does work (`context_layer_begin` is not
+depth-counted). Nothing observable misbehaves today and `eprintln!` goes
+nowhere in the wasm place, so the eight-deep warning is silent; the fix wants
+a `context_refreeze()` primitive in `edit.lib.rs` rather than a begin, and it
+belongs to the same prompt as the paragraph above.
 
 ## ideas parking lot
 

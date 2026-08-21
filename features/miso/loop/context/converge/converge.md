@@ -189,6 +189,13 @@ is `device`.
 turn's queued ops are appended to `state["_send"]`. It carries the
 `fm:context-op` hook token.
 
+`converge.rs`, `ctx_ship_ops()`: the drain, extracted from `update()` without
+changing what it does (refactored 2026-08-21 by `shell/tools/undo`, which needed
+the extension point). This link stopped being the outermost one on `update` when
+newer nodes arrived, so an op minted after it runs would sit in the outbox until
+the next event; a late link calls this itself after minting. An empty outbox
+makes it a no-op, so calling it twice in a turn is safe.
+
 `converge.rs`, `handle_msg()` /extension/: the server's half. A `CtxOp` is
 applied to the sender's world by declared merge, and the resolved value is
 published to that user's audience and returned as the reply.

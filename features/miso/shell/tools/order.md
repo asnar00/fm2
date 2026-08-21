@@ -3,3 +3,4 @@
 - [x] steady
 - [x] long-press
 - [x] bigger-buttons
+- [x] undo

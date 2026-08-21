@@ -24,6 +24,15 @@ impl feature_Converge {
             // op would re-add a delta and re-queue an echo.
             let _ = edit_context(|c| c.set_from_json(&path, &name, value.clone()));
         }
+        ctx_ship_ops(state)
+    }
+
+    // the drain, extracted so a link OUTSIDE this one can ship what it minted
+    // in the turn that minted it. This link is not the outermost any more, and
+    // an op queued after it would otherwise wait for the next event; a caller
+    // that mints late calls this after minting. Draining an empty outbox is a
+    // no-op, so calling it twice in a turn changes nothing.
+    fn ctx_ship_ops(state: String) -> String {
         let ops = context_op_drain();
         if ops.is_empty() {
             return state;
