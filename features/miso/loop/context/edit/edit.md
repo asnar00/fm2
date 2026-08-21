@@ -172,7 +172,23 @@ response is built. It is the outermost link because this node is the newest in
 the composition, which is what makes one request one turn.
 
 `edit.rs`, `on_event()` /extension/: the client's turn boundary, around the
-Elm update. It changes nothing about what the turn computes.
+Elm update. It changes nothing about what the turn computes. It also names the
+turn's last moment: `context_turn_close` runs after the whole event and before
+the freeze is dropped, which — because the update chain is nested inside this
+one by construction — is the only point in the composition guaranteed to be
+after every update link whatever its provenance. The base is the identity;
+`/turn-end` is what fills it.
+
+`edit.lib.rs`, `context_turn_stats()`: begins, ends, freezes and the current
+depth on this thread. Three increments in the paths that already existed, and
+the instrument that turns "begins and ends balance, and the view is retaken once
+per turn" from an argument into a reading. It found `/payload`'s unmatched
+begin.
+
+`edit.lib.rs`, `context_mirror_set()`: the read-your-own-writes flag, raisable
+by another writer. `/overlay`'s `edit_layer` replays against the layer's frozen
+view for the same reason `edit_context` replays against this one, and whatever
+queues ops has to be told the same way.
 
 `edit.rs`, `context_snapshot_json()` /extension/: inside a turn the snapshot
 reports the frozen view, so a `GET diag/context` describes what the request is

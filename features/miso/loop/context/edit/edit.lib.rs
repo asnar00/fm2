@@ -28,12 +28,45 @@ thread_local! {
 /// a nesting this deep is a runaway, not a design: said once, on the way past.
 const FM_CONTEXT_DEPTH_LOUD: u32 = 8;
 
+// (begins, ends, freezes) on this thread. The invariant the turn boundary
+// rests on is that begins and ends balance and that exactly one freeze happens
+// per outermost turn; an unmatched begin does not fail loudly — it leaves the
+// depth one higher and quietly stops the view from ever being retaken, which
+// is what /payload did until the turn-end phase took its work. Counting is
+// three increments and it makes the invariant observable instead of argued.
+thread_local! {
+    static FM_TURN_COUNTS: std::cell::Cell<(u64, u64, u64)> =
+        std::cell::Cell::new((0, 0, 0));
+}
+
+fn fm_turn_count(which: usize) {
+    FM_TURN_COUNTS.with(|c| {
+        let (b, e, f) = c.get();
+        c.set(match which {
+            0 => (b + 1, e, f),
+            1 => (b, e + 1, f),
+            _ => (b, e, f + 1),
+        });
+    });
+}
+
+/// begins, ends, freezes and the depth right now, for a rig or a probe.
+pub fn context_turn_stats() -> serde_json::Value {
+    let (b, e, f) = FM_TURN_COUNTS.with(|c| c.get());
+    serde_json::json!({
+        "begins": b, "ends": e, "freezes": f,
+        "depth": FM_CONTEXT_DEPTH.with(|d| d.get()),
+        "frozen": in_context_turn(),
+    })
+}
+
 /// open a turn: freeze the live context into this thread's view. Everything
 /// the turn reads through `with_context` sees this frozen value, so an edit
 /// landing mid-turn — from this thread or any other — cannot be observed by
 /// the event already in flight. Opening a turn inside a turn keeps the view
 /// the outer one froze.
 pub fn context_turn_begin() {
+    fm_turn_count(0);
     let depth = FM_CONTEXT_DEPTH.with(|d| {
         let n = d.get() + 1;
         d.set(n);
@@ -47,6 +80,7 @@ pub fn context_turn_begin() {
         }
         return;
     }
+    fm_turn_count(2);
     let cell = held_context();
     let frozen = cell
         .read()
@@ -61,6 +95,7 @@ pub fn context_turn_begin() {
 /// turn re-freezes, and that is when edits made during this one become visible.
 /// An end without a begin cannot go negative, and closes the view.
 pub fn context_turn_end() {
+    fm_turn_count(1);
     let depth = FM_CONTEXT_DEPTH.with(|d| {
         let n = d.get().saturating_sub(1);
         d.set(n);
@@ -144,4 +179,13 @@ thread_local! {
 
 pub fn in_context_mirror() -> bool {
     FM_CONTEXT_MIRROR.with(|m| m.get())
+}
+
+/// raise and lower the same flag from another writer. The layer has its own
+/// write path (`/overlay`'s `edit_layer`) and its own frozen view, so when it
+/// replays a closure against that view it is doing exactly what the two
+/// paragraphs above describe — and whatever queues ops must be told the same
+/// way, or the replay puts a second op on the wire.
+pub fn context_mirror_set(on: bool) {
+    FM_CONTEXT_MIRROR.with(|m| m.set(on));
 }

@@ -32,7 +32,8 @@ impl feature_Undo {
         } else {
             serde_json::Value::Null
         };
-        let sent = undo_outbox_len(state.clone());
+        // what the outbox already held. Anything past this mark is this turn's.
+        let sent = context_op_pending();
         let state = existing.update(state, event.clone());
         let e: serde_json::Value = serde_json::from_str(&event)
             .unwrap_or(serde_json::Value::Null);
@@ -42,47 +43,27 @@ impl feature_Undo {
                 undo_apply(step);
             }
         }
-        // /converge drains the op outbox in ITS link, and this node is newer,
-        // so every op minted at or beyond this point — this node's inverse, and
-        // any sibling newer than converge, /square-taps today — would otherwise
-        // wait for the next event. Shipping and stamping here puts them on the
-        // wire in the turn that made them (undo.md, "the late link's ops").
-        let state = ctx_stamp_outbox(ctx_ship_ops(state));
-        // and the paint has to see it. /payload re-freezes the layer before the
-        // render, but that link is inside this one, so an edit made out here
-        // lands after the re-freeze and the frame shows the old number until
-        // something else happens — which is invisible online, where the reply
-        // arrives as another event, and very visible offline. Re-freezing after
-        // a turn that produced ops is /payload's own move at the right moment.
-        if undo_outbox_len(state.clone()) > sent {
-            context_layer_begin();
-        }
+        // Nothing is shipped, stamped or re-frozen here. This node shipped its
+        // own ops for one build, because /converge drained at its own link and
+        // this node is newer than that link; `/turn-end` now does it for every
+        // link at every depth, and `edit_layer`'s read-your-own-writes shows a
+        // layer edit to the paint whoever made it. What is left is this node's
+        // own business.
         if !watch {
             return state;
         }
         undo_record(state, before, sent, open)
     }
 
-    // how many messages the outbox already held. What this turn added starts
-    // here, which is a truthful boundary whatever the transport has or has not
-    // managed to send.
-    fn undo_outbox_len(state: String) -> usize {
-        let s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        let empty: Vec<serde_json::Value> = Vec::new();
-        s["_send"].as_array().unwrap_or(&empty).len()
-    }
-
-    // file this turn's local var edits as one step. The ops are read off the
-    // outbox rather than intercepted at the point of edit, because the outbox is
-    // the one place every local edit ends up whatever feature made it — which is
-    // what makes this work for tools that do not exist yet.
+    // file this turn's local var edits as one step. The ops are read off
+    // /converge's outbox rather than intercepted at the point of edit, because
+    // the outbox is the one place every local edit ends up whatever feature
+    // made it — which is what makes this work for tools that do not exist yet.
+    // They are still IN the outbox at this moment: `/turn-end` drains it after
+    // the paint, which is after this link.
     fn undo_record(state: String, before: serde_json::Value, from: usize,
                    tool: String) -> String {
-        let s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        let empty: Vec<serde_json::Value> = Vec::new();
-        let sent = s["_send"].as_array().unwrap_or(&empty).clone();
+        let sent = context_op_peek();
         let mut changes: Vec<serde_json::Value> = Vec::new();
         let mut i = from;
         while i < sent.len() {

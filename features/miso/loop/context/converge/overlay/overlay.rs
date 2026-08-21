@@ -52,9 +52,11 @@ impl feature_Overlay {
         s.to_string()
     }
 
-    // the client's three jobs, at the outermost link of the update chain —
-    // after rung 6's link has drained this turn's ops into `_send`, which is
-    // what lets the stamping below be the last word.
+    // the client's two jobs on the update chain: retype a record that belongs
+    // to the layer, and apply it. Stamping the outbox used to be the third and
+    // had to be last, which it stopped being when nodes newer than this one
+    // arrived; it now runs in `/turn-end`'s phase, straight after the drain it
+    // has always had to follow. `ctx_stamp_outbox` below is unchanged.
     fn update(state: String, event: String) -> String {
         let e: serde_json::Value = serde_json::from_str(&event)
             .unwrap_or(serde_json::Value::Null);
@@ -77,7 +79,7 @@ impl feature_Overlay {
         if kind == "CtxUpdate" {
             ctx_apply_update(e["data"].clone());
         }
-        ctx_stamp_outbox(state)
+        state
     }
 
     // an arriving CtxUpdate carries the resolved value, which layer it belongs

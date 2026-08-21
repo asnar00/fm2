@@ -21,10 +21,24 @@ impl feature_Edit {
 
     // the client's turn boundary: one event is one turn, matching the Elm
     // update the loop already runs. Nothing here changes what the turn does.
+    //
+    // Between the event and the close there is now one named moment,
+    // `context_turn_close`. It is the only place in the composition that is
+    // guaranteed to run after EVERY link of the update chain, whatever its
+    // provenance, because the update chain is nested inside this one by
+    // construction rather than by position. The base below is the identity,
+    // so with nothing extending it this link is what it always was.
     fn on_event(input: String) -> String {
         context_turn_begin();
         let out = existing.on_event(input);
+        let out = context_turn_close(out);
         context_turn_end();
+        out
+    }
+
+    // the end-of-turn seam: the event's `{state, html}` payload on its way out.
+    // /turn-end extends this; on its own it changes nothing.
+    fn context_turn_close(out: String) -> String {
         out
     }
 

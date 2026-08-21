@@ -4,15 +4,25 @@ impl feature_Payload {
     // Context::republish(), one line per var that named a page key. Untick this
     // node and no var may claim one.
     //
-    // the paint's turn. The update that just ran was protected by rung 3's
+    // the paint's freshness. The update that just ran was protected by rung 3's
     // frozen view — that is what makes it replayable — but the render that
     // follows it should show what is TRUE now, including a CtxUpdate that
-    // arrived during this very event. So the views are re-frozen here, after
-    // the update and before the paint: determinism where it is needed,
-    // freshness where it is seen.
+    // arrived during this very event. An arriving record for the LAYER is
+    // written straight to the live layer cell, so the layer's view is re-taken
+    // here, before the paint: determinism where it is needed, freshness where
+    // it is seen.
+    //
+    // The user's own view is NOT re-taken, and the `context_turn_begin()` that
+    // used to be on the line above was a mistake rather than a mechanism: with
+    // `/first-turn`'s depth counter in place it re-froze nothing, and having no
+    // matching end it left the depth one higher after every event — so the
+    // client's own view was taken at the first event and never again, and the
+    // boundary law survived only because `edit_context` mirrors a turn's own
+    // writes into it. It is gone. Everything that reaches the user's own world
+    // during a turn goes through `edit_context`, whose read-your-own-writes
+    // already shows it to the rest of the turn, paint included.
     fn update(state: String, event: String) -> String {
         let state = existing.update(state, event);
-        context_turn_begin();
         context_layer_begin();
         ctx_republish(state)
     }

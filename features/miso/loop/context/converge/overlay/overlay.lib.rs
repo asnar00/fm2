@@ -79,10 +79,31 @@ pub fn context_layer<R>(f: impl FnOnce(&Context) -> Option<R>) -> Option<R> {
 /// back — which is exactly the optimistic-display-and-offline behaviour the loop
 /// must not lose. The write is to the LIVE layer; rung 7a's re-freeze before the
 /// paint is what makes it visible in the same frame.
-pub fn edit_layer<R>(f: impl FnOnce(&mut Context) -> R) -> R {
-    let cell = context_layer_cell();
-    let mut live = cell.write().unwrap_or_else(|p| p.into_inner());
-    f(&mut *live)
+pub fn edit_layer<R>(f: impl Fn(&mut Context) -> R) -> R {
+    let out = {
+        let cell = context_layer_cell();
+        let mut live = cell.write().unwrap_or_else(|p| p.into_inner());
+        f(&mut *live)
+    };
+    // read-your-own-writes for the layer, the exact twin of rung 3's for a
+    // user's own world: the turn's OWN closure is replayed against the turn's
+    // OWN frozen view, so a later link — or the paint — sees what an earlier
+    // one wrote, while another device's edit stays invisible until the next
+    // turn. Without this the layer's freshness depended on somebody calling
+    // `context_layer_begin` again at the right moment, which meant it depended
+    // on link order: an edit made by a node newer than /payload landed after
+    // the re-freeze and the frame showed the old value.
+    //
+    // The replay must change the value and NOTHING else, so the mirror flag is
+    // raised exactly as `edit_context` raises it and the op queue skips.
+    context_mirror_set(true);
+    FM_LAYER_TURN.with(|t| {
+        if let Some(view) = t.borrow_mut().as_mut() {
+            let _ = f(view);
+        }
+    });
+    context_mirror_set(false);
+    out
 }
 
 // ---- op identity ----------------------------------------------------------

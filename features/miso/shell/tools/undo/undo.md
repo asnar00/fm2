@@ -49,10 +49,11 @@ anyway. There is no per-tool code in this node and no seam for a tool to
 fill.
 
 **Capture reads the outbox, not the edit.** A local edit queues its op in
-`/converge`'s outbox, which the turn drains into `state["_send"]`. This node
-notes how long that queue was when the event arrived and reads everything
-past that mark when the event is done: those are exactly this turn's local
-ops, whichever feature made them. Intercepting at the point of edit would
+`/converge`'s outbox. This node notes how long that queue was when the event
+arrived and reads everything past that mark when the event is done: those are
+exactly this turn's local ops, whichever feature made them. They are still in
+the outbox at that moment — `/turn-end` drains it after the paint, which is
+after this link. Intercepting at the point of edit would
 have been the other option and was rejected — the queue function is a
 verbatim library another node owns, so wrapping it is not available, and
 more importantly the outbox is the one place every local edit already ends
@@ -168,34 +169,15 @@ undone. Another device's edits are excluded by construction (their ops never
 enter this device's outbox), as are arriving `CtxUpdate`s, which are applied
 by assignment and queue nothing.
 
-**The late link's ops.** This node is the newest in the composition, so its
-`update` link is the outermost, and `/converge`'s drain — which used to be
-the last word — now runs several links inside it. An op minted at or after
-this point would sit in the outbox until the next event, arriving late or,
-on a device where nothing else happens, not at all. `/converge` was
-refactored to expose its drain as `ctx_ship_ops`, behaviour unchanged, and
-this node calls it and then `/overlay`'s `ctx_stamp_outbox` at the end of
-every turn. That is what puts an undo on the wire in the turn that made it.
-The same argument applies to the frame: `/payload` re-freezes the shared
-layer before the paint so the render shows what is true now, and that link
-is also inside this one, so an edit made out here lands after the re-freeze
-and the render shows the old number. Online that is invisible, because the
-server's reply arrives as another event a moment later; offline it lasts
-until something else happens. So a turn that produced ops re-freezes the
-layer once more before returning — `/payload`'s own move, made at the moment
-that is now last.
-
-Both halves un-strand any other late link while this node is composed.
-`/square-taps` — the ask filed fourteen minutes before this one — is newer
-than `/converge` and had exactly this defect in both halves: measured on the
-rig, with undo unticked, pressing n² leaves the count unchanged on the
-device that pressed it AND never reaches a second instance, until some later
-event happens to flush the outbox; with undo ticked, the square shows in the
-frame the finger caused and the other device has it a moment later. That is
-a real fix, but it is a side effect of where this node sits rather than
-something this node owns; the structural answer — draining and re-freezing
-at the turn's true end regardless of who is outermost — belongs to
-`/converge` and `/payload`, and is recorded in notes.md.
+**The late link's ops — no longer this node's problem.** For one build this
+node shipped and stamped its own ops and re-froze the layer at the end of its
+link, because `/converge` drained at its own link and this node is newer than
+it. That worked and re-armed the trap for whatever node came next, so the fix
+moved where it belongs: `loop/context/edit/turn-end` ships and stamps at the
+turn's true end for every link at every depth, and `edit_layer`'s
+read-your-own-writes shows a layer edit to the paint whoever made it. The
+shim is gone from here; `/square-taps` stays fixed with this node unticked,
+which is how you can tell the fix is real.
 
 **Cost.** One `Context::snapshot()` per event, and only while a tool is
 open. That is a serialisation of every declared var (about 130 today) to
@@ -222,12 +204,11 @@ tool is open, so no tool-id test appears here, and that absence is the ask's
 
 `undo.rs`, `update()` /extension/: the feature. It reads the open tool and
 the pre-event snapshot, runs the chain beneath, claims `ctx_undo` (take the
-newest step for this tool and apply it), ships and stamps the turn's ops,
-re-freezes the layer if the turn produced any, and records what the turn
-changed.
+newest step for this tool and apply it), and records what the turn changed.
+Shipping, stamping and re-freezing are `/turn-end`'s.
 
 `undo.rs`, `undo_record()` / `undo_var_before()` / `undo_skips()`: capture.
-The first walks the outbox past the mark taken on entry and turns each new
+The first walks `context_op_peek()` past the mark taken on entry and turns each new
 `CtxOp` into a change, one per var; the second finds that var in the
 pre-event snapshot and reads its merge, scope and resolved prior, answering
 null for a merge with no reversible write; the third names the three var
@@ -282,7 +263,7 @@ that popped an error box would be worse), but it is a silence, and if a
 second such case ever appears it wants a line on stderr rather than a
 comment here.
 
-**Untick and it is gone.** No button, no capture, no shipping or re-freezing
-of late ops — which restores `/square-taps`'s pre-existing latency, since
-that defect was never this node's. Nothing else changes: the stack is
-thread-local and the extension points fall through.
+**Untick and it is gone.** No button, no capture. Nothing else changes: the
+stack is thread-local, the extension points fall through, and the op shipping
+this node briefly owned belongs to `/turn-end` now, so unticking it costs
+nothing but undo.

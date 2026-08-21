@@ -189,12 +189,23 @@ is `device`.
 turn's queued ops are appended to `state["_send"]`. It carries the
 `fm:context-op` hook token.
 
-`converge.rs`, `ctx_ship_ops()`: the drain, extracted from `update()` without
-changing what it does (refactored 2026-08-21 by `shell/tools/undo`, which needed
-the extension point). This link stopped being the outermost one on `update` when
-newer nodes arrived, so an op minted after it runs would sit in the outbox until
-the next event; a late link calls this itself after minting. An empty outbox
-makes it a no-op, so calling it twice in a turn is safe.
+`converge.rs`, `ctx_ship_ops()`: the drain. It was extracted from `update()` on
+2026-08-21 and moved out of it the same day: this link stopped being the
+outermost one on `update` when newer nodes arrived, so an op minted after it ran
+sat in the outbox until the next event — the trap named in notes.md, "the late
+link's ops", which `/square-taps` shipped with. It is now called from
+`loop/context/edit/turn-end`'s phase, which is after every update link by
+construction rather than by provenance. An empty outbox makes it a no-op.
+
+That move is what `fm:turn-end-required` in this node's source declares: a
+composition carrying this node without the phase would queue ops that nothing
+drains, and would build and run and look completely normal. The linker refuses
+it by name.
+
+`converge.lib.rs`, `context_op_peek()`: the outbox read without draining. Ops
+stay there for the whole turn now instead of moving into `state["_send"]`
+mid-update, so a link that wants to know what this turn changed looks here —
+`shell/tools/undo` is the caller.
 
 `converge.rs`, `handle_msg()` /extension/: the server's half. A `CtxOp` is
 applied to the sender's world by declared merge, and the resolved value is

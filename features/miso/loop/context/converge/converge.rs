@@ -5,12 +5,22 @@ impl feature_Converge {
     // the merge discipline. Untick this node and neither is emitted, and no
     // var type has to be anything it was not already.
     //
-    // the client's two jobs, both at the outermost link of the update chain.
-    // An arriving CtxUpdate is written to the LIVE context, which by rung 3's
-    // construction is invisible to the turn now running and visible to the
-    // next one — so a gate never changes its mind halfway through an event.
-    // Then the ops this turn produced are handed to the state's `_send`
-    // outbox, the same path every message on this system takes.
+    // the client's job on the update chain: an arriving CtxUpdate is written
+    // to the LIVE context, which by rung 3's construction is invisible to the
+    // turn now running and visible to the next one — so a gate never changes
+    // its mind halfway through an event.
+    //
+    // Shipping this turn's ops used to happen here too, at what was then the
+    // outermost link. It is not outermost any more and has not been for some
+    // time, so an op minted by a newer node was minted after the drain and
+    // waited for the next event (notes.md, "the late link's ops"). The drain
+    // now runs in `/turn-end`'s phase, which is after every update link by
+    // construction; `ctx_ship_ops` below is unchanged and is what that phase
+    // calls.
+    //
+    // fm:turn-end-required — that move is why this node may not be composed
+    // without the phase. Nothing here would fail to build; the ops would simply
+    // queue and never leave.
     fn update(state: String, event: String) -> String {
         let state = existing.update(state, event.clone());
         let e: serde_json::Value = serde_json::from_str(&event)
@@ -24,14 +34,14 @@ impl feature_Converge {
             // op would re-add a delta and re-queue an echo.
             let _ = edit_context(|c| c.set_from_json(&path, &name, value.clone()));
         }
-        ctx_ship_ops(state)
+        state
     }
 
-    // the drain, extracted so a link OUTSIDE this one can ship what it minted
-    // in the turn that minted it. This link is not the outermost any more, and
-    // an op queued after it would otherwise wait for the next event; a caller
-    // that mints late calls this after minting. Draining an empty outbox is a
-    // no-op, so calling it twice in a turn changes nothing.
+    // the drain: everything the turn queued, appended to the state's `_send`
+    // outbox — the same path every message on this system takes. It is called
+    // from `/turn-end`'s phase now rather than from the link above, so an op
+    // minted at any depth ships in the turn that minted it. Draining an empty
+    // outbox is a no-op, so calling it twice in a turn changes nothing.
     fn ctx_ship_ops(state: String) -> String {
         let ops = context_op_drain();
         if ops.is_empty() {

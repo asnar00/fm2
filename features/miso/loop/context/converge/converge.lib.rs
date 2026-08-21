@@ -32,9 +32,18 @@ pub fn context_op_drain() -> Vec<serde_json::Value> {
     FM_CONTEXT_OUTBOX.with(|o| std::mem::take(&mut *o.borrow_mut()))
 }
 
-/// how many ops are waiting. Tooling only.
+/// how many ops are waiting. Tooling, and the turn-end phase's early exit.
 pub fn context_op_pending() -> usize {
     FM_CONTEXT_OUTBOX.with(|o| o.borrow().len())
+}
+
+/// what is waiting, without taking it. The drain happens at the turn's end
+/// now, so a link that wants to know what this turn changed has to look in the
+/// outbox rather than in `state["_send"]` — that is where the ops are while
+/// the turn is still running. Reading is not draining: the phase still ships
+/// exactly what was queued.
+pub fn context_op_peek() -> Vec<serde_json::Value> {
+    FM_CONTEXT_OUTBOX.with(|o| o.borrow().clone())
 }
 
 /// last-write semantics. This impl is bounded on `MergeLastWrite`, so `set_at`

@@ -198,8 +198,21 @@ boundary on each place, outside rung 3's.
 `overlay.rs`, `init()` /extension/: the `CtxHello` that asks for an instance
 nonce.
 
-`overlay.rs`, `update()` /extension/: adopts a `CtxNonce`, applies the layer half
-of a `CtxUpdate`, and stamps the outbox.
+`overlay.rs`, `update()` /extension/: adopts a `CtxNonce` and applies the layer
+half of a `CtxUpdate`. Stamping the outbox used to happen here and had to be
+last, which this link stopped being when newer nodes arrived; it runs in
+`loop/context/edit/turn-end`'s phase now, straight after the drain it has always
+had to follow. `ctx_stamp_outbox` itself is unchanged.
+
+`overlay.lib.rs`, `edit_layer()` /refactored 2026-08-21/: the layer's write path
+gained read-your-own-writes — the caller's closure is replayed against the
+turn's frozen layer view, exactly as `edit_context` replays against the user's,
+with the same mirror flag raised so the replay queues no second op. Before this,
+a local layer edit was visible to the rest of the turn only if somebody called
+`context_layer_begin` afterwards, which made freshness a question of link order:
+an edit made by a node newer than `/payload` landed after that re-freeze and the
+frame showed the old value. `/square-taps` shipped with exactly that. The
+closure is `Fn` now and runs twice, the tax `edit_context` already charged.
 
 `overlay.rs`, `handle_msg()` /extension/: mints a nonce for a hello, suppresses a
 duplicate id, applies `clear`, and routes a global var's op to the layer.

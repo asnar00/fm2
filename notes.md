@@ -1882,6 +1882,18 @@ these six are parked, each with its reason and revisit trigger:
     depth of history the button can reach. Revisit: when someone asks to go
     back further, which is a different ask and would need a redo stack.
 
+13. **`/payload`'s republish is still position-dependent** (turn-end worker,
+    #p56): the bridged page keys are read during the paint, by Rust as well as
+    by JavaScript, so republishing at the turn's end would be a frame too late
+    and it stays at `/payload`'s own link. A node newer than `/payload` that
+    edits a **bridged** var would paint one stale frame. There is no such node —
+    all six bridged vars (`open_tool`, `tools_catalog`, `asks`,
+    `update_policy`, `update_accepted`, `update_ticks`) are written only by
+    nodes older than it. Revisit: the first node newer than `/payload` that
+    writes one; the structural answer is a pre-paint moment emitted by the
+    linker into the `render` entry, which is a bigger change than the trap
+    currently earns.
+
 THE CAMPAIGN CLOSED 2026-08-21, build 238: every residual from the
 contexts ladder and its own assignments is fixed (isolation, fragment
 obedience, coverage report, same-door, sole-tenant, unmixed, nested
@@ -2014,7 +2026,7 @@ keeping is mostly about measurement.
   live, an inner end clearing the outer view) and it took one rig route to
   show both, before and after.
 
-## the late link's ops: a trap every node newer than /converge falls into (2026-08-21, undo worker)
+## the late link's ops: a trap every node newer than /converge falls into — FIXED (2026-08-21, undo worker; fix the same evening)
 
 Found while building `shell/tools/undo` (asks#1787346956331), measured on the
 two-instance rig, and worth a rung of its own.
@@ -2037,28 +2049,55 @@ end of the turn) the square shows in the frame the finger caused and the
 other device has it a moment later. So the defect is real, and it is
 currently masked by whichever node happens to be newest.
 
-The honest fix is not "the newest node pays for everyone" — that is what is
-in the tree today and it evaporates the moment `tools/undo` is unticked or a
-newer node arrives that does not know to do it. The turn's end has to belong
-to the turn, not to a link: either `edit`'s `on_event` (the one wrapper that
-genuinely closes the client turn, and already the home of
-`context_turn_end`) takes over shipping and re-freezing, or the update chain
-gains an explicit last-word hook beneath the extension point, as edit.md's
-own risk section already anticipated for `route`. Either way it is a
-`/converge` + `/payload` prompt, small, and it should happen before the next
-node with a fresh anchor edits a var.
+The honest fix is not "the newest node pays for everyone" — that evaporates
+the moment `tools/undo` is unticked or a newer node arrives that does not know
+to do it. The turn's end has to belong to the turn, not to a link.
 
-**Related, found in passing and NOT fixed here:** `/payload`'s `update` link
-calls `context_turn_begin()` without a matching end. The depth counter added
+**BUILT, as `loop/context/edit/turn-end` (#p56).** `edit`'s `on_event` link
+gained one named moment, `context_turn_close`, between the event and the drop of
+the freeze, and the new node fills it with `/converge`'s drain and `/overlay`'s
+stamp. The position is structural rather than provenance-ordered: `update` is
+called from inside `on_event`, so every `on_event` link is outside every
+`update` link by construction, and no future node can get in front of it.
+Measured with a probe spliced into the client's outermost `update` dispatcher —
+a link no real node could be newer than: on main it stranded and shipped only on
+the next unrelated event; with the phase it ships in its own turn, stamped, and
+the server's world has it.
+
+The paint's half needed a different answer, because the phase is after the
+render, not before it. `edit_layer` gained the read-your-own-writes replay
+`edit_context` has had since rung 7, so a layer edit made at any depth is
+visible to the rest of its own turn including the paint, without anybody
+re-freezing anything. `/payload` keeps its layer re-freeze only for records
+arriving from the server, which are written straight to the live cell.
+
+One dependency in the family cannot be caught by rustc — the phase removes no
+generated function, it moves *when* something runs — so the linker catches it:
+`fm:turn-end-required` on `/converge`, `fm:turn-end-phase` on the new node, and
+a composition with the first and not the second fails by name instead of
+building an app that looks fine and syncs nothing.
+
+What is NOT fixed, and is on the parked register: `/payload`'s republish still
+runs at its own link, because the bridged page keys are read during the paint.
+A node newer than `/payload` that edits a bridged var would paint one stale
+frame. No such node exists — all six bridged vars are written by nodes older
+than it.
+
+**Related, and fixed in the same motion:** `/payload`'s `update` link called
+`context_turn_begin()` without a matching end. The depth counter added
 by `edit/first-turn` makes that a no-op re-freeze and leaves the depth one
 higher after every event, so the client's own frozen view is taken once at
 the first event and never retaken — the boundary law holds only because
 `edit_context`'s read-your-own-writes mirror keeps that view current. The
 layer half of `/payload`'s re-freeze does work (`context_layer_begin` is not
-depth-counted). Nothing observable misbehaves today and `eprintln!` goes
-nowhere in the wasm place, so the eight-deep warning is silent; the fix wants
-a `context_refreeze()` primitive in `edit.lib.rs` rather than a begin, and it
-belongs to the same prompt as the paragraph above.
+depth-counted). Nothing observable misbehaved and `eprintln!` goes
+nowhere in the wasm place, so the eight-deep warning was silent. The call is
+simply gone — the user's own world never needed a re-freeze there, because
+everything reaching it during a turn goes through `edit_context`. `edit.lib.rs`
+now counts begins, ends and freezes (`context_turn_stats()`), so the balance is
+a reading rather than an argument: over a rig session of 32 turns — 32 begins,
+31 ends (read from inside the still-open turn), 32 freezes, depth 1. Before the
+fix it was two begins and one freeze per event, with the depth climbing.
 
 ## ideas parking lot
 

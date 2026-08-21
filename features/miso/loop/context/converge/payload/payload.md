@@ -54,18 +54,38 @@ away. `payload` sorts after, so its link is outermost and it republishes last.
 The name is honest and the ordering is load-bearing; both are worth saying out
 loud, because the next node under `converge` inherits the same constraint.
 
-**The paint re-freezes.** Rung 3 froze the context for the duration of a turn,
-which is what makes `(context, event) → context` replayable. But the render that
-follows the update is not part of the update — it is what the user sees — and it
-should show what is true now, including an edit the event itself carried. So
-this node's `update` link, after the chain beneath it has finished, re-opens
-both frozen views from the live worlds and republishes from those.
+**The paint re-freezes — the LAYER, and only the layer (corrected 2026-08-21).**
+Rung 3 froze the context for the duration of a turn, which is what makes
+`(context, event) → context` replayable. But the render that follows the update
+is not part of the update — it is what the user sees — and it should show what
+is true now, including an edit the event itself carried. So this node's `update`
+link, after the chain beneath it has finished, re-opens the layer's frozen view
+from the live one and republishes from that.
+
+It used to call `context_turn_begin()` on the line above, for the user's own
+world, and that call was a mistake rather than a mechanism. `/first-turn`'s
+depth counter — which arrived after this line was written — makes a begin inside
+a turn a no-op, so it re-froze nothing; and having no matching end it left the
+depth one higher after every event, so the client's own view was taken at the
+first event and never retaken. Nothing observably misbehaved, because
+`edit_context` mirrors a turn's own writes into the frozen view, which is the
+real reason the user's own world needs no re-freeze here: everything that
+reaches it during a turn goes through that door. The call is gone, and
+`context_turn_stats()` counts begins against ends so the claim is checkable.
+
+The layer keeps its re-freeze for the one thing no mirror covers: a `CtxUpdate`
+arriving from the server for the layer is written straight to the live cell by
+`/overlay`. A layer edit made *locally* no longer needs it either — `edit_layer`
+gained the same read-your-own-writes replay — which is what stops a node newer
+than this one from painting a stale number.
 
 Nothing about the update's determinism changes: it had already completed under
-the view it opened with. What changes is that the paint, and the gates that run
-during `render`, see the current world. That is the difference between a feature
-disabled from another device repainting now and repainting on the user's next
-tap, and it is the behaviour the product wants.
+the view it opened with. What the layer's re-freeze buys is that the paint shows
+a shared value that arrived during this very event rather than on the next tap.
+For the user's own world the same freshness comes from the mirror instead, and
+it always did — this paragraph used to claim the re-freeze delivered it, which
+was true when it was written and stopped being true when the depth counter
+landed.
 
 **First paint is covered by `init`, not by the server.** The server never
 materialises loop state — `boot()` runs `init()` and then `render()` inside the
@@ -94,8 +114,10 @@ linearisation detail nobody should have to know.
 
 ## code description
 
-`payload.rs`, `update()` /extension/: the paint's turn — re-freeze both views
-after the update, then republish. It carries the `fm:context-bridge` token.
+`payload.rs`, `update()` /extension/: the paint's freshness — re-freeze the
+LAYER after the update, then republish. It carries the `fm:context-bridge`
+token. The user's own view is not re-frozen (see above); the unmatched
+`context_turn_begin()` that used to do it is gone.
 
 `payload.rs`, `init()` /extension/: the first paint, before anything renders.
 
@@ -120,15 +142,15 @@ events — but the moment one tries, its write vanishes silently. If that become
 a real pattern the bridge needs a complaint, not a fix.
 
 **Every paint pays for every bridged var.** One `to_value` per bridged var per
-turn, plus a re-freeze of both worlds (two `Context` clones). At tap rate that
+turn, plus a re-freeze of the layer (one `Context` clone, down from two). At tap rate that
 is nothing; with a large bridged `String` on a chatty event it would show. The
 migration should watch `asks` and `feature_ticks`, which are the two that grow.
 
-**The re-freeze moves when gates take effect during render.** Deliberate, argued
-above, but it is a real difference from rung 4's proof: a disable arriving mid
-event now silences that event's *paint*, where before it silenced only the next
-event. Update determinism is untouched; anything reasoning about render as part
-of the turn should know.
+**A disable arriving mid-event silences that event's paint, not just the next
+one.** True, deliberate, and a real difference from rung 4's proof — but it
+comes from `edit_context`'s mirror rather than from a re-freeze here, so it
+holds whether or not this link runs. Update determinism is untouched; anything
+reasoning about render as part of the turn should know.
 
 **For rung 7:** every var it migrates that a fragment reads needs a `js:`
 column, and the migration should add them in the same commit as the declaration
