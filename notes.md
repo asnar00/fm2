@@ -1657,6 +1657,22 @@ changing only what it claims):
    context values (and the global layer's) as id-bearing ops the client
    applies between turns — dedupe-safe, boundary-safe. Rules before
    rung 8 may claim absorption complete.
+   ✅ BUILT as `loop/context/converge/parity`. One deviation from the
+   brief, argued in the spec: the records are **resolved values in the
+   `CtxUpdate` shape, not id-bearing ops**. Rung 6 chose that shape for
+   the relay precisely because assignment is idempotent, so a join needs
+   no id and no seen-set — and an id-bearing op would be strictly weaker,
+   since the seen-set is bounded and a join replayed past the bound would
+   double-apply (for a counter, wrongly). Everything the brief asked for
+   comes with it: counters carry `[epoch, sum]`, device vars are excluded,
+   absent vars send nothing, and a join queues no op at all.
+   The rig found one defect in the first cut: the layer is a `Context`
+   like any other, so it carries a present bit for `own` user vars whose
+   resolver never reads it — five records of nobody's value in every
+   parcel. Fourth silence added; parcel 11 → 6 records.
+   FOR RUNG 8: the trigger is `/join`'s `Join` message and the reply is
+   typed `VarJoin`. Deleting either name silences the context join
+   SILENTLY. Keep both, or rename both halves in one commit.
 8. absorption complete: SyncVar has zero callers and is deleted; the
    chooser's tickboxes drive `enabled` — instant, per-user, work
    preserved. DONE = untick a feature in the chooser, it is off for you
