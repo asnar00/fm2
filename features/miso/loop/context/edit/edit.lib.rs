@@ -70,7 +70,40 @@ pub fn with_context<R>(f: impl FnOnce(&Context) -> R) -> R {
 /// edits serialise and the last one stands. The lock is held for the closure's
 /// duration: an `edit_context` closure must not call back into `with_context`
 /// or `edit_context` (see edit.md, "the write lock is not re-entrant").
-pub fn edit_context<R>(f: impl FnOnce(&mut Context) -> R) -> R {
-    let mut live = held_context().write().unwrap_or_else(|p| p.into_inner());
-    f(&mut *live)
+pub fn edit_context<R>(f: impl Fn(&mut Context) -> R) -> R {
+    let out = {
+        let mut live = held_context().write().unwrap_or_else(|p| p.into_inner());
+        f(&mut *live)
+    };
+    // read-your-own-writes: the same change is applied to this turn's frozen
+    // view, so a later link in the SAME turn sees what an earlier one wrote.
+    //
+    // The boundary law is untouched by this and is the reason it is written
+    // this way: the frozen view is not re-cloned from the live world (which
+    // would let another device's edit in mid-turn) — the turn's OWN closure is
+    // replayed against its OWN view. Foreign edits stay invisible until the
+    // next turn; a turn's own edits stop being invisible to itself, which is
+    // what read-modify-write across chain links requires. Migrating /ask found
+    // this: two links appending to one list each read the frozen "[]" and the
+    // second overwrote the first.
+    FM_CONTEXT_MIRROR.with(|m| m.set(true));
+    FM_CONTEXT_TURN.with(|t| {
+        if let Some(view) = t.borrow_mut().as_mut() {
+            let _ = f(view);
+        }
+    });
+    FM_CONTEXT_MIRROR.with(|m| m.set(false));
+    out
+}
+
+// true while the closure above is being replayed against the frozen view. The
+// replay must change the value and NOTHING else: an op queued twice would put
+// the same change on the wire twice under two different ids, which dedupe
+// cannot collapse. Whatever queues ops consults this.
+thread_local! {
+    static FM_CONTEXT_MIRROR: std::cell::Cell<bool> = std::cell::Cell::new(false);
+}
+
+pub fn in_context_mirror() -> bool {
+    FM_CONTEXT_MIRROR.with(|m| m.get())
 }

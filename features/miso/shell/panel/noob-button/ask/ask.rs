@@ -14,9 +14,10 @@ impl feature_Ask {
         if text.is_empty() {
             return state;
         }
-        let mut s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        let raw = SyncVar::<String>::user("asks").get(&s);
+        // the asks list is a declared /var now: read it resolved, write it
+        // back through the merge column. The `js:asks` column republishes it
+        // into the payload, so the panel fragments read `s.asks` unchanged.
+        let raw = asks_read();
         let mut asks: serde_json::Value = serde_json::from_str(&raw)
             .unwrap_or(serde_json::json!([]));
         if !asks.is_array() {
@@ -29,7 +30,20 @@ impl feature_Ask {
                 "status": "asked"
             }));
         }
-        SyncVar::<String>::user("asks").set(&mut s, &asks.to_string());
-        s.to_string()
+        asks_write(asks.to_string());
+        state
+    }
+
+    // the two accessors this feature's subnodes share, so the /var's address is
+    // written once and its shape stays this node's business.
+    fn asks_read() -> String {
+        with_context(|c| c.ask_asks_get())
+    }
+
+    fn asks_write(list: String) {
+        edit_context(|c| {
+            let _ = c.edit_op("miso/shell/panel/noob-button/ask", "asks",
+                              serde_json::json!(list));
+        });
     }
 }

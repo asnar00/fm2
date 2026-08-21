@@ -14,9 +14,10 @@ impl feature_Birthplace {
             return state;
         }
         let t = e["data"]["t"].as_u64().unwrap_or(0);
-        let mut s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        let raw = SyncVar::<String>::user("asks").get(&s);
+        // the asks list is a declared /var now: read it resolved, write it
+        // back through the merge column. The `js:asks` column republishes it
+        // into the payload, so the panel fragments read `s.asks` unchanged.
+        let raw = asks_read();
         let mut asks: serde_json::Value = serde_json::from_str(&raw)
             .unwrap_or(serde_json::json!([]));
         if let Some(arr) = asks.as_array_mut() {
@@ -31,7 +32,7 @@ impl feature_Birthplace {
                 }
             }
         }
-        SyncVar::<String>::user("asks").set(&mut s, &asks.to_string());
-        s.to_string()
+        asks_write(asks.to_string());
+        state
     }
 }

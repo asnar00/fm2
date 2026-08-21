@@ -130,6 +130,30 @@ can never be the deadlocking half (it copies rather than holding the guard
 across the caller's closure), which leaves one rule to remember rather than
 two; rung 4's gates read, so they are on the safe side of it by construction.
 
+## read-your-own-writes (found by rung 7's migration)
+
+`edit_context` writes the live context AND replays the same closure against this
+thread's frozen view. That is not a hole in the `/boundary law` — it is what the
+law always meant, made precise by a case rung 7 found.
+
+Migrating `/ask` put two chain links in one turn on the same var: `ask` appends
+the wish, `birthplace` stamps it. Both read the frozen `"[]"`, both wrote, and
+the second overwrote the first — a read-modify-write across links, which the
+JSON state used to make safe by passing the value down the chain. The context
+did not, because a turn's own edits were invisible to it.
+
+The fix replays the turn's OWN closure against its OWN view rather than
+re-cloning from the live world, which is the distinction that matters: another
+device's edit is still invisible until the next turn, and this turn can see what
+it just did. The replay changes the value and nothing else — `in_context_mirror`
+is true while it runs, and whatever queues ops consults it, because the same
+change to a second copy is not a second change and must not reach the wire
+twice.
+
+The cost is that a closure handed to `edit_context` is now `Fn` rather than
+`FnOnce` and runs twice, so it must be a function of its arguments and not of
+anything it consumes. Callers that moved a `serde_json::Value` in now clone it.
+
 ## glossary
 
 - **turn**: one bounded stretch of processing that runs under a single frozen

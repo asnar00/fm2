@@ -46,6 +46,23 @@ on the feature list are the named next rungs, not this node.
   answers, by surfacing what exists or by becoming provenance for what
   doesn't.
 
+## the asks list moved into the context (rung 7)
+
+`asks` is a declared `/var` now — `(user, last-write, own)` with a `js:asks`
+column — rather than a key in the loop's JSON state. Everything a user sees is
+the same: the list still reaches their other devices, still belongs to them
+alone, and the panel fragments still read `s.asks`, unedited, because rung 7a's
+bridge republishes the resolved value into the payload before every paint.
+
+What it gains: the list now persists across a server restart (rung 6a) and its
+writes are ops with ids that land exactly once (rung 6b), neither of which the
+old var store did.
+
+`asks_read` and `asks_write` are the two accessors this node exposes so that
+`/propose` and `/birthplace` name the address once. That mattered more than it
+looks: both of them and this node write the list inside one turn, which is the
+case that found the read-your-own-writes hole in rung 3 (see edit.md).
+
 ## code description
 
 `ask.rs` claims the `Ask` event: it appends

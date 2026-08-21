@@ -15,6 +15,12 @@ thread_local! {
 /// not the caller's choice — it comes from the marker impl that produced it.
 pub fn context_op_queue(op: &str, path: &str, name: &str,
                         value: serde_json::Value) {
+    // rung 3's read-your-own-writes replays an edit against the turn's frozen
+    // view; that replay is the same change to a second copy, not a second
+    // change, so it must not put a second op on the wire.
+    if in_context_mirror() {
+        return;
+    }
     FM_CONTEXT_OUTBOX.with(|o| o.borrow_mut().push(serde_json::json!({
         "type": "CtxOp",
         "data": { "path": path, "name": name, "op": op, "value": value }

@@ -66,7 +66,7 @@ impl feature_Edit {
                 format!("no \"value\" given for {}/{}", path, name));
         }
         let value = body["value"].clone();
-        let outcome = edit_context(|c| c.set_from_json(&path, &name, value));
+        let outcome = edit_context(|c| c.set_from_json(&path, &name, value.clone()));
         match outcome {
             Ok(_) => json_response(200, "{\"ok\":true}".to_string()),
             Err(e) => context_edit_error(400, e),

@@ -22,7 +22,7 @@ impl feature_Converge {
             // a CtxUpdate carries the RESOLVED value, so it is applied by
             // assignment — rung 3's write path, unchanged. Applying it as an
             // op would re-add a delta and re-queue an echo.
-            let _ = edit_context(|c| c.set_from_json(&path, &name, value));
+            let _ = edit_context(|c| c.set_from_json(&path, &name, value.clone()));
         }
         let ops = context_op_drain();
         if ops.is_empty() {
@@ -58,7 +58,7 @@ impl feature_Converge {
                 "a CtxOp needs data.path, data.name, data.op and data.value".to_string());
         }
         let value = m["data"]["value"].clone();
-        let resolved = match edit_context(|c| c.apply_op(&path, &name, &op, value)) {
+        let resolved = match edit_context(|c| c.apply_op(&path, &name, &op, value.clone())) {
             Ok(v) => v,
             Err(e) => return ctx_op_error(e),
         };
