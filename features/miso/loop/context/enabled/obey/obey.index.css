@@ -1,0 +1,4 @@
+/* furniture whose node is off. !important because the mark must beat the
+   element's own rules, and an attribute (rather than an inline style) because
+   the element's own display is its business again the moment it comes back. */
+[data-fm-off] { display: none !important; }

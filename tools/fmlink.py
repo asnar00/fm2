@@ -52,6 +52,23 @@ SLOT_MARKER = {"head": "<!-- fm:head -->", "style": "/* fm:style */",
 SLOT_COMMENT = {"head": "<!-- fm: {} -->", "style": "/* fm: {} */",
                 "body": "<!-- fm: {} -->", "script": "// fm: {}"}
 
+# ---- fragment gates: the page-side twin of the enabled gates ----------------
+# A composed node carrying this token in a page fragment asks the linker to
+# make every OTHER node's index fragments obey the tick map, the same way
+# GATE_HOOK makes the Rust chains obey it: a fragment's chain links fall
+# through to the function they replaced, its load-time furniture is marked
+# with its owner, and its stylesheet can be switched off. The runtime that
+# reads the map is the hook-bearing node's own fragment; everything here is
+# the wiring beneath it. See features/miso/loop/context/enabled/obey.
+FRAGMENT_GATE_HOOK = "fm:fragment-gate"
+# an assignment to a method of an object: `feature_Review.releases = …`. The
+# JS chain link — the page's `existing.fn()`.
+JS_PATCH_RE = re.compile(r"^[ \t]*(feature_\w+)\.(\w+)\s*=(?!=)", re.M)
+JS_DEFINE_RE = re.compile(r"^[ \t]*(?:const|let|var)\s+(feature_\w+)\s*=", re.M)
+# elements that never have children, so they never open a nesting level
+HTML_VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input",
+             "link", "meta", "source", "track", "wbr"}
+
 # ---- context slots: the sidecar declaration file ----------------------------
 # a node may carry <name>.vars, one declaration per line:
 #   name: Type = default (scope, merge, inherit)
@@ -390,7 +407,11 @@ class FeatureCode:
                                        "text": frag.read_text(),
                                        "name": frag.name,
                                        "required": target != "page",
-                                       "src": self.rel.replace("features/", "", 1)})
+                                       "src": self.rel.replace("features/", "", 1),
+                                       # the tree-global address, which a
+                                       # product-local override shares with the
+                                       # shared node it replaces
+                                       "node": node_path(self.rel)})
         # verbatim library files: full Rust (generics, traits, helpers) the
         # composition machinery doesn't touch — emitted as-is, per node
         self.libs = []            # (src_rel, text)
@@ -1634,6 +1655,107 @@ def remove_stale_pages(site: Path, copied: set):
             print(f"  removed stale site/{page} (owner not in this composition)")
 
 
+def js_patches(text: str) -> list:
+    """The (object, method) pairs a fragment installs on ANOTHER node's object,
+    in source order, deduped. An assignment to an object the fragment declares
+    itself is that object's own definition — a chain's start, not a link — and
+    Rust's rule for those is the same: the seam a chain hangs from is not
+    gated."""
+    own = set(JS_DEFINE_RE.findall(text))
+    seen, out = set(), []
+    for obj, method in JS_PATCH_RE.findall(text):
+        if obj in own or (obj, method) in seen:
+            continue
+        seen.add((obj, method))
+        out.append((obj, method))
+    return out
+
+
+def js_watch_block(path: str, pairs: list) -> str:
+    """Emitted ABOVE a fragment: remember what each function it is about to
+    replace looks like now, and make sure the observer that attributes new DOM
+    to its maker is running. Generated JS names the objects lexically — a
+    fragment-composed `const feature_X` is a script binding, not a window
+    property — so every read is typeof-guarded against the node being absent
+    from this composition."""
+    lines = [f"// fm: fragment gate {path} (watch)",
+             "if(!self.fmObeyMO){self.fmObeyMO=new MutationObserver(function(){});",
+             "self.fmObeyMO.observe(document.documentElement,"
+             "{childList:true,subtree:true});}",
+             "self.fmObeyPrev=self.fmObeyPrev||{};"]
+    for obj, method in pairs:
+        key = f"{path}|{obj}.{method}"
+        lines.append(f'self.fmObeyPrev[{json.dumps(key)}]='
+                     f'(typeof {obj}!=="undefined")?{obj}.{method}:undefined;')
+    return "\n".join(lines)
+
+
+def js_gate_block(path: str, pairs: list) -> str:
+    """Emitted BELOW a fragment: wrap each function it actually replaced, and
+    claim the DOM it made. The wrapper is the page's `gate_line`: off, the
+    previous link answers untouched; on, this link does. `self.fmOn` is the
+    runtime's read, late-bound because it is composed last — while it is
+    missing (during load) every gate is open, which is what load time is.
+
+    A pair is wrapped only when the fragment REPLACED a function that was
+    already there: a fragment that adds a new method to another node's object
+    is starting a chain, not extending one."""
+    lines = [f"// fm: fragment gate {path}"]
+    for obj, method in pairs:
+        key = json.dumps(f"{path}|{obj}.{method}")
+        lines.append(
+            f'if(typeof {obj}!=="undefined"){{const p=self.fmObeyPrev[{key}],'
+            f'm={obj}.{method};'
+            f'if(typeof p==="function"&&typeof m==="function"&&m!==p)'
+            f'{obj}.{method}=function(){{return(self.fmOn&&'
+            f'!self.fmOn({json.dumps(path)}))?p.apply(this,arguments)'
+            f':m.apply(this,arguments);}};}}')
+    # every element this fragment put in the page, including the ones inside
+    # what it made: the mark travels with the element, so a later fragment that
+    # re-parents somebody's button (and drops the row it came in) cannot take
+    # that button out of its owner's reach. An element that is already claimed
+    # keeps its first claimant — moving a thing is not making it.
+    lines.append(
+        'if(self.fmObeyMO){const fmClaim=function(n){'
+        'if(n.nodeType!==1||n.getAttribute("data-fm-node"))return;'
+        f'n.setAttribute("data-fm-node",{json.dumps(path)});'
+        'for(const k of n.querySelectorAll("*"))'
+        'if(!k.getAttribute("data-fm-node"))'
+        f'k.setAttribute("data-fm-node",{json.dumps(path)});}};'
+        'for(const r of self.fmObeyMO.takeRecords())'
+        'for(const n of r.addedNodes)fmClaim(n);}')
+    return "\n".join(lines)
+
+
+def html_mark_roots(text: str, path: str, src: str) -> str:
+    """Stamp every TOP-LEVEL element of a body fragment with its owning node,
+    so the runtime can hide furniture it cannot delete. Nested elements are
+    left alone — hiding a root takes its subtree with it, which is what an
+    ancestor's untick means everywhere else in this system."""
+    out, depth, i, marked = [], 0, 0, 0
+    for m in re.finditer(r"<!--.*?-->|<(/?)([a-zA-Z][\w-]*)((?:[^>\"']|\"[^\"]*\"|'[^']*')*?)(/?)>",
+                         text, re.S):
+        if m.group(0).startswith("<!--"):
+            continue
+        closing, tag, attrs, selfclose = m.groups()
+        if closing:
+            depth = max(0, depth - 1)
+            continue
+        if depth == 0:
+            out.append(text[i:m.start()])
+            out.append(f'<{tag} data-fm-node="{path}"{attrs}'
+                       f'{"/" if selfclose else ""}>')
+            i = m.end()
+            marked += 1
+        if not selfclose and tag.lower() not in HTML_VOID:
+            depth += 1
+    out.append(text[i:])
+    if not marked:
+        fail(f"{src}: a body fragment must have at least one element at its "
+             f"top level for the fragment gates to mark — this one has none")
+    return "".join(out)
+
+
 def compose_assets(site: Path, features: list):
     """Inject every included feature's page fragments at the slot markers of
     the page-owning assets, in linearisation order, provenance-commented.
@@ -1642,6 +1764,12 @@ def compose_assets(site: Path, features: list):
     for feature in features:
         for fr in feature.fragments:
             by_page.setdefault(fr["file"], []).append(fr)
+    # the fragment gates, if a composed node asked for them. The asking node's
+    # own fragments are NOT gated: the runtime that answers "is this node on?"
+    # cannot be a thing that stops running when a node is off, the same way the
+    # Rust gates' read primitive lives beneath the Context rather than on it.
+    gate_owner = next((fr["node"] for f in features for fr in f.fragments
+                       if FRAGMENT_GATE_HOOK in fr["text"]), None)
     # f/ is wholly linker-owned: sweep it so unticked features leave no
     # stale fragment files behind
     shutil.rmtree(site / "f", ignore_errors=True)
@@ -1667,23 +1795,37 @@ def compose_assets(site: Path, features: list):
                     fdir = site / "f"
                     fdir.mkdir(exist_ok=True)
                     tags = []
+                    gating = gate_owner is not None and page == "index.html"
                     for i in slot_items:
+                        body = i["text"].rstrip()
+                        if gating and slot == "script" and i["node"] != gate_owner:
+                            pairs = js_patches(body)
+                            body = (js_watch_block(i["node"], pairs) + "\n"
+                                    + body + "\n"
+                                    + js_gate_block(i["node"], pairs))
                         (fdir / i["name"]).write_text(
                             SLOT_COMMENT[slot].format(i["src"]) + "\n"
-                            + i["text"].rstrip() + "\n")
+                            + body + "\n")
+                        mark = f' data-fm-node="{i["node"]}"' if gating else ""
                         tags.append(
                             f'<script src="f/{i["name"]}"></script>'
                             if slot == "script"
-                            else f'<link rel="stylesheet" href="f/{i["name"]}">')
+                            else f'<link rel="stylesheet" href="f/{i["name"]}"'
+                                 f'{mark}>')
                     close, reopen = (("</script>", "<script>") if slot == "script"
                                      else ("</style>", "<style>"))
                     text = text.replace(
                         marker, close + "\n" + "\n".join(tags) + "\n" + reopen)
                 else:
-                    blocks = "\n".join(
-                        SLOT_COMMENT[slot].format(i["src"]) + "\n" + i["text"].rstrip()
-                        for i in slot_items)
-                    text = text.replace(marker, blocks)
+                    parts = []
+                    for i in slot_items:
+                        body = i["text"].rstrip()
+                        if (gate_owner is not None and page == "index.html"
+                                and slot == "body"):
+                            body = html_mark_roots(body, i["node"], i["name"])
+                        parts.append(SLOT_COMMENT[slot].format(i["src"])
+                                     + "\n" + body)
+                    text = text.replace(marker, "\n".join(parts))
         path.write_text(text)
     composed = {p: i for p, i in by_page.items() if i}
     if composed:
