@@ -1,6 +1,7 @@
 # handover
 *state of play for the next session — written 2026-08-21 at the top of the
-contexts ladder (transcripts/2026-08-21-hybrid.md, builds 182→215).
+contexts ladder and its residuals campaign
+(transcripts/2026-08-21-hybrid.md, builds 182→240).
 Discipline in `agents.md`; ops in `deploy.md`; the pipeline in `hybrid.md`;
 the day's ledger in `redo.md` and notes.md.*
 
@@ -32,8 +33,7 @@ Three things happened in one day, each built on the last:
    finds your state intact. ASH: the phone walkthrough is your summit
    review — untick something in the feature list and watch.
 
-Live: **build 212** at miso.nøøb.org (local head 215+, tools-only
-commits — next deploy carries them). 122 nodes, 123 vars per world.
+Live: **build 240** at miso.nøøb.org. 128 nodes, ~130 vars per world.
 
 ## THE RESIDUALS CAMPAIGN — CLOSED (builds 217–238, same day)
 
