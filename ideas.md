@@ -23,3 +23,13 @@
 ## 2026-08-14
 
 - colour palettes from https://github.com/carpdiem/ember (noted mid-transcription-build)
+
+## 2026-08-21
+
+- build/deploy speedups, to land AFTER the contexts ladder's last rung
+  (ash's ruling, hybrid #p37): shared CARGO_TARGET_DIR across worktrees
+  (cold worker builds are the latency king — warm link is only 4.8s);
+  a --quick fmlink profile (debug, no lto) for toggle-proof cycles while
+  deploy keeps release; skip deploy's feature re-export when no .md
+  changed. The zero-build path for tunable asks needs no work — it's
+  rung 6 of the ladder itself.
