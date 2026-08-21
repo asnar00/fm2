@@ -15,12 +15,40 @@ thread_local! {
         std::cell::RefCell::new(None);
 }
 
+// how many turns this thread has opened. Nesting is one turn, not many: the
+// OUTERMOST freeze is the turn, and an inner begin/end pair rides it. Without
+// this an inner begin re-froze from the live world (letting a foreign edit in
+// mid-turn) and an inner end cleared the outer view (leaving the rest of the
+// turn reading live). Nothing nests today; the day something does, it must
+// nest honestly rather than quietly break the boundary law.
+thread_local! {
+    static FM_CONTEXT_DEPTH: std::cell::Cell<u32> = std::cell::Cell::new(0);
+}
+
+/// a nesting this deep is a runaway, not a design: said once, on the way past.
+const FM_CONTEXT_DEPTH_LOUD: u32 = 8;
+
 /// open a turn: freeze the live context into this thread's view. Everything
 /// the turn reads through `with_context` sees this frozen value, so an edit
 /// landing mid-turn — from this thread or any other — cannot be observed by
-/// the event already in flight.
+/// the event already in flight. Opening a turn inside a turn keeps the view
+/// the outer one froze.
 pub fn context_turn_begin() {
-    let frozen = held_context()
+    let depth = FM_CONTEXT_DEPTH.with(|d| {
+        let n = d.get() + 1;
+        d.set(n);
+        n
+    });
+    if depth > 1 {
+        if depth == FM_CONTEXT_DEPTH_LOUD + 1 {
+            eprintln!("miso: context: turns are nested {} deep — the frozen \
+                       view is the outermost one's, but something is opening \
+                       turns it does not close", depth);
+        }
+        return;
+    }
+    let cell = held_context();
+    let frozen = cell
         .read()
         .unwrap_or_else(|p| p.into_inner())
         .clone();
@@ -29,9 +57,18 @@ pub fn context_turn_begin() {
     });
 }
 
-/// close a turn: drop the frozen view. The next turn re-freezes, and that is
-/// when edits made during this one become visible.
+/// close a turn: drop the frozen view when the OUTERMOST turn closes. The next
+/// turn re-freezes, and that is when edits made during this one become visible.
+/// An end without a begin cannot go negative, and closes the view.
 pub fn context_turn_end() {
+    let depth = FM_CONTEXT_DEPTH.with(|d| {
+        let n = d.get().saturating_sub(1);
+        d.set(n);
+        n
+    });
+    if depth > 0 {
+        return;
+    }
     FM_CONTEXT_TURN.with(|t| {
         *t.borrow_mut() = None;
     });

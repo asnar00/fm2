@@ -189,7 +189,12 @@ reads — the frozen view inside a turn, a copy of the live value outside one,
 never holding a lock while the caller's closure runs. `edit_context` writes
 under the write lock, so concurrent edits serialise and the last one stands.
 `context_turn_begin` / `context_turn_end` / `in_context_turn` maintain the
-thread-local frozen view.
+thread-local frozen view, counting depth as they go: nesting is ONE turn, whose
+freeze is the outermost begin's, because an inner begin re-freezing from the
+live world would let a foreign edit into a turn already in flight and an inner
+end would leave the rest of that turn reading live. Nothing nests today. A
+nesting past eight deep says so once on stderr — that is a runaway, not a
+design — and an end without a begin cannot take the depth below zero.
 
 `alive.rs`, `held_context()` /refactored/: the held cell is now
 `OnceLock<RwLock<Context>>` — same one-per-process construction, mutable
