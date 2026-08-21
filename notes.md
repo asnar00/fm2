@@ -1899,6 +1899,47 @@ and a hand-fed `VarJoin` that worked (so: not the client half). **When a rig
 says a shipped invariant broke, suspect the rig's identities first** — print
 the server's view of who each request is before believing the surface.
 
+## the silent-tickbox and tooling cluster (2026-08-21, #p56)
+
+Four fixes, four commits. Three arguments and one limitation worth keeping.
+
+- **The coverage report measures what the LINKER emitted, and that is not
+  quite "what a tickbox reaches".** `fmlink.py --coverage` counts rust gates,
+  fragment wrappers, marked stylesheets and marked body roots per node, and
+  writes them beside the build for the export to stamp. 50 of 120 nodes gate
+  nothing at runtime today — including all four nodes built in this cluster,
+  correctly: a route, a boot hook and a log label are machinery, not behaviour
+  a person ticks. The limitation: a node that honours its own tickbox in its
+  own code reads as under-covered — `/obey` shows `1 style` because its script
+  fragment is deliberately ungated (it is the thing that answers "is this node
+  on?") while its runtime neutralises its own map when unticked, which the rig
+  proves and the counter cannot see. A second-generation report could ask a
+  node to declare self-enforcement; today the number is a floor, not a truth.
+- **A second door is where invariants die.** `POST /diag/context` predated ops,
+  so it assigned into a world: no merge check, no id, no relay, and a log
+  record minted by a seam of its own. It is now a translation into the same
+  `CtxOp` a client sends, and everything downstream happens by itself. The
+  visible payoff is not the tidiness: a repair typed at the server now reaches
+  the person's phones without a reload, and a counter refuses a bare value
+  with a message naming both verbs instead of a serde error about arrays of
+  length two.
+- **A guest must not take the claim.** `sole-tenant` claims the state
+  directory at boot with a pidfile and refuses a second live miso. The first
+  cut let `MISO_ALLOW_SHARED_STATE` write the pidfile too — so the deliberate
+  second server, on dying, left a corpse's pid behind and silently disarmed
+  the check for the next boot. The override now warns and leaves the claim
+  with the server that actually holds the directory. Boot is the honest place
+  for this (deploy can only look at one machine at one moment, and the port
+  only ever caught the same-port case); deploy asserts the outcome instead.
+- **What a log is for decides how it names people.** The blackbox is read by
+  an operator who then usually talks to that person, so its label needs to
+  separate people AND identify them; the last-4 tag did only the second, badly.
+  It now carries the guest-list name plus the first 48 bits of the same opaque
+  id the relay uses — no phone number in a `/tmp` file, and `replay.py --who`
+  selects on either half. The seam it hangs on was a two-line refactor of
+  `/blackbox` (the tag was inline), which is the sanctioned move and which the
+  toggle proof shows is behaviour-neutral.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
