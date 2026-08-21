@@ -1,6 +1,6 @@
 struct feature_Queue;
 impl feature_Queue {
-    // a tick click toggles that build's entry in the user-scoped choice map.
+    // a tick click toggles that build's entry in the user-scoped choice /var.
     // Absent key = the default (ticked); we store only explicit choices, so
     // the map stays small and the default can evolve without rewriting it.
     fn update(state: String, event: String) -> String {
@@ -15,9 +15,7 @@ impl feature_Queue {
             Some(b) => b.to_string(),
             None => return state,
         };
-        let mut s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        let raw = SyncVar::<String>::user("update_ticks").get(&s);
+        let raw = update_ticks_read();
         let mut ticks: serde_json::Value = serde_json::from_str(&raw)
             .unwrap_or(serde_json::json!({}));
         if !ticks.is_object() {
@@ -25,7 +23,20 @@ impl feature_Queue {
         }
         let now_on = ticks[&build].as_bool().unwrap_or(true);
         ticks[&build] = serde_json::json!(!now_on);
-        SyncVar::<String>::user("update_ticks").set(&mut s, &ticks.to_string());
-        s.to_string()
+        update_ticks_write(ticks.to_string());
+        state
+    }
+
+    // the address, written once. The closure clones because `edit_context`
+    // replays it against this turn's frozen view and therefore runs it twice.
+    fn update_ticks_read() -> String {
+        with_context(|c| c.queue_update_ticks_get())
+    }
+
+    fn update_ticks_write(ticks: String) {
+        edit_context(|c| {
+            let _ = c.edit_op("miso/shell/update/policy/queue", "update_ticks",
+                              serde_json::json!(ticks.clone()));
+        });
     }
 }

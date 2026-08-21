@@ -1653,6 +1653,47 @@ changing only what it claims):
    preserved. DONE = untick a feature in the chooser, it is off for you
    only, on all your devices, and re-tick finds your state intact.
 
+## the migration drops a var out of `Join`: rung 7 needs a context join (2026-08-21, rung-7 worker)
+
+**Named and measured, not worked around — this is the wall rung 7's second
+half hit.** A user-scoped SyncVar lived in the var store, and `/join` answers a
+booting instance with a snapshot of that store, so a device seeing this user for
+the first time was told their values before it decided anything. A declared
+`/var` is not in that store, and nothing replaces the snapshot: the only thing
+that carries a migrated var to a never-seen-before instance is `messaging`'s
+broadcast backlog — **fifty entries, shared by every user**, so a var whose last
+write has aged out arrives as its declared default.
+
+Measured on the two-instance rig (test server on 8097, its own state directory,
+one test user, a third browser profile that has never seen the server):
+
+- **before** the update migration, with the backlog flooded past fifty:
+  `update_policy` = `"fixes"` on the new device — `VarJoin` delivered it.
+- **after**: `update_policy` = `""`, and `policy.index.js` falls back to
+  `auto`. A user who chose *ask me* would get automatic updates on their new
+  phone.
+- the hole is **not** this cluster's: flood the backlog with tick writes and
+  the already-shipped `asks` migration (6427208) fails identically — a fresh
+  device reads `[]` where the user has a list. It only looked fine before
+  because the flood *was* asks writes, and a `last-write` relay carries the
+  whole resolved value.
+
+Device-scoped vars are unaffected by construction — nothing was ever supposed
+to travel — so the tools cluster is clean.
+
+What is missing is a rung: **a context join**, the exact analogue of `VarJoin`.
+A booting instance asks; the server answers with its world; the values arrive as
+the ordinary events every other arrival already is (`set_from_json`, idempotent,
+republished by the bridge on the way out). It is small, it reuses the existing
+message path, and it should be ruled and built **before rung 8 declares
+absorption complete** — otherwise "off for you only, on all your devices" is
+true only for devices that were listening at the time.
+
+Two honest workarounds were considered and rejected: declaring `auto` as
+`update_policy`'s default (hides the gap behind a value that looks right and is
+not the user's) and leaving the three update vars on SyncVar (fails rung 7's
+zero-callers goal and leaves the hole in `asks` anyway).
+
 ## found in passing: the four-digit tag collision (2026-08-21, rung-5 worker)
 
 `comms/messaging`'s `sender_of` keys users by the LAST FOUR DIGITS of

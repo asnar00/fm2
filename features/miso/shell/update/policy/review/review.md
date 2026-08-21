@@ -16,7 +16,30 @@ The per-device chore that motivated automatic updates was the wrong cure; the ri
 
 - **awaiting update**: the set of features touched by builds newer than the one running — the reviewable content of the next update.
 
+## the acceptance moved into the context (rung 7)
+
+`update_accepted` is a declared `/var` now — `(user, last-write, own)` with a
+`js:update_accepted` column — rather than a key in the loop's JSON state. The
+one OK still reaches every instance: the acceptance is an op the declared merge
+ships, the other instance's `watch()` reads it at the same key it always did,
+and applies. Proven on the two-instance rig — an instance posing as running an
+older build than the server's stamped `localStorage.misoVersion` and reloaded
+when its user accepted the newer build on another device.
+
+The monotonic guard is the case that made the accessors worth having: this node
+reads the var and writes it back in one turn, so it depends on rung 3's
+read-your-own-writes. The declared default is the empty string, which parses to
+`0`, which is what `Default::default()` on the old var already gave it — so an
+instance that has never accepted anything behaves exactly as before.
+
+`/consent-once` reads the same key and is untouched. The bridge republishes the
+resolved value before every paint, so its `accepted()` and its
+`localStorage.misoAccepted` mirror see what they always saw.
+
 ## code description
+
+`review.vars` declares `update_accepted`; `review.rs`'s `update_accepted_read`
+and `update_accepted_write` are the address, written once.
 
 `review.rs` claims the `AcceptUpdate` event: it stamps `update_accepted` (a user-scoped var) with the accepted build number — `/scope` carries it to the user's other instances.
 

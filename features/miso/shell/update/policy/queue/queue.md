@@ -18,7 +18,24 @@ The panel's six-entry changes teaser gains a full view: tap it and the whole que
 
 - **tick**: a user's stored yes/no against one shipped change; the raw material of per-feature consent, not yet an enforcement.
 
+## the ticks moved into the context (rung 7)
+
+`update_ticks` is a declared `/var` now — `(user, last-write, own)` with a
+`js:update_ticks` column — rather than a key in the loop's JSON state. The ticks
+still follow the user across their devices, and `queue.index.js` still reads
+`s.update_ticks`, unedited, because rung 7a's bridge republishes the resolved
+value before every paint.
+
+The declared default is the empty string rather than `{}`, which keeps the
+fragment's `JSON.parse(s.update_ticks || '{}')` falling through exactly as it
+did when the old var answered `Default::default()`. Toggling is a
+read-modify-write of a JSON object inside one turn, so it rests on rung 3's
+read-your-own-writes the same way `/ask` does.
+
 ## code description
+
+`queue.vars` declares `update_ticks`; `queue.rs`'s `update_ticks_read` and
+`update_ticks_write` are the address, written once.
 
 `queue.rs` claims `qtick_<build>` clicks: it toggles that build's entry inside `update_ticks` (a user-scoped var holding a JSON object of explicit choices, absent keys meaning the default: ticked). `/scope` ships it, `/join` restores it — storage was free.
 
