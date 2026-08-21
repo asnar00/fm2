@@ -10,8 +10,8 @@ For operators and agents. A second server started on a state directory another
 live server holds refuses to start, and says which pid holds it and what to do:
 stop the other one, give this one `MISO_CONTEXT_DIR`, or set
 `MISO_ALLOW_SHARED_STATE=1` to mean it anyway. A crash leaves nothing to clean
-up — the next boot takes the directory back and logs that the last run did not
-shut down cleanly.
+up — the next boot finds the holder gone, takes the directory back, and says so
+in one line.
 
 Rigs and dev servers are the reason this exists: a second server on another
 port, pointed at the live state directory, used to be silent.
@@ -42,8 +42,11 @@ ways a pidfile goes stale are exactly those two.
 
 **What each case does.** A live holder: refuse, exit 1, one message naming the
 pid, the directory and the three ways out. A dead holder: take the directory and
-log that the last shutdown was not clean — the only trace a crash leaves. No
-file: claim it quietly. Unwritable directory: warn and carry on serving, because
+say whose claim was taken. That line deliberately does not call the previous
+shutdown unclean — a pidfile outlives its process whether the server was stopped
+or crashed, and a deploy stops the server on every release, so a "crashed"
+message would cry wolf once a day. What it can say honestly is that the holder
+is gone. No file: claim it quietly. Unwritable directory: warn and carry on serving, because
 a server that cannot write a pidfile is still a working server, and refusing
 would turn a permissions problem into an outage.
 
@@ -73,7 +76,8 @@ so the refusal never depends on which port this server was going to use.
 
 `claim_state_dir` (line 17) is the decision: read the holder, refuse if it is a
 live miso (unless the override is set, in which case it warns and leaves the
-claim alone), announce a takeover if the holder is gone, then write the pidfile.
+claim alone), announce the takeover if the holder is gone, then write the
+pidfile.
 A failed write is a warning, not a refusal.
 
 `state_pid_file` (line 58) and `pid_held` (line 64) are the file: `<dir>/

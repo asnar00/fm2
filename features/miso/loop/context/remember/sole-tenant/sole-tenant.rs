@@ -41,12 +41,13 @@ impl feature_SoleTenant {
             }
         }
         if held != 0 && held != mine {
-            // a crash leaves the file behind. It must never wedge the server:
-            // the previous run is gone, this one takes the directory and says
-            // so, which is the only trace that the last shutdown was not clean.
-            eprintln!("miso: the state directory {} was left claimed by pid {}, \
-                       which is no longer running — taking it over (the last \
-                       run did not shut down cleanly).", dir, held);
+            // a pidfile always outlives its process — a stop and a crash leave
+            // the same trace, and this cannot honestly tell them apart. What it
+            // can say is that the previous holder is gone, which is the fact
+            // that matters: nothing is holding this directory, so take it. It
+            // must never wedge the server (6a's lock-file argument).
+            eprintln!("miso: the state directory {} was claimed by pid {}, \
+                       which is gone — taking it over.", dir, held);
         }
         let _ = std::fs::create_dir_all(&dir);
         if let Err(e) = std::fs::write(&file, format!("{} {}\n", mine, now_ms())) {
