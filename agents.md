@@ -106,8 +106,11 @@ every law and not the request has failed.
   code-free grouping nodes order by their earliest child. Inspect with
   `fmlink.py <product> --chains`.
 - **Field asks are provenance too.** An ask filed from a device reaches the
-  builder through the ask store, not the session log, so it has no
-  `transcripts/…#pN` anchor. Cite it as `asks#<t>` — the ask's filing
+  builder through the ask store, not the session log. NOTE (2026-08-21):
+  the `asks#<t>` linker anchor was expunged with the rewind and is not yet
+  rebuilt — until it returns, cite the transcript prompt that engaged the
+  ask and quote the ask record as a rider (the reset-taps precedent).
+  The original design: cite `asks#<t>` — the ask's filing
   timestamp, which is both its stable id and its position (the linker reads
   the time straight from the id; no lookup). Quote the ask text beneath the
   citation as transcript-cited nodes do. **When an ask arrives, build it and
