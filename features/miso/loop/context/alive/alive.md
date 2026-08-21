@@ -33,7 +33,9 @@ The case that *is* loud is an asker the containment rule cannot reach — a node
 
 ## code description
 
-`alive.rs`, `held_context()`: the place's one `/context`, built on first ask and held forever. The `static` lives inside the function body because the composition machinery carries functions, not free items, and it is a `std::sync::OnceLock` rather than a `thread_local!` because one composed body is compiled for both places — `OnceLock` is correct in the native server and costs nothing in the single-threaded wasm client.
+`alive.rs`, `held_context()`: the place's one `/context`, built on first ask and held forever. The `static` lives inside the function body because the composition machinery carries functions, not free items, and it is a `std::sync::OnceLock` rather than a `thread_local!` because one composed body is compiled for both places — `OnceLock` is correct in the native server and costs nothing in the single-threaded wasm client. Its contents are a `RwLock<Context>` so a later rung can write through the same held cell; the cell itself is still initialised exactly once (refactor, `edit`).
+
+`alive.rs`, `context_snapshot_json()`: the snapshot rendered from the held `/context`, split out of `context_get` so the read path is a chain a later rung can extend rather than replace (refactor, `edit`).
 
 `alive.rs`, `serve()` and `boot()` /extensions/: each forces the construction before handing on, so a running place always holds a Context whether or not anything has asked for one. Neither changes what the chain beneath it does.
 

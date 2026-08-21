@@ -5,9 +5,12 @@ impl feature_Alive {
     // machinery only carries fns; OnceLock rather than thread_local! because
     // the same composed body is compiled for both places, and OnceLock is
     // correct in the native server and free in the single-threaded wasm client.
-    fn held_context() -> &'static Context {
-        static HELD: std::sync::OnceLock<Context> = std::sync::OnceLock::new();
-        HELD.get_or_init(Context::fresh)
+    // The RwLock inside it is the seam a later rung writes through — the cell
+    // is still constructed once and held forever; only its contents may move.
+    fn held_context() -> &'static std::sync::RwLock<Context> {
+        static HELD: std::sync::OnceLock<std::sync::RwLock<Context>> =
+            std::sync::OnceLock::new();
+        HELD.get_or_init(|| std::sync::RwLock::new(Context::fresh()))
     }
 
     // server startup: build the Context before the accept loop begins, so a
@@ -41,6 +44,16 @@ impl feature_Alive {
         if r.tunnel && !authed(r.cookie.clone()) {
             return json_response(401, "{\"ok\":false,\"error\":\"log in first\"}".to_string());
         }
-        json_response(200, held_context().snapshot().to_string())
+        json_response(200, context_snapshot_json())
+    }
+
+    // the snapshot, rendered from the live Context. A separate function so the
+    // read path is a chain a later rung can extend (fm.md's refactoring rule:
+    // behaviour intact, extension point extracted).
+    fn context_snapshot_json() -> String {
+        match held_context().read() {
+            Ok(c) => c.snapshot().to_string(),
+            Err(p) => p.into_inner().snapshot().to_string(),
+        }
     }
 }

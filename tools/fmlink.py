@@ -76,6 +76,13 @@ VAR_HOOK = "pub struct Var<"
 # No asker in the composition -> no walker, and no serde::Serialize demand on
 # var types. An asker without the var family is a link error, not a rustc one.
 SNAPSHOT_HOOK = "fm:context-snapshot"
+# the third hook: a composed node whose Rust source carries this token is
+# asking for Context::set_from_json() — the generated write path — and the
+# Clone impl a turn's frozen view needs. Those are what impose
+# serde::Deserialize and Clone on every var type, so a composition that never
+# edits a context pays neither. An asker without the var family is a link
+# error, exactly as for the snapshot hook.
+SET_HOOK = "fm:context-set"
 
 # fn names that additionally get std::ops glue, with required arity
 OP_TRAITS = {"add": ("Add", 2), "sub": ("Sub", 2), "mul": ("Mul", 2),
@@ -469,14 +476,20 @@ def emit_context(features: list, out: Emitter):
 
     Context::snapshot() rides on a second hook (SNAPSHOT_HOOK): it is emitted
     only when a composed node asks for it, because it is what imposes
-    serde::Serialize on every declared var type."""
+    serde::Serialize on every declared var type. Context::set_from_json() and
+    the Clone impl ride on a third (SET_HOOK), for the same reason with
+    Deserialize and Clone."""
     asks_snapshot = [f.rel for f in features
                      for _, text in f.sources if SNAPSHOT_HOOK in text]
+    asks_set = [f.rel for f in features
+                for _, text in f.sources if SET_HOOK in text]
     if not any(VAR_HOOK in text for f in features for _, text in f.libs):
-        if asks_snapshot:
-            fail(f"{asks_snapshot[0]} asks for Context::snapshot() "
-                 f"('{SNAPSHOT_HOOK}') but no composed node provides the var "
-                 f"family — tick loop/context, or untick the asking node")
+        for asker, what, token in ((asks_snapshot, "Context::snapshot()", SNAPSHOT_HOOK),
+                                   (asks_set, "Context::set_from_json()", SET_HOOK)):
+            if asker:
+                fail(f"{asker[0]} asks for {what} "
+                     f"('{token}') but no composed node provides the var "
+                     f"family — tick loop/context, or untick the asking node")
         return
     fields = []
     for feature in features:
@@ -502,6 +515,7 @@ def emit_context(features: list, out: Emitter):
     out.emit("}")
     out.emit("")
     if not asks_snapshot:
+        emit_context_set(fields, asks_set, out)
         return
     out.emit("impl Context {")
     out.emit("    // every declared var as JSON — node path, name, current")
@@ -522,6 +536,59 @@ def emit_context(features: list, out: Emitter):
         out.emit("            \"scope\": a.0, \"merge\": a.1, \"inherit\": a.2,")
         out.emit("        }));")
     out.emit("        serde_json::Value::Array(vars)")
+    out.emit("    }")
+    out.emit("}")
+    out.emit("")
+    emit_context_set(fields, asks_set, out)
+
+
+def emit_context_set(fields: list, asks_set: list, out: Emitter):
+    """The Context's generated write path, plus the Clone a turn's frozen view
+    needs. Scaffolding: mechanism here, design in features/miso/loop/context/edit.
+
+    set_from_json is a match over every declared var keyed by (node path, var
+    name) — the same two strings the snapshot reports — deserialising the given
+    JSON into the var's own Rust type. A miss names what it got and what exists;
+    a type mismatch returns serde's own message and leaves the var alone,
+    because the assignment is downstream of the `?`."""
+    if not asks_set:
+        return
+    out.emit("// ---- context: the write path (fm:context-set)")
+    out.emit("impl Clone for Context {")
+    out.emit("    // a turn freezes the context by cloning it; that is what")
+    out.emit("    // demands Clone of every var type.")
+    out.emit("    fn clone(&self) -> Context {")
+    out.emit("        Context {")
+    for fname, _, s in fields:
+        out.emit(f"            {fname}: self.{fname}.clone(),", s["src"], s["line"])
+    out.emit("        }")
+    out.emit("    }")
+    out.emit("}")
+    out.emit("")
+    declared = ", ".join(f"{path}/{s['name']}" for _, path, s in fields) or "(none)"
+    out.emit("impl Context {")
+    out.emit("    // set one declared var from JSON, addressed by the node path")
+    out.emit("    // and var name the snapshot reports. serde_json::from_value is")
+    out.emit("    // what demands Deserialize of a var's type; a type that hasn't")
+    out.emit("    // got it fails on the line below, which the line map points")
+    out.emit("    // back at the .vars file.")
+    out.emit("    pub fn set_from_json(&mut self, path: &str, name: &str,"
+             " value: serde_json::Value) -> Result<(), String> {")
+    out.emit("        match (path, name) {")
+    for fname, path, s in fields:
+        addr = f"{path}/{s['name']}"
+        out.emit(f"            ({json.dumps(path)}, {json.dumps(s['name'])}) => {{",
+                 s["src"], s["line"])
+        out.emit(f"                self.{fname}.value = serde_json::from_value(value)",
+                 s["src"], s["line"])
+        out.emit(f"                    .map_err(|e| format!({json.dumps(addr + ': {}')}, e))?;")
+        out.emit("                Ok(())")
+        out.emit("            }")
+    # non-ASCII stays literal: json.dumps would emit \uXXXX, which is not a
+    # Rust escape (Rust wants \u{XXXX}) — and a Rust source file is UTF-8.
+    miss = json.dumps("no var {}/{} — declared: " + declared, ensure_ascii=False)
+    out.emit(f"            _ => Err(format!({miss}, path, name)),")
+    out.emit("        }")
     out.emit("    }")
     out.emit("}")
     out.emit("")

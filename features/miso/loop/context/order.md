@@ -1,1 +1,2 @@
 - [x] alive
+- [x] edit
