@@ -180,6 +180,8 @@ def main():
         watched = [explorer.FEATURES, explorer.REPO / "transcripts"]
         newest = max((f.stat().st_mtime for root in watched
                       for f in root.rglob("*") if f.is_file()), default=0.0)
+        tools = (explorer.REPO / "tools").glob("*.py")
+        newest = max(newest, max(f.stat().st_mtime for f in tools))
         if stamp.stat().st_mtime > newest:
             print("features export: sources unchanged since last bake — skipped")
             return
