@@ -8,3 +8,4 @@ tools/__pycache__/
 features/miso/loop/compute/semantic-find/assets/find/*
 !features/miso/loop/compute/semantic-find/assets/find/PINNED
 .claude/worktrees/
+.cargo-shared-target/
