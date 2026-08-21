@@ -126,6 +126,13 @@ the relay is new — a layer op is published to the `global` audience that
 `/messaging`'s `wait_filter` already delivers to everyone, rather than to one
 user's.
 
+The sender is anonymised on the way in, for the same reason and by the same
+move: rung 6's link relays to `user.<_from>`, and a layer op is already on its
+way to everyone — the sender included, because they are in "everyone". Left on,
+the identity put a SECOND copy of one record into a 50-entry backlog, ageing
+that backlog out faster for every instance. The identity has already done its
+work by then: it is what the layer-write privilege was checked against.
+
 `clear` is the exception, and it is handled here rather than passed down,
 because rung 6's merge column knows only `set` and `add` and would reject the
 verb by name. A clear on an `own` var is refused for the same reason a clear is
@@ -199,6 +206,10 @@ duplicate id, applies `clear`, and routes a global var's op to the layer.
 
 `overlay.rs`, `ctx_relay()`: one `CtxUpdate`, published to the `global` audience
 when it belongs to the layer.
+
+`overlay.rs`, `anonymised()`: the same message with an empty `_from`, so the
+link beneath relays a layer op to nobody in particular and the `global`
+publish is the only one.
 
 `tools/fmlink.py`, `emit_context_presence` and `emit_context_resolve`
 (scaffolding, per the standing arrangement): the `Present` record, the

@@ -184,11 +184,29 @@ impl feature_Overlay {
         // layer for the duration of the call: rung 6 applies the op and rung 6a
         // logs it, both addressing `_global` because that is who this thread
         // now is. No interception, no second apply, no second log format.
+        //
+        // The sender is anonymised for the same reason and by the same move:
+        // rung 6's link relays to `user.<_from>`, and this op is on its way to
+        // EVERYONE — the sender included, since they are in "everyone". Leaving
+        // the identity on would put a second copy of the same record in the
+        // 50-entry backlog, ageing it out faster for every other instance.
         let was = context_user_now();
         context_user_set(context_layer_key().to_string());
-        let inner = existing.handle_msg(msg);
+        let inner = existing.handle_msg(anonymised(msg));
         context_user_set(was);
         ctx_after_layer(m, inner)
+    }
+
+    // the same message with no sender on it. The identity that matters has
+    // already been used — it was checked for the privilege to write the layer —
+    // and what remains of it downstream is only an audience.
+    fn anonymised(msg: String) -> String {
+        let mut m: serde_json::Value = serde_json::from_str(&msg)
+            .unwrap_or(serde_json::Value::Null);
+        if m.is_object() {
+            m["_from"] = serde_json::json!("");
+        }
+        m.to_string()
     }
 
     // the relay half of a layer op: what came back from rung 6 carries the
