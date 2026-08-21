@@ -1,7 +1,7 @@
 # redo — the ledger of the expunged session
 
 *Written 2026-08-21, revised same day after review with ash
-(transcripts/2026-08-21-hybrid.md#p7–p13). On ash's ruling, main was
+(transcripts/2026-08-21-hybrid.md#p7–p16). On ash's ruling, main was
 rewound to `431b39a` (the Aug 15 handover) and the entire Aug 16 session's
 code — Fable morning and Opus afternoon alike — was expunged, to be redone
 under the hybrid protocol (`hybrid.md`). The expunged history is preserved
@@ -11,7 +11,7 @@ records survived by design: `agents.md` (4a, the law above the laws),
 `notes.md` (the Aug 16 doctrine and the model comparison), both
 transcripts, and `fm.md` at its post-change form.*
 
-*Standing correction from the review (#p13): the screenshot remedy (old
+*Standing correction from the review (#p16): the screenshot remedy (old
 R2, `shot.py`/`look.py`) was a red herring — **`/diag/readout` is the
 agent's eyes**: DOM-as-JSON, in the tree since Aug 13, three days before
 the map. Opus built a vision path instead of finding it. Verification
@@ -54,7 +54,7 @@ recordings are the standing test case.
 **6. Contexts — the enable/disable wiring, redone completely** (#p4,
 #p4a; ash's priority). **A proper design conversation with ash comes
 before any implementation — that conversation is what didn't happen last
-time, and ash has thoughts.** The requirements as ruled (#p13): a user
+time, and ash has thoughts.** The requirements as ruled (#p16): a user
 can dis/enable features **instantly**, **without losing app context** (if
 possible), and **without affecting other users**. The old mechanism
 (linker-emitted gates, `fm_unticked`, `trusted.md`) is archive reference

@@ -85,7 +85,7 @@ Short — ten lines, not a spec. It must contain:
 - **acceptance evidence, named**: which artifacts the reviewer will demand —
   a `/diag/readout` assertion on the real surface (DOM-as-JSON is the
   agent's instrument for seeing the screen; pixel-reading is not — ash's
-  ruling, hybrid #p13, and readout's own spec since Aug 13), an on-device
+  ruling, hybrid #p16, and readout's own spec since Aug 13), an on-device
   receipt, a two-instance divergence proof, the toggle proof both ways.
   Named per ask, not generic. Questions of *appearance* — is it
   beautiful, is it on-brand — are not agent-verifiable evidence at all:

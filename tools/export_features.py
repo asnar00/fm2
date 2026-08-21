@@ -43,15 +43,21 @@ def build_numbers() -> dict:
     return {h: i + 1 for i, h in enumerate(order)}
 
 
+DIARY_PREFIXES = ("notes:", "handover:", "idea:", "ideas:", "format:")
+
+
 def latest_build(feature, build) -> int:
     """The most-recent release that touched this node's OWN files (#p82) —
     its spec, code and assets, excluding child-node subdirectories (children
     carry their own numbers) and excluding order.md (#p41: gaining a child
     edits the parent's order.md but changes nothing about the parent —
     grouping bookkeeping must not bump builds, or every new leaf drags its
-    ancestor into the awaiting-update list). The chooser and the release
-    list speak the same numbers; a feature's number moves forward as it
-    evolves."""
+    ancestor into the awaiting-update list). Diary-class commits — subjects
+    prefixed notes:/handover:/idea:/format: — are bookkeeping by declaration
+    and skipped for the same reason (a format pass across every spec must
+    not age the whole tree; 2026-08-21-hybrid #p17). The chooser and the
+    release list speak the same numbers; a feature's number moves forward
+    as it evolves."""
     own = [str(p.relative_to(explorer.REPO))
            for p in feature.dir.iterdir()
            if p.is_file() and p.name != "order.md"]
@@ -60,10 +66,14 @@ def latest_build(feature, build) -> int:
         own.append(str(assets.relative_to(explorer.REPO)))
     if not own:
         return 0
-    h = subprocess.run(("git", "log", "-1", "--format=%H", "--") + tuple(own),
-                       cwd=explorer.REPO, capture_output=True,
-                       text=True).stdout.strip()
-    return build.get(h, 0)
+    log = subprocess.run(("git", "log", "--format=%H%x09%s", "--") + tuple(own),
+                         cwd=explorer.REPO, capture_output=True,
+                         text=True).stdout
+    for line in log.splitlines():
+        h, _, subject = line.partition("\t")
+        if not subject.lstrip().lower().startswith(DIARY_PREFIXES):
+            return build.get(h, 0)
+    return 0
 
 
 def intro_of(feature) -> str:
