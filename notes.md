@@ -1572,6 +1572,57 @@ context syncs" = each slot merges by its declared discipline — this is
 also the machinery the tunables conversation (redo item 8) needs, so
 that conversation starts from here.
 
+## the absorption ladder: SyncVar merges into Var by migration (2026-08-21, hybrid #p31–p32)
+
+Ash asked the right question at #p31: isn't the old SyncVar just replaced
+by the new Var — one entity? Yes — they are the same entity seen from two
+eras, and the column mapping is exact: `Scope::Local/User/Group/Global` ↔
+the scope markers (local ≈ device); `.set()` ↔ `MergeLastWrite`; `.add()`
+↔ `MergeCrdtSum`; a key into the JSON state ↔ a field on the Context. The
+end state is one `Var`: the runtime sync behaviour lives on the marker
+impls (`add()` exists only where `MergeCrdtSum` was declared), so the
+declared discipline selects the machinery — today nothing stops a caller
+using `.set()` on a counter.
+
+They cannot be welded together mid-flight: SyncVar's callers live in
+composed functions that hold the JSON state string and have no path to
+the Context yet. Welding sync methods onto Var while values still live in
+the string would hand Var a key-into-JSON identity the design exists to
+kill. The merge is by **absorption**: migrate callers feature by feature
+once functions can reach the context; SyncVar is deleted when its caller
+count hits zero. Ruled at #p32: keep going until all rungs are built and
+working, testing as we go — the run is autonomous under the hybrid
+pipeline from here.
+
+**The rung ladder of record** (each rung provable, toggleable, and
+changing only what it claims):
+
+1. ✅ declarations → emitted typed Context (`.vars` sidecars, the Var
+   family, `Permits`; build 187, renamed 188).
+2. the Context comes alive: constructed and held per place;
+   `GET /diag/context` snapshot route (readout precedent).
+3. functions reach the context: an accessor threads the held Context to
+   every composed function (the methods-on-Context destination from #p21,
+   arrived at incrementally); zero behaviour change.
+4. `enabled` — the goal rung: every feature's implicit
+   `enabled: bool = true (user, last-write, inherit)` var; linker-emitted
+   gates at chain heads read the typed field. The old design's lessons
+   apply structurally: the var-delivery machinery lives beneath the
+   Context (no trusted.md needed); the gate reads the incoming context
+   (Elm boundary); nothing exempt (#p4 ruling stands).
+5. per-user Contexts on the server: the process-wide object becomes a
+   table keyed by user; dispatch selects; client unaffected (its one
+   Context is its user's).
+6. var sync by declared merge: the broadcast channel speaks
+   node-path-keyed var ops; marker impls emit them (set/add semantics
+   arrive on Var).
+7. migration: feature by feature, each SyncVar use becomes a `.vars`
+   declaration + field access; per-feature toggle proofs cover both eras.
+8. absorption complete: SyncVar has zero callers and is deleted; the
+   chooser's tickboxes drive `enabled` — instant, per-user, work
+   preserved. DONE = untick a feature in the chooser, it is off for you
+   only, on all your devices, and re-tick finds your state intact.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
