@@ -50,12 +50,33 @@ tests/flows the change touches, then untick the new node in `order.md`,
 relink, and confirm its code has left the composed output and nothing else
 broke. Re-tick. A feature that cannot be turned off is not a feature yet.
 
+**4a. Look at it, and ask if it is good enough.** Proving a thing works and
+judging it good are different acts; only the first is a test. Anything with
+a visual result gets rendered and *looked at* before it ships — a screenshot
+of the real surface, not a description of it. Then the question, out loud:
+*is this good enough?* The bar moves over time; asking at all is the
+discipline. Two things that repeatedly answer "no": a filter working hard to
+correct an asset (choose a source that gives you what you want instead), and
+a surface that ignores what the user's own ask history says they like.
+
 **5. Finish the node, then ship.** Complete the code description (short
 paragraphs, one per thing: entry/extension points first, then mechanics, then
 helpers). Commit with a user-readable subject — commit subjects are the
 changelog and the push-notification text. Deploy prints the feature nodes a
 release touches and warns on nodeless releases: treat that warning as the
 question "did a request go nodeless?"
+
+## The law above the laws
+
+**Deliver what the user asked for. Doctrine compliance is eventual, not
+mandatory.** (2026-08-16, after the map tool shipped a position readout
+instead of a map because imagery would have meant a third-party
+dependency.) Ash: *"the user actually asked for a map — that's what we
+should deliver. The doctrine is never as important as what the user
+requested."* The purity concern is usually real, and usually answerable
+with an hour's work rather than a refusal — proxy it, cache it, vendor it,
+own it. Ship the ask; converge on the doctrine after. A node that honours
+every law and not the request has failed.
 
 ## The laws (violations get repaired by audit — cheaper to obey)
 
@@ -78,6 +99,15 @@ question "did a request go nodeless?"
   code-bearing node MUST cite a real anchor — the linker fails otherwise;
   code-free grouping nodes order by their earliest child. Inspect with
   `fmlink.py <product> --chains`.
+- **Field asks are provenance too.** An ask filed from a device reaches the
+  builder through the ask store, not the session log, so it has no
+  `transcripts/…#pN` anchor. Cite it as `asks#<t>` — the ask's filing
+  timestamp, which is both its stable id and its position (the linker reads
+  the time straight from the id; no lookup). Quote the ask text beneath the
+  citation as transcript-cited nodes do. **When an ask arrives, build it and
+  ship it — never come back to the user to ask about it**: the asker is
+  expecting the feature in the next update. Use judgement, and document the
+  judgement in the node.
 - Node names are TREE-GLOBAL (fm.md "tree-global names", linker-enforced):
   unique across the composed tree, self-describing without the path.
   Implementation namespaces are flat — a duplicate JS `const feature_X` kills

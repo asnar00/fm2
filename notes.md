@@ -922,11 +922,13 @@ cheap insurance first, then the debt it protects, then doctrine. Tick as done.*
   (`str(REPO_ROOT).replace("/", "-")`), the exact fix ftr's feature_common
   established for this bug class. Tooling fix, no node (per the taxonomy).
 
-- [ ] **9. stale asset *trees* in site/** — noticed 2026-08-15: fmlink now
-  copies asset subdirectories (needed for `stt/`), but `remove_stale_pages`
-  only covers composition-target pages — untick a feature with an asset tree
-  and its files linger in `build/site/` (and would rsync to the mini).
-  Cheap fix when it matters: track copied rel-paths per build and sweep.
+- [x] **9. stale asset *trees* in site/** — DONE 2026-08-16 (it mattered:
+  `/tamed-request`'s toggle proof failed against a lingering `tame.js`, the
+  exact predicted failure). fmlink now writes `build/asset-manifest.json`
+  (the rel-paths it copied) and sweeps previous-but-not-current entries each
+  build — only files the linker itself placed are ever deleted. Bootstrap
+  caveat: files stale from before the manifest existed need one
+  tick→build→untick→build cycle (or a hand-delete) to clear.
 - [ ] **10. stt model download UX** — the ~130MB engine+model fetch happens
   silently on first transcription; over the network-first service worker it
   can also re-fetch per session when online. Wants: a cache-first sw rule
@@ -1124,6 +1126,398 @@ probably: transcripts join the mirrored record (a `/mirror` or
 laptop's tile the way the audio already does — with the better-server-
 transcript-replaces-rough rule already specced in `/phone` deciding
 collisions.
+
+## the sovereign turn: ort is being removed (2026-08-16, fm-spec #p15–16)
+
+The T2 rung mapped on day 2 has been taken deliberately. Ash, after the
+shim experiment's third failure in a row: *"let's remove the ort
+dependency and stand up our own sovereign webgpu runner, then get
+whisper working on it. It'll be a heavy lift but SO much more
+satisfying."*
+
+The ledger that decided it. Two days spent on ort produced: a device
+request iOS refuses (`/tamed-request`), a `webgpuInit is not a function`
+that was really a MIME type (`/module-mime`), a memoized-failure trap, a
+q8 kernel bug, a tokenizer that vanishes when a path has a scheme, and a
+26MB binary nobody here can read. None of it reusable. Meanwhile
+`/compute` and `/semantic-find` — both ours — went in clean and ran on
+the first phone we tried.
+
+The plan lives in **`sovereign.md`** at the repo root: four layers (GPU-
+resident tensors → the WGSL op library → whisper's graph → the
+`/dictate` rung), an eleven-rung ladder with a numeric acceptance test
+per rung, and the verification discipline that makes it survivable — a
+numpy twin (`tools/whisper_ref.py`) dumping golden tensors at every
+boundary, because a transformer that is subtly wrong produces fluent
+nonsense and timing tells you nothing.
+
+Two structural commitments worth repeating here: **ort stays a reachable
+rung until the last one**, so the app never stops transcribing mid-climb;
+and **feature-modular WGSL finally has its first real user**, which is
+exactly the condition `compute.md` set for building it.
+
+Five rulings are queued for ash in `sovereign.md` §10 — the load-bearing
+one being node placement (reusable math under `/compute`, the model
+under `/dictate`), which reads against compute.md's letter that tenants
+carry their own kernels.
+
+## per-feature logging, switchable at runtime (2026-08-16, fm-spec #p23–24a)
+
+Ash, after a day in which nearly every question became an archaeology
+expedition: *"I feel like we need more pervasive logging as part of the
+black box. A lot of these questions devolve to 'what actually ran and
+what did it return'"* — and the shape: *"logging statements are
+pervasive, but enabled at runtime on a per feature basis. So if we're
+working on transcription, we enable logging for transcription and have
+at it, then silence it once we're done (except for basic stuff)"*. Plus
+(#p24a): **device IDs**.
+
+**Why now: the promotion rule fires (#p18).** `/engine-receipts` was
+built this afternoon as one feature's private telemetry, and its own spec
+names the general form as "deliberately not built". This is the second
+ask for the same mechanism, so the parameter earns its variable: build
+the general form, and let receipts become a thin user of it.
+
+The day's evidence for the need, all of it real: the phone transcribed
+and we could not tell whether the GPU had run it; a failure arrived that
+we could not attribute to a device; a picker vanished and only a
+DOM-by-DOM reproduction found it; an OOM appeared whose cause was
+arithmetic nobody had done. Every one of those is "what actually ran and
+what did it return".
+
+### The shape
+
+**1. The call site is free of bookkeeping.** `log(...)` in Rust and in
+JS fragments, with **the linker injecting the node path**, exactly as it
+already injects node paths for `/context-manager`'s tick gates. Nobody
+hand-writes a path, so nothing drifts when a node is regrouped. For JS,
+composition injects a `FM_PATH` constant per fragment; for Rust, the
+existing rewriting pass covers it.
+
+**2. The switch is the context manager wearing a different hat.** A
+user-scoped `feature_log` var mapping node path → level, with the same
+prefix semantics ticks already use: enable `miso/loop/dictate` and
+everything beneath it speaks. **Absent means off** — the mirror image of
+`feature_ticks`, where absent means on. Levels: `always` (the few events
+a feature emits regardless — the "basic stuff" ash wants left on) and
+`verbose` (everything, on demand). Two levels until a third is missed.
+
+This is #p17a's prediction landing exactly: ticks, tunables and logging
+are one mechanism with three defaults.
+
+**3. The transport already exists.** `/blackbox` batches, bounds by age
+and count, survives offline, ships on visibility/reconnect/page-hide with
+a keepalive request, and the server half ingests into a size-rotated log
+on the mini. Log lines become another entry kind beside the event deltas
+— which also means **they replay with the events**, which is precisely
+the "what ran and what did it return" story, reconstructable after the
+fact. Console in dev; nothing new for delivery.
+
+**4. The control has two ends.** On the device, the chooser already
+lists every feature with a tick — logging is a second control on the same
+line (the `/sub-tool-cards` long-press idiom). From the terminal, the
+urgent one: a `tools/` script writes the user-scoped var and the existing
+broadcast reaches the device in ~0.5s. **Turn on transcription logging on
+ash's phone from my terminal, watch it, turn it off** — that is the
+capability this whole day lacked.
+
+**5. Instance identity (#p24a).** A short, stable, per-install id in
+localStorage, carried by every diag report, blackbox batch and log line.
+Today's stopgap was to add `ua` to receipts (build 193), which cannot
+distinguish two iPhones and is verbose in every line. The tree already
+says *instances* (`/mirror`, `/scope`), so the vocabulary exists: call it
+an **instance id**. Losing it when storage is cleared is honest — it is a
+new instance.
+
+**Cost when off** is a prefix check against a small cached list, using
+the same thread-local cache `/context-manager` already established. The
+zero-import law is untouched: Rust `log()` accumulates into a
+thread-local that the wasm entry drains into state, the way `_send`
+already carries outbound messages — no signature changes anywhere in the
+tree.
+
+### Rulings wanted
+
+1. **Privacy, the load-bearing one.** Log lines can carry user content —
+   transcripts, ask text, names. Receipts set the precedent (`chars`,
+   never the words). Is that the rule everywhere (log shape, never
+   content), or may verbose logging carry content when a user explicitly
+   enables it on their own device?
+2. **Does verbose ship to the server by default**, or is remote delivery
+   a separate opt-in from local capture? (Battery, bandwidth, and 1
+   above.)
+3. **Two levels or a number?**
+4. **Does `/engine-receipts` get subsumed** into the general mechanism,
+   or stay as a specialised node that uses it?
+5. **Instance id visible to the user?** (It would make "which device is
+   misbehaving" answerable in the panel, not just in my terminal.)
+
+## the flywheel's two rulings, settled in the field (2026-08-16, asks#1786892582635)
+
+An ask arrived mid-session — *"set the background grid size to match the
+tool icon size, and center it around screen center"* — and settled two
+things that had been queued since the 15th.
+
+**Ruling 1: never come back to ask.** Ash, on being asked how to cite it:
+*"when an ask comes in, the user expects a feature in the next update. So
+you must never ask me about it here - just build using your best
+judgement, document properly in the feature node, and ship."* Now in
+agents.md. The asker is a user waiting for their feature, not a
+collaborator in a design conversation; a question aimed back at the chat
+is a broken promise. Judgement belongs in the node's spec, where the
+asker can read it.
+
+**Ruling 2: the ask store is a provenance source.** The blocker named in
+the 15th's handover, hit for real: fmlink refuses a code-bearing node that
+cites no anchor, and an ask reaching the builder through the ask store has
+no `transcripts/…#pN`. Settled by taking the judgement rather than
+deferring it — **a field ask is provenance in its own right**, and a
+better record than a chat message quoting one: it is the human's actual
+request, timestamped to the millisecond, carrying its own recorded OK.
+Specs cite `asks#<t>`; the linker reads the node's position straight from
+the id, since the id *is* the timestamp. Known gap:
+`tools/audit_prompts.py` still inverts only transcript citations, so
+ask-cited nodes read as uncited in that audit until it learns the form.
+
+**And the promotion rule's first case landed with it** (#p18). The ask was
+size-shaped, which `ideas.md` had named as `/bigger-buttons`' trigger —
+and it turned out to be a stronger trigger than a plain resize, because
+two features now had to agree on one number, which is exactly the
+duplication the rule exists to prevent. `/tools` now *names* its two sizes
+and derives its own rules from them; `/bigger-buttons` *sets* those names
+instead of restating rules; `/aligned-grid` reads them. Proven by toggle:
+untick `/bigger-buttons` and the background grid drops to 40px along with
+the buttons. What was promoted is the **name** — one declaration, several
+consumers. Binding that name to a per-user var, so size is tunable without
+a build, is the next rung and waits for an ask that wants it.
+
+## the tickbox that commissions: suggested subfeatures (2026-08-16, fm-spec #p35a)
+
+Ash, watching a tool ship with its limits named in the spec where nobody
+would ever read them: *"ship minimal function, but anticipate subfeatures,
+and consider how you'd build them. It would be great to suggest a laundry
+list of subfeatures to the user, let them tick the ones they want once the
+first one has shipped. Can be part of an 'intro new feature / tool'
+workflow."* Noted for later, with the design as far as it goes.
+
+**The move underneath it is new: a tickbox that commissions a build.**
+Every tick in miso today enables or disables something that already
+exists — `feature_ticks` steers composition, `/review`'s awaiting section
+steers an update. A suggested subfeature is a line for something that does
+*not* exist, and ticking it doesn't switch anything on: **it files an
+ask**. The builder proposes, the user chooses, and the flywheel starts
+without anybody typing a wish. That closes a real gap — asks presently
+require the user to think of the thing and find the words, which is the
+slowest part of the loop and the part that most needs the app's help.
+
+**Most of the surface exists.** `/chooser` already renders tickable
+feature lines with intros and build numbers; `/review` already prepends a
+section of not-yet-yours features to that same list. "Suggested" is a
+third section in the same idiom, with the tick meaning *commission* rather
+than *enable*, and a build number that hasn't happened yet. The distinction
+must be visible — a promise and a fact should never look alike.
+
+**Where the suggestions come from.** The honest source is the spec: this
+session's nodes already end with named limits — `/map` names panning,
+antimeridian wrapping and offline vendoring; `/country-icon` names the
+border imprecision; `/logging` names the levels it deferred. Today those
+are prose an asker never sees. A `## suggested` section (or a stanza the
+export reads) would carry them into the tree export, and the chooser would
+render them. Then "anticipate subfeatures, consider how you'd build them"
+becomes a documented obligation of writing a node, not a private habit —
+and the cost of thinking ahead is paid once, by the person best placed to
+pay it.
+
+**Open questions for the build:** does ticking file the ask immediately or
+gather a batch; does a suggestion expire if never ticked; may the builder
+suggest against *another* node's subtree (the `/dictate` engine suggesting
+a `/compute` rung); and does a shipped suggestion keep its line, becoming
+an ordinary feature row, or vanish and reappear as one.
+
+## quality: the map was withdrawn, and what it taught (2026-08-16, fm-spec #p36–39)
+
+The map tool shipped in four builds across an hour, satisfied every ask
+literally, passed every toggle test — and was withdrawn, because it looked
+bad. Ash: *"This was a poor quality ship. Image is blown out, doesn't feel
+'good'. How can we do better? I'd like to grope towards some basic
+principles that deliver quality, rather than blame."* Then: *"delete the
+map tool. We need to do some foundational work before we're ready for a
+request like that."* Deleted at build 208; the work survives in git if it
+is ever wanted.
+
+**The root failure was structural, not careless: nothing ever looked at
+it.** Every check answered *did the mechanism work* — 25 tiles loaded, the
+filter applied, the chain resolved to the override. None answered *is this
+good*. There was no way to take a screenshot, so the test that could be run
+silently replaced the test that mattered. Tooling absence becomes a quality
+ceiling, invisibly. (`shot.py` now exists in the session scratchpad — CDP
+`Page.captureScreenshot`, whole viewport or one element. It belongs in
+`tools/` properly.)
+
+### The principles, as far as they go
+
+1. **See what you ship.** Anything with a visual result gets rendered and
+   looked at before it goes. "It loaded" is not "it looks right".
+2. **Self-criticism as a step, not a mood** (ash, #p37a): before shipping,
+   look at the thing and ask *is this good enough?* The bar moves over
+   time; the discipline is asking at all. It belongs in the five-step loop
+   beside "prove the toggle" — proving it works and judging it good are
+   different acts, and only one of them was being done.
+3. **Choose a source that gives you what you want; don't hack a filter over
+   one that doesn't** (ash, #p38). The map's tiles came with baked-in
+   labels, so a style was swapped — correct. But the swapped style was too
+   dark, so a `brightness(1.75)` was piled on top, which clipped the
+   brightest elements (pavement dashes) into glare while leaving buildings
+   near-black: the information hierarchy inverted, decoration louder than
+   substance. **A filter working hard to correct an asset is a smell.** The
+   real answer was a source that lets us say what to draw — vector tiles we
+   style ourselves, which is exactly the foundational work not yet done.
+4. **Read the user's aesthetic from their ask history** (ash, #p37b). It was
+   all there and unread: *"make the dots brighter"*, *"halve the dot
+   spacing"*, *"match the tool icon size"*, *"no extraneous labels"* — plus
+   a shell that is black, monochrome, restrained, with `#d8d8d8` as its
+   brightest note. The map arrived with a **blue** marker and a blue
+   accuracy disc, the only colour in the entire app, imported unthinkingly
+   from every other map anyone has seen. Nobody asked for miso to look like
+   Google Maps. The ask history is a style guide that is already written.
+5. **A premature yes is worse than a considered wait.** Four builds went out
+   before the foundations existed. Shipping the ask is right (agents.md's
+   law above the laws) — but *foundations first* and *ship the ask* only
+   conflict when the foundation is genuinely missing, and then the honest
+   answer is to say so, not to ship something that technically answers.
+
+### What the foundations actually are, before a map is attempted again
+
+- **Tiles we control.** Vector tiles plus our own style, so "buildings and
+  streets, no commercial names" is a rule we write rather than a basemap we
+  hunt for. This is the same sovereignty argument as `sovereign.md`, and it
+  should be planned the same way rather than improvised.
+- **A visual bar.** What does a miso surface look like? Monochrome, dark,
+  quiet, `#d8d8d8` at the top of the range. Written down, it stops being
+  something each node re-invents.
+- **The screenshot in the loop**, so the bar is checkable.
+
+### The remedies — what to build before that ask is attempted again
+
+Ash (#p40): *"write up the lessons and some proposed remedies - those are
+the features we need to build before we try that ask again."* Sized and
+ordered; the first three are general quality foundations, the fourth is the
+map's specific prerequisite.
+
+**R1 — `/shell/look`: the palette and scale, named once.** *(small; do
+first)*
+The evidence is worse than the map incident suggested: **52 distinct
+colours** across the tree's CSS, including six near-identical greys
+(`#333`, `#3a3a3f`, `#3c3c3c`, `#26262c`, `#23282f`, `#1a1a1d`) and colour
+that had already drifted in unnoticed — a blue (`#9db7d8`, `#48628a`) and a
+green (`#9fdba4`) predate the map entirely. The map's blue marker was not
+an aberration; it was the same disease with a witness.
+Declare the app's ink, paper, dim, line and accent as tokens on `:root`,
+exactly as `--tool-size` was named by the promotion rule, and let nodes
+derive. Migration is eventual, not mandatory: declare now, convert each
+node as it is next touched. What this buys is not tidiness — it is that
+*"does this look like miso"* becomes a question with an answer, and
+inventing a colour becomes a visible act rather than a silent one.
+
+**R2 — `tools/look.py`: the visual smoke sheet.** *(small)*
+`tools/shot.py` now takes one picture; the missing piece is taking *all* of
+them without being asked. One command that drives the app through its
+standard surfaces — home, each tool open, the panel open, the feature list
+— and writes a contact sheet. Then "look at what you ship" costs one
+command instead of a bespoke rig each time, which is the difference between
+a discipline and an intention. Deploy could refuse a release touching CSS
+whose sheet has not been regenerated; worth trying, easy to make naggy.
+
+**R3 — the visual bar, written down.** *(small; a doc, not a node)*
+What a miso surface is: black ground, monochrome, restrained, `#d8d8d8` the
+brightest note, information louder than decoration. Derived by *reading the
+ask history* — "brighter dots", "halve the spacing", "match the icon size",
+"no extraneous labels" — which is a style guide already written by the
+person who has to look at it. Belongs beside R1 so the tokens have stated
+intent rather than only values.
+
+**R4 — map data we author: the ask's actual prerequisite.** *(large; plan
+it like `sovereign.md`, do not improvise it)*
+The failure was reaching for a raster basemap and then arguing with it.
+Raster tiles are somebody's finished opinion; what the ask needed was
+**vector tiles plus our own style**, so "buildings and streets, no company
+names" is a rule we write rather than a basemap we hunt for. Three rungs:
+a vector source (self-hosted extracts, or a source whose licence permits
+restyling), a renderer (canvas first, `/compute` WGSL later — the same
+sovereignty argument as speech), and a style we author. **The tile proxy,
+cache, Web Mercator projection and country outlines from the deleted tool
+are all reusable from git** — that hour was not wasted, it was just
+sequenced wrong.
+
+**R5 — `withdrawn` in the ask lifecycle.** *(small)*
+Four asks still read *shipped*, with build numbers, for a tool that no
+longer exists. The lifecycle has no way to say a feature was delivered and
+then taken back, so the panel is currently lying to the person who asked.
+Directly caused by today, and the fix is a `/ask/lifecycle` subfeature plus
+a `--status withdrawn` in `stamp_ask.py`.
+
+**The gate.** The map ask becomes attemptable again when R1 exists (so it
+can look like miso), R2 exists (so we can see whether it does), and R4 has
+its first rung (so we can say what is drawn). R3 and R5 are cheap and
+should not wait for any of it.
+
+### One real bug the investigation surfaced, worth keeping
+
+Tile URLs carried no style name, while the server cache did. So a style
+change would have been invisible to anyone holding week-old cached tiles —
+and it fooled this very investigation for two rounds, showing a "light"
+basemap that was the old dark one inverted. **When a resource's content
+depends on a parameter, that parameter belongs in its URL.** Applies to any
+future tile, model, or asset route.
+
+## the model comparison: where judgment lives (2026-08-21, hybrid #p2–p6)
+
+The Aug 16 session was a natural experiment nobody designed: p1–p8 ran on
+Fable 5 (high effort), the credit cutoff fired mid-p8, and p9–p43 continued
+on Opus 5 — same session, same context, same rulebook, same user, same day.
+Ash's felt experience ("with Opus I wasted a ton of time correcting poor
+judgment calls; with Fable things just worked" — #p6) was checked against
+the transcripts by two forensic readers, one on the Fable baseline (both
+Aug 15 sessions plus the Aug 16 morning), one on the Opus stretch.
+
+**The numbers.** Fable, ~80 prompts across the baseline: essentially one
+substantive rework (reset as canvas button vs sub-tool), roughly 1.3
+prompts per surviving feature. Opus, ~30 substantive prompts: eight or
+nine corrective interventions, two doctrine rules written mid-session to
+constrain the model (the law above the laws, never-ask), four builds
+withdrawn — about 2.5 prompts per surviving feature, flattered by counting
+the map arc's negative yield as zero rather than minus four.
+
+**The split.** Opus followed the written discipline faithfully — anchors,
+toggle proofs both ways, parent refactors to extension points, the
+promotion rule correctly fired — and its root-cause debugging (the MIME
+type, the DOM loan, the double-load OOM) was excellent, its candor
+exemplary. Every major failure was a *judgment call in the space the rules
+didn't yet cover*: what the ask really wanted (the non-map), what
+"verified" means (the unseen `brightness(1.75)`), when to hold an ask for
+a ruling (the provenance stall), which hostile case a new mechanism must
+survive (three latent defects in one afternoon: tamed-request's failing
+fallback, logging evicting the flight recorder, logging polluting replay).
+
+**The asymmetry that decides the architecture.** Each Opus failure became
+a rule — 4a, the law above the laws, never-ask all date from that
+afternoon. Fable, running the same rulebook *before* those rules existed,
+never needed them. That is the signature of a capability difference, not
+a prompt gap: the prompt-fixable surface is now largely written into
+agents.md, and the residue — seeing that a blown-out image is bad without
+a rule saying to look, reading the asker's taste unprompted — is why
+judgment seats get Fable. Hence `hybrid.md`: Fable triage (ask → brief),
+Opus worker (the five-step loop in a worktree), Fable review (evidence
+against brief), main session serialising integrate/deploy/stamp. The
+hybrid is the flywheel with the seats named, and it is a bridge — the
+goal remains a Fable-only workflow that fits the fixed plan.
+
+**A note on fairness.** The comparison is one afternoon, mid-session
+handoff, on work (the map) that was genuinely the week's hardest ask; and
+Opus wrote two of the repo's best notes entries in the post-mortem. The
+finding is not "Opus is bad" but "the two models fail in different places,
+and fm2's discipline was written by watching Fable, so it patches Opus's
+gaps *after* they cost something." The hybrid puts the patching before.
 
 ## ideas parking lot
 
