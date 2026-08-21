@@ -1629,8 +1629,25 @@ changing only what it claims):
    blocks on this rung. Transport hardening lands here too: op ids +
    a seen-set, because the first crdt-sum declaration makes the
    demonstrated replayed-add double-count reachable.
+7a. the bridge (added 2026-08-21 when rung 7 returned to triage): six of
+   seven SyncVars are read from the state string by JS fragments, which
+   cannot call with_context — so migrated vars republish their resolved
+   values into the loop payload at declared legacy keys (a `js:` column
+   in the declaration). Fragments stay untouched; #p23's full arrival
+   (JS reading a ctx object directly) is a later cleanup. Bridged
+   declarations without the bridge node are a loud link error.
+7b. the counter merge kind (same triage return): `crdt-sum` forbids
+   `set`, and three shipped tools set the tap counter — a latent
+   set-races-add bug that exists TODAY under SyncVar. `counter` = an
+   epoch-reset counter: set bumps the epoch and assigns, adds within
+   the epoch sum, adds carrying a stale epoch drop (reset wins). The
+   tap/sync scope duality (local when sync unticked, global when
+   ticked) is preserved by two declarations and a seam sync extends.
 7. migration: feature by feature, each SyncVar use becomes a `.vars`
-   declaration + field access; per-feature toggle proofs cover both eras.
+   declaration + field access; per-feature toggle proofs cover both
+   eras. From this rung, loop/context stops being optional for migrated
+   features — untick becomes a loud link failure, and the byte-identical
+   baseline era ends, by design.
 8. absorption complete: SyncVar has zero callers and is deleted; the
    chooser's tickboxes drive `enabled` — instant, per-user, work
    preserved. DONE = untick a feature in the chooser, it is off for you
