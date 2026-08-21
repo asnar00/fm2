@@ -1519,6 +1519,59 @@ finding is not "Opus is bad" but "the two models fail in different places,
 and fm2's discipline was written by watching Fable, so it patches Opus's
 gaps *after* they cost something." The hybrid puts the patching before.
 
+## contexts: the world-object (2026-08-21, hybrid #p21–p26)
+
+The design conversation the contexts redo was waiting for (redo.md item 6
+— the one that didn't happen before the first build). Ash's crux (#p21):
+the runtime enabled-check should not be a scan of anything — turn the
+context into an **actual object whose methods are the composed
+functions**. Then ash pushed it further (#p23): the object holds not just
+enable/disable and settings but the in-flight Elm state too. The Context
+is **the world** — one value that is a user's entire situation.
+
+**The slot model is flat** (#p24, ruled #p26). No config/state taxonomy
+in the object: a Context is one namespace of feature-scoped slots, each
+declaring its own attributes — type, default, **scope**
+(global/group/user/device), **merge** (last-write, crdt-sum,
+better-replaces-rough, none), **inherit** (overlay through
+user → group → global, absent-means-inherit; never for owned state like
+drafts). `enabled` is not special: it is the one slot every feature has.
+"Config" and "state" survive only as preset attribute-bundles a
+declaration can invoke as shorthand; the odd slot (the counter's
+crdt-summed count) spells its columns out.
+
+**Lifecycle is enforced through generic vars** (ash's ruling, #p26): the
+attributes live in `Var<T>`-style wrapper types (scope's verbatim lib is
+the seed), so a mis-declared slot — an inheritable draft, a group-scoped
+open-tool — is a type error, not a doctrine violation found in review.
+The linker emits the Context struct from per-node slot declarations; a
+compose-time untick removes the slots from the struct, a runtime disable
+flips the `enabled` slot — the same toggle at two speeds, kept.
+
+What falls out by construction: the old raw-scan bug class (the `':'`
+discriminator lesson) becomes inexpressible — gates read typed fields.
+Per-user isolation is the server holding one Context per user. Instant
+toggle without losing work: disable gates a feature's slots, re-enable
+finds them intact; toggle is an in-place edit, **switch** is swapping
+which object is live, between loop turns (the Elm boundary satisfied by
+an atomic pointer swap). Update stays conceptually pure —
+`(context, event) → context` — so replay and the blackbox stay truthful,
+and snapshot/divergence-proof/hypothetical-worlds are all "construct
+another object". The trusted-base lesson is restated structurally: the
+machinery that builds and syncs Contexts lives *beneath* the Context and
+is not a slot on it. The promotion rule lands cleanly: a constant earns
+its variable by gaining a declaration line — name, type, default,
+scope, merge — and values are data forever after.
+
+**Open for the build phase**: the declaration stanza's grammar and home
+(spec stanza vs sibling file, linker-read either way); context
+versioning across builds (an update must migrate live Contexts);
+default scope for undeclared legacy state during the transition; whether
+the header/hypothetical contexts need a lifetime discipline. Sync "the
+context syncs" = each slot merges by its declared discipline — this is
+also the machinery the tunables conversation (redo item 8) needs, so
+that conversation starts from here.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
