@@ -1853,8 +1853,24 @@ these six are parked, each with its reason and revisit trigger:
    no per-user world) are outside it, named in obey.md. Revisit: same
    conversation as 7 — they share the convention.
 
-Everything else from the ladder's risk lists is in the residuals
-campaign and gets fixed, not parked.
+9. **The sweep's own tails** (final assignment, judged at close):
+   the eviction-mid-request window (a user idle past threshold whose
+   request lands during the sweep finishes against an emptied world —
+   writes reach the log, next touch rebuilds; revisit if eviction
+   thresholds shrink); `context_evicted`'s rebuildable-from-log rule
+   enforced by prose (revisit: type-enforce when a third implementor
+   appears); S5's console line unobserved by rig (static inspection
+   only; revisit: first JS-eval-capable rig) and its seamless-upgrade
+   noise left deliberately loud; boot's first-turn making a foreign
+   mid-boot edit invisible — recorded as the boundary law working, a
+   design note rather than a residual.
+
+THE CAMPAIGN CLOSED 2026-08-21, build 238: every residual from the
+contexts ladder and its own assignments is fixed (isolation, fragment
+obedience, coverage report, same-door, sole-tenant, unmixed, nested
+turns, boot-turn, single broadcast, eviction-frees-memory, the bridge
+complaint) or on this register with a reason and a revisit trigger.
+The ledger is empty. Done means done (#p57).
 ## fragments obey enabled: the census, and the half that is a design question (2026-08-21)
 
 Built as `loop/context/enabled/obey` (#p56). The page-side twin of rung 4:
