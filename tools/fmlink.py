@@ -83,6 +83,23 @@ SNAPSHOT_HOOK = "fm:context-snapshot"
 # edits a context pays neither. An asker without the var family is a link
 # error, exactly as for the snapshot hook.
 SET_HOOK = "fm:context-set"
+# the fourth hook: a composed node carrying this token asks for the enabled
+# machinery — an implicit `enabled` var on EVERY composed node, a per-node
+# `<node>_on()` conjunction down the composition tree, and a gate at the head
+# of every chain-EXTENDING function that carries loop state. No asker -> none of
+# it, and the emitted source is byte-identical to a build without this rung.
+GATE_HOOK = "fm:context-gate"
+# the implicit var every composed node gets while the gate hook is present.
+# Same shape as a declared line in a .vars sidecar, so it rides the same
+# emission, snapshot and write paths — there is nothing special about `enabled`.
+GATE_VAR = {"name": "enabled", "type": "bool", "default": "true",
+            "scope": "ScopeUser", "merge": "MergeLastWrite",
+            "inherit": "Inherit"}
+# a gated function is one whose FIRST parameter is `state: String` — the loop
+# state travelling through an Elm chain. Chain-STARTING definitions are never
+# gated (they are the seam the chain hangs from), and a function that does not
+# carry loop state (a route, a helper, a startup hook) is not gated at all.
+GATE_FIRST_PARAM = ("state", "String")
 
 # fn names that additionally get std::ops glue, with required arity
 OP_TRAITS = {"add": ("Add", 2), "sub": ("Sub", 2), "mul": ("Mul", 2),
@@ -259,13 +276,16 @@ def line_of(text: str, idx: int) -> int:
 
 
 def parse_signature(header: str):
-    """('name', [param types], return type or '') from 'fn name(a: T, b: U) -> R'."""
+    """('name', [param names], [param types], return type or '') from
+    'fn name(a: T, b: U) -> R'. The names are what a generated gate needs in
+    order to hand the arguments on to the previous link of the chain."""
     m = re.search(r"fn\s+(\w+)\s*\(([^)]*)\)\s*(?:->\s*(.+?))?\s*$", header, re.S)
     if not m:
         fail(f"cannot parse fn signature: {header.strip()!r}")
-    params = [p.split(":", 1)[1].strip()
-              for p in m.group(2).split(",") if ":" in p]
-    return m.group(1), params, (m.group(3) or "").strip()
+    parts = [p for p in m.group(2).split(",") if ":" in p]
+    names = [re.sub(r"^mut\s+", "", p.split(":", 1)[0].strip()) for p in parts]
+    params = [p.split(":", 1)[1].strip() for p in parts]
+    return m.group(1), names, params, (m.group(3) or "").strip()
 
 
 class FeatureCode:
@@ -394,10 +414,13 @@ class FeatureCode:
             fn_start = pos + fm.start()
             body_open = text.index("{", pos + fm.end())
             body_close = match_brace(text, body_open)
-            name, params, ret = parse_signature(text[fn_start:body_open])
+            name, pnames, params, ret = parse_signature(text[fn_start:body_open])
             first, last = line_of(text, fn_start), line_of(text, body_close)
-            self.fns.append({"name": name, "params": params, "ret": ret,
-                             "src": src, "first": first,
+            self.fns.append({"name": name, "pnames": pnames, "params": params,
+                             "ret": ret, "src": src, "first": first,
+                             # offset within `lines` of the line the body's
+                             # opening brace sits on: where a gate is injected
+                             "open_off": line_of(text, body_open) - first,
                              "lines": lines[first - 1:last]})
             pos = body_close + 1
 
@@ -464,6 +487,57 @@ def node_path(rel: str) -> str:
     return m.group(1) if m else rel
 
 
+def field_ident(node: str) -> str:
+    """A node name as a Rust identifier fragment. Node names may carry hyphens
+    (`reset-taps`); field and method names may not."""
+    return re.sub(r"[^0-9A-Za-z_]", "_", node)
+
+
+def gate_plan(features: list) -> dict:
+    """rel -> {ident, path, parent rel} for every composed node, when the
+    enabled machinery is switched on. The parent is looked up by node path, so
+    a product-local override (products/miso/miso/loop) and a shared node
+    (features/miso/loop/tap) sit in the same tree, which is what lets the
+    ancestor conjunction be resolved at compile time rather than walked at
+    runtime."""
+    by_path = {node_path(f.rel): f.rel for f in features}
+    plan, idents = {}, {}
+    for f in features:
+        path = node_path(f.rel)
+        node = Path(f.rel).name
+        ident = field_ident(node)
+        if ident in idents and idents[ident] != f.rel:
+            fail(f"nodes {idents[ident]} and {f.rel} both become the context "
+                 f"identifier '{ident}' — rename one (node names are "
+                 f"tree-global, fm.md)")
+        idents[ident] = f.rel
+        parent = path.rsplit("/", 1)[0] if "/" in path else None
+        plan[f.rel] = {"ident": ident, "path": path,
+                       "parent": by_path.get(parent) if parent else None}
+    return plan
+
+
+def emit_gate_predicates(features: list, plan: dict, out: Emitter, src, line):
+    """`<node>_on()` per composed node: own enabled AND the parent's answer.
+    The tree is known at link time, so an ancestor's untick silences its whole
+    subtree through a conjunction rustc inlines — no path string is ever
+    compared at runtime, which is the old design's `':'` bug made
+    inexpressible."""
+    out.emit("// ---- context: effective enablement (fm:context-gate)")
+    out.emit("//   <node>_on() = this node's enabled var AND its parent's")
+    out.emit("//   answer. A root node answers from its own field alone.")
+    out.emit("impl Context {")
+    for f in sorted(features, key=lambda f: plan[f.rel]["path"]):
+        me = plan[f.rel]
+        parent = plan.get(me["parent"]) if me["parent"] else None
+        conj = (f" && self.{parent['ident']}_on()" if parent else "")
+        out.emit(f"    /// {me['path']}")
+        out.emit(f"    pub fn {me['ident']}_on(&self) -> bool "
+                 f"{{ self.{me['ident']}_enabled.value{conj} }}", src, line)
+    out.emit("}")
+    out.emit("")
+
+
 def emit_context(features: list, out: Emitter):
     """Collect every composed node's .vars declarations and emit the Context
     struct plus Context::fresh(). Scaffolding: the mechanism lives here, the
@@ -483,18 +557,42 @@ def emit_context(features: list, out: Emitter):
                      for _, text in f.sources if SNAPSHOT_HOOK in text]
     asks_set = [f.rel for f in features
                 for _, text in f.sources if SET_HOOK in text]
+    asks_gate = [(f.rel, src) for f in features
+                 for src, text in f.sources + f.libs if GATE_HOOK in text]
     if not any(VAR_HOOK in text for f in features for _, text in f.libs):
         for asker, what, token in ((asks_snapshot, "Context::snapshot()", SNAPSHOT_HOOK),
-                                   (asks_set, "Context::set_from_json()", SET_HOOK)):
+                                   (asks_set, "Context::set_from_json()", SET_HOOK),
+                                   ([a[0] for a in asks_gate],
+                                    "the enabled gates", GATE_HOOK)):
             if asker:
                 fail(f"{asker[0]} asks for {what} "
                      f"('{token}') but no composed node provides the var "
                      f"family — tick loop/context, or untick the asking node")
         return
+    # the gates read the turn's frozen view, which is loop/context/edit's
+    # machinery: no frozen read, no gate. Loudly, because a silently ungated
+    # build is one whose tickboxes do nothing.
+    if asks_gate and not asks_set:
+        fail(f"{asks_gate[0][0]} asks for the enabled gates ('{GATE_HOOK}') but "
+             f"no composed node provides the frozen-read machinery "
+             f"('{SET_HOOK}') — tick loop/context/edit, or untick the gates")
+    plan = gate_plan(features) if asks_gate else None
+    gate_src, gate_line = (asks_gate[0][1], 1) if asks_gate else (None, None)
     fields = []
     for feature in features:
-        node = Path(feature.rel).name
+        node = field_ident(Path(feature.rel).name)
+        if plan:
+            # the implicit var: every composed node has an `enabled`, emitted
+            # exactly like a declared one, so it rides the snapshot and the
+            # write path with no special case anywhere downstream.
+            fields.append((f"{node}_enabled", node_path(feature.rel),
+                           dict(GATE_VAR, src=gate_src, line=gate_line)))
         for s in feature.vars:
+            if plan and s["name"] == GATE_VAR["name"]:
+                fail(f"{s['src']}:{s['line']}: node "
+                     f"'{Path(feature.rel).name}' declares its own 'enabled' "
+                     f"var, but loop/context/enabled gives every composed node "
+                     f"one — remove the declaration, or untick the gates")
             fields.append((f"{node}_{s['name']}", node_path(feature.rel), s))
     out.emit("// ---- context: vars declared by composed nodes (<name>.vars)")
     out.emit("pub struct Context {")
@@ -514,9 +612,11 @@ def emit_context(features: list, out: Emitter):
     out.emit("    }")
     out.emit("}")
     out.emit("")
+    if plan:
+        emit_gate_predicates(features, plan, out, gate_src, gate_line)
     if not asks_snapshot:
         emit_context_set(fields, asks_set, out)
-        return
+        return plan
     out.emit("impl Context {")
     out.emit("    // every declared var as JSON — node path, name, current")
     out.emit("    // value, and the three attributes read from the markers'")
@@ -540,6 +640,7 @@ def emit_context(features: list, out: Emitter):
     out.emit("}")
     out.emit("")
     emit_context_set(fields, asks_set, out)
+    return plan
 
 
 def emit_context_set(fields: list, asks_set: list, out: Emitter):
@@ -594,7 +695,29 @@ def emit_context_set(fields: list, asks_set: list, out: Emitter):
     out.emit("")
 
 
-def compose_features(features: list, out: Emitter) -> dict:
+def gate_line(fn: dict, key: tuple, heads: dict, plan_entry: dict) -> str:
+    """The gate injected at the head of a chain-extending, state-carrying
+    function: if this node is not effectively on in the turn's frozen view,
+    hand the previous link's answer back untouched. `gate_open` is
+    loop/context/enabled's own read primitive, so the frozen-view rule lives in
+    one place; the predicate is a method call rustc resolves statically."""
+    args = ", ".join(fn["pnames"])
+    return (f"        if !gate_open(|c| c.{plan_entry['ident']}_on()) "
+            f"{{ return feature_{heads[key]}::{fn['name']}({args}); }}"
+            f"   // fm: gate {plan_entry['path']}")
+
+
+def gated(fn: dict, key: tuple, chains: dict) -> bool:
+    """A function is gated when it EXTENDS an existing chain and carries the
+    loop state. A chain-starting definition is the seam the chain hangs from
+    and has no previous answer to return; a function that takes no `state` is
+    machinery (a route, a helper, a startup hook), not behaviour a user ticks."""
+    return (key in chains
+            and (fn["pnames"][:1], fn["params"][:1])
+            == ([GATE_FIRST_PARAM[0]], [GATE_FIRST_PARAM[1]]))
+
+
+def compose_features(features: list, out: Emitter, plan=None) -> dict:
     """Emit feature impl blocks; return chains keyed by (name, param types)."""
     chains = {}   # key -> {"head": feature struct name, "params": [...], "ret": str}
     for feature in features:
@@ -612,9 +735,18 @@ def compose_features(features: list, out: Emitter) -> dict:
                      f"from '{chains[key]['ret']}' to '{fn['ret']}' in {feature.rel}"
                      f" — all links of a chain must agree")
             heads = {k: v["head"] for k, v in chains.items()}
+            inject = (gate_line(fn, key, heads, plan[feature.rel])
+                      if plan and gated(fn, key, chains) else None)
             for offset, text in enumerate(fn["lines"]):
                 out.emit(rewrite_existing(text, fn, key, heads, feature),
                          fn["src"], fn["first"] + offset)
+                if inject and offset == fn["open_off"]:
+                    if text[text.rfind("{") + 1:].strip():
+                        fail(f"{fn['src']}:{fn['first']}: fn {fn['name']} opens "
+                             f"its body on a line that already carries code, so "
+                             f"the enabled gate has nowhere to go — put the "
+                             f"body on its own lines")
+                    out.emit(inject, fn["src"], fn["first"])
         out.emit("}")
         out.emit("")
         for fn in feature.fns:
@@ -711,8 +843,8 @@ def compose(features: list):
             for offset, line in enumerate(text.splitlines()):
                 out.emit(line, src, offset + 1)
             out.emit("")
-    emit_context(features, out)
-    chains = compose_features(features, out)
+    plan = emit_context(features, out)
+    chains = compose_features(features, out, plan)
     out.emit("// ---- dispatchers (plain delegate / generated-trait multiple dispatch)")
     emit_dispatchers(chains, out)
     return out, chains
