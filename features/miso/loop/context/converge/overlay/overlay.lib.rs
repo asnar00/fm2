@@ -13,7 +13,7 @@ pub fn context_layer_key() -> &'static str {
     "_global"
 }
 
-pub fn context_layer_cell() -> &'static std::sync::RwLock<Context> {
+pub fn context_layer_cell() -> std::sync::Arc<std::sync::RwLock<Context>> {
     context_of(context_layer_key())
 }
 
@@ -26,7 +26,8 @@ thread_local! {
 }
 
 pub fn context_layer_begin() {
-    let frozen = context_layer_cell()
+    let cell = context_layer_cell();
+    let frozen = cell
         .read()
         .unwrap_or_else(|p| p.into_inner())
         .clone();
@@ -60,7 +61,8 @@ pub fn context_layer<R>(f: impl FnOnce(&Context) -> Option<R>) -> Option<R> {
     match framed {
         Some(r) => r,
         None => {
-            let copy = context_layer_cell()
+            let layer = context_layer_cell();
+            let copy = layer
                 .read()
                 .unwrap_or_else(|p| p.into_inner())
                 .clone();
@@ -170,6 +172,23 @@ pub fn context_seen_mark(user: &str, id: &str) -> bool {
         }
     }
     true
+}
+
+/// forget everything remembered about one user's ops. Safe because it is all
+/// derivable again: the ids come from their log, and `context_seen_prime`
+/// re-reads it the next time this process sees them.
+pub fn context_seen_forget(user: &str) {
+    let prefix = format!("{}\u{1}", user);
+    {
+        let mut s = context_seen().lock().unwrap_or_else(|p| p.into_inner());
+        s.0.retain(|k| !k.starts_with(&prefix));
+        s.1.retain(|k| !k.starts_with(&prefix));
+        s.0.shrink_to_fit();
+        s.1.shrink_to_fit();
+    }
+    let mut primed = context_primed().lock().unwrap_or_else(|p| p.into_inner());
+    primed.remove(user);
+    primed.shrink_to_fit();
 }
 
 /// which users' logs have already been read into the seen-set.

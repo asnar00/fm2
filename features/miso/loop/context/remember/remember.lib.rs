@@ -220,12 +220,12 @@ pub fn context_now_ms() -> u64 {
 /// which is a suffix of it, so the two paths cannot deadlock each other.
 pub fn context_residency()
     -> &'static std::sync::Mutex<
-        std::collections::HashMap<String, (u64, &'static std::sync::RwLock<Context>)>>
+        std::collections::HashMap<String, (u64, std::sync::Arc<std::sync::RwLock<Context>>)>>
 {
     static R: std::sync::OnceLock<
         std::sync::Mutex<
             std::collections::HashMap<String,
-                                      (u64, &'static std::sync::RwLock<Context>)>>>
+                                      (u64, std::sync::Arc<std::sync::RwLock<Context>>)>>>
         = std::sync::OnceLock::new();
     R.get_or_init(|| std::sync::Mutex::new(std::collections::HashMap::new()))
 }
@@ -240,10 +240,10 @@ pub fn context_resident_count() -> usize {
 /// The whole decision happens under the residency lock, so two threads meeting
 /// a cold world cannot both replay it — the second waits and finds it warm. The
 /// lock order is always residency then cell; nothing takes them the other way.
-pub fn context_reside(user: &str, cell: &'static std::sync::RwLock<Context>) {
+pub fn context_reside(user: &str, cell: &std::sync::Arc<std::sync::RwLock<Context>>) {
     let mut live = context_residency().lock().unwrap_or_else(|p| p.into_inner());
     if live.contains_key(user) {
-        live.insert(user.to_string(), (context_now_ms(), cell));
+        live.insert(user.to_string(), (context_now_ms(), cell.clone()));
         return;
     }
     let records = context_log_read(user);
@@ -262,7 +262,7 @@ pub fn context_reside(user: &str, cell: &'static std::sync::RwLock<Context>) {
             }
         }
     }
-    live.insert(user.to_string(), (context_now_ms(), cell));
+    live.insert(user.to_string(), (context_now_ms(), cell.clone()));
 }
 
 /// how long a world may sit untouched before it is dropped from memory.
@@ -276,21 +276,48 @@ pub fn context_idle_ms() -> u64 {
 /// drop every world idle past the threshold, except the one this request is
 /// for. Returns the keys dropped. Reclaim is safe because recovery is total:
 /// the log holds everything the world was built from.
+///
+/// Both handles go: residency's, and rung 5's table entry — which is what makes
+/// the memory come back rather than merely being blanked. A request already
+/// holding a handle finishes against the world it started with and drops it on
+/// the way out; the world is emptied first, so what such a request sees is a
+/// world with nothing in it rather than a stale one, and its own writes reach
+/// the log either way.
+///
+/// The table lock is taken FIRST and the residency lock second — the order
+/// every other path uses — so eviction cannot deadlock a request that is
+/// materialising a world at the same moment.
 pub fn context_evict_idle(except: &str) -> Vec<String> {
     let cutoff = context_now_ms().saturating_sub(context_idle_ms());
     let mut live = context_residency().lock().unwrap_or_else(|p| p.into_inner());
-    let mut dropped: Vec<(String, &'static std::sync::RwLock<Context>)> = Vec::new();
+    let mut dropped: Vec<(String, std::sync::Arc<std::sync::RwLock<Context>>)> =
+        Vec::new();
     for (user, entry) in live.iter() {
         if user.as_str() != except && entry.0 <= cutoff {
-            dropped.push((user.clone(), entry.1));
+            dropped.push((user.clone(), entry.1.clone()));
         }
     }
     let mut names: Vec<String> = Vec::new();
     for (user, cell) in dropped {
-        let mut world = cell.write().unwrap_or_else(|p| p.into_inner());
-        *world = Context::fresh();
+        {
+            let mut world = cell.write().unwrap_or_else(|p| p.into_inner());
+            *world = Context::fresh();
+        }
         live.remove(&user);
         names.push(user);
+    }
+    drop(live);
+    for user in &names {
+        context_forget(user);
+    }
+    if !names.is_empty() {
+        // a map that has held two hundred users keeps room for two hundred
+        // users. Handing the buckets back is the difference between "the
+        // worlds are gone" and "the memory is back".
+        let mut table = context_table().write().unwrap_or_else(|p| p.into_inner());
+        let mut live = context_residency().lock().unwrap_or_else(|p| p.into_inner());
+        table.shrink_to_fit();
+        live.shrink_to_fit();
     }
     names
 }

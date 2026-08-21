@@ -5,7 +5,7 @@ impl feature_Overlay {
     // turn, two frozen views, and a resolved read that cannot change its mind
     // halfway through a request.
     fn route(r: request) -> response {
-        let _ = context_reside(context_layer_key(), context_layer_cell());
+        let _ = context_reside(context_layer_key(), &context_layer_cell());
         context_layer_begin();
         if r.path == "diag/context/layer" {
             let body = context_layer(|g| Some(g.snapshot().to_string()))
@@ -195,6 +195,17 @@ impl feature_Overlay {
         let inner = existing.handle_msg(anonymised(msg));
         context_user_set(was);
         ctx_after_layer(m, inner)
+    }
+
+    // an evicted user's dedupe state goes with them. Both halves are rebuilt
+    // from their log by `context_seen_prime` the next time this process meets
+    // them, so this costs one re-read and stops an evicted user costing memory
+    // for the life of the process.
+    fn context_evicted(users: Vec<String>) {
+        for user in &users {
+            context_seen_forget(user);
+        }
+        existing.context_evicted(users)
     }
 
     // the same message with no sender on it. The identity that matters has

@@ -6,7 +6,7 @@ impl feature_PerUser {
     // identity, the table answers instead. Every caller of held_context() —
     // both accessors and all the gates — is untouched, because the signature
     // is untouched.
-    fn held_context() -> &'static std::sync::RwLock<Context> {
+    fn held_context() -> std::sync::Arc<std::sync::RwLock<Context>> {
         let who = context_user_now();
         if who.is_empty() {
             return existing.held_context();

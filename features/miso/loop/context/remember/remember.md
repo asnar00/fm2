@@ -104,24 +104,22 @@ request — O(resident users) timestamp comparisons at human request rate — an
 never evicts the world the current request is for. A background thread would need
 a shutdown story and would evict worlds nobody was asking about.
 
-What eviction does is reset a world to `Context::fresh()` and forget it is
-loaded. What it does **not** do is free the cell, and this is the honest limit of
-the rung: rung 5 made `held_context()` return `&'static RwLock<Context>` so that
-its callers would not have to change, and a `&'static` cannot be reclaimed while
-any reference might still exist. So the per-user cost that survives eviction is
-one `Context`-sized cell per user the process has ever seen, and what is returned
-is everything the world's vars owned beyond that — nothing at all today, when
-every var is a `bool` or a `u64`, and everything once a var holds a `String` or a
-`Vec`. What *is* reclaimed today is the world's currency: the log's history stops
-living in RAM, and `GET /diag/context/log` reports `resident` falling while
-`known` stays.
+What eviction does is empty a world, forget it is loaded, and let it go.
+/Amended 2026-08-21 (#p56)./ It originally could not do the last of those: rung
+5's cells were `&'static`, so a world could be reset but never freed, and
+`GET /diag/context/log` reported `resident` falling while `known` stayed. The
+cells are counted handles now, and a sweep drops residency's handle, rung 5's
+table entry, and — through the `context_evicted` seam — the per-user dedupe
+state `/overlay` keeps. Both maps hand their buckets back afterwards, because a
+map that has held two hundred users otherwise keeps room for two hundred users.
+Measured on 200 worlds: 147 KB in, 99.9% of it back, both counters returning to
+two.
 
-The change that would make eviction total is naming: the accessors would return
-an `Arc<RwLock<Context>>` by value instead of a `&'static`, at which point an
-evicted world drops for real. It is a six-call-site refactor —
-`with_context`, `edit_context`, `context_turn_begin`, `context_snapshot_json`,
-`serve`, `boot` — and it belongs to whichever rung is willing to touch three
-other nodes' files, not to this one.
+The world is emptied before the handle is dropped, so a request that is still
+holding one sees a world with nothing in it rather than a stale one; its own
+writes reach the log either way, and the next touch rebuilds from there. The
+rule for anything else hung on `context_evicted`: it must be rebuildable from
+the log, because that is all an evicted user leaves behind.
 
 **Two write seams, because there are two ways to change a world.** Rung 6's op
 path is one: `handle_msg` has already applied the op and answered, and a
@@ -185,10 +183,10 @@ than as a rustc error inside a verbatim library.
 
 ## risks
 
-**Eviction does not free the cell.** Named in full above. Today it reclaims
-nothing measurable; the moment a var holds a `String` it reclaims that. The fix
-is the `Arc` refactor, and until it happens the per-user floor is one
-`Context`-sized allocation per user ever seen.
+**Eviction does not free the cell.** /Closed 2026-08-21 (#p56) by the `Arc`
+refactor: 99.9% of 147 KB returned across 200 create-evict worlds, measured with
+a counting allocator. The process's RSS does not fall with it — that is the
+system allocator holding its arena, not memory the server is still using./
 
 **Two processes on one state directory corrupt nothing and lose writes.** Every
 write is a whole-file rename, so neither process can leave a torn file and a

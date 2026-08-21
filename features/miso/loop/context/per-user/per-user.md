@@ -49,21 +49,15 @@ is small because rungs 2 and 3 left the right seams: the storage accessor is a
 chain function, so it can be redefined rather than edited, and identity is
 already a solved problem on this server.
 
-**The table, and why the entries are leaked.** `held_context()` keeps its exact
-signature — `-> &'static RwLock<Context>` — because thirty-six callers depend on
-it: both accessors in rung 3's library and all thirty-four of rung 4's gates.
-Changing that signature would have rippled through every one of them for no
-behavioural gain. So the table is a `HashMap<String, &'static RwLock<Context>>`
-and each entry is a `Box::leak` at creation. That is not a leak in the sense
-that matters: rung 2 already gave a context the lifetime of the process, and
-this rung only changes the count from one to one-per-user. What it does mean is
-that a user's world is never reclaimed — named in the risks below, and the same
-question as persistence, which rungs 5 and 6 deliberately leave alone.
-
-An alternative was an `Arc<RwLock<Context>>` returned by value, which frees on
-drop. It was rejected because nothing drops: a live user's context must outlive
-every request, and there is no eviction policy to hang a drop on until there is
-a persistence rung to evict *into*.
+**The table holds counted handles** — `HashMap<String, Arc<RwLock<Context>>>`,
+and `held_context()` answers with one by value. /Amended 2026-08-21 (#p56)./
+This rung originally leaked each entry (`Box::leak`) to keep the signature
+`-> &'static RwLock<Context>` that thirty-six callers depended on, on the
+argument that nothing would ever drop a world anyway; `/remember` then added
+eviction and could reset a world but never free it. The handle is that fix: one
+atomic increment per touch, and `context_forget` — called by eviction — lets the
+last handle go. A request already holding one finishes against the world it
+started with, which is exactly what a counted handle is for.
 
 **Identity is thread-local, and set outside the turn.** This node's `route` link
 is the outermost one — its provenance is the newest — so it runs before rung 3's
@@ -198,12 +192,16 @@ line and the rung that earns them back.
 
 ## risks
 
-**A user's world is never reclaimed.** Entries are leaked on creation and the
-table only grows, so a server that meets many distinct users accumulates one
-context each, for the life of the process. Each is small — a hundred-odd bools
-and a couple of numbers — and cookie identity is bounded by the guest list, so
-this is not urgent; but it is the same question as persistence, and the rung
-that gives contexts a store should own eviction at the same time. Naming it:
+**A user's world is never reclaimed.** /Closed 2026-08-21 (#p56): the entries
+are counted handles and `/remember`'s eviction drops both this table's and
+residency's, measured at 99.9% of 147 KB returned across 200 worlds. The rest of
+this paragraph is the original risk, kept for the record./ Entries are leaked on
+creation and the table only grows, so a server that meets many distinct users
+accumulates one context each, for the life of the process. Each is small — a
+hundred-odd bools and a couple of numbers — and cookie identity is bounded by
+the guest list, so this is not urgent; but it is the same question as
+persistence, and the rung that gives contexts a store should own eviction at the
+same time. Naming it:
 neither rung 5 nor rung 6 has it, and it should not be smuggled into rung 7's
 migration.
 

@@ -4,13 +4,13 @@ impl feature_Remember {
     // that cell is current, and rebuilds it from the user's log if it is not.
     // An empty identity — the whole wasm place, and startup — takes neither
     // branch, so nothing here ever runs on the client.
-    fn held_context() -> &'static std::sync::RwLock<Context> {
+    fn held_context() -> std::sync::Arc<std::sync::RwLock<Context>> {
         let cell = existing.held_context();
         let who = context_user_now();
         if who.is_empty() {
             return cell;
         }
-        context_reside(&who, cell);
+        context_reside(&who, &cell);
         cell
     }
 
@@ -21,14 +21,21 @@ impl feature_Remember {
     // this request is for.
     fn route(r: request) -> response {
         let who = context_user_of(r.cookie.clone(), r.tunnel, r.query.clone());
-        let dropped = context_evict_idle(&who);
-        for user in dropped {
-            eprintln!("miso: context evicted (idle): {}", user);
-        }
+        context_evicted(context_evict_idle(&who));
         if r.path == "diag/context/log" {
             return json_response(200, context_log_status());
         }
         existing.route(r)
+    }
+
+    // seam: what a world's departure takes with it. This link says it out
+    // loud; a later node may have per-user state of its own to drop, and the
+    // rule for anything hung here is that it must be rebuildable from the log,
+    // because that is all an evicted user leaves behind.
+    fn context_evicted(users: Vec<String>) {
+        for user in users {
+            eprintln!("miso: context evicted (idle): {}", user);
+        }
     }
 
     // what persistence is doing, for the agent's instrument and for a human

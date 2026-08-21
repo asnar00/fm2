@@ -109,7 +109,8 @@ pub fn with_context<R>(f: impl FnOnce(&Context) -> R) -> R {
 /// or `edit_context` (see edit.md, "the write lock is not re-entrant").
 pub fn edit_context<R>(f: impl Fn(&mut Context) -> R) -> R {
     let out = {
-        let mut live = held_context().write().unwrap_or_else(|p| p.into_inner());
+        let cell = held_context();
+        let mut live = cell.write().unwrap_or_else(|p| p.into_inner());
         f(&mut *live)
     };
     // read-your-own-writes: the same change is applied to this turn's frozen
