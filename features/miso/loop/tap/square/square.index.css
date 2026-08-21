@@ -1,0 +1,2 @@
+/* square (asks 2026-08-21): the tap button loses its pill — corners, per the ask */
+.tap { border-radius: 0; }

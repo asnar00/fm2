@@ -1,2 +1,3 @@
 - [x] sync
 - [x] counter
+- [x] square
