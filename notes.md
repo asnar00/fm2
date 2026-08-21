@@ -1814,6 +1814,34 @@ tag is an annotation in an operator-only file rather than an isolation key.
 Two colliding guests interleave there and cannot be told apart — a
 readability limit, named rather than fixed.
 
+## the parked-residuals register (2026-08-21, hybrid #p61)
+
+Under the zeno rule (hybrid.md checklist 7, #p57) a run ends with
+residuals fixed or deliberately parked. Ash delegated park judgment
+(#p61: "if you consider them necessary, build them, otherwise don't");
+these six are parked, each with its reason and revisit trigger:
+
+1. **Relay entries dropped at the identity switch** — one-time event,
+   already past; parity heals rejoining devices. Nothing to build.
+2. **Audience-token/signing-secret coupling** — losing the secret
+   re-keys audiences, costing one relay round in a scenario that
+   already logs everyone out. Revisit: never, unless secrets rotate.
+3. **Local epoch minting** — two racing resets collide into the same
+   zeroed counter both users asked for; adds in the collision window
+   are lost either way by reset-wins semantics. Revisit: if a counter
+   ever means money.
+4. **Seen-set FIFO bound (4096)** — a replay slips through only after
+   4096 intervening ops outrun a retry; growable constant, log-primed.
+   Revisit: raise the constant if op rates grow 100x.
+5. **Whole-value join parcels** — bounded by what a person touched;
+   the watch-trigger is a chatty list var (asks is the candidate).
+   Revisit: per-var versioning when a parcel measurably drags a join.
+6. **Group scope refused** — awaits a membership model; future feature,
+   not leftover. Revisit: when groups exist.
+
+Everything else from the ladder's risk lists is in the residuals
+campaign and gets fixed, not parked.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
