@@ -1839,6 +1839,20 @@ these six are parked, each with its reason and revisit trigger:
 6. **Group scope refused** — awaits a membership model; future feature,
    not leftover. Revisit: when groups exist.
 
+7. **Seam occupancy** (assignment 2's triage-return): a node reached
+   only through `typeof` checks wants ABSENCE when unticked, not a
+   no-op — which needs window-bound fragment objects and an authorship
+   convention (53 unguarded `feature_Loop` references say so). Parked
+   with the census attached. Revisit: at the fragment-convention /
+   builder-skillset design conversation, or when a seam-occupied
+   feature's untick becomes a real user path (today's only case is the
+   chooser's own teaser seam, behind the self-lockout repair path).
+8. **Fragment-obedience coverage limits**: obey gates the four census
+   shapes on index.html; document-level listeners/timers, post-load DOM
+   outside claimed containers, and the auth/install pages (which have
+   no per-user world) are outside it, named in obey.md. Revisit: same
+   conversation as 7 — they share the convention.
+
 Everything else from the ladder's risk lists is in the residuals
 campaign and gets fixed, not parked.
 ## fragments obey enabled: the census, and the half that is a design question (2026-08-21)
