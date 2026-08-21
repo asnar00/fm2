@@ -1940,6 +1940,47 @@ Four fixes, four commits. Three arguments and one limitation worth keeping.
   `/blackbox` (the tag was inline), which is the sanctioned move and which the
   toggle proof shows is behaviour-neutral.
 
+## the small-residuals sweep (2026-08-21, #p56)
+
+Five fixes, five commits, the campaign's last assignment. What is worth
+keeping is mostly about measurement.
+
+- **Two readings before a performance claim.** Boot-as-a-turn drops the
+  per-gate world clone from 15 to 1, and the first timing said the fix made
+  boot *slower* — which would have been a real finding if it were true. It
+  was a cold machine: warm, it is 363µs against 369µs, a 1.6% difference at
+  the noise floor. A `Context` clone turns out to cost ~0.4µs because most
+  of its 121 vars are `Copy` scalars. The fix is still right (the count is
+  one clone per gate call, and the tree only grows) but it buys allocation
+  pressure, not latency, and the spec says so. **A number from one run is
+  not a measurement.**
+- **The eviction proof needed the right instrument.** RSS does not move when
+  200 worlds are freed — macOS's allocator keeps its arena — so RSS would
+  have said the fix did nothing. A counting `GlobalAlloc` patched into the
+  rig binary says the truth to the byte: 147 KB in for 200 worlds, 99.9% of
+  it back after the sweep, against 1.2% before. When a measurement can only
+  disprove, find a better one before believing it.
+- **A refactor's last 35% was somebody else's state.** The `Arc` migration
+  freed the worlds and still returned only 64.5%, because eviction left two
+  things behind: the maps' retained buckets (a map that has held 200 users
+  keeps room for 200 users) and `/overlay`'s per-user dedupe state. The
+  second could not be reached from `/remember` without a backwards
+  dependency, so `/remember` grew a `context_evicted` seam and `/overlay`
+  hung its own forgetting on it — with the rule written down: anything hung
+  there must be rebuildable from the log, because that is all an evicted
+  user leaves behind.
+- **The bridged key set was free all along.** The one-way bridge's complaint
+  looked like it needed the linker to emit a list of bridged keys. It does
+  not: `Context::republish` writes its keys unconditionally, so republishing
+  into an EMPTY object is the list, and the values with it. A mechanism that
+  looks like it needs a declaration sometimes only needs to be run against
+  nothing.
+- **A guard for a case that cannot happen yet is still worth its ten lines.**
+  Nothing nests turns today; the probe that proves the depth counter also
+  documents what the bug would have been (an inner begin re-freezing from
+  live, an inner end clearing the outer view) and it took one rig route to
+  show both, before and after.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
