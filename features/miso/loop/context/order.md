@@ -2,3 +2,4 @@
 - [x] edit
 - [x] enabled
 - [x] per-user
+- [x] converge

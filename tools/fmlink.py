@@ -71,11 +71,15 @@ VAR_INHERIT = {"inherit": "Inherit", "own": "Own"}
 # 5); a global or group scoped var would be stored per user and quietly behave
 # as if it were user-scoped, which is the kind of silent lie the typed
 # declaration exists to prevent. Refused with the rung that earns them back.
+# (rung 6 syncs a user's own vars across their instances; what global and group
+# still await is the OVERLAY chain — a value living above the user and falling
+# through to them — which no rung on the ladder owns yet.)
 VAR_SCOPE_AWAITS = {
-    "global": "scope 'global' awaits the sync rung (the ladder's rung 6, "
-              "'var sync by declared merge') — declare user or device for now",
-    "group": "scope 'group' awaits the sync rung (the ladder's rung 6, "
-             "'var sync by declared merge') — declare user or device for now",
+    "global": "scope 'global' awaits the overlay chain (a value above the user "
+              "that a user's absence falls through to) — no rung owns it yet; "
+              "declare user or device for now",
+    "group": "scope 'group' awaits the overlay chain and a membership model — "
+             "no rung owns either yet; declare user or device for now",
 }
 # the hook: this token in a composed verbatim library switches slot collection
 # and Context emission on. No hook in the composition -> no struct, and the
@@ -110,6 +114,17 @@ GATE_VAR = {"name": "enabled", "type": "bool", "default": "true",
 # gated (they are the seam the chain hangs from), and a function that does not
 # carry loop state (a route, a helper, a startup hook) is not gated at all.
 GATE_FIRST_PARAM = ("state", "String")
+# the fifth hook: a composed node carrying this token asks for the two halves of
+# the merge discipline — Context::edit_op(), which mutates a var through the
+# write method its DECLARED merge earned and queues the resulting op, and
+# Context::apply_op(), which applies an op that arrived over the wire after
+# checking that its verb is the one the declaration speaks. No asker -> neither,
+# and the emitted source is byte-identical to a build without this rung.
+OP_HOOK = "fm:context-op"
+# which write method a declared merge earns. A merge that is not in this table
+# has no write API yet, and edit_op says so by name rather than guessing.
+MERGE_WRITE = {"MergeLastWrite": ("set", "set_at"),
+               "MergeCrdtSum": ("add", "add_at")}
 
 # fn names that additionally get std::ops glue, with required arity
 OP_TRAITS = {"add": ("Add", 2), "sub": ("Sub", 2), "mul": ("Mul", 2),
@@ -571,11 +586,14 @@ def emit_context(features: list, out: Emitter):
                 for _, text in f.sources if SET_HOOK in text]
     asks_gate = [(f.rel, src) for f in features
                  for src, text in f.sources + f.libs if GATE_HOOK in text]
+    asks_op = [f.rel for f in features
+               for _, text in f.sources + f.libs if OP_HOOK in text]
     if not any(VAR_HOOK in text for f in features for _, text in f.libs):
         for asker, what, token in ((asks_snapshot, "Context::snapshot()", SNAPSHOT_HOOK),
                                    (asks_set, "Context::set_from_json()", SET_HOOK),
                                    ([a[0] for a in asks_gate],
-                                    "the enabled gates", GATE_HOOK)):
+                                    "the enabled gates", GATE_HOOK),
+                                   (asks_op, "the var op methods", OP_HOOK)):
             if asker:
                 fail(f"{asker[0]} asks for {what} "
                      f"('{token}') but no composed node provides the var "
@@ -588,6 +606,12 @@ def emit_context(features: list, out: Emitter):
         fail(f"{asks_gate[0][0]} asks for the enabled gates ('{GATE_HOOK}') but "
              f"no composed node provides the frozen-read machinery "
              f"('{SET_HOOK}') — tick loop/context/edit, or untick the gates")
+    # an arriving CtxUpdate is applied through set_from_json, and a local edit
+    # is made under edit_context: both are loop/context/edit's.
+    if asks_op and not asks_set:
+        fail(f"{asks_op[0]} asks for the var op methods ('{OP_HOOK}') but no "
+             f"composed node provides the write path ('{SET_HOOK}') — tick "
+             f"loop/context/edit, or untick the op methods")
     plan = gate_plan(features) if asks_gate else None
     gate_src, gate_line = (asks_gate[0][1], 1) if asks_gate else (None, None)
     fields = []
@@ -628,6 +652,7 @@ def emit_context(features: list, out: Emitter):
         emit_gate_predicates(features, plan, out, gate_src, gate_line)
     if not asks_snapshot:
         emit_context_set(fields, asks_set, out)
+        emit_context_ops(fields, asks_op, out)
         return plan
     out.emit("impl Context {")
     out.emit("    // every declared var as JSON — node path, name, current")
@@ -652,7 +677,109 @@ def emit_context(features: list, out: Emitter):
     out.emit("}")
     out.emit("")
     emit_context_set(fields, asks_set, out)
+    emit_context_ops(fields, asks_op, out)
     return plan
+
+
+def emit_context_ops(fields: list, asks_op: list, out: Emitter):
+    """The merge discipline's two generated halves. Scaffolding: mechanism here,
+    design in features/miso/loop/context/converge.
+
+    `edit_op` is a LOCAL edit — it reaches for the write method the var's
+    DECLARED merge earned (`set_at` on MergeLastWrite, `add_at` on
+    MergeCrdtSum), which is what queues the outgoing op. The caller never picks
+    the verb, and could not: the method it would have to name does not exist on
+    the other marker, so a mis-declared call is a rustc error.
+
+    `apply_op` is the arriving half — it checks the op's verb against the same
+    declaration and then assigns directly, without going through the write
+    methods, so applying a remote op never queues an echo of itself."""
+    if not asks_op:
+        return
+    declared = ", ".join(f"{path}/{s['name']}" for _, path, s in fields) or "(none)"
+    out.emit("// ---- context: var ops by declared merge (fm:context-op)")
+    # one listing, shared by both miss arms rather than inlined into each
+    miss = json.dumps("no var {}/{} — declared: " + declared, ensure_ascii=False)
+    out.emit("fn context_op_miss(path: &str, name: &str) -> String {")
+    out.emit(f"    format!({miss}, path, name)")
+    out.emit("}")
+    out.emit("")
+    out.emit("impl Context {")
+    out.emit("    // a LOCAL edit: mutate through the declared merge's write")
+    out.emit("    // method, which queues the op, and answer with the resolved")
+    out.emit("    // value. `value` is the new value for a last-write var and")
+    out.emit("    // the DELTA for a crdt-sum one — the declaration says which.")
+    out.emit("    pub fn edit_op(&mut self, path: &str, name: &str,"
+             " value: serde_json::Value) -> Result<serde_json::Value, String> {")
+    out.emit("        match (path, name) {")
+    for fname, path, s in fields:
+        addr = f"{path}/{s['name']}"
+        out.emit(f"            ({json.dumps(path)}, {json.dumps(s['name'])}) => {{",
+                 s["src"], s["line"])
+        if s["merge"] not in MERGE_WRITE:
+            tag = next(k for k, v in VAR_MERGE.items() if v == s["merge"])
+            out.emit(f"                let _ = value;")
+            out.emit(f"                Err({json.dumps(addr)}.to_string() + "
+                     f"{json.dumps(f': merge {tag!r} has no write API yet')})")
+        else:
+            verb, method = MERGE_WRITE[s["merge"]]
+            ty = "u64" if verb == "add" else s["type"]
+            what = "delta" if verb == "add" else "value"
+            out.emit(f"                let v: {ty} = serde_json::from_value(value)",
+                     s["src"], s["line"])
+            out.emit(f"                    .map_err(|e| format!("
+                     f"{json.dumps(addr + ' (' + what + '): {}')}, e))?;")
+            out.emit(f"                self.{fname}.{method}("
+                     f"{json.dumps(path)}, {json.dumps(s['name'])}, v);",
+                     s["src"], s["line"])
+            out.emit(f"                Ok(serde_json::to_value(&self.{fname}.value)",
+                     s["src"], s["line"])
+            out.emit("                    .unwrap_or(serde_json::Value::Null))")
+        out.emit("            }")
+    out.emit("            _ => Err(context_op_miss(path, name)),")
+    out.emit("        }")
+    out.emit("    }")
+    out.emit("")
+    out.emit("    // an ARRIVING op. The verb must be the one this var's merge")
+    out.emit("    // speaks; a set aimed at a crdt-sum var is a wire error, not")
+    out.emit("    // a silent overwrite. Assignment is direct, so applying a")
+    out.emit("    // remote op never queues an echo of itself.")
+    out.emit("    pub fn apply_op(&mut self, path: &str, name: &str, op: &str,"
+             " value: serde_json::Value) -> Result<serde_json::Value, String> {")
+    out.emit("        match (path, name) {")
+    for fname, path, s in fields:
+        addr = f"{path}/{s['name']}"
+        tag = next(k for k, v in VAR_MERGE.items() if v == s["merge"])
+        out.emit(f"            ({json.dumps(path)}, {json.dumps(s['name'])}) => {{",
+                 s["src"], s["line"])
+        if s["merge"] not in MERGE_WRITE:
+            out.emit("                let _ = value;")
+            out.emit(f"                Err(format!({json.dumps(addr + ': merge ' + repr(tag) + ' speaks no op (got {})')}, op))")
+        else:
+            verb, _ = MERGE_WRITE[s["merge"]]
+            wrong = json.dumps(f"{addr}: merge {tag!r} speaks {verb!r}, not " + "{}")
+            out.emit(f"                if op != {json.dumps(verb)} {{")
+            out.emit(f"                    return Err(format!({wrong}, op));")
+            out.emit("                }")
+            ty = "u64" if verb == "add" else s["type"]
+            out.emit(f"                let v: {ty} = serde_json::from_value(value)",
+                     s["src"], s["line"])
+            out.emit(f"                    .map_err(|e| format!("
+                     f"{json.dumps(addr + ': {}')}, e))?;")
+            if verb == "add":
+                out.emit(f"                self.{fname}.value = self.{fname}.value + v;",
+                         s["src"], s["line"])
+            else:
+                out.emit(f"                self.{fname}.value = v;", s["src"], s["line"])
+            out.emit(f"                Ok(serde_json::to_value(&self.{fname}.value)",
+                     s["src"], s["line"])
+            out.emit("                    .unwrap_or(serde_json::Value::Null))")
+        out.emit("            }")
+    out.emit("            _ => Err(context_op_miss(path, name)),")
+    out.emit("        }")
+    out.emit("    }")
+    out.emit("}")
+    out.emit("")
 
 
 def emit_context_set(fields: list, asks_set: list, out: Emitter):
