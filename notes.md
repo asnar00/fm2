@@ -1616,12 +1616,31 @@ changing only what it claims):
 6. var sync by declared merge: the broadcast channel speaks
    node-path-keyed var ops; marker impls emit them (set/add semantics
    arrive on Var).
+6a. persistence + eviction (added on the rung-5 worker's recommendation,
+   2026-08-21): a user's world survives a server restart, and idle
+   worlds can be reclaimed. Sequenced after sync because a var op on the
+   wire is the same shape a disk record wants; eviction lands here too —
+   it is the same question as the table-only-grows leak.
 7. migration: feature by feature, each SyncVar use becomes a `.vars`
    declaration + field access; per-feature toggle proofs cover both eras.
 8. absorption complete: SyncVar has zero callers and is deleted; the
    chooser's tickboxes drive `enabled` — instant, per-user, work
    preserved. DONE = untick a feature in the chooser, it is off for you
    only, on all your devices, and re-tick finds your state intact.
+
+## found in passing: the four-digit tag collision (2026-08-21, rung-5 worker)
+
+`comms/messaging`'s `sender_of` keys users by the LAST FOUR DIGITS of
+their phone number, and `dictate/mirror`'s blob storage inherits the
+key — so two guests whose numbers share a last-four share a blob
+namespace today: one could see, or overwrite, the other's mirrored
+audio. Pre-existing, unrelated to the contexts ladder, surfaced while
+rung 5 was deriving cookie→user (it deliberately keys contexts on the
+full phone number for exactly this reason, and does not call
+`sender_of`). Two nodes now independently derive user-from-cookie — the
+rule-of-two signal that a shared `sender_of` belongs in `miso/users`,
+keyed on the full number, with mirror's blob namespace migrating to it.
+Queue as a redo-adjacent fix; it touches real user data isolation.
 
 ## ideas parking lot
 
