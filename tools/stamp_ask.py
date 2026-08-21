@@ -53,7 +53,9 @@ def main():
     for user in users:
         if user == "_global":
             continue
-        q = urllib.parse.quote(user, safe="")
+        # the server does no percent-decoding (one parser to keep honest):
+        # by-key takes the raw key, whose chars are all query- and shell-safe
+        q = user
         snap = sh(f"curl -s 'localhost:8095/diag/context?user={q}'", a.local)
         try:
             vars_ = json.loads(snap)
