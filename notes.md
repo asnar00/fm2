@@ -1841,6 +1841,49 @@ these six are parked, each with its reason and revisit trigger:
 
 Everything else from the ladder's risk lists is in the residuals
 campaign and gets fixed, not parked.
+## fragments obey enabled: the census, and the half that is a design question (2026-08-21)
+
+Built as `loop/context/enabled/obey` (#p56). The page-side twin of rung 4:
+a fragment's chain links fall through to what they replaced when their node
+is off, and its furniture is marked with its owner and hidden. Four things
+worth keeping:
+
+- **The census made the mechanism honest.** 105 fragments (68 script, 32
+  style, 4 body, 1 head); 62 script + 32 style reach `index.html`, the only
+  page with a per-user world. Every script fragment is one or more of four
+  shapes — object definition (65 of 68), chain link (41 files, 75 patched
+  functions), load-time side effect (34), handler registration (12) — and
+  there is no fifth. The mechanism covers shapes two and three, plus body
+  and style; it says so, with counts, in its own spec.
+- **No JS parser is needed to gate a chain link.** The linker notes what a
+  function looks like above a fragment and wraps it below, only if it
+  changed. A patch inside a `typeof` guard that did not fire is left alone
+  for free, and the rule "a new method is a chain's start, not a link" falls
+  out of the same comparison — which is Rust's gating rule verbatim.
+- **A claim must ride the element, not its position.** The first cut marked
+  only the root a fragment added; `/build-row` re-parents `#featuresBtn` out
+  of `/features-button`'s row and deletes the row, so the button escaped its
+  owner. Marking every element in what a fragment adds fixes it. Expect this
+  class wherever one node rearranges another's DOM.
+- **The object half is returned to triage, not shipped.** A node whose only
+  page effect is a method reached through `typeof feature_X !== 'undefined'`
+  is still untouched — `panel.index.js` picks the chooser's list or the
+  changes teaser exactly that way, and says in a comment that unticking the
+  occupant should restore the teaser. Absence is what that seam wants, and
+  it needs every `const feature_X` rewritten to a window binding; the census
+  found 53 unguarded references to `feature_Loop`, so absence there throws
+  rather than degrades. That is a design conversation with a fragment
+  authorship convention in it, not a residual fix. The runtime carries an
+  empty `extra()` seam for it.
+
+**A rig lesson that cost an hour, again.** The rig's login route derived the
+phone number from every digit in the query string, so `who=a2` minted a
+different user than `who=a` — and "a device this user has never used" looked
+like a broken context join, on a build with and without the change. Two
+readings saved it: the same failure with the node unticked (so: not mine),
+and a hand-fed `VarJoin` that worked (so: not the client half). **When a rig
+says a shipped invariant broke, suspect the rig's identities first** — print
+the server's view of who each request is before believing the surface.
 
 ## ideas parking lot
 
