@@ -20,15 +20,15 @@ impl Scope {
     }
 }
 
-pub struct Var<T> {
+pub struct SyncVar<T> {
     pub scope: Scope,
     pub key: &'static str,
     _t: std::marker::PhantomData<T>,
 }
 
-impl<T: serde::Serialize + serde::de::DeserializeOwned + Default> Var<T> {
+impl<T: serde::Serialize + serde::de::DeserializeOwned + Default> SyncVar<T> {
     pub const fn new(scope: Scope, key: &'static str) -> Self {
-        Var { scope, key, _t: std::marker::PhantomData }
+        SyncVar { scope, key, _t: std::marker::PhantomData }
     }
     pub const fn local(key: &'static str) -> Self { Self::new(Scope::Local, key) }
     pub const fn user(key: &'static str) -> Self { Self::new(Scope::User, key) }
@@ -55,7 +55,7 @@ impl<T: serde::Serialize + serde::de::DeserializeOwned + Default> Var<T> {
     }
 }
 
-impl Var<u64> {
+impl SyncVar<u64> {
     /// counter semantics: bump locally, sync the operation (concurrent adds all count)
     pub fn add(&self, state: &mut serde_json::Value, delta: u64) {
         let v = self.get(state) + delta;

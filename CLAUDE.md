@@ -34,5 +34,5 @@ live system.
 
 A node may carry `<name>.lib.rs`: full Rust (generics, traits, comma-bearing
 types) the linker emits as-is — no chains, no merging, provenance-commented,
-toggleable with the node. Use for library types like scope's `Var<T>`; the
+toggleable with the node. Use for library types like scope's `SyncVar<T>`; the
 regex parser never sees these files, so its limits don't apply inside them.

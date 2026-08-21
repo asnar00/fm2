@@ -16,7 +16,7 @@ impl feature_Ask {
         }
         let mut s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
-        let raw = Var::<String>::user("asks").get(&s);
+        let raw = SyncVar::<String>::user("asks").get(&s);
         let mut asks: serde_json::Value = serde_json::from_str(&raw)
             .unwrap_or(serde_json::json!([]));
         if !asks.is_array() {
@@ -29,7 +29,7 @@ impl feature_Ask {
                 "status": "asked"
             }));
         }
-        Var::<String>::user("asks").set(&mut s, &asks.to_string());
+        SyncVar::<String>::user("asks").set(&mut s, &asks.to_string());
         s.to_string()
     }
 }

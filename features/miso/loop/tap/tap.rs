@@ -10,7 +10,7 @@ impl feature_Tap {
         let mut s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
         // a device-local counter: /sync escalates it to a shared one
-        Var::<u64>::local("tap_count").add(&mut s, 1);
+        SyncVar::<u64>::local("tap_count").add(&mut s, 1);
         s.to_string()
     }
 
@@ -24,7 +24,7 @@ impl feature_Tap {
         if s["open_tool"].is_string() && s["open_tool"].as_str() != Some("taps") {
             return base;
         }
-        let count = Var::<u64>::local("tap_count").get(&s);
+        let count = SyncVar::<u64>::local("tap_count").get(&s);
         let label = if count == 0 {
             "tap".to_string()
         } else {

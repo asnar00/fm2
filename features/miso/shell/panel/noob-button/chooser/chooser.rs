@@ -18,7 +18,7 @@ impl feature_Chooser {
         };
         let mut s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
-        let raw = Var::<String>::user("feature_ticks").get(&s);
+        let raw = SyncVar::<String>::user("feature_ticks").get(&s);
         let mut ticks: serde_json::Value = serde_json::from_str(&raw)
             .unwrap_or(serde_json::json!({}));
         if !ticks.is_object() {
@@ -26,7 +26,7 @@ impl feature_Chooser {
         }
         let now_on = ticks[&path].as_bool().unwrap_or(true);
         ticks[&path] = serde_json::json!(!now_on);
-        Var::<String>::user("feature_ticks").set(&mut s, &ticks.to_string());
+        SyncVar::<String>::user("feature_ticks").set(&mut s, &ticks.to_string());
         s.to_string()
     }
 }

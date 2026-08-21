@@ -27,12 +27,12 @@ impl feature_Tools {
         let state = existing.init();
         let mut s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
-        Var::<String>::local("open_tool").put(&mut s, &String::new());
+        SyncVar::<String>::local("open_tool").put(&mut s, &String::new());
         // the composed catalog as data: which tools exist here, whatever the
         // toolbar happens to be showing (the page reads this — the DOM only
         // renders the open tool's button in open mode)
         let catalog = tools_list(s.to_string());
-        Var::<String>::local("tools_catalog").put(&mut s, &catalog);
+        SyncVar::<String>::local("tools_catalog").put(&mut s, &catalog);
         s.to_string()
     }
 
@@ -47,15 +47,15 @@ impl feature_Tools {
         let mut s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
         if ev == "tools_home" {
-            Var::<String>::local("open_tool").put(&mut s, &String::new());
+            SyncVar::<String>::local("open_tool").put(&mut s, &String::new());
             return s.to_string();
         }
         if let Some(id) = ev.strip_prefix("tool_") {
             // tapping the open tool's own button returns home (#p88 — no
             // separate back button); tapping any other tool opens it
-            let open = Var::<String>::local("open_tool").get(&s);
+            let open = SyncVar::<String>::local("open_tool").get(&s);
             let next = if open == id { String::new() } else { id.to_string() };
-            Var::<String>::local("open_tool").put(&mut s, &next);
+            SyncVar::<String>::local("open_tool").put(&mut s, &next);
             return s.to_string();
         }
         state
@@ -69,7 +69,7 @@ impl feature_Tools {
     fn render_toolbar(state: String) -> String {
         let s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
-        let open = Var::<String>::local("open_tool").get(&s);
+        let open = SyncVar::<String>::local("open_tool").get(&s);
         let list: serde_json::Value = serde_json::from_str(&tools_list(state.clone()))
             .unwrap_or(serde_json::json!([]));
         let empty: Vec<serde_json::Value> = Vec::new();

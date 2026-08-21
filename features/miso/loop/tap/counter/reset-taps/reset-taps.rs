@@ -10,7 +10,7 @@ impl feature_ResetTaps {
         let mut s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
         // register semantics: zero locally now, VarSet sweeps the fleet
-        Var::<u64>::global("tap_count").set(&mut s, &0);
+        SyncVar::<u64>::global("tap_count").set(&mut s, &0);
         s.to_string()
     }
 

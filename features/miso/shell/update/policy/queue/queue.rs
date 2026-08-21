@@ -17,7 +17,7 @@ impl feature_Queue {
         };
         let mut s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
-        let raw = Var::<String>::user("update_ticks").get(&s);
+        let raw = SyncVar::<String>::user("update_ticks").get(&s);
         let mut ticks: serde_json::Value = serde_json::from_str(&raw)
             .unwrap_or(serde_json::json!({}));
         if !ticks.is_object() {
@@ -25,7 +25,7 @@ impl feature_Queue {
         }
         let now_on = ticks[&build].as_bool().unwrap_or(true);
         ticks[&build] = serde_json::json!(!now_on);
-        Var::<String>::user("update_ticks").set(&mut s, &ticks.to_string());
+        SyncVar::<String>::user("update_ticks").set(&mut s, &ticks.to_string());
         s.to_string()
     }
 }

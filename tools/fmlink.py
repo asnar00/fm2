@@ -53,24 +53,24 @@ SLOT_COMMENT = {"head": "<!-- fm: {} -->", "style": "/* fm: {} */",
                 "body": "<!-- fm: {} -->", "script": "// fm: {}"}
 
 # ---- context slots: the sidecar declaration file ----------------------------
-# a node may carry <name>.slots, one declaration per line:
+# a node may carry <name>.vars, one declaration per line:
 #   name: Type = default (scope, merge, inherit)
 # the linker collects them from every composed node and emits a `Context`
-# struct whose fields are typed by the slot family in the context node's
+# struct whose fields are typed by the var family in the context node's
 # verbatim library. scaffolding per the standing arrangement: the linker holds
 # the mechanism, features/miso/loop/context owns the design and the types.
-SLOT_RE = re.compile(
+VAR_DECL_RE = re.compile(
     r"^(\w+)\s*:\s*(.+?)\s*=\s*(.+?)\s*"
     r"\(\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*\)$")
-SLOT_SCOPE = {"global": "ScopeGlobal", "group": "ScopeGroup",
+VAR_SCOPE = {"global": "ScopeGlobal", "group": "ScopeGroup",
               "user": "ScopeUser", "device": "ScopeDevice"}
-SLOT_MERGE = {"last-write": "MergeLastWrite", "crdt-sum": "MergeCrdtSum",
+VAR_MERGE = {"last-write": "MergeLastWrite", "crdt-sum": "MergeCrdtSum",
               "better": "MergeBetter", "none": "MergeNone"}
-SLOT_INHERIT = {"inherit": "Inherit", "own": "Own"}
+VAR_INHERIT = {"inherit": "Inherit", "own": "Own"}
 # the hook: this token in a composed verbatim library switches slot collection
 # and Context emission on. No hook in the composition -> no struct, and the
 # emitted source is byte-identical to a build without this mechanism.
-SLOT_HOOK = "pub struct Slot<"
+VAR_HOOK = "pub struct Var<"
 
 # fn names that additionally get std::ops glue, with required arity
 OP_TRAITS = {"add": ("Add", 2), "sub": ("Sub", 2), "mul": ("Mul", 2),
@@ -186,7 +186,7 @@ def contributes(directory: Path) -> bool:
     real = directory.resolve()
     if (real / "assets").is_dir() or (real / "deps.toml").exists():
         return True
-    return any(f.is_file() and (f.suffix in (".rs", ".slots")
+    return any(f.is_file() and (f.suffix in (".rs", ".vars")
                                 or f.suffix[1:] in EXT_SLOT)
                for f in real.iterdir())
 
@@ -311,9 +311,9 @@ class FeatureCode:
             if rs.name.endswith(".lib.rs"):
                 continue
             self._parse(rs)
-        # context slot declarations: sidecar files the chain parser never sees
-        self.slots = []           # dicts: name, type, default, scope/merge/inherit
-        for sf in sorted(feature_dir.glob("*.slots")):
+        # context var declarations: sidecar files the chain parser never sees
+        self.vars = []           # dicts: name, type, default, scope/merge/inherit
+        for sf in sorted(feature_dir.glob("*.vars")):
             self._parse_slots(sf)
 
     def _parse_slots(self, sf: Path):
@@ -323,26 +323,26 @@ class FeatureCode:
             line = raw.split("#", 1)[0].strip()
             if not line:
                 continue
-            m = SLOT_RE.match(line)
+            m = VAR_DECL_RE.match(line)
             if not m:
-                fail(f"{src}:{lineno}: cannot parse slot declaration "
+                fail(f"{src}:{lineno}: cannot parse var declaration "
                      f"{line!r} — expected "
                      f"'name: Type = default (scope, merge, inherit)'")
             name, ty, default, scope, merge, inherit = m.groups()
-            for word, table, what in ((scope, SLOT_SCOPE, "scope"),
-                                      (merge, SLOT_MERGE, "merge"),
-                                      (inherit, SLOT_INHERIT, "inherit")):
+            for word, table, what in ((scope, VAR_SCOPE, "scope"),
+                                      (merge, VAR_MERGE, "merge"),
+                                      (inherit, VAR_INHERIT, "inherit")):
                 if word not in table:
                     fail(f"{src}:{lineno}: unknown {what} '{word}' — "
                          f"expected one of {' | '.join(sorted(table))}")
             if name in seen:
-                fail(f"{src}:{lineno}: slot '{name}' already declared on this "
+                fail(f"{src}:{lineno}: var '{name}' already declared on this "
                      f"node at line {seen[name]}")
             seen[name] = lineno
-            self.slots.append({"name": name, "type": ty, "default": default,
-                               "scope": SLOT_SCOPE[scope],
-                               "merge": SLOT_MERGE[merge],
-                               "inherit": SLOT_INHERIT[inherit],
+            self.vars.append({"name": name, "type": ty, "default": default,
+                               "scope": VAR_SCOPE[scope],
+                               "merge": VAR_MERGE[merge],
+                               "inherit": VAR_INHERIT[inherit],
                                "src": src, "line": lineno})
 
     def _parse(self, rs: Path):
@@ -451,7 +451,7 @@ def node_path(rel: str) -> str:
 
 
 def emit_context(features: list, out: Emitter):
-    """Collect every composed node's .slots declarations and emit the Context
+    """Collect every composed node's .vars declarations and emit the Context
     struct plus Context::fresh(). Scaffolding: the mechanism lives here, the
     design and the slot types live in features/miso/loop/context.
 
@@ -459,18 +459,18 @@ def emit_context(features: list, out: Emitter):
     (fm.md), so that disambiguates two nodes declaring the same slot name —
     and unlike a flattened path it survives a regroup, which the tree's own
     law says must never change behaviour. The full path rides in a comment."""
-    if not any(SLOT_HOOK in text for f in features for _, text in f.libs):
+    if not any(VAR_HOOK in text for f in features for _, text in f.libs):
         return
     fields = []
     for feature in features:
         node = Path(feature.rel).name
-        for s in feature.slots:
+        for s in feature.vars:
             fields.append((f"{node}_{s['name']}", node_path(feature.rel), s))
-    out.emit("// ---- context: slots declared by composed nodes (<name>.slots)")
+    out.emit("// ---- context: vars declared by composed nodes (<name>.vars)")
     out.emit("pub struct Context {")
     for fname, path, s in fields:
         out.emit(f"    // {path}/{s['name']} ({s['src']}:{s['line']})")
-        out.emit(f"    pub {fname}: Slot<{s['type']}, {s['scope']}, "
+        out.emit(f"    pub {fname}: Var<{s['type']}, {s['scope']}, "
                  f"{s['merge']}, {s['inherit']}>,", s["src"], s["line"])
     out.emit("}")
     out.emit("")
@@ -478,7 +478,7 @@ def emit_context(features: list, out: Emitter):
     out.emit("    pub fn fresh() -> Context {")
     out.emit("        Context {")
     for fname, _, s in fields:
-        out.emit(f"            {fname}: Slot::new({s['default']}),",
+        out.emit(f"            {fname}: Var::new({s['default']}),",
                  s["src"], s["line"])
     out.emit("        }")
     out.emit("    }")

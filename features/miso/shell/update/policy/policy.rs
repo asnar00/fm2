@@ -15,7 +15,7 @@ impl feature_Policy {
         }
         let mut s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
-        Var::<String>::user("update_policy").set(&mut s, &choice);
+        SyncVar::<String>::user("update_policy").set(&mut s, &choice);
         s.to_string()
     }
 

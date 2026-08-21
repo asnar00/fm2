@@ -11,8 +11,8 @@ impl feature_DoubleTaps {
             .unwrap_or(serde_json::json!({}));
         // read the count the user can see, write twice it — register
         // semantics, the fleet converges like reset's zero does
-        let doubled = Var::<u64>::local("tap_count").get(&s) * 2;
-        Var::<u64>::global("tap_count").set(&mut s, &doubled);
+        let doubled = SyncVar::<u64>::local("tap_count").get(&s) * 2;
+        SyncVar::<u64>::global("tap_count").set(&mut s, &doubled);
         s.to_string()
     }
 

@@ -12,7 +12,7 @@ impl feature_Sync {
         }
         let mut s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
-        Var::<u64>::global("tap_count").add_op(&mut s, 1);
+        SyncVar::<u64>::global("tap_count").add_op(&mut s, 1);
         s.to_string()
     }
 }

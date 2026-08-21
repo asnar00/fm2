@@ -15,10 +15,10 @@ impl feature_Review {
         }
         let mut s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
-        let prev: i64 = Var::<String>::user("update_accepted").get(&s)
+        let prev: i64 = SyncVar::<String>::user("update_accepted").get(&s)
             .parse().unwrap_or(0);
         if build > prev {
-            Var::<String>::user("update_accepted").set(&mut s, &build.to_string());
+            SyncVar::<String>::user("update_accepted").set(&mut s, &build.to_string());
         }
         s.to_string()
     }

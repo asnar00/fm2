@@ -9,12 +9,12 @@ impl feature_DecrementTaps {
         }
         let mut s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
-        let count = Var::<u64>::local("tap_count").get(&s);
+        let count = SyncVar::<u64>::local("tap_count").get(&s);
         if count == 0 {
             return state; // the asked-for guard, and the u64 floor
         }
         let lowered = count - 1;
-        Var::<u64>::global("tap_count").set(&mut s, &lowered);
+        SyncVar::<u64>::global("tap_count").set(&mut s, &lowered);
         s.to_string()
     }
 
