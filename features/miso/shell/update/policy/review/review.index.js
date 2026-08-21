@@ -20,6 +20,19 @@ const feature_Review = {
     location.reload();
   },
 
+  // seam: which changes.json entries earn a release line — every pending
+  // build in the gap that no feature row already represents. A subfeature
+  // may narrow the set (see /bookkeeping).
+  releases(changes, running, server, covered) {
+    return changes.filter((c) =>
+      c.build > running && c.build <= server && !covered.has(c.build));
+  },
+
+  // seam: how many releases the header claims. Default: the build gap.
+  count(running, server) {
+    return server - running;
+  },
+
   // the awaiting section: pending features from the server's LIVE tree —
   // any node whose build exceeds what's running here
   async section() {
@@ -54,17 +67,17 @@ const feature_Review = {
     const covered = new Set(pending.map((n) => n.build));
     const changes = await fetch('changes.json', { cache: 'no-store' })
       .then((r) => r.ok ? r.json() : []).catch(() => []);
-    rows += changes
-      .filter((c) => c.build > running && c.build <= server && !covered.has(c.build))
+    rows += this.releases(changes, running, server, covered)
       .map((c) => '<div class="crow"><span class="cnum">' + c.build + '</span>'
         + '<div class="ctext"><span class="cpurpose">'
         + String(c.text).replace(/&/g, '&amp;').replace(/</g, '&lt;')
         + '</span></div></div>').join('');
     const sect = document.createElement('div');
     sect.id = 'awaiting';
+    const n = this.count(running, server);
     sect.innerHTML =
       '<div class="awhead">awaiting update — build ' + server
-      + (server > running + 1 ? ' (' + (server - running) + ' releases)' : '') + '</div>'
+      + (n > 1 ? ' (' + n + ' releases)' : '') + '</div>'
       + rows
       + '<div class="awrow"><button id="acceptBtn">update</button></div>';
     box.prepend(sect);
