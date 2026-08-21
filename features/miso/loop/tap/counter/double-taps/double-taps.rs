@@ -7,13 +7,11 @@ impl feature_DoubleTaps {
         if e["ev"].as_str().unwrap_or("") != "tap_double" {
             return state;
         }
-        let mut s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        // read the count the user can see, write twice it — register
-        // semantics, the fleet converges like reset's zero does
-        let doubled = SyncVar::<u64>::local("tap_count").get(&s) * 2;
-        SyncVar::<u64>::global("tap_count").set(&mut s, &doubled);
-        s.to_string()
+        // read the count the user can see, write twice it — a reset to a
+        // computed number, so the fleet converges the way zero does
+        let doubled = tap_count_read() * 2;
+        tap_count_reset(doubled);
+        state
     }
 
     // the sub-tool idiom: ×2 rides the toolbar while taps is open

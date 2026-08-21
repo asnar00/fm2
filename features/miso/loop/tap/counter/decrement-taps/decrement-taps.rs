@@ -7,15 +7,14 @@ impl feature_DecrementTaps {
         if e["ev"].as_str().unwrap_or("") != "tap_dec" {
             return state;
         }
-        let mut s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        let count = SyncVar::<u64>::local("tap_count").get(&s);
+        let count = tap_count_read();
         if count == 0 {
             return state; // the asked-for guard, and the u64 floor
         }
-        let lowered = count - 1;
-        SyncVar::<u64>::global("tap_count").set(&mut s, &lowered);
-        s.to_string()
+        // -1 is a reset to a computed number, like ×2: it opens a new epoch,
+        // so a tap in flight cannot land on top of the lowered count
+        tap_count_reset(count - 1);
+        state
     }
 
     // the sub-tool idiom: -1 rides the toolbar while taps is open

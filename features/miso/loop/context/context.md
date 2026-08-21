@@ -31,6 +31,26 @@ adds still in flight from before it — is argued in converge.md, beside the res
 of the merge discipline. A composition that declares no counter is unchanged by
 its existence: the type is inert and the linker emits nothing extra.
 
+## what unticking this subtree means, from rung 7 on
+
+Until rung 7 the whole `/context` subtree could be unticked and the composed
+source went back, byte for byte, to a build that predated it — the machinery was
+additive and nothing depended on it. That ends here, deliberately and by
+construction: from the migration on, features keep their state IN the context,
+so a composition without it is a composition where those features have nowhere
+to put their values.
+
+The failure is loud, not degraded. A migrated node names a generated field and a
+generated method; with the context unticked neither exists and the build stops
+with a rustc error pointing at the node's own line. That is the right answer —
+a tap counter that silently forgot how to count, or a panel that rendered empty,
+would be a worse thing to ship than a build that will not link — and it is worth
+saying plainly because the earlier rungs' specs promise the opposite for their
+own machinery, which remains true of them.
+
+So `loop/context` is no longer an optional subtree. It is a dependency of every
+feature that has migrated, and the list grows as rung 7 proceeds.
+
 ## glossary
 
 - **var**: one named, typed, defaulted piece of a context, carrying its own scope, merge discipline and inheritance. A constant earns a var when it earns a variable; the declaration line *is* the promotion.

@@ -7,11 +7,11 @@ impl feature_ResetTaps {
         if e["ev"].as_str().unwrap_or("") != "tap_reset" {
             return state;
         }
-        let mut s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        // register semantics: zero locally now, VarSet sweeps the fleet
-        SyncVar::<u64>::global("tap_count").set(&mut s, &0);
-        s.to_string()
+        // reset semantics: the counter's `set` opens a new epoch, so every tap
+        // still in flight from before this moment is dropped on arrival rather
+        // than landing on top of the zero (converge.md argues the direction)
+        tap_count_reset(0);
+        state
     }
 
     // a sub-tool of taps: the reset control rides the toolbar while the

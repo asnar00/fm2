@@ -69,6 +69,20 @@ pub fn context_layer<R>(f: impl FnOnce(&Context) -> Option<R>) -> Option<R> {
     }
 }
 
+/// write the layer, the counterpart of rung 3's `edit_context`.
+///
+/// A LOCAL edit of a global-scoped var has to land here, not in the caller's own
+/// world: a global var's resolver reads the layer and never the user's field, so
+/// an edit written anywhere else would be invisible until the server relayed it
+/// back — which is exactly the optimistic-display-and-offline behaviour the loop
+/// must not lose. The write is to the LIVE layer; rung 7a's re-freeze before the
+/// paint is what makes it visible in the same frame.
+pub fn edit_layer<R>(f: impl FnOnce(&mut Context) -> R) -> R {
+    let cell = context_layer_cell();
+    let mut live = cell.write().unwrap_or_else(|p| p.into_inner());
+    f(&mut *live)
+}
+
 // ---- op identity ----------------------------------------------------------
 
 /// this instance's nonce. The server mints its own; a wasm place has no clock
