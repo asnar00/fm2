@@ -1,0 +1,7 @@
+# slots this node declares. one per line:
+#   name: Type = default (scope, merge, inherit)
+# scope   ∈ global | group | user | device
+# merge   ∈ last-write | crdt-sum | better | none
+# inherit ∈ inherit | own
+
+heartbeat: u32 = 0 (user, last-write, own)
