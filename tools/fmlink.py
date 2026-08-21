@@ -301,6 +301,10 @@ def linearise(directory: Path, out: list, excluded: list, root: Path):
 # regrouping can never rewire behaviour. "Newest is outermost", globally.
 
 CITE_RE = re.compile(r"transcripts/([\w.-]+\.md)#p(\d+)([a-z]?)")
+# a field ask's anchor: asks#<ms timestamp> — the filing time IS the position,
+# read straight from the id, no lookup (agents.md "field asks are provenance
+# too"; rebuilt 2026-08-21, hybrid #p68, second workaround = mechanism time)
+ASK_CITE_RE = re.compile(r"asks#(\d{13})")
 
 
 def read_anchor_times() -> dict:
@@ -320,9 +324,17 @@ def node_key(directory: Path, times: dict):
     spec = real / f"{real.name}.md"
     if not spec.exists():
         return None
-    m = CITE_RE.search(spec.read_text())
+    text = spec.read_text()
+    m = CITE_RE.search(text)
     if not m:
-        return None
+        a = ASK_CITE_RE.search(text)
+        if not a:
+            return None
+        import datetime
+        ms = int(a.group(1))
+        stamp = datetime.datetime.fromtimestamp(ms / 1000).strftime(
+            "%Y-%m-%d %H:%M")
+        return (stamp, "asks", ms, "")
     key = (m.group(1), int(m.group(2)), m.group(3))
     if key not in times:
         fail(f"{real.relative_to(REPO)}: spec cites {m.group(1)}#p{m.group(2)}"

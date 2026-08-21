@@ -1,3 +1,4 @@
 - [x] reset-taps
 - [x] double-taps
 - [x] decrement-taps
+- [x] square-taps
