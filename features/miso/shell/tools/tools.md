@@ -44,7 +44,46 @@ is called a toolbar, not a panel — `/panel` is the system panel.)
 - **display surface**: the screen above the toolbar, owned by the open tool.
 - **toolset**: a named page of tools (future: when the toolbar overflows).
 
+## the toolbar's two keys moved into the context (rung 7)
+
+`open_tool` and `tools_catalog` are declared `/var`s now — both
+`(device, last-write, own)`, both carrying a `js:` column naming the state key
+they used to live at — rather than keys this node put into the loop's JSON
+state. Nothing a user sees changed: tapping a tool still opens it, tapping it
+again still goes home, and navigation still stays on the device it happened on.
+
+**Device scope is the declaration `local` always was.** `SyncVar::local` meant
+"write the replica, ship nothing", and a device-scoped var's write method makes
+the same test on the declared scope tag — so opening a tool produces no op, and
+the outbox after a tool click is empty. What changes is that the rule is now in
+the declaration where it can be read, instead of at each of the five call sites.
+
+**Six fragments read `open_tool` and one reads `tools_catalog`, so both keys are
+promises.** `/steady`, `/restore`, `/account`, `/ask` (twice — the open-chip and
+the catalog), `/birthplace` and `/context-bias` all do
+`JSON.parse(feature_Loop.state).open_tool`. The `js:` columns land in the same
+commit as the declarations, so no build ever exists in which the key has left
+the page; rung 7a's bridge republishes the resolved value before every paint,
+including the first, and not one of those fragments is edited.
+
+The launcher-mode marker keeps its meaning by a different mechanism. It was
+"`init` puts the key, so the key's absence means this feature is off"; it is now
+"this node declares the key, so the key's absence means this feature is off" —
+untick `/tools` and the declaration leaves with it, and the Rust readers in
+`/tap`, `/dictate` and the counter's sub-tools that test `s["open_tool"]` see
+nothing, exactly as before.
+
 ## code description
+
+`tools.vars` declares the two: `open_tool` (the empty string, meaning the
+launcher) and `tools_catalog` (`[]`), both device-scoped, last-write, own, both
+bridged back to the page at their own names.
+
+`tools.rs`, the navigation seam — `open_tool_read`, `open_tool_write`,
+`tools_catalog_write` — is where the address is written once. `open_tool_write`
+and `tools_catalog_write` go through `edit_op`, so the verb comes from the
+declared merge; their closures clone rather than move, because `edit_context`
+replays a closure against the turn's frozen view and therefore runs it twice.
 
 `tools.rs` owns four things. `tools_list(state)` is the registry chain — the
 base returns `[]`; each tool redefines it to append its entry. `init` marks

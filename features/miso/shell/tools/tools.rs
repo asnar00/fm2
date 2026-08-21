@@ -22,18 +22,47 @@ impl feature_Tools {
 
     // launcher-mode marker: the key existing (even empty) means the toolbar
     // owns navigation; if this feature is unticked the key never appears and
-    // tools render unconditionally as before.
+    // tools render unconditionally as before. Both keys are `js:` columns on
+    // this node's declarations now, so the key exists exactly when this node
+    // is composed — which is what the marker always meant.
     fn init() -> String {
         let state = existing.init();
-        let mut s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        SyncVar::<String>::local("open_tool").put(&mut s, &String::new());
+        open_tool_write(String::new());
         // the composed catalog as data: which tools exist here, whatever the
         // toolbar happens to be showing (the page reads this — the DOM only
         // renders the open tool's button in open mode)
-        let catalog = tools_list(s.to_string());
-        SyncVar::<String>::local("tools_catalog").put(&mut s, &catalog);
-        s.to_string()
+        let catalog = tools_list(state.clone());
+        tools_catalog_write(catalog);
+        state
+    }
+
+    // ---- the navigation seam ----------------------------------------------
+    // which tool is open lives in the /context now: a DEVICE-scoped var, which
+    // is the declaration the old `local` scope always meant — navigation
+    // is per-instance and never travels. The declared scope is what stops the
+    // op: `set_at` queues nothing when the scope tag is "device", so opening a
+    // tool puts nothing on the wire.
+    //
+    // the closure handed to edit_context runs TWICE (once against the live
+    // world, once replayed against this turn's frozen view, so a later link in
+    // the same turn reads what this one wrote), so it clones rather than moves.
+
+    fn open_tool_read() -> String {
+        with_context(|c| c.tools_open_tool_get())
+    }
+
+    fn open_tool_write(id: String) {
+        edit_context(|c| {
+            let _ = c.edit_op("miso/shell/tools", "open_tool",
+                              serde_json::json!(id.clone()));
+        });
+    }
+
+    fn tools_catalog_write(catalog: String) {
+        edit_context(|c| {
+            let _ = c.edit_op("miso/shell/tools", "tools_catalog",
+                              serde_json::json!(catalog.clone()));
+        });
     }
 
     fn update(state: String, event: String) -> String {
@@ -44,19 +73,17 @@ impl feature_Tools {
             return state;
         }
         let ev = e["ev"].as_str().unwrap_or("").to_string();
-        let mut s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
         if ev == "tools_home" {
-            SyncVar::<String>::local("open_tool").put(&mut s, &String::new());
-            return s.to_string();
+            open_tool_write(String::new());
+            return state;
         }
         if let Some(id) = ev.strip_prefix("tool_") {
             // tapping the open tool's own button returns home (#p88 — no
             // separate back button); tapping any other tool opens it
-            let open = SyncVar::<String>::local("open_tool").get(&s);
+            let open = open_tool_read();
             let next = if open == id { String::new() } else { id.to_string() };
-            SyncVar::<String>::local("open_tool").put(&mut s, &next);
-            return s.to_string();
+            open_tool_write(next);
+            return state;
         }
         state
     }
@@ -67,9 +94,7 @@ impl feature_Tools {
     }
 
     fn render_toolbar(state: String) -> String {
-        let s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        let open = SyncVar::<String>::local("open_tool").get(&s);
+        let open = open_tool_read();
         let list: serde_json::Value = serde_json::from_str(&tools_list(state.clone()))
             .unwrap_or(serde_json::json!([]));
         let empty: Vec<serde_json::Value> = Vec::new();
