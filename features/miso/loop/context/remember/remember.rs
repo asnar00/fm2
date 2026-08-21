@@ -65,12 +65,19 @@ impl feature_Remember {
         }
         let who = context_user_now();
         if !who.is_empty() {
-            context_log_append(&who, serde_json::json!({
+            let mut record = serde_json::json!({
                 "path": m["data"]["path"].clone(),
                 "name": m["data"]["name"].clone(),
                 "op": m["data"]["op"].clone(),
                 "value": m["data"]["value"].clone(),
-            }));
+            });
+            // an op that carries an identity carries it into the log too, so a
+            // restart can prime a seen-set from it. A composition whose ops have
+            // no ids writes exactly the records it wrote before.
+            if m["data"]["id"].is_string() {
+                record["id"] = m["data"]["id"].clone();
+            }
+            context_log_append(&who, record);
         }
         reply
     }

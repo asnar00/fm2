@@ -74,13 +74,17 @@ VAR_INHERIT = {"inherit": "Inherit", "own": "Own"}
 # (rung 6 syncs a user's own vars across their instances; what global and group
 # still await is the OVERLAY chain — a value living above the user and falling
 # through to them — which no rung on the ladder owns yet.)
+# (the overlay chain arrived with the ladder's rung 6b, so `global` is real and
+# no longer refused. `group` still is: a group layer needs to know who is in a
+# group, and no rung owns membership.)
 VAR_SCOPE_AWAITS = {
-    "global": "scope 'global' awaits the overlay chain (a value above the user "
-              "that a user's absence falls through to) — no rung owns it yet; "
-              "declare user or device for now",
-    "group": "scope 'group' awaits the overlay chain and a membership model — "
-             "no rung owns either yet; declare user or device for now",
+    "group": "scope 'group' awaits a membership model — the overlay chain "
+             "resolves straight through the group layer because nothing can "
+             "say who is in one; declare user, global or device for now",
 }
+# a scope whose values live in the shared `_global` layer rather than in any
+# user's world. The resolver reads the layer and never the user's own field.
+VAR_SCOPE_LAYER = "ScopeGlobal"
 # the hook: this token in a composed verbatim library switches slot collection
 # and Context emission on. No hook in the composition -> no struct, and the
 # emitted source is byte-identical to a build without this mechanism.
@@ -131,6 +135,13 @@ MERGE_WRITE = {"MergeLastWrite": ("set", "set_at"),
 # lets a composition missing that door fail by name here rather than as a rustc
 # error inside a verbatim library.
 REMEMBER_HOOK = "fm:context-remember"
+# the seventh hook: a composed node carrying this token asks for the overlay
+# chain — a per-var presence record, a resolved read per var that falls from the
+# user's own value through the shared layer to the declared default, the `clear`
+# verb that returns a var to inheriting, and the scope lookup that routes a
+# global var's ops to the layer. No asker -> none of it, no presence record, and
+# every read stays the raw `.value` it was before this rung.
+OVERLAY_HOOK = "fm:context-overlay"
 
 # fn names that additionally get std::ops glue, with required arity
 OP_TRAITS = {"add": ("Add", 2), "sub": ("Sub", 2), "mul": ("Mul", 2),
@@ -550,7 +561,107 @@ def gate_plan(features: list) -> dict:
     return plan
 
 
-def emit_gate_predicates(features: list, plan: dict, out: Emitter, src, line):
+def emit_context_presence(fields: list, out: Emitter):
+    """The presence record: one bool per var, mirroring the Context's fields.
+
+    Presence belongs to a var, and the tidy home for it would be a field on
+    `Var` — but that is rung 1's verbatim library, and putting it there would
+    leave the bit in every composition whether or not it wanted overlays. A
+    parallel record generated under the same hook keeps the property exactly as
+    toggleable as the feature that needs it, and costs one bool per var.
+
+    A var declared `own` starts present: it has no layer to fall to, so it is
+    always its own answer. A var declared `inherit` starts ABSENT, holding its
+    declared default, which is what makes 'never touched' expressible."""
+    out.emit("// ---- context: presence, one bool per var (fm:context-overlay)")
+    out.emit("#[derive(Clone)]")
+    out.emit("pub struct Present {")
+    for fname, path, s in fields:
+        out.emit(f"    pub {fname}: bool,", s["src"], s["line"])
+    out.emit("}")
+    out.emit("")
+    out.emit("impl Present {")
+    out.emit("    pub fn fresh() -> Present {")
+    out.emit("        Present {")
+    for fname, _, s in fields:
+        starts = "true" if s["inherit"] == "Own" else "false"
+        out.emit(f"            {fname}: {starts},", s["src"], s["line"])
+    out.emit("        }")
+    out.emit("    }")
+    out.emit("}")
+    out.emit("")
+
+
+def emit_context_resolve(fields: list, out: Emitter):
+    """THE resolved read: one `<field>_get()` per var, and the scope lookup that
+    routes an op to the world that owns it.
+
+    Resolution falls through the overlay chain — own value if present, then the
+    group layer, then the `_global` layer, then the declared default. The group
+    step is written as a comment rather than as code because nothing can say who
+    is in a group; when membership exists it lands between these two lines.
+
+    A `global`-scoped var never consults the user's own field at all: its
+    authority is the layer, and the field every user carries for it is unread
+    ballast that keeps `Context` one shape."""
+    out.emit("// ---- context: the resolved read (fm:context-overlay)")
+    out.emit("impl Context {")
+    for fname, path, s in fields:
+        addr = f"{path}/{s['name']}"
+        layered = (s["scope"] == VAR_SCOPE_LAYER)
+        out.emit(f"    /// {addr} ({'global — the layer is the authority'
+                                    if layered else s['inherit'].lower()})")
+        out.emit(f"    pub fn {fname}_get(&self) -> {s['type']} {{",
+                 s["src"], s["line"])
+        if not layered and s["inherit"] != "Own":
+            out.emit(f"        if self.present.{fname} {{")
+            out.emit(f"            return self.{fname}.value.clone();",
+                     s["src"], s["line"])
+            out.emit("        }")
+        elif not layered:
+            # `own`: always present, never falls through
+            out.emit(f"        return self.{fname}.value.clone();",
+                     s["src"], s["line"])
+            out.emit("    }")
+            continue
+        # ... the group layer would be consulted here ...
+        out.emit(f"        if let Some(v) = context_layer(|g| if g.present.{fname} "
+                 f"{{ Some(g.{fname}.value.clone()) }} else {{ None }}) {{",
+                 s["src"], s["line"])
+        out.emit("            return v;")
+        out.emit("        }")
+        out.emit(f"        {s['default']}", s["src"], s["line"])
+        out.emit("    }")
+    out.emit("")
+    out.emit("    // which world owns a var's authority: the shared layer for a")
+    out.emit("    // global-scoped one, the requester's own for everything else.")
+    out.emit("    pub fn scope_of(path: &str, name: &str) -> Option<&'static str> {")
+    out.emit("        match (path, name) {")
+    for fname, path, s in fields:
+        tag = next(k for k, v in VAR_SCOPE.items() if v == s["scope"])
+        out.emit(f"            ({json.dumps(path)}, {json.dumps(s['name'])}) "
+                 f"=> Some({json.dumps(tag)}),", s["src"], s["line"])
+    out.emit("            _ => None,")
+    out.emit("        }")
+    out.emit("    }")
+    out.emit("")
+    out.emit("    // whether a var may be cleared: an `own` var has no layer to")
+    out.emit("    // fall back to, so returning it to inheriting is meaningless.")
+    out.emit("    pub fn inherits(path: &str, name: &str) -> bool {")
+    out.emit("        match (path, name) {")
+    for fname, path, s in fields:
+        out.emit(f"            ({json.dumps(path)}, {json.dumps(s['name'])}) "
+                 f"=> {'false' if s['inherit'] == 'Own' else 'true'},",
+                 s["src"], s["line"])
+    out.emit("            _ => false,")
+    out.emit("        }")
+    out.emit("    }")
+    out.emit("}")
+    out.emit("")
+
+
+def emit_gate_predicates(features: list, plan: dict, out: Emitter, src, line,
+                         resolved: bool = False):
     """`<node>_on()` per composed node: own enabled AND the parent's answer.
     The tree is known at link time, so an ancestor's untick silences its whole
     subtree through a conjunction rustc inlines — no path string is ever
@@ -564,9 +675,14 @@ def emit_gate_predicates(features: list, plan: dict, out: Emitter, src, line):
         me = plan[f.rel]
         parent = plan.get(me["parent"]) if me["parent"] else None
         conj = (f" && self.{parent['ident']}_on()" if parent else "")
+        # with the overlay composed a gate reads the RESOLVED enablement, which
+        # is what lets a value set once on the shared layer reach every user who
+        # never overrode it.
+        own = (f"self.{me['ident']}_enabled_get()" if resolved
+               else f"self.{me['ident']}_enabled.value")
         out.emit(f"    /// {me['path']}")
         out.emit(f"    pub fn {me['ident']}_on(&self) -> bool "
-                 f"{{ self.{me['ident']}_enabled.value{conj} }}", src, line)
+                 f"{{ {own}{conj} }}", src, line)
     out.emit("}")
     out.emit("")
 
@@ -596,6 +712,8 @@ def emit_context(features: list, out: Emitter):
                for _, text in f.sources + f.libs if OP_HOOK in text]
     asks_remember = [f.rel for f in features
                      for _, text in f.sources + f.libs if REMEMBER_HOOK in text]
+    asks_overlay = [f.rel for f in features
+                    for _, text in f.sources + f.libs if OVERLAY_HOOK in text]
     if not any(VAR_HOOK in text for f in features for _, text in f.libs):
         for asker, what, token in ((asks_snapshot, "Context::snapshot()", SNAPSHOT_HOOK),
                                    (asks_set, "Context::set_from_json()", SET_HOOK),
@@ -603,7 +721,9 @@ def emit_context(features: list, out: Emitter):
                                     "the enabled gates", GATE_HOOK),
                                    (asks_op, "the var op methods", OP_HOOK),
                                    (asks_remember, "context persistence",
-                                    REMEMBER_HOOK)):
+                                    REMEMBER_HOOK),
+                                   (asks_overlay, "the overlay chain",
+                                    OVERLAY_HOOK)):
             if asker:
                 fail(f"{asker[0]} asks for {what} "
                      f"('{token}') but no composed node provides the var "
@@ -629,6 +749,23 @@ def emit_context(features: list, out: Emitter):
         fail(f"{asks_remember[0]} persists contexts ('{REMEMBER_HOOK}') but no "
              f"composed node provides the op methods ('{OP_HOOK}') that a log "
              f"replays through — tick loop/context/converge, or untick it")
+    # the overlay resolves a var by falling from the user's own value through
+    # the shared layer, and both halves of that are op machinery: `clear` is an
+    # op verb, and a global var's authority is reached by routing its ops.
+    if asks_overlay and not asks_op:
+        fail(f"{asks_overlay[0]} asks for the overlay chain ('{OVERLAY_HOOK}') "
+             f"but no composed node provides the op methods ('{OP_HOOK}') it "
+             f"resolves and routes through — tick loop/context/converge, or "
+             f"untick the overlay")
+    if not asks_overlay:
+        # global scope has no layer to live in without the overlay composed, so
+        # the refusal that rung 6b lifted comes back for this composition.
+        for feature in features:
+            for s in feature.vars:
+                if s["scope"] == VAR_SCOPE_LAYER:
+                    fail(f"{s['src']}:{s['line']}: scope 'global' needs the "
+                         f"overlay chain ('{OVERLAY_HOOK}') — tick "
+                         f"loop/context/converge/overlay, or declare user")
     plan = gate_plan(features) if asks_gate else None
     gate_src, gate_line = (asks_gate[0][1], 1) if asks_gate else (None, None)
     fields = []
@@ -653,23 +790,34 @@ def emit_context(features: list, out: Emitter):
         out.emit(f"    // {path}/{s['name']} ({s['src']}:{s['line']})")
         out.emit(f"    pub {fname}: Var<{s['type']}, {s['scope']}, "
                  f"{s['merge']}, {s['inherit']}>,", s["src"], s["line"])
+    if asks_overlay:
+        out.emit("    // fm:context-overlay — which vars have been written. A")
+        out.emit("    // var that has not is what makes `inherit` expressible.")
+        out.emit("    pub present: Present,")
     out.emit("}")
     out.emit("")
+    if asks_overlay:
+        emit_context_presence(fields, out)
     out.emit("impl Context {")
     out.emit("    pub fn fresh() -> Context {")
     out.emit("        Context {")
     for fname, _, s in fields:
         out.emit(f"            {fname}: Var::new({s['default']}),",
                  s["src"], s["line"])
+    if asks_overlay:
+        out.emit("            present: Present::fresh(),")
     out.emit("        }")
     out.emit("    }")
     out.emit("}")
     out.emit("")
+    if asks_overlay:
+        emit_context_resolve(fields, out)
     if plan:
-        emit_gate_predicates(features, plan, out, gate_src, gate_line)
+        emit_gate_predicates(features, plan, out, gate_src, gate_line,
+                             bool(asks_overlay))
     if not asks_snapshot:
-        emit_context_set(fields, asks_set, out)
-        emit_context_ops(fields, asks_op, out)
+        emit_context_set(fields, asks_set, out, bool(asks_overlay))
+        emit_context_ops(fields, asks_op, out, bool(asks_overlay))
         return plan
     out.emit("impl Context {")
     out.emit("    // every declared var as JSON — node path, name, current")
@@ -688,17 +836,26 @@ def emit_context(features: list, out: Emitter):
                  s["src"], s["line"])
         out.emit("                .unwrap_or(serde_json::Value::Null),")
         out.emit("            \"scope\": a.0, \"merge\": a.1, \"inherit\": a.2,")
+        if asks_overlay:
+            # additive, so rung 2's readers keep working: `value` is still this
+            # world's own field, `resolved` is what a reader would actually get.
+            out.emit(f"            \"present\": self.present.{fname},",
+                     s["src"], s["line"])
+            out.emit(f"            \"resolved\": serde_json::to_value(&self.{fname}_get())",
+                     s["src"], s["line"])
+            out.emit("                .unwrap_or(serde_json::Value::Null),")
         out.emit("        }));")
     out.emit("        serde_json::Value::Array(vars)")
     out.emit("    }")
     out.emit("}")
     out.emit("")
-    emit_context_set(fields, asks_set, out)
-    emit_context_ops(fields, asks_op, out)
+    emit_context_set(fields, asks_set, out, bool(asks_overlay))
+    emit_context_ops(fields, asks_op, out, bool(asks_overlay))
     return plan
 
 
-def emit_context_ops(fields: list, asks_op: list, out: Emitter):
+def emit_context_ops(fields: list, asks_op: list, out: Emitter,
+                     overlay: bool = False):
     """The merge discipline's two generated halves. Scaffolding: mechanism here,
     design in features/miso/loop/context/converge.
 
@@ -749,6 +906,9 @@ def emit_context_ops(fields: list, asks_op: list, out: Emitter):
             out.emit(f"                self.{fname}.{method}("
                      f"{json.dumps(path)}, {json.dumps(s['name'])}, v);",
                      s["src"], s["line"])
+            if overlay:
+                out.emit(f"                self.present.{fname} = true;",
+                         s["src"], s["line"])
             out.emit(f"                Ok(serde_json::to_value(&self.{fname}.value)",
                      s["src"], s["line"])
             out.emit("                    .unwrap_or(serde_json::Value::Null))")
@@ -774,6 +934,27 @@ def emit_context_ops(fields: list, asks_op: list, out: Emitter):
             out.emit(f"                Err(format!({json.dumps(addr + ': merge ' + repr(tag) + ' speaks no op (got {})')}, op))")
         else:
             verb, _ = MERGE_WRITE[s["merge"]]
+            if overlay:
+                # `clear` returns a var to inheriting. An `own` var has no layer
+                # beneath it, so clearing one is refused by name.
+                out.emit('                if op == "clear" {')
+                if s["inherit"] == "Own":
+                    # ensure_ascii=False: Rust wants \u{XXXX}, not \uXXXX
+                    refuse = json.dumps(
+                        f"{addr}: declared 'own', so it has nothing beneath it "
+                        f"to fall back to — a clear is meaningless",
+                        ensure_ascii=False)
+                    out.emit(f"                    return Err({refuse}.to_string());",
+                             s["src"], s["line"])
+                else:
+                    out.emit(f"                    self.present.{fname} = false;",
+                             s["src"], s["line"])
+                    out.emit(f"                    self.{fname}.value = {s['default']};",
+                             s["src"], s["line"])
+                    out.emit("                    return Ok(serde_json::to_value("
+                             f"&self.{fname}_get())", s["src"], s["line"])
+                    out.emit("                        .unwrap_or(serde_json::Value::Null));")
+                out.emit("                }")
             wrong = json.dumps(f"{addr}: merge {tag!r} speaks {verb!r}, not " + "{}")
             out.emit(f"                if op != {json.dumps(verb)} {{")
             out.emit(f"                    return Err(format!({wrong}, op));")
@@ -788,6 +969,9 @@ def emit_context_ops(fields: list, asks_op: list, out: Emitter):
                          s["src"], s["line"])
             else:
                 out.emit(f"                self.{fname}.value = v;", s["src"], s["line"])
+            if overlay:
+                out.emit(f"                self.present.{fname} = true;",
+                         s["src"], s["line"])
             out.emit(f"                Ok(serde_json::to_value(&self.{fname}.value)",
                      s["src"], s["line"])
             out.emit("                    .unwrap_or(serde_json::Value::Null))")
@@ -799,7 +983,8 @@ def emit_context_ops(fields: list, asks_op: list, out: Emitter):
     out.emit("")
 
 
-def emit_context_set(fields: list, asks_set: list, out: Emitter):
+def emit_context_set(fields: list, asks_set: list, out: Emitter,
+                     overlay: bool = False):
     """The Context's generated write path, plus the Clone a turn's frozen view
     needs. Scaffolding: mechanism here, design in features/miso/loop/context/edit.
 
@@ -818,6 +1003,8 @@ def emit_context_set(fields: list, asks_set: list, out: Emitter):
     out.emit("        Context {")
     for fname, _, s in fields:
         out.emit(f"            {fname}: self.{fname}.clone(),", s["src"], s["line"])
+    if overlay:
+        out.emit("            present: self.present.clone(),")
     out.emit("        }")
     out.emit("    }")
     out.emit("}")
@@ -839,6 +1026,10 @@ def emit_context_set(fields: list, asks_set: list, out: Emitter):
         out.emit(f"                self.{fname}.value = serde_json::from_value(value)",
                  s["src"], s["line"])
         out.emit(f"                    .map_err(|e| format!({json.dumps(addr + ': {}')}, e))?;")
+        if overlay:
+            # a write makes a var present: it stops inheriting from here on.
+            out.emit(f"                self.present.{fname} = true;",
+                     s["src"], s["line"])
         out.emit("                Ok(())")
         out.emit("            }")
     # non-ASCII stays literal: json.dumps would emit \uXXXX, which is not a
