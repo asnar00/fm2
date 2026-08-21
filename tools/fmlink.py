@@ -69,6 +69,53 @@ JS_DEFINE_RE = re.compile(r"^[ \t]*(?:const|let|var)\s+(feature_\w+)\s*=", re.M)
 HTML_VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input",
              "link", "meta", "source", "track", "wbr"}
 
+# ---- gate coverage: what a node's tickbox actually reaches -------------------
+# Every composed node gets an `enabled` var and a tickbox in the chooser, but a
+# node whose functions carry no loop state and whose fragments patch nothing has
+# nothing for either gate to hold: unticking it changes nothing until the next
+# link. The linker knows this at emission time, so it says so — here, as a table
+# (--coverage) and as a per-node record the export stamps into the tree.
+COVERAGE = {}
+
+
+def coverage_note(node: str, kind: str, n: int):
+    """Record what got emitted for one node, keyed by its tree-global path (a
+    product-local override and the node it replaces are one node). Rust gates
+    are counted per PLACE
+    and merged by max: the same node composes into every place, so its gates
+    are the same set seen twice, not twice as many."""
+    c = COVERAGE.setdefault(node, {"rust": 0, "fragment": 0, "style": 0, "body": 0})
+    c[kind] = max(c[kind], n) if kind == "rust" else c[kind] + n
+
+
+def coverage_of(node: str) -> dict:
+    return COVERAGE.get(node, {"rust": 0, "fragment": 0, "style": 0, "body": 0})
+
+
+def coverage_total(node: str) -> int:
+    return sum(coverage_of(node).values())
+
+
+def coverage_table(features: list):
+    """The report: one line per composed node, loudest case last."""
+    print("gate coverage — what each node's tickbox reaches at runtime:")
+    silent = []
+    for f in features:
+        node = node_path(f.rel)
+        c = coverage_of(node)
+        if not coverage_total(node):
+            silent.append(node)
+            continue
+        parts = [f"{c['rust']} rust" if c["rust"] else "",
+                 f"{c['fragment']} fragment" if c["fragment"] else "",
+                 f"{c['style']} style" if c["style"] else "",
+                 f"{c['body']} body" if c["body"] else ""]
+        print(f"  {node:<52} {', '.join(p for p in parts if p)}")
+    for node in silent:
+        print(f"  {node:<52} NOTHING — this tickbox is compose-time only")
+    print(f"  {len(features) - len(silent)} of {len(features)} nodes gate "
+          f"something at runtime; {len(silent)} are compose-time only")
+
 # ---- context slots: the sidecar declaration file ----------------------------
 # a node may carry <name>.vars, one declaration per line:
 #   name: Type = default (scope, merge, inherit)
@@ -1304,6 +1351,7 @@ def gated(fn: dict, key: tuple, chains: dict) -> bool:
 def compose_features(features: list, out: Emitter, plan=None) -> dict:
     """Emit feature impl blocks; return chains keyed by (name, param types)."""
     chains = {}   # key -> {"head": feature struct name, "params": [...], "ret": str}
+    gates = {}    # rel -> how many gates this place injected for that node
     for feature in features:
         if not feature.fns:
             continue
@@ -1321,6 +1369,8 @@ def compose_features(features: list, out: Emitter, plan=None) -> dict:
             heads = {k: v["head"] for k, v in chains.items()}
             inject = (gate_line(fn, key, heads, plan[feature.rel])
                       if plan and gated(fn, key, chains) else None)
+            if inject:
+                gates[feature.rel] = gates.get(feature.rel, 0) + 1
             for offset, text in enumerate(fn["lines"]):
                 out.emit(rewrite_existing(text, fn, key, heads, feature),
                          fn["src"], fn["first"] + offset)
@@ -1339,6 +1389,8 @@ def compose_features(features: list, out: Emitter, plan=None) -> dict:
             chains[key] = {"head": feature.name, "params": fn["params"],
                            "ret": fn["ret"],
                            "members": members + [feature.rel]}
+    for rel, n in gates.items():
+        coverage_note(node_path(rel), "rust", n)
     return chains
 
 
@@ -1638,10 +1690,19 @@ def build_places(product: str, places: list, base: Emitter, chains: dict,
         print(f"  site/ assets: {', '.join(top + trees)}")
     remove_stale_pages(site, {str(rel) for _, rel in asset_files})
     compose_assets(site, features)
+    write_coverage(build_dir, features)
 
     print("build OK")
     if run and native_binaries:
         run_binary(native_binaries[0], build_dir)
+
+
+def write_coverage(build_dir: Path, features: list):
+    """The coverage record beside the build, for whoever wants it as data —
+    today `tools/export_features.py`, which stamps it onto each node of the
+    exported tree so the chooser can one day say what a tickbox reaches."""
+    record = {node_path(f.rel): coverage_of(node_path(f.rel)) for f in features}
+    (build_dir / "coverage.json").write_text(json.dumps(record, indent=1))
 
 
 def remove_stale_pages(site: Path, copied: set):
@@ -1753,7 +1814,7 @@ def html_mark_roots(text: str, path: str, src: str) -> str:
     if not marked:
         fail(f"{src}: a body fragment must have at least one element at its "
              f"top level for the fragment gates to mark — this one has none")
-    return "".join(out)
+    return "".join(out), marked
 
 
 def compose_assets(site: Path, features: list):
@@ -1800,6 +1861,7 @@ def compose_assets(site: Path, features: list):
                         body = i["text"].rstrip()
                         if gating and slot == "script" and i["node"] != gate_owner:
                             pairs = js_patches(body)
+                            coverage_note(i["node"], "fragment", len(pairs))
                             body = (js_watch_block(i["node"], pairs) + "\n"
                                     + body + "\n"
                                     + js_gate_block(i["node"], pairs))
@@ -1807,6 +1869,8 @@ def compose_assets(site: Path, features: list):
                             SLOT_COMMENT[slot].format(i["src"]) + "\n"
                             + body + "\n")
                         mark = f' data-fm-node="{i["node"]}"' if gating else ""
+                        if mark and slot == "style":
+                            coverage_note(i["node"], "style", 1)
                         tags.append(
                             f'<script src="f/{i["name"]}"></script>'
                             if slot == "script"
@@ -1822,7 +1886,9 @@ def compose_assets(site: Path, features: list):
                         body = i["text"].rstrip()
                         if (gate_owner is not None and page == "index.html"
                                 and slot == "body"):
-                            body = html_mark_roots(body, i["node"], i["name"])
+                            body, roots = html_mark_roots(body, i["node"],
+                                                          i["name"])
+                            coverage_note(i["node"], "body", roots)
                         parts.append(SLOT_COMMENT[slot].format(i["src"])
                                      + "\n" + body)
                     text = text.replace(marker, "\n".join(parts))
@@ -1886,6 +1952,9 @@ def main():
                     help="debug-profile build (fast; proof cycles, never deploy)")
     ap.add_argument("--chains", action="store_true",
                     help="print chain topology and exit (no build)")
+    ap.add_argument("--coverage", action="store_true",
+                    help="after linking, print what each node's tickbox gates "
+                         "(pair with --quick for a fast look)")
     args = ap.parse_args()
 
     if args.quick:
@@ -1925,6 +1994,8 @@ def main():
         build_legacy(args.product, base, chains, args.run)
     else:
         build_places(args.product, places, base, chains, features, args.run)
+    if args.coverage:
+        coverage_table(features)
 
 
 if __name__ == "__main__":

@@ -140,16 +140,28 @@ def subtools_of(feature) -> list:
     return evs
 
 
-def tree_json(children, times, builds) -> list:
+def coverage_record() -> dict:
+    """What the last link emitted for each node, if it is there to be read.
+    The linker writes it beside the build; a tree exported without a build
+    beside it simply carries no coverage, rather than a guess."""
+    f = explorer.REPO / "products" / "miso" / "build" / "coverage.json"
+    try:
+        return json.loads(f.read_text())
+    except Exception:
+        return {}
+
+
+def tree_json(children, times, builds, coverage=None) -> list:
     """The tree as data, for the in-app chooser (features/miso/shell/panel/
     noob-button/chooser): name, path, purpose, intro, provenance timestamp,
     children — order.md order. ts uses fmlink's provenance rule: a node's
     time is its cited prompt's; a citation-less grouping node inherits its
     earliest child's."""
     import fmlink
+    coverage = coverage_record() if coverage is None else coverage
     out = []
     for f in children:
-        kids = tree_json(f.children, times, builds)
+        kids = tree_json(f.children, times, builds, coverage)
         key = fmlink.node_key(f.dir, times)
         ts = key[0] if key else min((k["ts"] for k in kids if k["ts"]), default="")
         node = {
@@ -161,6 +173,11 @@ def tree_json(children, times, builds) -> list:
             "build": latest_build(f, builds),
             "children": kids,
         }
+        # what this node's tickbox actually reaches: {rust, fragment, style,
+        # body} counts, all zero meaning the tickbox is compose-time only.
+        # Data for now — no surface reads it yet.
+        if f.path in coverage:
+            node["coverage"] = coverage[f.path]
         tool = tool_of(f)
         if tool:
             node["tool"] = tool
