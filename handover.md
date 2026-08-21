@@ -35,26 +35,35 @@ Three things happened in one day, each built on the last:
 Live: **build 212** at miso.nøøb.org (local head 215+, tools-only
 commits — next deploy carries them). 122 nodes, 123 vars per world.
 
-## THE POST-LADDER QUEUE, in order
+## THE RESIDUALS CAMPAIGN — CLOSED (builds 217–238, same day)
 
-1. **`sender_of` on full phone numbers** — URGENT, real isolation bug:
-   messaging keys users by last-four digits; rung 8's rig reproduced a
-   cross-user *settings* leak under colliding tags (and mirror's blob
-   namespace shares the key). Move to `miso/users`, full number.
-2. **Fragments obey `enabled`** — gates are Rust; a feature whose
-   visible half is JS looks half-off when disabled. The natural next
-   context rung.
-3. **Gate coverage report** — a node whose functions don't carry
-   `state: String` has a tickbox that silently does nothing; the linker
-   should say what each node gates.
-4. Rung 3's `POST /diag/context` should become an `edit_op` (predates
-   the merge column); deploy should assert one-server-per-state-dir.
-5. The tunables conversation + the grid asks re-fired live from the
+Under ash's zeno rule (a task is not done until residuals are done —
+hybrid.md checklist 7, #p57), everything the ladder left behind was
+fixed the same evening by a third persistent worker: the sender-tag
+isolation leak (opaque relay tokens, blob adoption), fragments obeying
+`enabled` (census-led, 105 fragments, four shapes), the gate-coverage
+report (`fmlink --coverage`; 71/122 nodes gate something, the silent
+rest announced), the tooling POST through the one op door, sole-tenant
+state dirs (boot refuses a second server, crash-safe), un-mixed
+blackbox streams, nested-turn safety, boot-as-a-turn, single-broadcast
+global ops, eviction that genuinely frees memory (99.9% back, counted
+by allocator), and the bridge's lost-write complaint. 57-check
+regression green including the done-sentence rig. The parked-residuals
+register (notes.md) holds nine entries, each with a reason and revisit
+trigger — the only legitimate leftovers. NOTE for hand-runs: a server
+now refuses to start on a claimed state dir (MISO_ALLOW_SHARED_STATE=1
+overrides); the LaunchAgent holds the mini's.
+
+## THE NEXT WORK (queue emptied — these are chosen, not owed)
+
+1. The tunables conversation + the grid asks re-fired live from the
    app (redo.md item 8) — the promotion rule's machinery all exists
    now; a tunable ask is a `.vars` line and data forever after.
-6. The webgpu restart (`webgpu.md` from scratch — redo.md item 7);
+2. The webgpu restart (`webgpu.md` from scratch — redo.md item 7);
    transcript mirroring + self-heal, picker fix, logging cluster
    (redo.md items 3–5) — still unredone from the rewind.
+3. The fragment-authorship / seam-occupancy design conversation (the
+   register's items 7–8 revisit here, census attached in notes.md).
 
 ## tooling state
 
