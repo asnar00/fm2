@@ -3,3 +3,4 @@
 - [x] enabled
 - [x] per-user
 - [x] converge
+- [x] remember

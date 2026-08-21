@@ -125,6 +125,12 @@ OP_HOOK = "fm:context-op"
 # has no write API yet, and edit_op says so by name rather than guessing.
 MERGE_WRITE = {"MergeLastWrite": ("set", "set_at"),
                "MergeCrdtSum": ("add", "add_at")}
+# the sixth hook: a composed node carrying this token persists and replays
+# contexts. It asks for NOTHING to be emitted — the op log replays through
+# Context::apply_op, which the fifth hook already provides — but declaring it
+# lets a composition missing that door fail by name here rather than as a rustc
+# error inside a verbatim library.
+REMEMBER_HOOK = "fm:context-remember"
 
 # fn names that additionally get std::ops glue, with required arity
 OP_TRAITS = {"add": ("Add", 2), "sub": ("Sub", 2), "mul": ("Mul", 2),
@@ -588,12 +594,16 @@ def emit_context(features: list, out: Emitter):
                  for src, text in f.sources + f.libs if GATE_HOOK in text]
     asks_op = [f.rel for f in features
                for _, text in f.sources + f.libs if OP_HOOK in text]
+    asks_remember = [f.rel for f in features
+                     for _, text in f.sources + f.libs if REMEMBER_HOOK in text]
     if not any(VAR_HOOK in text for f in features for _, text in f.libs):
         for asker, what, token in ((asks_snapshot, "Context::snapshot()", SNAPSHOT_HOOK),
                                    (asks_set, "Context::set_from_json()", SET_HOOK),
                                    ([a[0] for a in asks_gate],
                                     "the enabled gates", GATE_HOOK),
-                                   (asks_op, "the var op methods", OP_HOOK)):
+                                   (asks_op, "the var op methods", OP_HOOK),
+                                   (asks_remember, "context persistence",
+                                    REMEMBER_HOOK)):
             if asker:
                 fail(f"{asker[0]} asks for {what} "
                      f"('{token}') but no composed node provides the var "
@@ -612,6 +622,13 @@ def emit_context(features: list, out: Emitter):
         fail(f"{asks_op[0]} asks for the var op methods ('{OP_HOOK}') but no "
              f"composed node provides the write path ('{SET_HOOK}') — tick "
              f"loop/context/edit, or untick the op methods")
+    # a log replays through apply_op and through nothing else: no op methods,
+    # no recovery, and a persisted world that could not be rebuilt would be
+    # worse than one that was never written.
+    if asks_remember and not asks_op:
+        fail(f"{asks_remember[0]} persists contexts ('{REMEMBER_HOOK}') but no "
+             f"composed node provides the op methods ('{OP_HOOK}') that a log "
+             f"replays through — tick loop/context/converge, or untick it")
     plan = gate_plan(features) if asks_gate else None
     gate_src, gate_line = (asks_gate[0][1], 1) if asks_gate else (None, None)
     fields = []
