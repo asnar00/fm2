@@ -71,6 +71,11 @@ VAR_INHERIT = {"inherit": "Inherit", "own": "Own"}
 # and Context emission on. No hook in the composition -> no struct, and the
 # emitted source is byte-identical to a build without this mechanism.
 VAR_HOOK = "pub struct Var<"
+# the second hook: a composed node whose Rust source carries this token is
+# asking for Context::snapshot(), the generated walker over every declared var.
+# No asker in the composition -> no walker, and no serde::Serialize demand on
+# var types. An asker without the var family is a link error, not a rustc one.
+SNAPSHOT_HOOK = "fm:context-snapshot"
 
 # fn names that additionally get std::ops glue, with required arity
 OP_TRAITS = {"add": ("Add", 2), "sub": ("Sub", 2), "mul": ("Mul", 2),
@@ -266,6 +271,7 @@ class FeatureCode:
         self.name = None          # e.g. "Hello" from struct feature_Hello
         self.fns = []             # dicts: name, params, ret, src, first, lines
         self.structs = []         # (struct_name, [(field, type, src_file, line)])
+        self.sources = []         # (src_rel, full text) of this node's chain .rs
         assets = feature_dir / "assets"
         # (file, path relative to assets/) pairs — subdirectories are preserved
         # into site/, so a node may own a whole asset tree (e.g. STT models)
@@ -348,6 +354,7 @@ class FeatureCode:
     def _parse(self, rs: Path):
         text = rs.read_text()
         src = str(rs.resolve().relative_to(REPO))
+        self.sources.append((src, text))
 
         m = re.search(r"struct\s+feature_(\w+)\s*;", text)
         if m:
@@ -458,8 +465,18 @@ def emit_context(features: list, out: Emitter):
     A field is named <node name>_<slot name>. Node names are tree-global
     (fm.md), so that disambiguates two nodes declaring the same slot name —
     and unlike a flattened path it survives a regroup, which the tree's own
-    law says must never change behaviour. The full path rides in a comment."""
+    law says must never change behaviour. The full path rides in a comment.
+
+    Context::snapshot() rides on a second hook (SNAPSHOT_HOOK): it is emitted
+    only when a composed node asks for it, because it is what imposes
+    serde::Serialize on every declared var type."""
+    asks_snapshot = [f.rel for f in features
+                     for _, text in f.sources if SNAPSHOT_HOOK in text]
     if not any(VAR_HOOK in text for f in features for _, text in f.libs):
+        if asks_snapshot:
+            fail(f"{asks_snapshot[0]} asks for Context::snapshot() "
+                 f"('{SNAPSHOT_HOOK}') but no composed node provides the var "
+                 f"family — tick loop/context, or untick the asking node")
         return
     fields = []
     for feature in features:
@@ -481,6 +498,30 @@ def emit_context(features: list, out: Emitter):
         out.emit(f"            {fname}: Var::new({s['default']}),",
                  s["src"], s["line"])
     out.emit("        }")
+    out.emit("    }")
+    out.emit("}")
+    out.emit("")
+    if not asks_snapshot:
+        return
+    out.emit("impl Context {")
+    out.emit("    // every declared var as JSON — node path, name, current")
+    out.emit("    // value, and the three attributes read from the markers'")
+    out.emit("    // TAGs. serde_json::to_value is what demands Serialize of a")
+    out.emit("    // var's type; a type that hasn't got it fails on the line")
+    out.emit("    // below, which the line map points back at the .vars file.")
+    out.emit("    pub fn snapshot(&self) -> serde_json::Value {")
+    out.emit("        let mut vars: Vec<serde_json::Value> = Vec::new();")
+    for fname, path, s in fields:
+        out.emit(f"        let a = self.{fname}.attrs();", s["src"], s["line"])
+        out.emit("        vars.push(serde_json::json!({")
+        out.emit(f"            \"path\": {json.dumps(path)},")
+        out.emit(f"            \"name\": {json.dumps(s['name'])},")
+        out.emit(f"            \"value\": serde_json::to_value(&self.{fname}.value)",
+                 s["src"], s["line"])
+        out.emit("                .unwrap_or(serde_json::Value::Null),")
+        out.emit("            \"scope\": a.0, \"merge\": a.1, \"inherit\": a.2,")
+        out.emit("        }));")
+    out.emit("        serde_json::Value::Array(vars)")
     out.emit("    }")
     out.emit("}")
     out.emit("")
