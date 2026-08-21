@@ -65,7 +65,8 @@ VAR_DECL_RE = re.compile(
 VAR_SCOPE = {"global": "ScopeGlobal", "group": "ScopeGroup",
               "user": "ScopeUser", "device": "ScopeDevice"}
 VAR_MERGE = {"last-write": "MergeLastWrite", "crdt-sum": "MergeCrdtSum",
-              "better": "MergeBetter", "none": "MergeNone"}
+              "better": "MergeBetter", "none": "MergeNone",
+              "counter": "MergeCounter"}
 VAR_INHERIT = {"inherit": "Inherit", "own": "Own"}
 # scopes the runtime cannot yet honour. A context is held per user (ladder rung
 # 5); a global or group scoped var would be stored per user and quietly behave
@@ -128,7 +129,12 @@ OP_HOOK = "fm:context-op"
 # which write method a declared merge earns. A merge that is not in this table
 # has no write API yet, and edit_op says so by name rather than guessing.
 MERGE_WRITE = {"MergeLastWrite": ("set", "set_at"),
-               "MergeCrdtSum": ("add", "add_at")}
+               "MergeCrdtSum": ("add", "add_at"),
+               # the counter's DEFAULT verb; it also speaks `set`, which is
+               # emitted separately because it is the only two-verb kind.
+               "MergeCounter": ("add", "add_at")}
+# the merge kind whose ops carry an epoch, and whose apply drops a stale add.
+MERGE_EPOCH = "MergeCounter"
 # the sixth hook: a composed node carrying this token persists and replays
 # contexts. It asks for NOTHING to be emitted — the op log replays through
 # Context::apply_op, which the fifth hook already provides — but declaring it
@@ -854,6 +860,115 @@ def emit_context(features: list, out: Emitter):
     return plan
 
 
+def emit_counter_apply(fname: str, addr: str, s: dict, out: Emitter,
+                       overlay: bool):
+    """The arriving half of the `counter` merge — the only kind that speaks two
+    verbs. A `set` opens a new epoch and assigns; an `add` sums only if it was
+    minted under the epoch the var is in now. An add from before a reset is
+    DROPPED, and says so on stderr: reset wins, and the loss is deliberate
+    rather than the silent one SyncVar had (converge.md argues the direction)."""
+    if overlay:
+        out.emit('                if op == "clear" {')
+        if s["inherit"] == "Own":
+            refuse = json.dumps(
+                f"{addr}: declared 'own', so it has nothing beneath it to fall "
+                f"back to — a clear is meaningless", ensure_ascii=False)
+            out.emit(f"                    return Err({refuse}.to_string());",
+                     s["src"], s["line"])
+        else:
+            out.emit(f"                    self.present.{fname} = false;",
+                     s["src"], s["line"])
+            out.emit(f"                    self.{fname}.value = {s['default']};",
+                     s["src"], s["line"])
+            out.emit("                    return Ok(serde_json::to_value("
+                     f"&self.{fname}_get())", s["src"], s["line"])
+            out.emit("                        .unwrap_or(serde_json::Value::Null));")
+        out.emit("                }")
+    out.emit(f"                let c: Counter = serde_json::from_value(value)",
+             s["src"], s["line"])
+    out.emit(f"                    .map_err(|e| format!("
+             f"{json.dumps(addr + ': {}')}, e))?;")
+    out.emit('                if op == "set" {')
+    stale_set = json.dumps(
+        f"miso: context: {addr}: reset at epoch {{}} is older than the current "
+        f"epoch {{}} — dropped", ensure_ascii=False)
+    out.emit(f"                    if c.epoch < self.{fname}.value.epoch {{",
+             s["src"], s["line"])
+    out.emit(f"                        eprintln!({stale_set}, c.epoch, self.{fname}.value.epoch);",
+             s["src"], s["line"])
+    out.emit("                    } else {")
+    out.emit(f"                        self.{fname}.value = c;", s["src"], s["line"])
+    if overlay:
+        out.emit(f"                        self.present.{fname} = true;",
+                 s["src"], s["line"])
+    out.emit("                    }")
+    out.emit(f"                    return Ok(serde_json::to_value(&self.{fname}.value)",
+             s["src"], s["line"])
+    out.emit("                        .unwrap_or(serde_json::Value::Null));")
+    out.emit("                }")
+    out.emit('                if op == "add" {')
+    stale_add = json.dumps(
+        f"miso: context: {addr}: add of {{}} minted under epoch {{}} arrived "
+        f"after a reset to epoch {{}} — dropped", ensure_ascii=False)
+    out.emit(f"                    if c.epoch != self.{fname}.value.epoch {{",
+             s["src"], s["line"])
+    out.emit(f"                        eprintln!({stale_add}, c.sum, c.epoch, self.{fname}.value.epoch);",
+             s["src"], s["line"])
+    out.emit("                    } else {")
+    out.emit(f"                        self.{fname}.value.sum = self.{fname}.value.sum + c.sum;",
+             s["src"], s["line"])
+    if overlay:
+        out.emit(f"                        self.present.{fname} = true;",
+                 s["src"], s["line"])
+    out.emit("                    }")
+    out.emit(f"                    return Ok(serde_json::to_value(&self.{fname}.value)",
+             s["src"], s["line"])
+    out.emit("                        .unwrap_or(serde_json::Value::Null));")
+    out.emit("                }")
+    speaks = json.dumps(f"{addr}: merge 'counter' speaks set and add, not " + "{}")
+    out.emit(f"                Err(format!({speaks}, op))")
+
+
+def emit_edit_reset(fields: list, out: Emitter, overlay: bool):
+    """The counter kind's second verb, emitted only when a composition
+    declares a counter — so a build with none is what it was before."""
+    out.emit("    // a LOCAL edit through the OTHER verb, for the one merge kind")
+    out.emit("    // that has two. On a counter this is the reset: it opens a new")
+    out.emit("    // epoch, which is what lets every add still in flight from")
+    out.emit("    // before it be recognised and dropped on arrival.")
+    out.emit("    pub fn edit_reset(&mut self, path: &str, name: &str,"
+             " value: serde_json::Value) -> Result<serde_json::Value, String> {")
+    out.emit("        match (path, name) {")
+    for fname, path, s in fields:
+        addr = f"{path}/{s['name']}"
+        tag = next(k for k, v in VAR_MERGE.items() if v == s["merge"])
+        out.emit(f"            ({json.dumps(path)}, {json.dumps(s['name'])}) => {{",
+                 s["src"], s["line"])
+        if s["merge"] == MERGE_EPOCH:
+            out.emit("                let v: u64 = serde_json::from_value(value)",
+                     s["src"], s["line"])
+            out.emit(f"                    .map_err(|e| format!("
+                     f"{json.dumps(addr + ' (reset): {}')}, e))?;")
+            out.emit(f"                self.{fname}.set_at("
+                     f"{json.dumps(path)}, {json.dumps(s['name'])}, v);",
+                     s["src"], s["line"])
+            if overlay:
+                out.emit(f"                self.present.{fname} = true;",
+                         s["src"], s["line"])
+            out.emit(f"                Ok(serde_json::to_value(&self.{fname}.value)",
+                     s["src"], s["line"])
+            out.emit("                    .unwrap_or(serde_json::Value::Null))")
+        else:
+            no = json.dumps(f"{addr}: merge {tag!r} has one verb; edit_op is it")
+            out.emit("                let _ = value;")
+            out.emit(f"                Err({no}.to_string())")
+        out.emit("            }")
+    out.emit("            _ => Err(context_op_miss(path, name)),")
+    out.emit("        }")
+    out.emit("    }")
+    out.emit("")
+
+
 def emit_context_ops(fields: list, asks_op: list, out: Emitter,
                      overlay: bool = False):
     """The merge discipline's two generated halves. Scaffolding: mechanism here,
@@ -917,6 +1032,10 @@ def emit_context_ops(fields: list, asks_op: list, out: Emitter,
     out.emit("        }")
     out.emit("    }")
     out.emit("")
+    # the second verb is emitted only when something speaks it, so a
+    # composition with no counter declared is unchanged by this rung.
+    if any(s["merge"] == MERGE_EPOCH for _, _, s in fields):
+        emit_edit_reset(fields, out, overlay)
     out.emit("    // an ARRIVING op. The verb must be the one this var's merge")
     out.emit("    // speaks; a set aimed at a crdt-sum var is a wire error, not")
     out.emit("    // a silent overwrite. Assignment is direct, so applying a")
@@ -932,6 +1051,8 @@ def emit_context_ops(fields: list, asks_op: list, out: Emitter,
         if s["merge"] not in MERGE_WRITE:
             out.emit("                let _ = value;")
             out.emit(f"                Err(format!({json.dumps(addr + ': merge ' + repr(tag) + ' speaks no op (got {})')}, op))")
+        elif s["merge"] == MERGE_EPOCH:
+            emit_counter_apply(fname, addr, s, out, overlay)
         else:
             verb, _ = MERGE_WRITE[s["merge"]]
             if overlay:

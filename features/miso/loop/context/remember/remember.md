@@ -140,6 +140,14 @@ the same empty identity that rung 5 used, and the wasm place never sets one — 
 has no `route`. So no log is read, no residency is recorded, and no file is
 touched on the client. Its own persistence is IndexedDB's job and out of scope.
 
+**Counter records fold by replaying them (rung 7b).** A `counter`'s records
+carry `[epoch, n]`, and the rules above would rescue exactly the records replay
+is going to throw away — a stale reset, or an add minted before one. So a
+counter's records are compacted by running `apply_op`'s own rule over them and
+emitting the single `set` that lands where replay would land. That is exact by
+construction rather than by argument, which is the same standard the other
+kinds' folds are held to, reached by a shorter road.
+
 ## glossary
 
 - **record**: one line of a user's log — the wire's op shape, as applied.

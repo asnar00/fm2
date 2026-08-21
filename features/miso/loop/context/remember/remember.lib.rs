@@ -106,6 +106,32 @@ pub fn context_log_compact(records: Vec<serde_json::Value>) -> Vec<serde_json::V
             by_var.insert(key.clone(), Vec::new());
         }
         let slot = by_var.get_mut(&key).expect("just inserted");
+        if r["value"].is_array() {
+            // a `counter` record: [epoch, sum] for a set, [epoch, delta] for an
+            // add. Folding these by the rules above would rescue records that
+            // replay is going to DROP — a stale reset, or an add from before
+            // one. So a counter's records are folded by running apply_op's own
+            // rule over them and emitting the single `set` that lands where
+            // replay would: exact by construction rather than by argument.
+            let epoch = r["value"][0].as_u64().unwrap_or(0);
+            let n = r["value"][1].as_u64().unwrap_or(0);
+            let (cur_e, cur_s) = match slot.first() {
+                Some(p) => (p["value"][0].as_u64().unwrap_or(0),
+                            p["value"][1].as_u64().unwrap_or(0)),
+                None => (0u64, 0u64),
+            };
+            let (next_e, next_s) = match r["op"].as_str().unwrap_or("") {
+                "set" if epoch >= cur_e => (epoch, n),
+                "add" if epoch == cur_e => (cur_e, cur_s + n),
+                _ => (cur_e, cur_s),   // dropped, exactly as replay would
+            };
+            let mut folded = r.clone();
+            folded["op"] = serde_json::json!("set");
+            folded["value"] = serde_json::json!([next_e, next_s]);
+            slot.clear();
+            slot.push(folded);
+            continue;
+        }
         if r["op"].as_str().unwrap_or("") == "set" {
             slot.clear();
             slot.push(r);

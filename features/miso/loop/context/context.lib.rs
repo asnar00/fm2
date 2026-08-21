@@ -42,6 +42,48 @@ pub struct MergeLastWrite;
 pub struct MergeCrdtSum;
 pub struct MergeBetter;
 pub struct MergeNone;
+/// a counter that can also be reset: adds sum within an epoch, a set bumps the
+/// epoch. The only merge kind that speaks two verbs. See converge.md.
+pub struct MergeCounter;
+
+/// the value a `counter` var holds: which epoch it is in, and the sum so far.
+///
+/// The epoch is what makes reset expressible on something that also sums. An
+/// add carries the epoch it was minted under; one that arrives after a reset
+/// carries the old epoch and is dropped, which is the deliberate loss argued in
+/// converge.md.
+///
+/// Serialised as `[epoch, sum]` — hand-written rather than derived because the
+/// composition's serde is the plain crate without its `derive` feature, and one
+/// shape on the wire, in the log and in a snapshot is worth ten lines here. In
+/// an `add` op the same two numbers mean `(epoch it was minted under, delta)`.
+#[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
+pub struct Counter {
+    pub epoch: u64,
+    pub sum: u64,
+}
+
+impl Counter {
+    pub const fn zero() -> Counter {
+        Counter { epoch: 0, sum: 0 }
+    }
+    pub const fn at(epoch: u64, sum: u64) -> Counter {
+        Counter { epoch, sum }
+    }
+}
+
+impl serde::Serialize for Counter {
+    fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+        serde::Serialize::serialize(&[self.epoch, self.sum], s)
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for Counter {
+    fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Counter, D::Error> {
+        let a: [u64; 2] = serde::Deserialize::deserialize(d)?;
+        Ok(Counter { epoch: a[0], sum: a[1] })
+    }
+}
 
 impl VarMerge for MergeLastWrite {
     const TAG: &'static str = "last-write";
@@ -54,6 +96,9 @@ impl VarMerge for MergeBetter {
 }
 impl VarMerge for MergeNone {
     const TAG: &'static str = "none";
+}
+impl VarMerge for MergeCounter {
+    const TAG: &'static str = "counter";
 }
 
 pub struct Inherit;

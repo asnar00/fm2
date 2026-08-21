@@ -23,6 +23,14 @@ Field names are `<node name>_<var name>`, not the flattened node path, even thou
 
 Open, and deliberately not answered here: context versioning across builds (an update must migrate live Contexts), the default scope for undeclared legacy state during the transition, and whether hypothetical contexts need a lifetime discipline.
 
+The merge column's vocabulary grew a fifth word at rung 7b: `counter`, whose
+value type is this library's `Counter` (an epoch and a sum) and which is the one
+kind that speaks two verbs. The type and the marker live here because the family
+is where a var's attributes live; what the kind MEANS — and why a reset drops the
+adds still in flight from before it — is argued in converge.md, beside the rest
+of the merge discipline. A composition that declares no counter is unchanged by
+its existence: the type is inert and the linker emits nothing extra.
+
 ## glossary
 
 - **var**: one named, typed, defaulted piece of a context, carrying its own scope, merge discipline and inheritance. A constant earns a var when it earns a variable; the declaration line *is* the promotion.

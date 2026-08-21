@@ -136,6 +136,39 @@ is this node's own `enabled`: turn `converge` off and this client stops both
 sending and receiving, which is #p4's "nothing exempt" applied to the syncer
 itself.
 
+**The `counter` kind: a sum that can be reset (rung 7b).** `crdt-sum` cannot be
+reset — that is not an oversight in this system, it is what a grow-only counter
+is — and three shipped tap tools reset, double and halve a counter that `sync`
+sums across devices. Under SyncVar both verbs were available and the result was
+already lossy: a `.set` racing an `.add` silently dropped the add, with no way
+to know it had happened. So the merge column grows a fifth kind rather than
+either breaking those features or pretending.
+
+A `counter` var holds a `Counter` — an epoch and a sum. An `add` sums within the
+current epoch and ships the epoch it was minted under. A `set` opens a new epoch
+and assigns; every add still in flight from before it then carries a stale epoch
+and is **dropped on arrival**, loudly, on stderr.
+
+The loss is deliberate and its direction is chosen: **reset wins.** A user who
+presses reset means "from zero, now", and a tap they made a moment earlier
+arriving afterwards to make the counter read 1 would be the surprising answer,
+not the safe one. What changes from SyncVar is not that a race can lose an add —
+it always could — but that the loss now has a rule, a direction, and a line in
+the log saying which add went and why.
+
+`counter` is the only kind that speaks two verbs, so it is the only one with
+both `set_at` and `add_at` implemented against its marker, and the only one
+whose local edits need two entry points: `edit_op` is the add, `edit_reset` is
+the set. Everything else about it is ordinary — it rides the same op, the same
+relay, the same dedupe and the same log as every other var.
+
+Two things it does not fix. Epochs are minted locally (`self.epoch + 1`), so two
+resets racing can mint the same number and the second is applied rather than
+recognised as concurrent; the sums are then whichever arrived last, and the adds
+of both are dropped either way. And a `counter` var's value type is `Counter`,
+not `u64`, so a reader wants `.sum` — the type is the honest one and callers
+say so.
+
 ## glossary
 
 - **op**: one addressed change to a context var — `{path, name, op, value}` —

@@ -75,3 +75,42 @@ where
         }
     }
 }
+
+/// the counter kind speaks BOTH verbs, which is what makes it the only merge
+/// that needs two impls. An add sums within the current epoch and ships the
+/// epoch it was minted under; a set bumps the epoch, which is what makes every
+/// add still in flight from before the reset droppable on arrival.
+impl<S, I> VarCrdtSum for Var<Counter, S, MergeCounter, I>
+where
+    S: Permits<I>,
+    I: VarInherit,
+{
+    fn add_at(&mut self, path: &str, name: &str, delta: u64) {
+        let minted = self.value.epoch;
+        self.value.sum = self.value.sum + delta;
+        if S::TAG != "device" {
+            // (epoch it was minted under, delta)
+            context_op_queue("add", path, name,
+                serde_json::to_value(&Counter::at(minted, delta))
+                    .unwrap_or(serde_json::Value::Null));
+        }
+    }
+}
+
+impl<S, I> VarLastWrite<u64> for Var<Counter, S, MergeCounter, I>
+where
+    S: Permits<I>,
+    I: VarInherit,
+{
+    fn set_at(&mut self, path: &str, name: &str, v: u64) {
+        // a reset is a new epoch. Minting it locally means two resets racing
+        // can mint the same number; the server takes the later arrival and the
+        // loser's adds are dropped either way (converge.md names this).
+        let next = Counter::at(self.value.epoch + 1, v);
+        self.value = next;
+        if S::TAG != "device" {
+            context_op_queue("set", path, name,
+                serde_json::to_value(&next).unwrap_or(serde_json::Value::Null));
+        }
+    }
+}
