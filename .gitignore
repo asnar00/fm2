@@ -7,3 +7,4 @@ tools/__pycache__/
 # fetched on-device find artifacts (tools/fetch_find.py) — recipe + pin in git, binaries not
 features/miso/loop/compute/semantic-find/assets/find/*
 !features/miso/loop/compute/semantic-find/assets/find/PINNED
+.claude/worktrees/
