@@ -1,3 +1,4 @@
 - [x] alive
 - [x] edit
 - [x] enabled
+- [x] per-user

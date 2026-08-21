@@ -67,6 +67,16 @@ VAR_SCOPE = {"global": "ScopeGlobal", "group": "ScopeGroup",
 VAR_MERGE = {"last-write": "MergeLastWrite", "crdt-sum": "MergeCrdtSum",
               "better": "MergeBetter", "none": "MergeNone"}
 VAR_INHERIT = {"inherit": "Inherit", "own": "Own"}
+# scopes the runtime cannot yet honour. A context is held per user (ladder rung
+# 5); a global or group scoped var would be stored per user and quietly behave
+# as if it were user-scoped, which is the kind of silent lie the typed
+# declaration exists to prevent. Refused with the rung that earns them back.
+VAR_SCOPE_AWAITS = {
+    "global": "scope 'global' awaits the sync rung (the ladder's rung 6, "
+              "'var sync by declared merge') — declare user or device for now",
+    "group": "scope 'group' awaits the sync rung (the ladder's rung 6, "
+             "'var sync by declared merge') — declare user or device for now",
+}
 # the hook: this token in a composed verbatim library switches slot collection
 # and Context emission on. No hook in the composition -> no struct, and the
 # emitted source is byte-identical to a build without this mechanism.
@@ -368,6 +378,8 @@ class FeatureCode:
                 if word not in table:
                     fail(f"{src}:{lineno}: unknown {what} '{word}' — "
                          f"expected one of {' | '.join(sorted(table))}")
+            if scope in VAR_SCOPE_AWAITS:
+                fail(f"{src}:{lineno}: {VAR_SCOPE_AWAITS[scope]}")
             if name in seen:
                 fail(f"{src}:{lineno}: var '{name}' already declared on this "
                      f"node at line {seen[name]}")

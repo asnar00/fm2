@@ -5,6 +5,10 @@ pub struct request {
     pub body: String,
     pub raw: Vec<u8>,
     pub tunnel: bool,
+    // the request line's query string, without the '?'. Parsed here because
+    // parsing the request line is this feature's job; clean_path threw it away
+    // before, which left routes no way to see a parameter at all.
+    pub query: String,
 }
 
 pub struct response {
@@ -74,8 +78,15 @@ impl feature_Serve {
             }
         }
         let body = String::from_utf8_lossy(&raw).to_string();
-        request { method: method, path: clean_path(raw_path), cookie: cookie,
-                  body: body, raw: raw, tunnel: tunnel }
+        request { method: method, path: clean_path(raw_path.clone()), cookie: cookie,
+                  body: body, raw: raw, tunnel: tunnel,
+                  query: query_of(raw_path) }
+    }
+
+    // "/x?a=1&b=2" -> "a=1&b=2"; no query -> "". The other half of clean_path:
+    // what it strips, this keeps, so a route can read a parameter.
+    fn query_of(raw: String) -> String {
+        raw.splitn(2, '?').nth(1).unwrap_or("").to_string()
     }
 
     // "/x?q" -> "x"; "/" -> "index.html"; ".." refused (falls back to index)
