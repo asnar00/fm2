@@ -4,13 +4,13 @@
 > (transcripts/2026-08-14-fm-spec-3.md#p49)
 > also let's move the logo icon to the top right of the window - that gives the toolbar full control of the button of the screen
 
-## spec
-
-The logo button leaves the bottom edge: it sits at the top-right of the window (safe-area relative, per `/corner`'s rule — chrome is placed from the insets, never the physical edge). The bottom edge belongs entirely to `/tools`: the toolbar's right-hand clearance for the old corner stamp is released, so tool buttons and controls can use the full width. Everything else about the button is unchanged — the update glow still pulses there, and its tap stays reserved for the agent interface (`/account`).
-
 ## user
 
 The little logo now lives at the top right of the screen — still glowing when an update is waiting. The toolbar stretches across the whole bottom.
+
+## spec
+
+The logo button leaves the bottom edge: it sits at the top-right of the window (safe-area relative, per `/corner`'s rule — chrome is placed from the insets, never the physical edge). The bottom edge belongs entirely to `/tools`: the toolbar's right-hand clearance for the old corner stamp is released, so tool buttons and controls can use the full width. Everything else about the button is unchanged — the update glow still pulses there, and its tap stays reserved for the agent interface (`/account`).
 
 ## glossary
 

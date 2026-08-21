@@ -4,6 +4,13 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p31)
 > 1) gate first-paint on sync (or timeout and inform)
 
+## user
+
+Launching miso, you see a brief "syncing…" instead of possibly-outdated
+values; on a dead or slow network the app appears after a couple of seconds
+with a notice that it's showing local state. You never mistake old numbers
+for current ones.
+
 ## spec
 
 The user must never knowingly see stale state (the client-side twin of
@@ -14,13 +21,6 @@ small banner — "showing local state — server not reachable" — which clears
 itself the moment a late join lands. Replay is unaffected: a recorded boot
 contains its recorded `VarJoin`, so replayed instances reveal exactly as the
 original did. First requested as a future refinement at fm-spec-2 #p29.
-
-## user
-
-Launching miso, you see a brief "syncing…" instead of possibly-outdated
-values; on a dead or slow network the app appears after a couple of seconds
-with a notice that it's showing local state. You never mistake old numbers
-for current ones.
 
 ## glossary
 

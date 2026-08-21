@@ -4,6 +4,16 @@
 > (transcripts/2026-08-15-fm-spec.md#p18)
 > another small detail: let's tie the noob popup to the top of the screen, so it doesn't overlap the toolbar at the bottom.
 
+## user
+
+The system panel now hangs from the top of the screen, so your tools
+stay visible and tappable underneath while it's open.
+
+Tied to the top, a tall panel could still grow down into the toolbar,
+so the tie comes with a bound: the panel's height stops 160px short of
+the viewport (worst-case top inset plus the toolbar's ground) and
+scrolls inside when content exceeds it.
+
 ## spec
 
 The panel anchored to the bottom of the screen sat on top of the
@@ -14,16 +24,6 @@ centred as before, growing downward, so the toolbar keeps its ground
 at the bottom of the screen. Everything inside the panel is untouched;
 only the anchor changes — untick this node and the panel drops back to
 the bottom.
-
-## user
-
-The system panel now hangs from the top of the screen, so your tools
-stay visible and tappable underneath while it's open.
-
-Tied to the top, a tall panel could still grow down into the toolbar,
-so the tie comes with a bound: the panel's height stops 160px short of
-the viewport (worst-case top inset plus the toolbar's ground) and
-scrolls inside when content exceeds it.
 
 ## code description
 

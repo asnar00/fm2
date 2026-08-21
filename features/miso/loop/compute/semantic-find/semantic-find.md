@@ -5,6 +5,12 @@
 > sure-footed as a mountain goat - this is awesome to watch :-)
 > *(the climb continued: #p9 "if the tool exists, we'll find it quickly on the phone without touching the network"; #p12 "implement anything we want (even potion-style search) into webgpu, without depending on anything else")*
 
+## user
+
+Ask in your own words and the right tools surface even when you use
+none of their names. It answers in a blink, works in airplane mode,
+and nothing you type ever leaves your phone.
+
 ## spec
 
 `/ask`'s find step matches words; this node matches **meaning**, with
@@ -34,12 +40,6 @@ The assets load lazily on the first ask (once, ~8MB, cached by the
 service worker and preserved by `/delta` ever after); until they
 arrive, and whenever anything fails, the word-overlap scorer keeps
 answering — absence degrades, never breaks.
-
-## user
-
-Ask in your own words and the right tools surface even when you use
-none of their names. It answers in a blink, works in airplane mode,
-and nothing you type ever leaves your phone.
 
 ## glossary
 

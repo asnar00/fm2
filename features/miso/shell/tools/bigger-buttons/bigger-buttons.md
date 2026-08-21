@@ -5,6 +5,10 @@
 > NEW ASK [proposed] … :: 'increase the size of the tool buttons by 25%'
 > *(a field ask, filed from the launcher on 2026-08-15, miso build 169)*
 
+## user
+
+The tool buttons are a quarter bigger — easier to hit, easier to read.
+
 ## spec
 
 Every button in the toolbar grows by 25%: the square tool buttons from
@@ -14,10 +18,6 @@ sub-tool controls share the `tool-button` base, so reset, ×2, −1 and
 record grow with the rest — one toolbar, one size. Nothing else about
 the buttons changes: colour discipline, selection, the slide, the
 long-press cards all ride along.
-
-## user
-
-The tool buttons are a quarter bigger — easier to hit, easier to read.
 
 ## glossary
 

@@ -4,6 +4,12 @@
 > (transcripts/2026-08-15-fm-spec.md#p6)
 > let's do all three :-)
 
+## user
+
+Some updates now land like a thought rather than a restart: the build
+number ticks over and the behaviour is new, without the screen so much
+as blinking — even mid-recording.
+
 ## spec
 
 When `/delta`'s diff shows the only code change is `client.wasm` — the
@@ -26,12 +32,6 @@ This is the buildable rung of hot patching. The rest — patching live
 JS features, which needs re-linkable chains (a registry instead of
 closure capture) — is parked in notes.md as the mechanism the context
 manager will also need; when that arrives, updates ride it for free.
-
-## user
-
-Some updates now land like a thought rather than a restart: the build
-number ticks over and the behaviour is new, without the screen so much
-as blinking — even mid-recording.
 
 ## glossary
 

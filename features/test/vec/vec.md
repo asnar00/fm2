@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p29)
 > let's implement full-signature dispatch in the linker
 
-## spec
-
-Defines the `vec2` struct (`x`, `y`: `f32`) and `add(vec2, vec2)`. Exists to exercise `/multiple dispatch`: its `add` shares a name with `add(colour, colour)` but forms an independent chain, keyed by the full signature.
-
 ## user
 
 For agents: `add(v1, v2)` and `v1 + v2` both work; the linker routes them to this chain by argument types.
+
+## spec
+
+Defines the `vec2` struct (`x`, `y`: `f32`) and `add(vec2, vec2)`. Exists to exercise `/multiple dispatch`: its `add` shares a name with `add(colour, colour)` but forms an independent chain, keyed by the full signature.
 
 ## glossary
 

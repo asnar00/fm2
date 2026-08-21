@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p38)
 > Let's do a little "hello muon" PWA that displays the nøøb logo "ᕦ(ツ)ᕤ" and then build features one by one. We'll stick to a mobile format for now.
 
-## spec
-
-The client-side base of miso: a `render()` chain returning the HTML placed into the page's `#app` element, plus the PWA scaffolding as assets — `index.html` (mobile viewport, dark theme, wasm loader, service-worker registration), `sw.js` (stale-while-revalidate cache so the app works offline after first visit), `manifest.json` and icons (installable to home screen). `render()` returns empty HTML; subfeatures extend it with content. Entry of the `wasm` place in the miso product.
-
 ## user
 
 Open miso in a mobile browser; add to home screen to install. Works offline after the first visit. Content comes from subfeatures of shell.
+
+## spec
+
+The client-side base of miso: a `render()` chain returning the HTML placed into the page's `#app` element, plus the PWA scaffolding as assets — `index.html` (mobile viewport, dark theme, wasm loader, service-worker registration), `sw.js` (stale-while-revalidate cache so the app works offline after first visit), `manifest.json` and icons (installable to home screen). `render()` returns empty HTML; subfeatures extend it with content. Entry of the `wasm` place in the miso product.
 
 ## glossary
 

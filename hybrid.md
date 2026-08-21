@@ -83,8 +83,13 @@ Short — ten lines, not a spec. It must contain:
   a sentence the non-map could not have survived.
 - **placement**: proposed node and parent, with the cap check done.
 - **acceptance evidence, named**: which artifacts the reviewer will demand —
-  screenshot of the real surface, on-device receipt, two-instance
-  divergence proof, toggle proof both ways. Named per ask, not generic.
+  a `/diag/readout` assertion on the real surface (DOM-as-JSON is the
+  agent's instrument for seeing the screen; pixel-reading is not — ash's
+  ruling, hybrid #p13, and readout's own spec since Aug 13), an on-device
+  receipt, a two-instance divergence proof, the toggle proof both ways.
+  Named per ask, not generic. Questions of *appearance* — is it
+  beautiful, is it on-brand — are not agent-verifiable evidence at all:
+  they go to ash interactively.
 - **scope**: the literal ask; generalisations parked, with the promotion
   rule cited if a tunable is in play.
 - **taste notes**: anything the asker's history says they like or dislike
@@ -117,10 +122,11 @@ Short — ten lines, not a spec. It must contain:
 
 ## the review checklist (Fable, before any ship)
 
-1. Every artifact the brief named is present. Look at the screenshot —
-   not "does it exist", but *is it good* (4a at the reviewer's desk:
-   blown-out filters, ignored taste notes, and asset-fighting are the
-   known "no"s).
+1. Every artifact the brief named is present. Read the readout — not
+   "does the mechanism work" but *does the surface say what the ask
+   wanted* (4a at the reviewer's desk: the in-hand line, checked against
+   the DOM's actual structure and content). Where the ask is aesthetic,
+   the reviewer's job is to route it to ash, not to judge pixels.
 2. Calibration: every claim in the worker's report traces to an
    observation. Anything device-shaped claimed from a desktop measurement
    is a return.

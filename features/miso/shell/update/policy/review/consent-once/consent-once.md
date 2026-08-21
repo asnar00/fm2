@@ -4,6 +4,14 @@
 > (transcripts/2026-08-15-fm-spec.md#p2)
 > I think in order: 1) update by consent once, update all devices belonging to user; 2) update workflow (review proposed feature additions auto-ticked by policy, press "upgrade" button; 3) minimal disruption upgrade [retains system state / place / tasks underway]; 4) agent hookup ("do x" -> find + introduce/use tool, or build tool for next update)
 
+## user
+
+No device updates itself behind your back, and no device nags you twice.
+When a build is waiting, any one of your devices can show you what's in
+it; say OK once, and every device you own takes the update — the ones in
+your pocket the moment they hear, the ones on your desk the next time
+they wake.
+
 ## spec
 
 `/review` built the one-OK path but left the old self-apply paths running
@@ -27,14 +35,6 @@ handle pulses, the feature list opens with the awaiting section, and
 the update button is the one OK — for this device and all the user's
 others. `/policy`'s picker keeps its place; its new meaning (what the
 review pre-ticks rather than whether to ask) is the next rung's node.
-
-## user
-
-No device updates itself behind your back, and no device nags you twice.
-When a build is waiting, any one of your devices can show you what's in
-it; say OK once, and every device you own takes the update — the ones in
-your pocket the moment they hear, the ones on your desk the next time
-they wake.
 
 ## glossary
 

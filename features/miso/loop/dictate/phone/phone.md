@@ -10,15 +10,15 @@
 > (transcripts/2026-08-14-fm-spec-3.md#p64, draft-phase revision — the diagnosis corrected)
 > except the iphone does run webgpu apps - take a look at ../ftr (you wrote it / we wrote it together) - that's webgpu and it runs nicely on the same iphone :-)
 
+## user
+
+Record a note and a rough transcript appears under its tile a few moments later — even in airplane mode. The first transcription after install downloads the speech model (~60MB, wifi recommended); after that it's local. Better transcripts replace rough ones automatically when the server rungs arrive.
+
 ## spec
 
 The first rung of the graded transcription ladder (`/dictate` #p36–39), built first by choice — it is the offline-true floor. Ticked, it makes `transcribe_local()` reachable: recordings gain a draft transcript computed entirely on the device (whisper-tiny via transformers.js — WebGPU when the device has it, wasm otherwise; the engine and model are served from miso's own origin, never a third-party CDN). The scheduler stamps the result grade 1 — *a draft, honestly labelled* — and when a better rung (server, api) comes into reach later, the same recording is re-derived and upgraded in place. Transcription is compute, not hardware: it still must not run during `/replay`, because re-enactment sends no events.
 
 Deliberate v0 gaps: the engine assets (~60MB) load through the network-first service worker, so an online session re-fetches them (a cache-first rule for `stt/` needs a seam in `/pwa`'s fetch handler — a coming refinement); transcripts are device-local (they don't mirror yet); a failed attempt is stamped as an empty grade-1 result so the scheduler moves on rather than retrying forever.
-
-## user
-
-Record a note and a rough transcript appears under its tile a few moments later — even in airplane mode. The first transcription after install downloads the speech model (~60MB, wifi recommended); after that it's local. Better transcripts replace rough ones automatically when the server rungs arrive.
 
 ## glossary
 

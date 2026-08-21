@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p109)
 > I think we need one more feature as part of blackbox: the ability for you to reach out and actually tap the button (and by extension, any UI object) yourself, either at a whim from you, or by running a script. That would let us put demos together nicely: a demo script is just a set of UI interactions, followed by assertions on the readout.
 
-## spec
-
-The inverse of `/readout`: where readout lets an agent see the screen, drive lets it act on one. With `?drive=1` the page polls the server (4×/second) for queued commands and executes them — `send` (an event through the `/loop` Rust loop), `tap` (any CSS selector, a real click — chrome and login included), `type` (fill an input and fire its events). Commands are enqueued by `POST diag/drive` and popped one per poll; localhost is open for tooling, the tunnel requires a cookie both ways. Together with readout this is miso's native demo-and-test framework: **a demo script is interactions followed by assertions on the readout**, and `tools/drive.py run <script>` executes exactly that, failing loudly on a missed assertion.
-
 ## user
 
 For agents: `python3 tools/drive.py tap '#build'` pokes the live page; `drive.py send '{"type":"click","ev":"tap"}'` speaks straight to the Rust loop; `drive.py run demos/<name>.json` performs a whole scripted demo and checks its assertions. Scripts are JSON step lists: `send` / `tap` / `type` / `wait` / `assert` (find-by-attributes, then check `text`, `text_starts`, `hidden`, or `exists`).
+
+## spec
+
+The inverse of `/readout`: where readout lets an agent see the screen, drive lets it act on one. With `?drive=1` the page polls the server (4×/second) for queued commands and executes them — `send` (an event through the `/loop` Rust loop), `tap` (any CSS selector, a real click — chrome and login included), `type` (fill an input and fire its events). Commands are enqueued by `POST diag/drive` and popped one per poll; localhost is open for tooling, the tunnel requires a cookie both ways. Together with readout this is miso's native demo-and-test framework: **a demo script is interactions followed by assertions on the readout**, and `tools/drive.py run <script>` executes exactly that, failing loudly on a missed assertion.
 
 ## glossary
 

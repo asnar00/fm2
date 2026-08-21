@@ -4,6 +4,13 @@
 > (transcripts/2026-08-15-fm-spec.md#p31a)
 > and this is where a list of in-progress feature requests (matching exactly the waiting-for-update and feature list formats) would be supercool.
 
+## user
+
+Your asks live in the system panel with the updates: each one listed
+with where it's got to — waiting for your description, sent to the
+builder — until it ships and becomes a real entry in the feature list.
+Ask on your phone, see it listed on your laptop.
+
 ## spec
 
 The feature list becomes the request lifecycle's display (#p85's
@@ -27,13 +34,6 @@ A named limit, honestly: status changes the builder makes land in the
 server's copy of the asks store and reach a device on its next
 join/launch — live mid-session status pushes await a builder→user
 channel.
-
-## user
-
-Your asks live in the system panel with the updates: each one listed
-with where it's got to — waiting for your description, sent to the
-builder — until it ships and becomes a real entry in the feature list.
-Ask on your phone, see it listed on your laptop.
 
 ## glossary
 

@@ -4,6 +4,13 @@
 > (transcripts/2026-08-15-fm-spec-2.md#p6)
 > we should make it so that if I go change the text file of a node in the feature, it auto-updates everywhere. In other words, the cache entry should be able to check whether its source file has changed, and update if so
 
+## user
+
+Change what a feature's documentation says, and everywhere those words
+appear — the feature pages, the features list, the little cards —
+says the new thing on its next look, without waiting for a redeploy on
+your dev machine or an app update on your phone.
+
 ## spec
 
 Every surface that speaks a node's documentation — the served
@@ -36,13 +43,6 @@ can catch a 404; and because the re-export runs inside whichever
 request noticed first, a concurrent read (`/threads`) can pair a
 mid-export tree with the other side's stamp — the held-vs-served
 comparison then refetches one read later than ideal, never not at all.
-
-## user
-
-Change what a feature's documentation says, and everywhere those words
-appear — the feature pages, the features list, the little cards —
-says the new thing on its next look, without waiting for a redeploy on
-your dev machine or an app update on your phone.
 
 ## glossary
 

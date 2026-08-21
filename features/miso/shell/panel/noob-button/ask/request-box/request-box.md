@@ -5,6 +5,10 @@
 > NEW ASK [proposed] … [in taps @ miso/loop/tap/counter] :: 'Instead of “ask miso…” let’s say “request”'
 > *(a field ask, filed 2026-08-15 on miso build 173, moments after the button became `miso-button`)*
 
+## user
+
+The box says **do something** — type what you want, press miso.
+
 ## spec
 
 The ask box's placeholder reads **do something** — playful and
@@ -13,10 +17,6 @@ explain at length. It stops repeating the app's name next to a button
 that now says it, and pairs with that button as what → do: *do
 something → miso*. The whole placeholder is the phrase, the calm-panel
 taste applied to prose.
-
-## user
-
-The box says **do something** — type what you want, press miso.
 
 ## glossary
 

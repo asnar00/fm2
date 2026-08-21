@@ -4,6 +4,15 @@
 > (transcripts/2026-08-15-fm-spec.md#p2)
 > 4) agent hookup ("do x" -> find + introduce/use tool, or build tool for next update)
 
+## user
+
+Open the system panel and ask for what you want — "count my taps",
+"record a note", "I need a timer". If a tool can already do it, miso
+shows you the tool and opens it for you; if a feature page explains it,
+it's a tap away. If miso doesn't have it, your ask is filed for the
+builder — with your name and words on it — and lands in front of the
+agent that grows miso.
+
 ## spec
 
 The nøøb button's destiny is "how do I use this?" / "do xyz" / "I need
@@ -30,15 +39,6 @@ becomes visible at the moment of shipping.
 The agent behind the box is the dev-session agent on a delay (the
 doctrine's starting point); the proposed/in-progress lifecycle states
 on the feature list are the named next rungs, not this node.
-
-## user
-
-Open the system panel and ask for what you want — "count my taps",
-"record a note", "I need a timer". If a tool can already do it, miso
-shows you the tool and opens it for you; if a feature page explains it,
-it's a tap away. If miso doesn't have it, your ask is filed for the
-builder — with your name and words on it — and lands in front of the
-agent that grows miso.
 
 ## glossary
 

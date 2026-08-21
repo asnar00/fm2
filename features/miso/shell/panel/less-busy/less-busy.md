@@ -5,6 +5,12 @@
 > let's combine the "logged-in-as-asnaroo" and log out button into one row, right at the end; so "ask muon" will come first. Then below that let's have the features-available-for-update list and the update button, and then below that the update policy button, and then a "features" button that opens the long feature list. That'll make things less busy.
 > *(#p15: "incidentally 'build 132: up-to-date' could be just below 'ask muon'")*
 
+## user
+
+The panel stops shouting: ask miso at the top, a one-line build status
+under it, updates and their policy next, and your name with the log out
+button in one quiet row at the bottom.
+
 ## spec
 
 The panel reads top to bottom in the order a user actually needs it:
@@ -17,12 +23,6 @@ calm last row where "logged in as asnaroo" and **log out** live
 together. The who-line loses its build freight — that moved to the
 build line — and `/features-button`'s row slots in after the policy
 picker (each node places itself; this node only arranges what exists).
-
-## user
-
-The panel stops shouting: ask miso at the top, a one-line build status
-under it, updates and their policy next, and your name with the log out
-button in one quiet row at the bottom.
 
 ## code description
 

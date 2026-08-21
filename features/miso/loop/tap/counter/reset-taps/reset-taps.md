@@ -5,6 +5,11 @@
 > fair warning: it's going to be a "reset" button in the taps tool. So I'd be in the taps tool, realise I want to reset the counter, and ask for "reset taps".
 > *(and so it came: the ask arrived from the field on 2026-08-15, filed from inside the taps tool on muon build 144 — text "reset tap count", birthplace `taps @ muon/loop/tap/counter`, proposal approved in the ask box: "The taps tool gains a new ability: reset tap count. It appears in the tool and does exactly that.")*
 
+## user
+
+The taps tool gains a new ability: reset tap count. It appears in the
+tool and does exactly that.
+
 ## spec
 
 Reset is a **sub-tool of taps** (#p32's correction: "reset is a
@@ -19,11 +24,6 @@ footnote (#p128's op-fold question, met in the wild for the first
 time): a tap in flight at the moment of a reset lands before or after
 it by arrival order — the register and the counter ops race, and
 last-write-wins is the chosen answer, not a hidden accident.
-
-## user
-
-The taps tool gains a new ability: reset tap count. It appears in the
-tool and does exactly that.
 
 ## glossary
 

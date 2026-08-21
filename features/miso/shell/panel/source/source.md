@@ -4,13 +4,13 @@
 > (transcripts/2026-08-14-fm-spec.md#p136)
 > let's add a "view source" button to the update popup?
 
-## spec
-
-The panel gains a `view source` button that opens the live feature tree at `/features/` — miso's own self-description, served by miso. It opens outside the PWA window (a new tab / in-app browser) so the app itself stays put. A feature-modular app's "source" is its feature tree, not a file listing: the button lands on the same orientation page any agent or human uses.
-
 ## user
 
 Open the panel (tap the logo pill), press `view source`, and the feature tree opens in the browser — every node, its prompt, and its code.
+
+## spec
+
+The panel gains a `view source` button that opens the live feature tree at `/features/` — miso's own self-description, served by miso. It opens outside the PWA window (a new tab / in-app browser) so the app itself stays put. A feature-modular app's "source" is its feature tree, not a file listing: the button lands on the same orientation page any agent or human uses.
 
 ## glossary
 

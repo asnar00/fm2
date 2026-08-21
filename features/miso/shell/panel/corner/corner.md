@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p58)
 > I think the number in the corner is being swallowed by the round display corner
 
-## spec
-
-The panel handle was positioned from the physical screen edge and vanished into the iPhone's corner radius. Rule established: fixed-position chrome is placed relative to the safe area (`env(safe-area-inset-*)`), never the physical edge — the app claims the full display (`viewport-fit=cover`), so respecting the insets is our job.
-
 ## user
 
 The corner button sits fully visible above the home-indicator zone on any display shape.
+
+## spec
+
+The panel handle was positioned from the physical screen edge and vanished into the iPhone's corner radius. Rule established: fixed-position chrome is placed relative to the safe area (`env(safe-area-inset-*)`), never the physical edge — the app claims the full display (`viewport-fit=cover`), so respecting the insets is our job.
 
 ## glossary
 

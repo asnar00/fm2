@@ -4,6 +4,11 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p31)
 > 2) join on background->foreground as well as startup
 
+## user
+
+Nothing to operate: switch back to miso after any absence and the values on
+screen are current, not what they were when you left.
+
 ## spec
 
 A backgrounded instance is frozen (iOS suspends PWA JavaScript), and its
@@ -13,11 +18,6 @@ foreground re-joins: the same `Join` through the same outbox, deduplicated,
 also fired on the browser's `online` event (a warm tab regaining network).
 This completes join's generalisation: boot, reconnect and resume are one act
 — "catch up whenever you might be stale".
-
-## user
-
-Nothing to operate: switch back to miso after any absence and the values on
-screen are current, not what they were when you left.
 
 ## glossary
 

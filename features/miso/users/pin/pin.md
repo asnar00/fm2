@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p39)
 > We could start with a simple SMS-PIN authenticator (just hold a phone number per user - don't even need a username).
 
-## spec
-
-The code-by-text exchange: `auth_request` checks the /guest list/, rate-limits (5 texts per phone per hour), generates a 4-digit PIN (5-minute expiry, 3 attempts) and sends it via the `send_sms` chain; `auth_verify` checks the PIN (constant-time), and on success issues the /session token/ cookie. Pending PINs and send-times persist to disk in `~/.miso-auth/` — the server restarts on every deploy, and a code already texted out must survive that. Base `send_sms` prints to the console (test/dev); `/vonage` extends it with real delivery.
-
 ## user
 
 Enter your phone number, receive a 4-digit code, type it in — logged in for a year on that device. Test users (`_` prefix) read their PIN off the server log instead.
+
+## spec
+
+The code-by-text exchange: `auth_request` checks the /guest list/, rate-limits (5 texts per phone per hour), generates a 4-digit PIN (5-minute expiry, 3 attempts) and sends it via the `send_sms` chain; `auth_verify` checks the PIN (constant-time), and on success issues the /session token/ cookie. Pending PINs and send-times persist to disk in `~/.miso-auth/` — the server restarts on every deploy, and a code already texted out must survive that. Base `send_sms` prints to the console (test/dev); `/vonage` extends it with real delivery.
 
 ## glossary
 

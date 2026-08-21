@@ -5,6 +5,12 @@
 > The system should be smart enough to know 1) that I'm in the tap tool right now, so my request probably pertains to it
 > *(fired at #p30; #p78 named context sensitivity — this is its first cash-out)*
 
+## user
+
+Ask while you're inside a tool and that tool gets the benefit of the
+doubt: vague words like "reset" or "undo" find the thing you're
+looking at before anything else.
+
 ## spec
 
 An ask made inside a tool probably pertains to it, so the finder leans
@@ -15,12 +21,6 @@ the tool you're using over a global near-tie ("reset" asked inside
 taps finds taps first) and far too small to drag an unrelated family
 over a real match elsewhere. On the launcher, no tool is open and
 nothing tilts.
-
-## user
-
-Ask while you're inside a tool and that tool gets the benefit of the
-doubt: vague words like "reset" or "undo" find the thing you're
-looking at before anything else.
 
 ## glossary
 

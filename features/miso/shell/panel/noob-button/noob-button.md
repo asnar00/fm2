@@ -4,13 +4,13 @@
 > (transcripts/2026-08-14-fm-spec-3.md#p58)
 > OK: so let's move the "user" thing back to the noob button - that's the meta-button, basically. Keep the "user" button there, but let it be empty for now - we'll fill that in later with an editable user profile page.
 
-## spec
-
-The #p54 doctrine lands: the **nøøb button** (ash's name for the corner logo lozenge) is the meta-surface — it controls how miso works; the rest is miso. Its tap, parked by `/account`, is un-parked: tapping the lozenge opens the system panel (who you are, updates and the queue, log out), exactly as before `/account` moved it. The 👤 tool keeps its toolbar place and its teal, but opening it shows an **empty display surface** — the placeholder for the editable user profile page (`/account`'s social future, notes #p55). The agent prompt (#p53) will join the meta-surface later; the panel is its first tenant. Untick this and `/account`'s arrangement returns whole: tool opens panel, lozenge parked.
-
 ## user
 
 The little logo at the top right is the system button again: tap it for updates, the feature list, and log out. The 👤 button in the toolbar is your page — empty for now, profile coming.
+
+## spec
+
+The #p54 doctrine lands: the **nøøb button** (ash's name for the corner logo lozenge) is the meta-surface — it controls how miso works; the rest is miso. Its tap, parked by `/account`, is un-parked: tapping the lozenge opens the system panel (who you are, updates and the queue, log out), exactly as before `/account` moved it. The 👤 tool keeps its toolbar place and its teal, but opening it shows an **empty display surface** — the placeholder for the editable user profile page (`/account`'s social future, notes #p55). The agent prompt (#p53) will join the meta-surface later; the panel is its first tenant. Untick this and `/account`'s arrangement returns whole: tool opens panel, lozenge parked.
 
 ## glossary
 

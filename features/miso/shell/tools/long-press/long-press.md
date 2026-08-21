@@ -5,6 +5,12 @@
 > PROPOSAL: A long press on a tool button should pop up a tooltip with user documentation
 > *(a field ask, filed 2026-08-15 on muon build 155)*
 
+## user
+
+Hold your finger on any tool button and a little card tells you what
+that tool does, in plain words. Tap anywhere to put it away; a normal
+tap still just opens the tool.
+
 ## spec
 
 Press and hold any tool button in the toolbar (half a second) and a
@@ -18,12 +24,6 @@ the next touch anywhere, and a drift of more than a few pixels while
 holding cancels the hold (a scroll is not a question). Without the
 chooser's catalog in the composition, the popover degrades to the
 button's title.
-
-## user
-
-Hold your finger on any tool button and a little card tells you what
-that tool does, in plain words. Tap anywhere to put it away; a normal
-tap still just opens the tool.
 
 ## glossary
 

@@ -5,6 +5,10 @@
 > NEW PROPOSED … [in taps @ muon/loop/tap/counter] PROPOSAL: decrement tap count if >0
 > *(a field ask whose arrival is its own anchor: filed from inside the taps tool on 2026-08-15, muon build 150 — the first node whose founding quote is the wish itself, verbatim, as it reached the builder)*
 
+## user
+
+decrement tap count if >0
+
 ## spec
 
 A **−1** control joins reset and ×2 in the taps toolbar while the taps
@@ -14,10 +18,6 @@ asked-for guard, which is also the u64 floor. Register semantics like
 its siblings: the decremented value computes from the local replica
 and writes with a last-write-wins `VarSet`; increments in flight race
 it by arrival order.
-
-## user
-
-decrement tap count if >0
 
 ## glossary
 

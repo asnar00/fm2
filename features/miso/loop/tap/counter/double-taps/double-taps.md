@@ -5,6 +5,10 @@
 > It should concisely describe what the tool does : "double the tap count"
 > *(and then it was asked for in earnest: filed from inside the taps tool on 2026-08-15, muon build 148 — text "double the tap count", birthplace `taps @ muon/loop/tap/counter`, approved proposal: "double the tap count" — the first ask drafted in the concise style it itself defined)*
 
+## user
+
+double the tap count
+
 ## spec
 
 A **×2** control joins reset in the taps toolbar while the taps tool
@@ -15,10 +19,6 @@ computed from the local replica and written with register semantics —
 last-write-wins `VarSet` sweeping the fleet. Same honest race as
 reset: increments in flight land before or after the doubling by
 arrival order.
-
-## user
-
-double the tap count
 
 ## glossary
 

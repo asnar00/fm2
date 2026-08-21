@@ -4,6 +4,14 @@
 > (transcripts/2026-08-15-fm-spec.md#p38)
 > can we add the thing that shows the "being built" list of features? same format as the "list of features in next update". Then when they're done, they appear in the next-update list
 
+## user
+
+When the builder takes your request on, it moves into a **being
+built** list in the panel — same shape as the update list, live while
+you watch. When it's done it vanishes from there and reappears
+moments later as a real feature in the next update, waiting for your
+OK.
+
 ## spec
 
 Between "proposed" and "in the next update" a request disappears into
@@ -24,14 +32,6 @@ user's `asks` var to the broadcast file** — the same file the server's
 (Named risk, accepted: the stamp tool and the server both write the
 broadcast file; single-writer in practice, a real lock if it ever
 isn't.)
-
-## user
-
-When the builder takes your request on, it moves into a **being
-built** list in the panel — same shape as the update list, live while
-you watch. When it's done it vanishes from there and reappears
-moments later as a real feature in the next update, waiting for your
-OK.
 
 ## glossary
 

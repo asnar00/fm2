@@ -4,6 +4,12 @@
 > (transcripts/2026-08-15-fm-spec.md#p2a)
 > I notice in the "taps" tool, whenever I tap the "taps" button, the tool icon at lower left jumps around - it should stay stable.
 
+## user
+
+The tool icon at the lower left sits still while you use the tool —
+tapping away at the taps counter no longer makes it twitch. Icons still
+slide in when you open a tool or come back out.
+
 ## spec
 
 `/tools`'s slide-in animation was written for mode changes, but renders
@@ -13,12 +19,6 @@ lurching in from the left. The rule this node enforces is the
 animation's original intent: the slide belongs to a change of mode
 (which tool is open, or none), and a re-render within the same mode
 mounts the toolbar buttons exactly where they were, motionless.
-
-## user
-
-The tool icon at the lower left sits still while you use the tool —
-tapping away at the taps counter no longer makes it twitch. Icons still
-slide in when you open a tool or come back out.
 
 ## code description
 

@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p39)
 > How about user login? We could start with a simple SMS-PIN authenticator (just hold a phone number per user - don't even need a username).
 
-## spec
-
-Identity is a phone number. The guest list is `~/.miso-auth/users.json` — `[{ "name", "phone" }]` — outside the deployed tree (a deploy can never wipe it) and read fresh per request (adding someone needs no restart). Sessions are stateless signed cookies `miso_auth=<digits>.<expiry>.<hmac-sha256>`, valid one year, signed with a 32-byte secret generated once into `~/.miso-auth/secret`; they survive every deploy because nothing per-session is stored server-side. Ported from ftr's proven gate (itself a port of earlier nøøb miso).
-
 ## user
 
 Add someone: append `{ "name": "x", "phone": "+44…" }` to `~/.miso-auth/users.json` on the mini. Names starting with `_` are test users (PIN goes to the server log, no SMS). Phone match is digits-only with `+` restored — country code required.
+
+## spec
+
+Identity is a phone number. The guest list is `~/.miso-auth/users.json` — `[{ "name", "phone" }]` — outside the deployed tree (a deploy can never wipe it) and read fresh per request (adding someone needs no restart). Sessions are stateless signed cookies `miso_auth=<digits>.<expiry>.<hmac-sha256>`, valid one year, signed with a 32-byte secret generated once into `~/.miso-auth/secret`; they survive every deploy because nothing per-session is stored server-side. Ported from ftr's proven gate (itself a port of earlier nøøb miso).
 
 ## glossary
 

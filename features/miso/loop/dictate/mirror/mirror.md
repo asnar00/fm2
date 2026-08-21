@@ -4,6 +4,13 @@
 > (transcripts/2026-08-14-fm-spec-2.md#p50)
 > for our next milestone, let's figure out distribution - the outcome should be that the first recorded file appears in the other muon instance on this laptop browser.
 
+## user
+
+Record a note on your phone: within moments it appears in dictate's grid on
+your laptop (dimmed until first played, while the audio fetches). Everything
+you record reaches all your logged-in instances; nobody else's instances ever
+see it.
+
 ## spec
 
 Recordings are user-scoped facts: record on one instance and the note appears
@@ -17,13 +24,6 @@ audio is local — never lie about what's actually on the device. Offline
 recording queues both the upload and the announcement; reconnect delivers
 them. The server stores blobs and index under `~/.miso-blobs/<user>/`,
 outside the deploy tree.
-
-## user
-
-Record a note on your phone: within moments it appears in dictate's grid on
-your laptop (dimmed until first played, while the audio fetches). Everything
-you record reaches all your logged-in instances; nobody else's instances ever
-see it.
 
 ## glossary
 

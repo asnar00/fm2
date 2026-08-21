@@ -4,13 +4,13 @@
 > (transcripts/2026-08-13-fm-spec.md#p13)
 > Let's build v0 linker. Any way you like, quick and dirty for the first pass is fine.
 
-## spec
-
-Root demo feature, from the fm.md worked example. Introduces the program `/entry point` `main`, which prints `Hello, world!`. Exists to give the v0 linker a base function for subfeatures to extend.
-
 ## user
 
 Build the `demo` product and run it; it prints `Hello, world!` (plus whatever subfeatures add).
+
+## spec
+
+Root demo feature, from the fm.md worked example. Introduces the program `/entry point` `main`, which prints `Hello, world!`. Exists to give the v0 linker a base function for subfeatures to extend.
 
 ## glossary
 
