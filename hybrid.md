@@ -136,6 +136,14 @@ Short — ten lines, not a spec. It must contain:
    and cap sound, spec paragraphs complete.
 6. Verdict: **ship** (integrate, deploy, stamp) or **return** with notes,
    once; twice → escalate to ash with both rounds' evidence.
+7. **A task is not done while residuals stand** (ash's ruling, hybrid
+   #p57). Workers naming residuals mid-run is the pipeline's best
+   behaviour — but a run does not end with a queue attached: every
+   named residual is either fixed within the run or explicitly parked
+   by ash as accepted-and-recorded. Without this, every request leaves
+   a tail that becomes the next request's opening cost, which leaves
+   its own tail — Zeno's paradox as a workflow. "Done" means the
+   residual ledger is empty or every entry carries ash's signature.
 
 ## triage at scale: many askers (#p7)
 
