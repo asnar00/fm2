@@ -1,3 +1,4 @@
 - [x] pin
 - [x] gate
 - [x] passkey
+- [x] whole-number
