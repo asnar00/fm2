@@ -1621,6 +1621,14 @@ changing only what it claims):
    worlds can be reclaimed. Sequenced after sync because a var op on the
    wire is the same shape a disk record wants; eviction lands here too —
    it is the same question as the table-only-grows leak.
+6b. the overlay chain: global (and group) scopes become real — a shared
+   `_global` layer that inherit-resolving reads fall through to, ops
+   whose audience is everyone, and the linker's scope refusal lifted.
+   Added 2026-08-21 when rung 6 proved `SyncVar::global` (the shared
+   tap counter) cannot migrate without it — rung 7's zero-callers goal
+   blocks on this rung. Transport hardening lands here too: op ids +
+   a seen-set, because the first crdt-sum declaration makes the
+   demonstrated replayed-add double-count reachable.
 7. migration: feature by feature, each SyncVar use becomes a `.vars`
    declaration + field access; per-feature toggle proofs cover both eras.
 8. absorption complete: SyncVar has zero callers and is deleted; the
