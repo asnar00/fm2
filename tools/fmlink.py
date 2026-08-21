@@ -1538,8 +1538,16 @@ def merged_deps(features: list) -> str:
     return "".join(f"{spec}\n" for _, spec in sorted(merged.items()))
 
 
+# --quick builds the debug profile: no lto, no opt — for toggle-proof and
+# rig cycles, where seconds matter and artifact size does not. Deploy always
+# uses release (deploy.sh calls fmlink without --quick).
+BUILD_PROFILE = "release"
+
+
 def cargo_build(crate_dir: Path, emitter: Emitter, wasm: bool, label: str):
-    cmd = ["cargo", "build", "--release", "--message-format=json"]
+    cmd = ["cargo", "build", "--message-format=json"]
+    if BUILD_PROFILE == "release":
+        cmd.insert(2, "--release")
     if wasm:
         cmd += ["--target", "wasm32-unknown-unknown"]
     result = subprocess.run(cmd, cwd=crate_dir, capture_output=True, text=True)
@@ -1562,7 +1570,7 @@ def build_legacy(product: str, emitter: Emitter, chains: dict, run: bool):
     cargo_build(build_dir, emitter, wasm=False, label=product)
     print("build OK")
     if run:
-        run_binary(build_dir / "target" / "release" / product, build_dir)
+        run_binary(build_dir / "target" / BUILD_PROFILE / product, build_dir)
 
 
 def build_places(product: str, places: list, base: Emitter, chains: dict,
@@ -1588,12 +1596,12 @@ def build_places(product: str, places: list, base: Emitter, chains: dict,
         cargo_build(crate_dir, emitter, wasm, label=place["name"])
         if wasm:
             artifact = (crate_dir / "target" / "wasm32-unknown-unknown"
-                        / "release" / f"{crate}.wasm")
+                        / BUILD_PROFILE / f"{crate}.wasm")
             site.mkdir(parents=True, exist_ok=True)
             (site / "client.wasm").write_bytes(artifact.read_bytes())
             print(f"  site/client.wasm ({artifact.stat().st_size} bytes)")
         else:
-            native_binaries.append(crate_dir / "target" / "release" / crate)
+            native_binaries.append(crate_dir / "target" / BUILD_PROFILE / crate)
 
     # feature assets land in site/, linearisation order (later overwrites earlier)
     asset_files = [a for f in features for a in f.assets]
@@ -1732,10 +1740,15 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("product", nargs="?", default="demo")
     ap.add_argument("--run", action="store_true", help="run the binary after building")
+    ap.add_argument("--quick", action="store_true",
+                    help="debug-profile build (fast; proof cycles, never deploy)")
     ap.add_argument("--chains", action="store_true",
                     help="print chain topology and exit (no build)")
     args = ap.parse_args()
 
+    if args.quick:
+        global BUILD_PROFILE
+        BUILD_PROFILE = "debug"
     product_dir = REPO / "products" / args.product
     if not product_dir.is_dir():
         fail(f"no such product: products/{args.product}")

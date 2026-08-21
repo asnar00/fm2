@@ -53,3 +53,15 @@ On restart the server announces the new build to push subscribers by itself
 - Device reports: `ssh <mini> tail -f /tmp/miso-diag.log` (launches, errors,
   enrolment outcomes — the remote eyes on installed phones)
 - The system panel on any device shows its running build and recent changes.
+
+## Speed (added 2026-08-21, hybrid #p37)
+
+- `fmlink.py --quick` builds the debug profile: ~1.2s warm, ~16s cold vs
+  minutes for cold release+LTO. For toggle proofs and rig cycles only —
+  deploy.sh always builds release.
+- Pipeline workers in worktrees should `export CARGO_TARGET_DIR` to one
+  shared directory (e.g. `<repo>/.cargo-shared-target`) so dependency
+  artifacts compile once across all worktrees; cargo's own locking makes
+  concurrent use safe.
+- `export_features.py` skips the ~4.5s bake when nothing under features/
+  or transcripts/ changed since the last stamp; `--force` overrides.

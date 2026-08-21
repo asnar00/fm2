@@ -172,6 +172,17 @@ def tree_json(children, times, builds) -> list:
 
 
 def main():
+    # deploy calls this on every ship; when no feature source changed since
+    # the last bake, the bake is identical (per-feature builds move only when
+    # a feature's own files do) — skip the ~4.5s. --force overrides.
+    stamp = OUT / "stamp"
+    if stamp.exists() and "--force" not in sys.argv:
+        watched = [explorer.FEATURES, explorer.REPO / "transcripts"]
+        newest = max((f.stat().st_mtime for root in watched
+                      for f in root.rglob("*") if f.is_file()), default=0.0)
+        if stamp.stat().st_mtime > newest:
+            print("features export: sources unchanged since last bake — skipped")
+            return
     children = explorer.load_children(explorer.FEATURES)
     paths = all_paths(children, [])
     if OUT.exists():
