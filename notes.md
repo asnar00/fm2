@@ -1673,10 +1673,20 @@ changing only what it claims):
    FOR RUNG 8: the trigger is `/join`'s `Join` message and the reply is
    typed `VarJoin`. Deleting either name silences the context join
    SILENTLY. Keep both, or rename both halves in one commit.
-8. absorption complete: SyncVar has zero callers and is deleted; the
-   chooser's tickboxes drive `enabled` — instant, per-user, work
-   preserved. DONE = untick a feature in the chooser, it is off for you
-   only, on all your devices, and re-tick finds your state intact.
+8. ✅ absorption complete (build 212, 2026-08-21): SyncVar deleted, the
+   chooser's tickboxes drive `enabled`. THE DONE SENTENCE WAS PROVEN on
+   the real UI, nine stages: untick a feature in the chooser, it is off
+   for you only, on all your devices (0.5s, no reload), it survives a
+   server restart and reaches a never-seen device, and re-tick finds
+   your state intact — the count resumed at 3 and counted to 4. The
+   ladder ran builds 187–212 in one day under the hybrid pipeline: two
+   Opus workers, eleven rungs (three added mid-climb by triage returns
+   and worker findings), zero review returns, one correct refusal.
+   Remaining post-ladder queue: sender_of full-phone migration (now
+   URGENT — rung 8's rig reproduced a cross-user settings leak under
+   colliding last-fours), fragments obeying enabled (the half-off
+   surface), the gate-coverage report, rung 3's POST as edit_op,
+   deploy's one-server-per-state-dir assert.
    ✅ **THE LADDER IS TOPPED OUT.** Built as
    `shell/panel/noob-button/chooser/enforced`, which contains no mechanism
    of its own — every rung beneath it supplies one, and this node is a
