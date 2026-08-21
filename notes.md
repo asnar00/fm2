@@ -1784,6 +1784,36 @@ cross-user leak of a *setting* rather than only of a blob namespace. It
 cost an hour of a rig chasing a phantom. The fix is unchanged and now
 overdue: `sender_of` moves to `miso/users`, keyed on the full number.
 
+✅ **FIXED, 2026-08-21** — two nodes, both cited `#p32`. `users/whole-number`
+redefines `sender_of` to the whole number, spelled `phone:+44…` exactly as
+rung 5's context table spells it, so the server has one key per person;
+`dictate/mirror/adopt` moves recordings already filed under a four-digit
+name onto their owner. Three findings worth keeping:
+
+- **The relay is addressed by a token, not by the identity.** Numbers in
+  audience strings would have moved the leak rather than closed it:
+  `/tmp/miso-broadcast.json` is a shared file that outlives the request.
+  `publish` and `wait_filter` translate through an HMAC of the identity
+  under the signing secret, so callers keep writing `user.<identity>` and
+  the buffer never sees a number. Durable state keeps the identity — a
+  lost secret costs one relay round, not a recording.
+- **Migration is on first touch, not at boot.** A directory named `…0123`
+  names a *tag*; the map from tag to person is the ambiguity being repaired,
+  and only a request carries a proven identity. The rename is the claim, so
+  it is atomic and the collision resolves itself: first claimant takes the
+  store, the second starts clean, and the log says in as many words that
+  some of those recordings may belong to somebody else.
+- **The rig proves the bug, not just the fix.** Untick `whole-number` and
+  the same script fails three checks — B hears A's context op, A and B read
+  each other's blobs, B's index lists A's recording — which is the rung-8
+  reproduction, now on a switch. Scripts in the worker's scratchpad; the
+  shape is worth re-creating if this ever regresses.
+
+Still keyed by the tag, deliberately: `diag/blackbox`'s log lines, where the
+tag is an annotation in an operator-only file rather than an isolation key.
+Two colliding guests interleave there and cannot be told apart — a
+readability limit, named rather than fixed.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
