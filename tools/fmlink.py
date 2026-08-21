@@ -61,7 +61,11 @@ SLOT_COMMENT = {"head": "<!-- fm: {} -->", "style": "/* fm: {} */",
 # the mechanism, features/miso/loop/context owns the design and the types.
 VAR_DECL_RE = re.compile(
     r"^(\w+)\s*:\s*(.+?)\s*=\s*(.+?)\s*"
-    r"\(\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*\)$")
+    r"\(\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*\)"
+    # optional fourth column: the legacy state key this var is republished at,
+    # so a page fragment that reads `s.<key>` keeps working after the value has
+    # moved into the Context. See features/miso/loop/context/converge/payload.
+    r"(?:\s+js:([A-Za-z_][A-Za-z0-9_]*))?\s*$")
 VAR_SCOPE = {"global": "ScopeGlobal", "group": "ScopeGroup",
               "user": "ScopeUser", "device": "ScopeDevice"}
 VAR_MERGE = {"last-write": "MergeLastWrite", "crdt-sum": "MergeCrdtSum",
@@ -148,6 +152,11 @@ REMEMBER_HOOK = "fm:context-remember"
 # global var's ops to the layer. No asker -> none of it, no presence record, and
 # every read stays the raw `.value` it was before this rung.
 OVERLAY_HOOK = "fm:context-overlay"
+# the eighth hook: a composed node carrying this token republishes bridged vars
+# into the loop's state at their legacy keys, so a page fragment that reads
+# `s.<key>` keeps working after the value has moved into the Context. No asker
+# -> no republish, and a `js:` column without one is a link error naming both.
+BRIDGE_HOOK = "fm:context-bridge"
 
 # fn names that additionally get std::ops glue, with required arity
 OP_TRAITS = {"add": ("Add", 2), "sub": ("Sub", 2), "mul": ("Mul", 2),
@@ -409,7 +418,7 @@ class FeatureCode:
                 fail(f"{src}:{lineno}: cannot parse var declaration "
                      f"{line!r} — expected "
                      f"'name: Type = default (scope, merge, inherit)'")
-            name, ty, default, scope, merge, inherit = m.groups()
+            name, ty, default, scope, merge, inherit, js = m.groups()
             for word, table, what in ((scope, VAR_SCOPE, "scope"),
                                       (merge, VAR_MERGE, "merge"),
                                       (inherit, VAR_INHERIT, "inherit")):
@@ -426,6 +435,7 @@ class FeatureCode:
                                "scope": VAR_SCOPE[scope],
                                "merge": VAR_MERGE[merge],
                                "inherit": VAR_INHERIT[inherit],
+                               "js": js,
                                "src": src, "line": lineno})
 
     def _parse(self, rs: Path):
@@ -666,6 +676,34 @@ def emit_context_resolve(fields: list, out: Emitter):
     out.emit("")
 
 
+def emit_context_republish(fields: list, out: Emitter):
+    """Carry every bridged var's RESOLVED value back into the loop's state, at
+    the legacy key a page fragment still reads.
+
+    This is the one direction the world-object did not have: rungs 1-6b moved
+    values out of the JSON state, and a JavaScript fragment cannot call
+    with_context. Rather than edit every fragment (six read `open_tool` alone),
+    a var may name the key it used to live at and the bridge writes it back
+    before the paint. The values are the resolved ones, so what a fragment sees
+    is what a gate would see."""
+    out.emit("// ---- context: bridged vars, back into the payload"
+             " (fm:context-bridge)")
+    out.emit("impl Context {")
+    out.emit("    pub fn republish(&self, state: &mut serde_json::Value) {")
+    for fname, path, s in fields:
+        key = s.get("js")
+        if not key:
+            continue
+        out.emit(f"        // {path}/{s['name']}")
+        out.emit(f"        state[{json.dumps(key)}] = "
+                 f"serde_json::to_value(&self.{fname}_get())",
+                 s["src"], s["line"])
+        out.emit("            .unwrap_or(serde_json::Value::Null);")
+    out.emit("    }")
+    out.emit("}")
+    out.emit("")
+
+
 def emit_gate_predicates(features: list, plan: dict, out: Emitter, src, line,
                          resolved: bool = False):
     """`<node>_on()` per composed node: own enabled AND the parent's answer.
@@ -720,6 +758,8 @@ def emit_context(features: list, out: Emitter):
                      for _, text in f.sources + f.libs if REMEMBER_HOOK in text]
     asks_overlay = [f.rel for f in features
                     for _, text in f.sources + f.libs if OVERLAY_HOOK in text]
+    asks_bridge = [f.rel for f in features
+                   for _, text in f.sources + f.libs if BRIDGE_HOOK in text]
     if not any(VAR_HOOK in text for f in features for _, text in f.libs):
         for asker, what, token in ((asks_snapshot, "Context::snapshot()", SNAPSHOT_HOOK),
                                    (asks_set, "Context::set_from_json()", SET_HOOK),
@@ -729,7 +769,9 @@ def emit_context(features: list, out: Emitter):
                                    (asks_remember, "context persistence",
                                     REMEMBER_HOOK),
                                    (asks_overlay, "the overlay chain",
-                                    OVERLAY_HOOK)):
+                                    OVERLAY_HOOK),
+                                   (asks_bridge, "the payload bridge",
+                                    BRIDGE_HOOK)):
             if asker:
                 fail(f"{asker[0]} asks for {what} "
                      f"('{token}') but no composed node provides the var "
@@ -772,6 +814,33 @@ def emit_context(features: list, out: Emitter):
                     fail(f"{s['src']}:{s['line']}: scope 'global' needs the "
                          f"overlay chain ('{OVERLAY_HOOK}') — tick "
                          f"loop/context/converge/overlay, or declare user")
+    # a `js:` column is a promise to a page fragment, and a promise nothing
+    # keeps is worse than one nobody made: a build whose declarations claim
+    # legacy keys but whose bridge is absent would render blank rather than
+    # fail, so it fails.
+    # the bridge republishes RESOLVED values, which is the overlay's read.
+    if asks_bridge and not asks_overlay:
+        fail(f"{asks_bridge[0]} republishes bridged vars ('{BRIDGE_HOOK}') but "
+             f"no composed node provides the resolved read ('{OVERLAY_HOOK}') "
+             f"it republishes — tick loop/context/converge/overlay, or untick "
+             f"the bridge")
+    bridged = {}
+    for feature in features:
+        for s in feature.vars:
+            key = s.get("js")
+            if not key:
+                continue
+            if not asks_bridge:
+                fail(f"{s['src']}:{s['line']}: '{s['name']}' claims the page "
+                     f"key '{key}' (js:), but no composed node provides the "
+                     f"payload bridge ('{BRIDGE_HOOK}') — tick "
+                     f"loop/context/converge/payload, or drop the js: column")
+            if key in bridged:
+                prev = bridged[key]
+                fail(f"{s['src']}:{s['line']}: page key '{key}' is already "
+                     f"claimed by {prev['src']}:{prev['line']} — two vars "
+                     f"cannot republish to one key")
+            bridged[key] = s
     plan = gate_plan(features) if asks_gate else None
     gate_src, gate_line = (asks_gate[0][1], 1) if asks_gate else (None, None)
     fields = []
@@ -818,6 +887,8 @@ def emit_context(features: list, out: Emitter):
     out.emit("")
     if asks_overlay:
         emit_context_resolve(fields, out)
+    if asks_bridge:
+        emit_context_republish(fields, out)
     if plan:
         emit_gate_predicates(features, plan, out, gate_src, gate_line,
                              bool(asks_overlay))
