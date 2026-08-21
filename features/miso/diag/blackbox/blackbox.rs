@@ -14,7 +14,7 @@ impl feature_Blackbox {
         if t.is_empty() || !token_valid(t.clone()) {
             return json_response(401, "{\"ok\":false,\"error\":\"log in first\"}".to_string());
         }
-        let who = tag(token_phone(t));
+        let who = blackbox_who(r.cookie.clone());
         let mut body = r.body;
         if body.len() > 65536 {
             body = body.chars().take(65536).collect();
@@ -22,6 +22,13 @@ impl feature_Blackbox {
         rotate_blackbox_log();
         append_blackbox(format!("{} {} {}\n", now_ms(), who, body.replace("\n", " ")));
         json_response(200, "{\"ok\":true}".to_string())
+    }
+
+    // seam: how a stream is labelled in the log. The last-4 tag is log-safe and
+    // was enough when the label only had to be followed by eye; a subfeature
+    // may name the stream in a way that also tells two people apart.
+    fn blackbox_who(cookie: String) -> String {
+        tag(token_phone(cookie_token(cookie)))
     }
 
     fn blackbox_file() -> String {

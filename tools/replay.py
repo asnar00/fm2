@@ -7,7 +7,7 @@ server is running (localhost is ungated: no login in the test browser), and
 opens the app with ?replay=1 — in a booted iPhone simulator with --simulator,
 else the default browser.
 
-Usage: replay.py [--who 3023] [--minutes 30] [--speed 1] [--simulator]
+Usage: replay.py [--who ash] [--minutes 30] [--speed 1] [--simulator]
 """
 
 import argparse
@@ -40,7 +40,9 @@ def assemble(who: str, minutes: float):
     tags = set()
     for tag, batch in pull_batches():
         tags.add(tag)
-        if who and not tag.endswith(who):
+        # a stream is labelled <name>:<id> (diag/blackbox/unmixed); either half
+        # selects it, and a substring still finds the older last-4 labels
+        if who and who not in tag:
             continue
         keyframes += batch.get("keyframes") or []
         entries += batch.get("entries") or []
@@ -94,7 +96,8 @@ def open_target(url: str, simulator: bool):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--who", default="", help="match the last digits of the phone tag")
+    ap.add_argument("--who", default="",
+                    help="select one stream: any part of its <name>:<id> label")
     ap.add_argument("--minutes", type=float, default=30)
     ap.add_argument("--speed", type=float, default=1)
     ap.add_argument("--simulator", action="store_true")
