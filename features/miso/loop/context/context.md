@@ -51,6 +51,31 @@ own machinery, which remains true of them.
 So `loop/context` is no longer an optional subtree. It is a dependency of every
 feature that has migrated, and the list grows as rung 7 proceeds.
 
+## the ladder topped out (rung 8)
+
+The absorption is complete. `SyncVar` — the runtime generic this design replaced
+— has no callers, and neither it, nor its `/tmp/miso-vars` store, nor its
+`VarUpdate` relay is in the tree any more. Every value that used to be a key in
+the loop's JSON state is a declared `/var` on this object, and the last of them
+was the chooser's `feature_ticks`, which is not stored at all now: it is derived
+from the implicit `enabled` var every node carries, so the map a user reads and
+the gates that obey it are two readings of one field.
+
+The sentence the ladder was built to make true is true, and was proven through
+the real interface rather than argued: **untick a feature in the chooser, it is
+off for you only, on all your devices, and re-tick finds your state intact.**
+Off *for you only* is rung 5's per-user table; *on all your devices* is rung 6's
+ops and 6b's layer; *state intact* is rung 4's gate, which declines to look
+rather than clearing anything; surviving a restart is 6a, and a device that has
+never run before learning all of it is 7c. Rung 8 added no mechanism — it wired a
+tickbox to what was already here.
+
+What this node's own open questions look like from the top: context versioning
+across builds is still open and now matters more, because a user's world is the
+only place their choices live. The default scope for undeclared legacy state is
+answered — there is none left. And the lifetime discipline for hypothetical
+contexts is still unasked-for.
+
 ## glossary
 
 - **var**: one named, typed, defaulted piece of a context, carrying its own scope, merge discipline and inheritance. A constant earns a var when it earns a variable; the declaration line *is* the promotion.
@@ -59,6 +84,12 @@ feature that has migrated, and the list grows as rung 7 proceeds.
 ## code description
 
 `context.vars`: this node's own declarations. One real var, `heartbeat: u32 = 0 (user, last-write, own)`, so emission is provable without touching another node.
+
+`context.deps.toml` — `serde = "1"`: the bare crate this node's hand-written
+`Serialize`/`Deserialize` impls need. It lived in `/scope`'s deps until rung 8
+hollowed that node out; the dependency now sits where the code that uses it
+does, which is what lets the joining subtree be unticked without taking the
+world-object's serialisation with it.
 
 `context.lib.rs` (verbatim library): the var family. `VarScope` / `VarMerge` / `VarInherit` are the three attribute traits, each carrying a `TAG` string; the zero-sized marker types (`ScopeUser`, `MergeCrdtSum`, `Inherit`, `Own`, …) implement them. `Var<T, S, M, I>` holds the value and phantoms the attributes, with a `const fn new` for defaults and `attrs()` for machinery that must walk vars generically. `Permits<I>` is where lifecycle enforcement lands: a scope declares which inheritance modes it accepts, and `ScopeDevice` accepts only `Own`.
 

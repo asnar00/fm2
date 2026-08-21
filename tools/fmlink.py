@@ -727,6 +727,30 @@ def emit_gate_predicates(features: list, plan: dict, out: Emitter, src, line,
         out.emit(f"    /// {me['path']}")
         out.emit(f"    pub fn {me['ident']}_on(&self) -> bool "
                  f"{{ {own}{conj} }}", src, line)
+    out.emit("")
+    # the tick map the chooser's page half has always read: one entry per node
+    # whose OWN enablement resolves off, absent meaning on. Ancestor shading is
+    # the page's own prefix walk and stays that way, so the map means exactly
+    # what it meant when a user's explicit choices were stored in it.
+    #
+    # It is emitted here rather than behind a hook of its own because it IS the
+    # gate machinery's view of itself — the same per-node fields, in path
+    # order — and because a walk of the snapshot would serialise every var's
+    # value on every event to answer a question about bools.
+    out.emit("    // the chooser's derived tick map: explicit false for a node")
+    out.emit("    // whose own enablement resolves off; absent means on.")
+    out.emit("    pub fn enabled_off_map(&self) -> serde_json::Value {")
+    out.emit("        let mut m = serde_json::Map::new();")
+    for f in sorted(features, key=lambda f: plan[f.rel]["path"]):
+        me = plan[f.rel]
+        own = (f"self.{me['ident']}_enabled_get()" if resolved
+               else f"self.{me['ident']}_enabled.value")
+        out.emit(f"        if !{own} {{", src, line)
+        out.emit(f"            m.insert({json.dumps(me['path'])}.to_string(),")
+        out.emit("                     serde_json::Value::Bool(false));")
+        out.emit("        }")
+    out.emit("        serde_json::Value::Object(m)")
+    out.emit("    }")
     out.emit("}")
     out.emit("")
 

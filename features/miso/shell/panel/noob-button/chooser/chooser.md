@@ -40,9 +40,20 @@ The convergence #p59 named, built — and at #p78, moved home: the list IS the p
 
 - **chooser**: the tickable tree view of the product's features — reader and consent surface in one.
 
+*(Revised by [enforced](#miso/shell/panel/noob-button/chooser/enforced), rung 8:
+the sentence above that ticks are "**stored, not yet enforced**, awaiting the
+context manager" was true for four builds and is not any more. The context
+manager arrived as the absorption ladder, and unticking a line now stops that
+feature running — for that user, on all their devices, with their state intact
+for the re-tick. `chooser.rs` is gone with it: the stored map was a `SyncVar`,
+and the map this file's page half reads is derived from the context now. Nothing
+in `chooser.index.js` changed.)*
+
 ## code description
 
-`chooser.rs` claims `ftick_<path>` clicks: toggles that path in the user-scoped `feature_ticks` map (explicit values only, absent = on) — `/queue`'s storage pattern with node paths as keys.
+`chooser.rs` /retired/: it claimed `ftick_<path>` clicks and toggled that path
+in a stored `feature_ticks` `SyncVar`. Rung 8 deleted both — the click is
+`/enforced`'s now, and the map is derived rather than stored.
 
 `chooser.index.js` owns the view: `mount()` — called through `/panel`'s fill seam on every open — renders the list into the panel's changes area (claiming it from `/queue`'s tap handler, which is guarded and stands down); the data comes from `features/tree.json` (exported at deploy by `tools/export_features.py` — name, path, purpose, **intro** (the `## user` paragraph, spec-paragraph fallback) **ts** (fmlink's provenance rule: a node's time is its cited prompt's; grouping nodes inherit their earliest child's) and **build** (deploy's convention build = commit count, read back: the count at the last commit touching the node's own files — spec, code, assets, children excluded, they carry their own numbers — computed by `latest_build()`). The tree is flattened and sorted newest-first. Rows carry `data-ev="ftick_<path>"` ticks (tick taps are excluded from row handling); tapping the row toggles the in-place box (`‹` via `data-up`, intro tappable via `data-read`, child chips via `data-goto`); `‹` and chips both `goto()` — scroll to the target line, flash it, open its box. The reader is an iframe on the served page with ✕ to dismiss. `reflect()` re-reads `feature_ticks` on every apply and shades lines whose path crosses an unticked ancestor.
 

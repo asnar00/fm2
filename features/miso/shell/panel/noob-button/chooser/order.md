@@ -1,3 +1,4 @@
 - [x] build-order
 - [x] features-button
 - [x] fresh-catalog
+- [x] enforced

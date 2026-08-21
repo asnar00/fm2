@@ -12,6 +12,35 @@ For agents: `let taps = Var::<u64>::global("tap_count");` then `taps.add(&mut s,
 
 The scope lattice as a Rust generic. `Var<T>` names a piece of loop state with a scope — `Var::local`, `::user`, `::group`, `::global` — and a key. `get`/`put` read and write the local replica; `set` (register, last-write-wins) and `add` (counter, op-fold) also queue a sync message. Everything after that is generic machinery owned by this node: the server keys its store by scope instance (user scope keys by the sender's cookie-proven identity, stamped into messages by `/messaging`), publishes a scoped `VarUpdate`, and every instance's generic `update` extension writes arriving updates into state — **a feature using a Var writes no sync code at all**. Implemented now: `Local` (never leaves the device), `Global`, `User` (server-filtered broadcast — one user's values cannot reach another's instances). `Group` is declared structure: local ops work, sync is an honest error awaiting the membership model. This node is also the first *verbatim library* — `scope.lib.rs` is full Rust (generics, traits) the linker emits as-is, outside the chain machinery.
 
+## absorbed, and what is left (rung 8)
+
+This node's mechanism is gone. Everything above describes `SyncVar` — the scope
+lattice as a runtime generic, its file-backed store under `/tmp/miso-vars`, its
+`VarSet`/`VarAdd` messages and the `VarUpdate` relay — and every word of it was
+true until the absorption ladder finished. It is kept as the record of what was
+built and why, because the design it argued did not die: it was **absorbed**.
+
+Ash asked the question at #p31 — isn't the old `SyncVar` just replaced by the
+new `Var`? — and the answer was yes, the same entity seen from two eras, with an
+exact column mapping: `Scope::Local/User/Group/Global` became the scope markers,
+`.set()` became `MergeLastWrite`, `.add()` became `MergeCrdtSum`, and a key into
+the JSON state became a field on the `Context`. What could not be welded
+together mid-flight was merged by migration instead, feature by feature, through
+rung 7. When the last caller went, so did this.
+
+The difference the absorption bought is that a var's discipline is now
+**declared** rather than chosen at each call site: scope, merge and inheritance
+live in the type, the linker picks the verb from the declaration, and reaching
+for `.set()` on a counter is a rustc error rather than a convention nobody
+enforced. That was the one complaint this node's own spec could not answer.
+
+What survives here is the **joining moment** — `/join`, `/veil` and `/resume`,
+which were never about the store and are about being current after boot,
+reconnect or a return to foreground. So this becomes a grouping node holding
+them, and the file-backed store stops being written: `/tmp/miso-vars` is dead,
+and anything reading it (the off-tree ask-intake monitor) reads
+`~/.miso-context/<user key>.log` instead.
+
 ## glossary
 
 - **scoped variable**: loop state declared with a scope (device ⊂ user ⊂ group ⊂ everyone); the scope is both replication domain and access boundary.

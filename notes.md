@@ -1677,6 +1677,35 @@ changing only what it claims):
    chooser's tickboxes drive `enabled` — instant, per-user, work
    preserved. DONE = untick a feature in the chooser, it is off for you
    only, on all your devices, and re-tick finds your state intact.
+   ✅ **THE LADDER IS TOPPED OUT.** Built as
+   `shell/panel/noob-button/chooser/enforced`, which contains no mechanism
+   of its own — every rung beneath it supplies one, and this node is a
+   translation: a click on one side, an `enabled` edit on the other, and a
+   DERIVED `feature_ticks` map that cannot disagree with the gates because
+   the map and the gates are two readings of one field.
+   `chooser.index.js` was not touched.
+   Two arguments worth keeping. **Re-tick is `clear`, not set-true** —
+   `enabled` is `inherit`, and the old stored map's absent-means-on is
+   exactly what `clear` restores; writing `true` would look identical
+   today and would silently pin that user off the layer forever. And the
+   map carries a node's OWN answer, not its resolved one, because
+   `reflect()` already derives ancestor shading by prefix walk — so an
+   unticked parent shades its children without unticking their boxes, and
+   re-ticking the parent restores the shape the user had.
+   **The sentence was proven end to end through the real UI** (nine
+   stages, a genuine click on the rendered `.ctick`, no synthesized
+   `ftick_` event): A1 counts 3 taps → unticks the counter → its tool
+   leaves A1's toolbar and A2's within a moment, no reload → B, a
+   different person, is untouched throughout → server restart, A's untick
+   replays from the log → a device A has never used joins and sees it →
+   A1 re-ticks → both instances recover and the count resumes at 3, then
+   counts on to 4.
+   SyncVar, `queue_var_op`, the `/tmp/miso-vars` store and its VarUpdate
+   relay, and `/join`'s value snapshot are all deleted; `scope` is a
+   grouping node holding the joining flow now, and its `serde` dependency
+   moved to `/context`, which is what uses it. The `Join` message and the
+   `VarJoin` reply type were KEPT, per 7c's warning — `/parity` rides the
+   envelope and `/veil` waits on the type.
 
 ## the migration drops a var out of `Join`: rung 7 needs a context join (2026-08-21, rung-7 worker)
 
@@ -1732,6 +1761,18 @@ full phone number for exactly this reason, and does not call
 rule-of-two signal that a shared `sender_of` belongs in `miso/users`,
 keyed on the full number, with mirror's blob namespace migrating to it.
 Queue as a redo-adjacent fix; it touches real user data isolation.
+
+**Seen live, 2026-08-21, rung-8 worker.** The rung-8 rig minted two test
+users whose numbers happened to share a last-four, and the "a different
+person is unaffected" stage failed: person B's feature list showed A's
+untick and B's toolbar lost the tool A had switched off. The *authority*
+was never wrong — the server wrote A's world and only A's, exactly as
+rung 5 promised — but `publish("user.<sender_of>")` addressed the relay by
+the four-digit tag, so B's long-poll heard it and applied it. That is the
+collision, reproduced end to end on a real surface, and it is now a
+cross-user leak of a *setting* rather than only of a blob namespace. It
+cost an hour of a rig chasing a phantom. The fix is unchanged and now
+overdue: `sender_of` moves to `miso/users`, keyed on the full number.
 
 ## ideas parking lot
 

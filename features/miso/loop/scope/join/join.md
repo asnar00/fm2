@@ -29,6 +29,25 @@ return and network return are join moments too — #p31).
 - **join**: the boot-time (or reconnect-time) act of asking the authoritative
   store for the current values of every var in your hearable scopes.
 
+## the payload changed hands (rung 8)
+
+The act this node names is unchanged — ask, on boot and on every moment you
+might be stale, and be told what is true — and `/veil` and `/resume` are
+untouched. What changed is what the answer carries.
+
+The var store this node snapshotted no longer exists (see scope.md), so the
+server half's `snapshot_vars` and the client half's `data.values` writer are
+gone. The **envelope stays**: the `Join` message and the `VarJoin` reply type
+are the joining moment's names, and two nodes now depend on them —
+`/parity` hangs the user's whole `/context` on the reply as `data.ctx`, and
+`/veil` waits for the type to lift the first-paint veil. Deleting the names with
+the payload would have silenced both, and silently, because an absent join looks
+exactly like a join with nothing to say. `parity.md` named that risk before it
+was one.
+
+`values` is still answered, as an empty object, so a client from before this
+build reads it as "nothing to apply" rather than meeting an absent field.
+
 ## code description
 
 `join.rs` server half: `handle_msg` claims the `Join` type — it scans the var
