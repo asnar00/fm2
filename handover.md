@@ -1,163 +1,91 @@
 # handover
-*state of play for the next session — written late 2026-08-15, end of the
-evening session (transcripts/2026-08-15-fm-spec-2.md, 22 prompts, builds
-162→175). Discipline in `agents.md`; ops in `deploy.md`; this file is only
-what's current.*
+*state of play for the next session — written 2026-08-21 at the top of the
+contexts ladder (transcripts/2026-08-21-hybrid.md, builds 182→215).
+Discipline in `agents.md`; ops in `deploy.md`; the pipeline in `hybrid.md`;
+the day's ledger in `redo.md` and notes.md.*
 
-## THE HEADLINE: the loop ran all evening
+## THE HEADLINE: the rewind, the hybrid, and the ladder
 
-Seven field asks travelled phone → inbox → node → build → phone in one
-sitting, each one stamped building/shipped live to the panel:
+Three things happened in one day, each built on the last:
 
-- **decrement restored** (165) — "subtract 1 if >0" arrived by ask; the
-  removal had been a product override, so the restore was the symmetric
-  re-tick + symlink in products/miso. Selection changes stay nodeless.
-- **sub-tool-cards** (166) — long-press cards extend to control buttons
-  (reset, ×2, −1, record). Ground truth: `export_features.py` now stamps
-  `subtools` (the control's data-ev ids) per registering node — the
-  sub-tool twin of the `tool:` stamp. The node wraps
-  `feature_LongPress.contentFor` and arms the parent's own timer state.
-- **honest 👤 tooltip** (167) — the card was right, the account node's
-  `## user` para was stale (pre-noob-button prose). Doc repair in place
-  with a cited revision note; no node (code-free subfeatures are illegal).
-- **fresh-catalog** (168) — 167 shipped as a data-only delta = quiet
-  apply = no reload, and the chooser's memoized catalog outlived it (ash
-  hit this live: "still showing the old tooltip"). New chooser subfeature
-  wraps `feature_Delta.quiet`, forgets flat/byPath before live-panel
-  re-renders. The wasm `patch` path shares quiet's ending, so it's covered.
-- **bigger-buttons** (170) — +25%: 40→50px squares, 19→24px icons, back
-  chevron in proportion. Pure CSS override node under shell/tools.
-- **miso-button** (173) — the ask button says **miso**: type a wish,
-  press the name, make it so.
-- **request-box** (174, churned to 175) — the placeholder became
-  "request", then same-evening wordsmithing landed on **"do something"**
-  (revised in place; two-phase lifecycle blesses draft churn). Box and
-  button now read *do something → miso*.
+1. **The rewind.** The Aug 16 session's code (Fable morning and Opus
+   afternoon) was expunged on ash's ruling — main rewound to the Aug 15
+   handover, archive on `archive/aug16-pre-rewind`, doctrine and records
+   kept. The forensic model comparison that motivated it is in notes.md;
+   `redo.md` is the ledger of what came back and how.
+2. **The hybrid pipeline** (`hybrid.md`): Fable triage writes per-ask
+   briefs, Opus workers build in isolated worktrees, Fable reviews
+   against named acceptance evidence before integrate → deploy → stamp.
+   Run all day: ~15 worker deliveries, zero review returns, one correct
+   triage-return, two workers (the first retired honestly at its context
+   budget after seven rungs). Persistent workers (one warm instance,
+   briefs as follow-up messages) cut the per-rung cold-start.
+3. **THE CONTEXTS LADDER — DONE.** Eleven rungs, builds 187–212, the
+   full design in notes.md ("the world-object", "the absorption
+   ladder"): `.vars` declarations → typed per-user `Context` worlds →
+   the turn boundary → implicit `enabled` gates → merge-disciplined ops
+   → persistence → the overlay chain → the migration (payload bridge +
+   epoch counters) → the context join → **the chooser's ticks mean it
+   and SyncVar is deleted**. The done sentence was proven nine stages
+   on the real UI: untick a feature, it's off for you only, on all
+   your devices, survives restarts, reaches new devices, and re-tick
+   finds your state intact. ASH: the phone walkthrough is your summit
+   review — untick something in the feature list and watch.
 
-Plus one typed design ask that became a node:
+Live: **build 212** at miso.nøøb.org (local head 215+, tools-only
+commits — next deploy carries them). 122 nodes, 123 vars per world.
 
-- **auto-export** (169, serve/features) — "change a node's text file and
-  it auto-updates everywhere". Server half: any `features/*` request
-  compares newest source mtime against the baked tree.json and re-runs
-  the export first (~4.5s, once per edit; mini has no sources so the
-  deploy bake stays the truth there). Device half: export writes a
-  `stamp` (tree.json content hash); the chooser's held catalog
-  revalidates against it on every read — words reach phones without
-  reload, apply, or deploy. PAID-FOR LESSON: route paths arrive
-  slash-stripped (`clean_path`) — match `features/`, not `/features`.
-  Named risks (both dev-only, self-healing next read): racing re-exports
-  can 404 momentarily; threads can pair a mid-export tree with a
-  mismatched stamp, deferring the refetch one read.
+## THE POST-LADDER QUEUE, in order
 
-Live: **build 175** at miso.nøøb.org, 110 nodes. (171/172 were doc-only
-commits — build = commit count.)
-
-## THE DOCTRINE RUN (all in notes.md, all anchored, fm-spec-2)
-
-The evening's asks kept generalising; five entries landed, converging:
-
-1. **the ask–engineering gap + privilege** (#p12): text vs proposal is
-   where translation lives; authority = subtree reach (blast radius ⊆
-   asker's privilege); user records in ~/.miso-auth/users.json (the `_`
-   prefix is already a privilege bit). Gates the headless flywheel.
-2. **tunables** (#p17a): every naive ask is "make parameter X tunable at
-   scope per-user/per-group/global". Var<T>, the var store, and the
-   broadcast channel already exist; parameter-set asks could skip builds.
-3. **the promotion rule** (#p18): a parameter earns its variable on the
-   SECOND ask that touches it. First ask ships the literal constant; the
-   declaration (name/type/default/scopes) is the one node; values are
-   data forever after. bigger-buttons is the standing first case — the
-   next size-shaped ask triggers its promotion.
-4. **rule of two, surface side** (#p20): a tool earns its TOOLBAR slot on
-   the second show of intent; until then it's usable from the ask
-   surface (open-chip) and held in a "new tools" drawer. Naturally
-   per-user — toolbar membership as a user-scoped selection var.
-5. **the builder is a feature-modular skillset** (#p21): agent
-   instructions become a composition language (`<name>.agent.md`
-   fragments, skeleton + slots, provenance-ordered, toggleable).
-   Tonight's entries are fragments-in-waiting for the nodes they govern;
-   agents.md is the monolith the skeleton comes from (index.html before
-   SPLIT_PAGES); fm.md stays constitution. The flywheel's headless
-   builder would receive its composed skillset like devices receive
-   index.html.
-
-Entries 2–4 + per-user ticks all converge on ONE mechanism: the context
-manager (rung 3 below).
-
-**Rulings queued for ash**: where a tunable is declared (linker-read
-stanza?); whose scope a repeat ask writes (asker's per-user vs global
-default); what graduates a tool from the new-tools drawer (second ask vs
-first real use); skillset fragment extension + slot vocabulary, and
-whether the composed skillset replaces agents.md as what a session loads.
-
-## NEXT SESSION
-
-0. **Transcript mirroring** (#p22, field-confirmed): ash's first real
-   test recording transcribed ON the iPhone (the on-device STT path
-   works in the field!) but the transcript never reached the laptop —
-   /mirror moves audio only, and the laptop reseeds from IndexedDB and
-   re-transcribes. Shape: transcripts join the mirrored record
-   (/mirror or /transcript subfeature); /phone's better-replaces-rough
-   rule decides collisions. Also still open from day 3: persisting
-   transcript stamps, silent 130MB model fetch, >30s truncation.
-1. **Whisper on webgpu** — unchanged standing rung: (a) ort shim
-   experiment (clamp requiredLimits to adapter.limits; clear
-   localStorage.misoSttDevice; watch onnxruntime #26827), or (b) the
-   sovereign path (mel → matmul → attention WGSL on /compute,
-   feature-modular WGSL lands with it). notes.md has the T1–T3 map.
-2. **THE FLYWHEEL** — in-session parallelism (fork subagents in
-   worktrees per ask, main session serialises integrate/deploy/stamp)
-   ready to adopt; always-on mini builder still blocked on the
-   provenance ruling (ask-store as anchor source) AND now the privilege
-   doctrine (#p12) — both doctrine-before-code.
-3. **Per-user ticks / THE CONTEXT MANAGER** — the convergence point:
-   ticks enforcement (untick gates live behaviour, ancestor patterns
-   survive), tunables, and the new-tools drawer are one mechanism.
-   `feature_ticks` is user-scoped, absent-means-on; `reflect()` already
-   shades; enforcement is what's missing. `_test`/`_test2` machinery
-   ready for the two-user divergence proof.
-4. **Regroup pressure**: `ask` joined the at-cap list (open-chip,
-   birthplace, propose, lifecycle, miso-button, request-box) — its next
-   child forces a regroup; miso-button + request-box are natural
-   "wording" group candidates. Also still at cap: review, panel, miso
-   root, shell/update. counter at 4.
-5. ideas.md gained: bigger-buttons → per-user "size" var (the promotion
-   rule's first target, with the naive-asks lesson attached).
+1. **`sender_of` on full phone numbers** — URGENT, real isolation bug:
+   messaging keys users by last-four digits; rung 8's rig reproduced a
+   cross-user *settings* leak under colliding tags (and mirror's blob
+   namespace shares the key). Move to `miso/users`, full number.
+2. **Fragments obey `enabled`** — gates are Rust; a feature whose
+   visible half is JS looks half-off when disabled. The natural next
+   context rung.
+3. **Gate coverage report** — a node whose functions don't carry
+   `state: String` has a tickbox that silently does nothing; the linker
+   should say what each node gates.
+4. Rung 3's `POST /diag/context` should become an `edit_op` (predates
+   the merge column); deploy should assert one-server-per-state-dir.
+5. The tunables conversation + the grid asks re-fired live from the
+   app (redo.md item 8) — the promotion rule's machinery all exists
+   now; a tunable ask is a `.vars` line and data forever after.
+6. The webgpu restart (`webgpu.md` from scratch — redo.md item 7);
+   transcript mirroring + self-heal, picker fix, logging cluster
+   (redo.md items 3–5) — still unredone from the rewind.
 
 ## tooling state
 
-- **1s ask monitor** — re-arm each session (scratchpad is
-  session-specific, so recreate `ask_filter.py`): persistent ssh to the
-  mini streaming `/tmp/miso-vars/user.*.asks.json` once a second, local
-  python dedupe on t:status against a seen-file, fires on
-  asked|proposed. **Wrap the ssh in a `while true` reconnect loop** —
-  lid-sleep kills the stream otherwise (learned twice tonight). An ask
-  fires twice: `asked` (pre-OK, no birthplace) then `proposed` (OK'd,
-  with tool/at) — act on `proposed`.
-- **tools/stamp_ask.py** `--text X --status building|shipped [--build N]`
-  — unchanged, used seven times tonight; open panels update in ~0.5s.
-- **export_features.py**: now stamps `subtools` (control data-ev ids per
-  tool_controls-bearing node) and writes `site/features/stamp`
-  (tree.json content hash) after export.
-- **export_transcript.py**: same-day sessions need distinct slugs (the
-  collision guard refuses politely) — tonight is `fm-spec-2`.
-- Dev server on 8095 runs the build-175 binary from products/miso/build
-  (auto-export ACTIVE locally: editing features/** re-exports on the
-  next /features request). Headless Chrome lives on 9222; CDP lessons
-  from day 4 still apply (IIFE everything; toolbar renders only the
-  open tool in open mode — go home before pressing launcher buttons;
-  restore reopens the last tool).
+- **Server state moved**: per-user context op logs live in
+  `~/.miso-context/` on the mini (`MISO_CONTEXT_DIR` overrides).
+  `/tmp/miso-vars` IS NO LONGER WRITTEN — the old 1s ask monitor must
+  read `~/.miso-context/<user key>.log` (asks are ops in the log) or
+  poll `GET localhost:8095/diag/context?user=<key>`.
+- **Agent instruments**: `GET/POST /diag/context[?user=]` (localhost
+  open, tunnel cookie-gated) — the world as JSON, and the repair path
+  for a user who unticks their own chooser. `/diag/readout` — DOM as
+  JSON (screenshots are ruled out; readout is the eyes).
+- **Speed** (deploy.md "Speed"): `fmlink.py --quick` = debug builds
+  (1.2s warm) for proof cycles; export_features skips an unchanged
+  bake; workers should share `CARGO_TARGET_DIR` across worktrees.
+- Dev server on 8095 runs the summit binary from products/miso/build.
+  `/tmp/miso-broadcast.json` is process-global and survives state-dir
+  wipes — rigs should mint fresh user names, not reuse.
+- `.claude/worktrees/` is gitignored (persistent workers live there).
+- `origin/main` still holds pre-rewind history — publishing the rewind
+  is a deliberate force-push, ash's call, still pending.
 
-## small print
+## standing doctrine landed today
 
-- fresh-catalog + auto-export overlap benignly: quiet applies forget
-  the catalog; every read revalidates the stamp anyway. Old builds
-  without the stamp file 404 and behave as before (fetch guarded).
-- request-box holds "do something" under its founding name — revised in
-  place per the two-phase draft-churn rule, revision note cites #p17.
-- The account node's ## user para now describes the placeholder truth;
-  its second revision footnote cites the field ask (#p4a).
-- asks var still grows unboundedly (11 entries, all shipped); the
-  lifecycle-archive rung remains someday-material.
-- notes.md hygiene items #9 (stale asset trees) and #10 (stt cache-first
-  sw rule + download UX) still open; #10 now has field evidence.
+- The regroup law's invariant is COMPOSITION ORDER (ash, #p46):
+  grouping nodes may carry vars (a group's enabled is a feature);
+  chains must not move; defaults must not change behaviour.
+- The model comparison, the absorption ladder, the world-object design,
+  the tag-collision finding, and the ladder's completion record are all
+  in notes.md with anchors.
+- From rung 7 on, `loop/context` is a dependency of migrated features:
+  unticking it is a loud link failure, not a degraded app — by design.
+- `context` and `shell` sit at the 6-child cap; context's next child
+  forces the holding/changing regroup (now legal under #p46).
