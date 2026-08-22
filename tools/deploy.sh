@@ -162,19 +162,31 @@ if [ "${live:-0}" -gt 1 ]; then
 fi
 
 # the ask inbox: shipping without answering becomes visible at the moment of
-# shipping — print every user ask still status "asked" (see noob-button/ask)
-ssh "$HOST" 'find /tmp/miso-vars -name "user.*.asks.json" -exec cat {} + 2>/dev/null' | python3 -c '
+# shipping — print every user ask still status "asked" (see noob-button/ask).
+# Asks live in each asker's world since rung 7, so the source is the context op
+# logs, not the var store rung 8 deleted; the last `asks` op in a log is that
+# user's current list. Until 2026-08-22 this read /tmp/miso-vars and had been
+# finding an empty cupboard since the ladder — reporting "nothing outstanding"
+# whatever was true, which is the one thing /honest forbids.
+ssh "$HOST" 'cat ${MISO_CONTEXT_DIR:-$HOME/.miso-context}/*.log 2>/dev/null' | python3 -c '
 import json, sys
+latest = {}
 for line in sys.stdin:
     line = line.strip()
-    if not line: continue
-    try: asks = json.loads(json.loads(line).get("v") or "[]")
+    if not line or "\"asks\"" not in line: continue
+    try: op = json.loads(line)
+    except Exception: continue
+    if op.get("name") != "asks": continue
+    v = op.get("value")
+    try: asks = json.loads(v) if isinstance(v, str) else (v or [])
     except Exception: continue
     for a in asks:
-        if a.get("status") in ("asked", "proposed"):
-            where = (" (in %s)" % a["tool"]) if a.get("tool") else ""
-            print("  %s awaiting the builder: \"%s\"%s"
-                  % (a["status"].upper(), a.get("text", ""), where))
+        if a.get("t") is not None: latest[a["t"]] = a
+for _, a in sorted(latest.items()):
+    if a.get("status") in ("asked", "proposed"):
+        where = (" (in %s)" % a["tool"]) if a.get("tool") else ""
+        print("  %s awaiting the builder: \"%s\"%s"
+              % (a["status"].upper(), a.get("text", ""), where))
 ' || true
 
 echo "deployed — https://miso.nøøb.org"
