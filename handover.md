@@ -69,9 +69,20 @@ overrides); the LaunchAgent holds the mini's.
 
 - **Server state moved**: per-user context op logs live in
   `~/.miso-context/` on the mini (`MISO_CONTEXT_DIR` overrides).
-  `/tmp/miso-vars` IS NO LONGER WRITTEN — the old 1s ask monitor must
-  read `~/.miso-context/<user key>.log` (asks are ops in the log) or
-  poll `GET localhost:8095/diag/context?user=<key>`.
+  `/tmp/miso-vars` IS NO LONGER WRITTEN.
+- **The ask monitor is a script now** (2026-08-22): `python3
+  tools/ask_monitor.py`, armed through the Monitor tool at the start of
+  every session. It reads each asker's world (`~/.miso-context/<user
+  key>.log`, where asks are `set` ops on the `asks` var), prints a
+  BACKLOG line per ask already standing and an ASK line per arrival or
+  restamp. It re-reads a log whenever it moves rather than tailing it —
+  `remember` writes by temp file and rename, so an open handle goes
+  silent after the first write. `--local` watches a dev state dir;
+  `--all-statuses` includes building/shipped. It used to be an inline
+  one-liner retyped each session, which is how its bugs kept coming back.
+- deploy.sh's unaddressed-ask warning reads the same logs (fixed
+  2026-08-22 — it had been reading the deleted var store, so it reported
+  "nothing outstanding" whatever was true).
 - **Agent instruments**: `GET/POST /diag/context[?user=]` (localhost
   open, tunnel cookie-gated) — the world as JSON, and the repair path
   for a user who unticks their own chooser. `/diag/readout` — DOM as
