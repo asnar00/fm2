@@ -74,3 +74,35 @@ this ask, and that unwritable sentence was the signal to ask, unread.
 cheap move is a did-you-mean (two concrete options, one tap), not a
 build — and an in-hand line you cannot write is how you notice
 (hybrid.md, "intake"; plans #p12).
+
+---
+
+## the attention brief (2026-08-23) — filed the same day, by the pipeline itself
+
+**The ask:** the attention ladder (plans #p17–#p19) — panel open
+updates in place, foreground flashes the lozenge, backgrounded rings a
+notification, and nothing rings about nothing.
+
+**The estimate:** 2 nodes, ~8 files — held. The misses were in the
+brief's *map*, not its size; the worker corrected in flight and named
+all three rather than building on them.
+
+**What the plan could not see (three things, one root):**
+1. It said `push-subs.txt` lines were anonymous and would need a user
+   field plus a migration — false; field 4 has carried the subscriber's
+   phone since the miso rename, so no migration existed and the
+   "ash must re-enrol his devices" warning given at triage was wrong.
+2. It implied the relay audience was tag-shaped — false; since
+   `/whole-number` the audience is `user.phone:+44…`, the whole world
+   key. The worker's first build published to an audience nobody
+   listens on; the rig caught it.
+3. It never mentioned that a joining page replays its broadcast backlog
+   from `v = 0` — so the flash would have fired on every page load. The
+   worker added an awake-window; the tree-level fix belongs to
+   `/messaging` (parked).
+
+**The lesson:** a brief's claims about wire formats, keys and file
+layouts must be read from the composed source at brief-writing time,
+never from specs or memory of them — the specs describe births, the
+composition describes now. And any feature that reacts to "an arrival"
+must ask what join-replay looks like before believing its trigger.

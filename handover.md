@@ -46,18 +46,36 @@ Then two interlinked designs, talked through and landed the same day:
    history) is deliberately NOT built: it is rungs 1–4 of the
    emergent-tools ladder and leans on the open trace-privacy ruling.
 
-The did-you-mean build was the first run under the new doctrine: brief
-with problem + estimate lines, Opus worker in a worktree, delivered on
-estimate, zero review returns, one honest hypothesis (below).
+3. **The attention ladder shipped the same afternoon** (ash's rule,
+   plans #p17–#p19): every builder message reaches the user through
+   exactly one channel chosen by the app's state — panel open → the
+   row appears in place (`/to-owner` fixed the real bug underneath:
+   the relay now publishes to the *edited world's owner*, so bench
+   stamps reach open panels at all); foreground, panel closed → the
+   nøøb lozenge pulses gently (its own class beside `/update`'s,
+   cleared on panel open, never for this device's own edits — read
+   from the outbox, not guessed); backgrounded → a targeted push to
+   that user's devices (subs already carried the user; no re-enrol
+   needed — an earlier triage claim to the contrary was wrong). And
+   nothing rings about nothing: no-op stamps and wordless changes
+   send zero wire traffic, proven at the wire.
+
+Both builds ran under the new doctrine: briefs with problem + estimate
+lines, Opus workers in worktrees, delivered on estimate, zero review
+returns. The attention brief's three map errors are `misses.md`'s
+third entry — the ledger fed by the pipeline it governs, same day.
 
 ## FOR ASH (summit-review-sized, when convenient)
 
 - **Fire a real did-you-mean at your phone**: file an ambiguous ask
-  from the field, let the bench stamp a question, tap an answer. The
-  live-arrival half is a *hypothesis*: localhost rigs verified the row
-  renders after a page load, but "the question walks into an
-  already-open panel" is unobserved (the relay needs a logged-in
-  `_from`; localhost callers have none — pre-existing, not new).
+  from the field, let the bench stamp a question, watch which channel
+  it takes (open panel / lozenge pulse / notification), tap an answer.
+  Rig-proven end to end on localhost; the two device-only hypotheses:
+  whether iOS/Chrome tolerate the suppressed-when-foreground push
+  without showing a default card, and the lived feel of the pulse.
+- **A status flip on an ask still carrying a question re-sends the
+  question text as a notification.** Defensible (the question is still
+  open) but it is a re-notification — say if you want it narrowed.
 - **The rewind experiment stays named and deferred** (your call to
   run): rewind to 501e7fe, keep attempt one as a branch, replay the
   square-tap-evening asks under the new doctrine, measure against 36
@@ -104,6 +122,13 @@ estimate, zero review returns, one honest hypothesis (below).
    was doing from a day of real blackbox events? — an afternoon's
    answer, gated on the trace-privacy ruling); fmlink honouring
    CARGO_TARGET_DIR.
+5. Parked residuals from the attention build: the broadcast-backlog
+   replay on page load (`feature_Messaging.lastV` starts at 0 — the
+   attention node works around it with a 1s awake window; the real fix
+   belongs to `/messaging`); `/attention`'s hard dependency on `/push`
+   is BY DESIGN and PROVEN loud (untick `/push` → clean link failure
+   naming the node, the `loop/context` precedent); the `asks` list
+   still grows unboundedly (the standing lifecycle-archive rung).
 
 ## standing doctrine landed today
 

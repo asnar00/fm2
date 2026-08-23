@@ -2499,6 +2499,17 @@ status, the option chips, the answer event, the stamp tool's question
 mode — built through the hybrid pipeline itself; its record is in the
 node and the session transcript.
 
+Then ash, reading the ship report, stated the rule the delivery was
+missing (#p17–#p19): a builder message reaches you in place if the
+panel is open, as a gentle lozenge pulse if the app is foreground, as
+a notification if backgrounded — and nothing rings about nothing. That
+shipped the same afternoon as `/to-owner` (the relay's audience is the
+edited world's owner — the fix that makes "panel open → it updates"
+true for bench stamps at all) and `/attention` (the three-channel
+rule, the sw-side foreground fork, targeted push). The worker's three
+map corrections became misses.md's third entry — the ledger fed by
+the pipeline it governs, on its first day.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.

@@ -161,6 +161,10 @@ to the recorded misses repeats them. It must contain:
 
 ## the worker preamble (prepended to every Opus worker)
 
+> Rig browsers run HEADLESS, always — a visible window interrupts ash's
+> other work and gets closed under you (learned live, 2026-08-23).
+> Readouts and screenshots satisfy every evidence and 4a need.
+>
 > Before anything else, confirm your worktree's base is current main and
 > fast-forward if it is not — a stale base means building against an
 > expunged tree (found the hard way 2026-08-23: a worktree spawned 72
