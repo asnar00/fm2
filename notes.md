@@ -2257,6 +2257,134 @@ quarter's.
   shows what was built; "is this what you meant?" is one tap, and a no could
   reopen the conversation instead of becoming a fresh ask.
 
+## permission, escalation, and features that spread by consent (2026-08-23, asks #p11, #p13)
+
+Still forming — ash stopped the build deliberately ("more I want to chew
+over"), so this is the state of the thinking, not a plan. Follows the ask
+conversation above; the two belong to one design.
+
+### where permission actually stands today
+
+Nothing is enforced. `users.json` is `{name, phone}` with no authority field,
+and the only privilege check in the composed source is
+`overlay.rs`'s `ctx_may_write_layer` — localhost tooling may write the shared
+layer, a logged-in user may write their own world and nobody else's. No ask
+can reach another person because no path exists for one.
+
+So **the human-supervised builder IS the permission system**, exactly as
+notes.md predicted when it filed this as ruling-shaped. That holds at two
+users and fails at a campaign team.
+
+### permission gates REACH, not asking
+
+Asking stays open to everyone on the guest list. What permission decides is
+how far the answer travels — and miso already has the vocabulary for that, in
+scope. **An ordinary person's ask lands in their own world by default**, so
+the common case raises no permission question at all: bigger buttons, for
+you, is nobody else's business. Permission only bites when the effect widens
+past the asker.
+
+Three things the word muddles, kept apart: *may you ask* (guest list, one
+bar); *what may it touch* (blast radius against authority); *how far does it
+land* (scope). The second and third are the real ones.
+
+**Authority may not live in the asker's own world.** A context is the user's
+to write — that is the ladder's whole design — so a permission expressed as a
+var is a permission the user can raise. It belongs beside the guest list,
+where only the server writes it. This is the sharp form of the standing note
+that ticks are preference and authority is not: co-located, never conflated.
+
+**Blast radius is a guess before and a fact after.** Triage can only estimate
+what an ask will touch; the build discovers it. So the check runs twice, and
+the second instrument already exists — deploy prints the feature nodes a
+release touches. A finished thing that reaches further than what was
+authorised does not ship; it escalates.
+
+### escalation routes to the nearest person who can say yes
+
+Not everything reaches ash. The adjudicator is the smallest authority
+covering the ask's blast radius — a field volunteer's group-wide ask goes to
+their campaign lead; only asks touching miso itself climb to the owner.
+
+Two details that keep it cheap: **the adjudicator's inbox is the requests
+list from the other side** (they already have that surface in the panel —
+approve and decline, no new screen, works on a phone in a field), and **the
+asker hears a state, never a question and never silence** — a lifecycle stamp
+naming who it waits on. The never-ask rule survives intact: the question goes
+to the person who can answer it, not back to the person who asked.
+
+**Partial grant is the move to reach for.** If the ask would widen past the
+asker and they may have it themselves, build it at their own scope NOW and
+let the wider version wait for the ruling. They get their thing today, nobody
+else is touched, and approval later is a change of scope rather than a build.
+Three people separately granted their own copy is also evidence for the
+adjudicator — the rule of two, arriving as data instead of argument.
+
+Two failure modes to design against: **over-refusal** (a system that asks
+permission often teaches people to stop asking — self-scope-by-default is
+what prevents it) and **invisible authority** (a refusal that does not name
+who could say yes feels arbitrary; the app should say "Sam can approve
+that").
+
+**A bin we do not have**: asks whose subject is another person ("remove Dave",
+"let Priya see my posts"). Not a tunable, selection, feature or bug — an act
+with consequences for somebody else. Always an adjudicator, never a builder.
+
+**The model should bound the builder too.** An agent shipping to everyone's
+phone should not be able to exceed what the requester could have authorised.
+That is the flywheel's safety catch and it matters most unsupervised.
+
+### consent from beside: features that spread (#p13)
+
+Ash's move, and it is a bigger one than permission-from-above: two people
+collaborating, one asks for something affecting their interaction, and they
+**send the feature to the other**, who accepts. Then the pool widens by
+adding more people. Always consensual; good features spread quickly to the
+groups that need them.
+
+Three consequences worth recording:
+
+**The group is the accept-set.** `group` scope has been refused at link time
+since rung 6b for exactly one reason — nothing in this system can say who is
+in a group (overlay.md). This answers it: a group is not a list somebody
+administers, it is the set of people who accepted, and the consent trail IS
+the membership record. The one hole the absorption ladder named and could not
+fill.
+
+**Spreading a feature is not distribution, it is enablement.** Composition is
+global and enablement is per-user, so a feature built for one person is
+already sitting, switched off, on every other person's phone. "Send it to
+Priya" is an offer to flip a switch she already holds — the chooser does the
+flipping and `/messaging` does the offering. Both exist. This makes the whole
+mechanism small.
+
+**And it exposes a leak**: if every phone carries every feature, every
+feature's name and `## user` paragraph appear in everyone's list. Harmless
+for taps and dictate; not harmless for a campaign tool where a node's name
+may reveal what somebody is doing. Whether the tree is public within a
+product, or filtered per person, is a decision the account work owes.
+
+### the account ladder (sketched, NOT started)
+
+`/panel` is at the six-child cap; `/account` has none and its spec has been a
+declared placeholder for the profile page since #p58. So the family hangs off
+`/account`:
+
+1. **profile** — the 👤 tool gets a body: who you are, what this device is,
+   log out moving in from the panel. Assembles what exists.
+2. **display name** — the first piece of a user's world other people can
+   read. A public corner of a private world is a new idea and needs one.
+3. **directory** — who else is here, and the privacy decisions begin.
+4. **link** — a mutual connection, consensual both ways. The campaign app's
+   trust ring, arriving early.
+5. **share** — offer a feature along a link; accepting flips the tick; the
+   accept-set becomes the group.
+
+**Rung 4 is the first user-to-user action in miso's history.** Everything
+until now is you-to-you or server-to-you. Crossing that line opens unwanted
+contact as a possibility, so the constraint belongs in the design at birth:
+reachable only by someone you have linked with, and a link needs both sides.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
