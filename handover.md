@@ -1,12 +1,55 @@
 # handover
 *state of play for the next session — written 2026-08-23 at the end of
-the plans-meet-terrain session (transcripts/2026-08-23-plans.md).
-Discipline in `agents.md`; ops in `deploy.md`; the pipeline — now with
-intake, tripwires and the replan path — in `hybrid.md`; the day's design
-in notes.md ("the plan meets the terrain"); the new ledger is
-`misses.md` at the repo root.*
+the auth red-team session (transcripts/2026-08-23-fm-spec.md#p3).
+Discipline in `agents.md`; ops in `deploy.md`; the pipeline in `hybrid.md`;
+the ledger is `misses.md` at the repo root.*
 
-## THE HEADLINE: plans meet terrain, and the builder learned to ask
+## THE HEADLINE: the auth scheme was red-teamed and hardened, live at build 261
+
+Ash asked for a red-team of the login scheme, then "fix all the weaknesses"
+(fold authz in; apply the mini ops over SSH). Eight toggleable nodes shipped
+and deployed, each with a transcript anchor (`#p3`), toggle-proven, and the
+SMS/token/authz paths exercised against a running server:
+
+- **serve/loopback** — binds `127.0.0.1`, so `/gate`'s `!r.tunnel == trusted`
+  is now backed by the kernel; the LAN can no longer skip the login wall. Live:
+  the mini's server is bound to loopback and `185.96.221.52:8095` is
+  unreachable from the internet (cloudflared is outbound-only).
+- **users/harden** — sessions are revocable now: the token gained an issued-at
+  (four-part `digits.issued.expiry.hmac`), and `token_valid` additionally
+  requires issued ≥ a `~/.miso-auth/revoked-before` epoch AND still-a-guest.
+  Drop someone from users.json → their cookie dies next request; bump the epoch
+  → mass sign-out keeping the key. Also: signing secret forced 0600, urandom
+  short-reads are hard errors, and a process-global `with_store_lock`
+  (`harden.lib.rs`) ends the flat-file races. **The four-part token invalidated
+  every old cookie once — the whole guest list re-logs-in; passkeys and the
+  guest list survived.**
+- **users/pin/code-guard** — uniform 6-digit codes (were biased 4-digit), no
+  membership oracle (stranger and member get identical opaque `{ok:true}`,
+  proven live), race-free 3-strike verify (proven: 6 parallel wrong guesses →
+  exactly 3 tries then lockout).
+- **users/passkey/login-guard** — consume the challenge before the credential
+  lookup, re-check the guest list, race-free. (NOT toggled live — needs a real
+  device; compiles + follows proven patterns.)
+- **users/authority** — graded authority beside the guest list
+  (member/support/admin) gating `ctx_may_write_layer`, the one shared-write
+  choke point; least-privilege default, proven live (member refused, support &
+  localhost admitted). This is the FOUNDATION only — the richer
+  reachable-subtrees / "authority ⊇ blast radius" enactment model
+  (notes.md 966-984) is the **named next rung**, built on this authority datum.
+- **users/pin/vonage/off-argv** — Vonage creds + the login code off the curl
+  argv (via `-K -` on stdin). (Not exercised live — no test creds.)
+- **comms/push/private-vapid** — VAPID key to 0600.
+
+Mini ops applied over SSH (ash-authorised): every `~/.miso-auth` file → 0600,
+the dir → 0700, and the signing key **rotated** (it had been world-readable
+0644 since Aug 15). `~/.agent-config.json` (Vonage creds) was NOT touched —
+worth a look.
+
+**`users` is now at the 6-child cap** (pin, gate, passkey, whole-number,
+harden, authority) — its next child forces a regroup (like context/shell).
+
+## (historical) prior session: plans meet terrain, and the builder learned to ask
 
 A Sunday that was meant to be all conversation and ended with one node
 shipped. Ash confirmed the summit review first: the phone walkthrough

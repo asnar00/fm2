@@ -2552,3 +2552,41 @@ the pipeline it governs, on its first day.
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
+
+## the auth red-team, and what it became (2026-08-23, #p3)
+
+Ash asked for a feeling about how secure the login scheme was, then to fix
+everything found. The crux the read surfaced: the crypto is sound (HMAC token,
+correct WebAuthn), so nobody forges their way in — they get in by **network
+position, one readable file, or a taken phone**, and once in there was almost
+no authorization layer. That shaped the fixes (all shipped, build 261):
+
+- The real trust boundary was `gate.rs`'s `if !r.tunnel` — network position,
+  not identity — over a `0.0.0.0` bind. Binding loopback makes the kernel
+  enforce "not-tunnel = same host". The single highest-value fix.
+- The signing secret + `users.json` were the whole kingdom (forge-anyone +
+  the confidential supporter list). Perms are the mitigation the code can
+  reach; the file being the game is inherent to good crypto. Secret rotated on
+  the mini (had been 0644 since Aug 15).
+- Sessions were un-revocable one-year bearers. Issued-at + a revoked-before
+  epoch + a guest-list recheck in `token_valid` gives both a per-person cutoff
+  (delist) and a mass one (epoch), without discarding the key.
+
+**Deliberate non-fixes, recorded so they aren't mistaken for oversights:**
+the WebAuthn signature counter (Apple passkeys are iCloud-synced, always 0 —
+clone detection would be dead weight); the `auth/request` *timing* side channel
+(the blatant name+403 oracle is closed; a send-takes-longer timing difference
+remains); the push `/tmp` file (it's RFC-8291 ciphertext, not plaintext — the
+red-team note was wrong on that).
+
+**The authz foundation, and the honest gap.** `/authority` grades the one
+enforcement point that existed (`ctx_may_write_layer`) into member/support/admin
+beside the guest list. It is NOT the full sketched model (notes.md 966-984:
+authority as reachable subtrees, "enactment requires authority ⊇ blast radius")
+— that needs enactment machinery the tree doesn't have, and is the next rung.
+What shipped is the authority datum + a graded gate + `may_write_shared` as the
+first, coarsest blast-radius test (own-world vs shared). Built on this, the
+subtree model is a data-and-check extension, not a rewrite.
+
+`users` hit the 6-child cap doing this (harden, authority added) — next child
+regroups.
