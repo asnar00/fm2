@@ -59,9 +59,10 @@ On restart the server announces the new build to push subscribers by itself
 - `fmlink.py --quick` builds the debug profile: ~1.2s warm, ~16s cold vs
   minutes for cold release+LTO. For toggle proofs and rig cycles only —
   deploy.sh always builds release.
-- Pipeline workers in worktrees should `export CARGO_TARGET_DIR` to one
-  shared directory (e.g. `<repo>/.cargo-shared-target`) so dependency
-  artifacts compile once across all worktrees; cargo's own locking makes
-  concurrent use safe.
+- Do NOT `export CARGO_TARGET_DIR` for worktree workers (advice
+  retracted 2026-08-23): fmlink.py reads `<crate>/target/...` literally,
+  so the build succeeds and then dies unable to find the wasm. Until
+  fmlink honours the variable, workers build cold (~17s debug) in their
+  own worktrees.
 - `export_features.py` skips the ~4.5s bake when nothing under features/
   or transcripts/ changed since the last stamp; `--force` overrides.
