@@ -113,9 +113,15 @@ every law and not the request has failed.
   citation as transcript-cited nodes do. (`ASK_CITE_RE` in fmlink; the
   anchor was expunged by the Aug 16 rewind and rebuilt on 2026-08-21 —
   `/square-taps` and `/undo` are the shipped precedents.) **When an ask arrives, build it and
-  ship it — never come back to the user to ask about it**: the asker is
-  expecting the feature in the next update. Use judgement, and document the
-  judgement in the node.
+  ship it — never come back to the user with design homework**: the asker is
+  expecting the feature in the next update. One question is legitimate, at
+  agent discretion (2026-08-23, plans #p12): when more than one reading of
+  the ask survives its context, a did-you-mean — concrete options, one
+  tap — may travel to the asker's requests list; silence gets the likelier
+  reading built at their scope with the hedge in the stamp. Which thing
+  they *meant* is theirs to answer; everything else is yours. Use
+  judgement, and document the judgement in the node (the intake discipline
+  is hybrid.md's).
 - Node names are TREE-GLOBAL (fm.md "tree-global names", linker-enforced):
   unique across the composed tree, self-describing without the path.
   Implementation namespaces are flat — a duplicate JS `const feature_X` kills

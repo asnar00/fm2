@@ -2385,6 +2385,120 @@ until now is you-to-you or server-to-you. Crossing that line opens unwanted
 contact as a possibility, so the constraint belongs in the design at birth:
 reachable only by someone you have linked with, and a link needs both sides.
 
+## the plan meets the terrain (2026-08-23, plans #p4–#p14)
+
+A Sunday conversation, no code until ash said go (#p13–#p14). Two areas,
+which turned out to be one architecture seen at two moments.
+
+### the build process: no plan survives contact (#p4–#p7)
+
+Ash's two observations: simple asks blow up into deep trees and long
+builds; and the residual tail ends in permission questions he is not
+placed to answer, having not been in the code. His diagnosis (#p5): the
+plan was made with inadequate information, and the right move on
+detecting runaway complexity is to *modify the plan and try again* —
+not to push through. That reframes a blown-up build as reconnaissance:
+the plan is made from the map, the build is first contact with the
+terrain, and what comes back is a better map. Pushing through on a
+wrong plan is exactly what generates the residual tail — every
+improvisation made to keep a doomed plan alive becomes a loose end.
+
+The machinery (now in hybrid.md): briefs carry an **estimate** (nodes,
+vars, seams); workers carry a **tripwire** — touching what the brief
+never named, a fix needing a second fix, actuals crossing ~2× estimate
+→ stop, and stopping is correct behaviour, not failure; what comes back
+is a **contact report** (what the plan assumed, what turned out false,
+what the tree needs), which is a **replan**, not a failed delivery —
+triage writes a new brief from the corrected map, and the worktree may
+be discarded: code is cheap, the map is the asset. The rewind precedent
+at per-ask scale.
+
+**The self-improving loop (#p6):** every miss is a labeled example —
+plan, estimate, actuals, what was missed. `misses.md` is the ledger;
+triage reads it before writing any brief (the loop only closes if the
+record is *consulted* — a report nobody reads is a diary). Calibration
+is measurable: estimate-vs-actual per ask, tripwires firing too late
+or too early, returns getting rarer, tails getting shorter. Rule count
+going up is not improvement. And doctrine that only accumulates goes
+sclerotic — the ledger's lessons get periodically consolidated into
+fewer, deeper principles; the regroup law for rules.
+
+Escalation routing got its rule too (#p4): **an escalation must be
+expressed in ask-language or it isn't ash's** — a choice statable as
+what a user experiences is his; a choice that exists only in code terms
+is the agent's, decided by doctrine and recorded. Each code-level
+question that reaches ash and finds him unable to judge is a missing
+rule, not a needed answer.
+
+**The deferred experiment (#p7–#p8):** rewind to the pre-square-tap
+boundary (501e7fe), keep the first attempt as a branch, retry the same
+asks under the modified plan, and measure — wall time, files, returns,
+residual count — against the recorded 36 files / ~1,400 lines / next-day
+fallout of attempt one. Deliberately not run today; it stays a named,
+ready experiment.
+
+### the ask workflow: recovering the problem (#p10–#p12)
+
+The XY problem, named for miso: users meet a problem, imagine a
+solution, and ask for the solution. The brief template held the ask
+verbatim and nowhere the problem. Ash's design (#p11): three guesses,
+each offered y/n/edit — the task ("we think you were doing T", from
+history), the problem ("the problem looks like P"), the amended request
+("we'd propose R; *n* means build what I asked"). The keystone is that
+**the literal ask at the asker's own scope is a zero-consequence
+floor** — only they see it — so the whole guess ladder is enrichment
+that never blocks, silence is a valid answer meaning "build what I
+said, for me," and the better-for-everyone version is post-hoc, riding
+confirmed problems that rhyme (the rule of two at the problem level;
+the problem line is the dedup key). The map-lesson guard survives: an
+unconfirmed problem never licenses departing from the literal ask.
+
+**Discretion decides whether to ask at all (#p12).** The criterion is
+the ambiguity test: how many readings survive the ask's context?
+"Italic" with a word selected has one — build, any question is noise.
+"Square" inside taps had two, and the record shows both got built six
+minutes apart — ambiguity resolved with tokens. The in-hand line is the
+forcing function: unwritable means undisambiguated means ask. A
+did-you-mean (two concrete readings, one tap) is doctrinally clean
+where an open question is not — never-ask forbade design homework, and
+which thing *you meant* is the one fact only the asker holds. The
+threshold itself learns, with two measurable failure modes: wrong
+builds (immediate unticks, corrective re-asks) and question fatigue
+(confirms going unanswered — the over-asking failure the permission
+notes warn of). Both areas converged on the same architecture: a few
+named judgment points (bin, scope, ambiguity, tripwire), each with a
+floor that makes wrong calls cheap, each leaving a trail that tunes it.
+
+**Stage 1 is the emergent-tools ladder's foundation.** "Guess the
+task-tree from tool-use history, offer it for confirmation" is rungs
+1–4 of that ladder almost verbatim — one build serves both designs, and
+the cheap experiment (can a model name what a person was doing from a
+day of real blackbox events?) is still the gate. Parked today, not
+built: it leans on the open privacy ruling (#p10 of the asks
+transcript: traces are private; whether ask text and trace context may
+leave the device to a third-party model is ash's open call). Today's
+guesser context is deliberately narrower — birthplace tool, selection,
+ask history — which existing machinery already carries.
+
+**Every y/n/edit is a labeled example** — the confirms are the
+guessers' contact reports, and they land in the same ledger. The two
+areas are one loop: guess → contact → correction → better guesser.
+
+### what got built on it (same day)
+
+Doctrine: hybrid.md gained the intake section (request object,
+ambiguity test, silence default), the brief's problem and estimate
+lines, the preamble's tripwire and contact report, the review's depth
+check and replan path; agents.md's never-ask bullet sharpened to admit
+the one legitimate question. `misses.md` opened with two retrospective
+entries — the feature-untick ladder (the tripwire would have fired at
+rung 1; the lesson: "X should just work" is a foundation ask) and the
+two squares (the lesson: an unwritable in-hand line is the signal to
+ask). Code: the did-you-mean node under `/lifecycle` — the question
+status, the option chips, the answer event, the stamp tool's question
+mode — built through the hybrid pipeline itself; its record is in the
+node and the session transcript.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.

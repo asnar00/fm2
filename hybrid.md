@@ -72,16 +72,78 @@ Two degraded modes, so the loop never fully stops:
   the baseline sessions. This is the proven path; the hybrid exists only
   to ration it.
 
+## intake: from ask to request (2026-08-23, plans #p10–#p12)
+
+Users meet a problem, imagine a solution, and ask for the solution. The
+ask is the solution as imagined; the *request* is what triage builds
+from it, and the difference is the problem recovered. "Request = ask +
+user edit" was the old formula; the request object is now richer:
+
+**ask verbatim + problem guess (with its evidence) + amended request,
+each carrying a status: confirmed / edited / silent.** The problem line
+is the dedup key — different users asking for different features are
+often reporting the same problem — and the promotion unit: two
+confirmed problems that rhyme are the rule of two firing where it
+means something.
+
+**The ambiguity test decides whether to ask.** Before writing a brief,
+triage reads the ask against its context — the birthplace tool, any
+selection, the asker's history — and counts the readings that survive.
+One reading ("italic", said with a word selected): build now; any
+question would be noise. More than one with comparable weight
+("square", said inside taps: button shape, or square the count?): ask
+first, via a did-you-mean — two concrete readings, one tap. The record
+holds the cost of guessing instead: 2026-08-21, both squares built six
+minutes apart. The forcing function is the in-hand line: **if you
+cannot write one in-hand sentence, you have not disambiguated, and
+that is the signal to ask.** By the time a brief exists, ambiguity is
+dead — this discretion lives in the triage seat, never the worker.
+
+**Never-ask, sharpened (#p10):** what the rule forbids is design
+homework travelling toward the user. Which thing *you meant* is the
+one fact no context can fully settle, and it is genuinely the asker's
+— so a disambiguation (concrete options, one tap) is doctrinally
+clean where an open question is not. Guesses are shown for
+confirmation, never asked as questions: "were you trying to X?" with
+y/n/edit, not "what were you trying to do?".
+
+**Silence is a valid answer and it means "build what I said, for me."**
+The confirm ladder never blocks: the literal ask at the asker's own
+scope is the floor, ships regardless, and is zero-consequence — only
+the asker sees it (#p11). A did-you-mean left unanswered gets the
+likelier reading built at their scope, with the hedge in the stamp:
+"read it as X — tap if you meant the other." A wrong guess costs one
+untick and a re-ask, which the context ladder made cheap.
+
+**An unconfirmed problem never licenses departing from the literal
+ask** (the map lesson's guard): only a problem the asker confirmed
+lets the request say "the build may solve X even where that means
+not-literally-Y." The developer's private theory of the real need
+never overrides the words. Post-hoc is where "better for everyone"
+lives: the literal thing ships to the asker today; the generalised
+solution follows confirmed, rhyming problems through the escalation
+ladder.
+
 ## the triage brief (Fable writes one per ask)
 
-Short — ten lines, not a spec. It must contain:
+Short — ten lines, not a spec. **Before writing one, read `misses.md`**
+— the ledger of plans that met terrain and lost; a brief written blind
+to the recorded misses repeats them. It must contain:
 
 - **the ask, verbatim**, with its anchor (`asks#<t>` or transcript `#pN`).
 - **in-hand**: one sentence saying what the asker literally has on their
   screen or in their hands when this ships. The map ask's line would have
   been "streets and buildings drawn around their position, on the phone" —
   a sentence the non-map could not have survived.
+- **the problem, as reconstructed**: what the asker was trying to do
+  and where it broke, with the evidence (birthplace, rhyming asks) and
+  its status — confirmed, edited, or silent. Silent means the literal
+  ask is the whole contract.
 - **placement**: proposed node and parent, with the cap check done.
+- **the estimate**: nodes touched, new vars, seams crossed — a plan's
+  stated footprint, and the tripwire's baseline (#p5). An ask whose
+  honest estimate dwarfs its apparent size is a foundation ask; say so
+  here, before the build discovers it.
 - **acceptance evidence, named**: which artifacts the reviewer will demand —
   a `/diag/readout` assertion on the real surface (DOM-as-JSON is the
   agent's instrument for seeing the screen; pixel-reading is not — ash's
@@ -115,6 +177,16 @@ Short — ten lines, not a spec. It must contain:
 > the buffer that evicts what it exists to protect, the replay that
 > re-triggers: these are where your defects will live.
 >
+> No plan survives contact with the terrain, and the brief is a plan
+> (#p5). The moment you are modifying things the brief never named, or
+> a fix needs a second fix to hold, or your actuals cross about twice
+> the brief's estimate — STOP. Do not ask permission to continue and do
+> not grind on: stopping is the correct behaviour, not a failure. File
+> a **contact report** instead of a delivery: what the plan assumed,
+> what turned out false, what the tree actually needs before this ask
+> is buildable. Your worktree may be discarded — code is cheap, the
+> corrected map is the asset you were sent for.
+>
 > Report outcomes plainly: what shipped, what was proven, what remains.
 > No victory prose — calibrated claims are what make celebration safe.
 > Return: the diff, the evidence artifacts, one paragraph of outcome,
@@ -136,6 +208,20 @@ Short — ten lines, not a spec. It must contain:
    and cap sound, spec paragraphs complete.
 6. Verdict: **ship** (integrate, deploy, stamp) or **return** with notes,
    once; twice → escalate to ash with both rounds' evidence.
+6a. **Depth check**: did the delivery's depth match the brief's
+   estimate? Excess that the terrain demanded is essential — record it
+   in `misses.md` as an estimate miss. Excess the terrain did not
+   demand is accidental — that is a return.
+6b. **A contact report is not a failed delivery — it is a replan**
+   (#p5). It skips the return-with-notes path entirely: triage reads
+   the corrected map, writes a *new* brief (often "build the missing
+   foundation first"; sometimes "this is two asks"; occasionally
+   "park it — the terrain says no"), and the second attempt starts
+   fresh rather than inheriting the first's half-built compromises.
+   Every contact report lands in `misses.md`: the guessers and the
+   estimators improve only if their misses are recorded and read
+   (#p6) — a report filed where no future triage looks is a diary,
+   not a feedback loop.
 7. **A task is not done while residuals stand** (ash's ruling, hybrid
    #p57). Workers naming residuals mid-run is the pipeline's best
    behaviour — but a run does not end with a queue attached: every

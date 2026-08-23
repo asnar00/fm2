@@ -1,0 +1,76 @@
+# misses — the ledger of plans that met terrain
+
+*Commissioned 2026-08-23 (transcripts/2026-08-23-plans.md#p5–#p7). Every
+entry is a labeled example: a plan, what it assumed, what the terrain
+said. Triage reads this file before writing any brief (hybrid.md);
+contact reports, estimate misses, and confirm-ladder edits land here.
+Append-only in spirit — entries may be corrected, never quietly removed.
+When the lessons pile up, they get consolidated into fewer, deeper
+principles and dead entries retired to the bottom — a ledger that only
+accumulates makes a worse planner, not a better one (#p6).*
+
+Entry shape: **the ask** (verbatim, anchored) · **the estimate** (what
+the plan thought the footprint was) · **the actual** · **what the plan
+could not see** · **the lesson** (one sentence, the part a future brief
+must read).
+
+---
+
+## the feature-untick ladder (2026-08-21) — retrospective, filed 2026-08-23
+
+**The ask:** that the feature chooser's ticks mean it — untick a
+feature and it is off, for you, on all your devices, surviving
+restarts. (transcripts/2026-08-21-hybrid.md; the ladder's record is in
+notes.md, "the absorption ladder".)
+
+**The estimate, as it would have been written:** a handful of nodes
+around `/chooser` and `/enforced` — read the ticks, filter the
+composition. An afternoon.
+
+**The actual:** eleven rungs, builds 187–212 — `.vars` declarations,
+typed per-user worlds, the turn boundary, implicit `enabled` gates,
+merge-disciplined ops, persistence, the overlay chain, a migration with
+epoch counters, the context join, SyncVar deleted. Then a same-day
+residuals campaign of comparable size (builds 217–238).
+
+**What the plan could not see:** per-user anything requires a place for
+per-user state to live, and no such place existed. The ask was not a
+feature; it was a demand for the world-object. Every rung after the
+first was this one discovery propagating.
+
+**Where the tripwires would have fired:** immediately — rung 1 was
+already "modifying things the brief never named" (a state model no
+chooser brief would mention). The contact report would have said: *the
+plan assumed ticks could filter composition; false — composition is
+global and enablement needs a per-user world; the tree needs the world
+built before this ask is buildable.* The replan — build the foundation
+as its own named ladder — is what happened anyway, but by
+discovery-in-flight over a full day rather than a one-hour first
+contact. Same destination; the map would have been bought cheaper.
+
+**The lesson:** an ask phrased "X should just work" is a foundation ask
+until proven otherwise — estimate the foundation, not the feature.
+
+---
+
+## the two squares (2026-08-21) — retrospective, filed 2026-08-23
+
+**The ask:** "square", filed from the field, from inside the taps tool
+(asks anchor in the `/square-taps` and `/tap/square` nodes).
+
+**The estimate:** trivial — one node either way.
+
+**The actual:** two readings survived the context — the tap *button*
+made square, and the tap *count* squared — and both were built, landing
+six minutes apart (commits 512edec 22:00, 0a69170 22:06). Ambiguity was
+resolved with tokens instead of a question.
+
+**What the plan could not see:** nothing in hand broke the tie — the
+birthplace said "taps," which fit both readings. The miss was not the
+estimate but the intake: no in-hand line could have been written for
+this ask, and that unwritable sentence was the signal to ask, unread.
+
+**The lesson:** when more than one reading survives the context, the
+cheap move is a did-you-mean (two concrete options, one tap), not a
+build — and an in-hand line you cannot write is how you notice
+(hybrid.md, "intake"; plans #p12).
