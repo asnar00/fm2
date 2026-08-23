@@ -2099,6 +2099,164 @@ a reading rather than an argument: over a rig session of 32 turns — 32 begins,
 31 ends (read from inside the still-open turn), 32 freezes, depth 1. Before the
 fix it was two begins and one freeze per event, with the depth climbing.
 
+## the ask conversation, and the trace behind it (2026-08-23, asks #p8–p10)
+
+Two conversations that turned out to be one machine. Ash brought Tom's
+challenge to the never-ask rule (#p8), and then the wider vision the ask box
+has always been a door into (#p9). Recorded as design, not as a plan: ash's
+own framing is *"groping at the big idea — measure the design against reality
+and modify as we go"* (#p10), so what follows is a hypothesis with named
+places where it will meet evidence.
+
+### the never-ask rule was about WHEN, not whether
+
+Tom's challenge: a user asking for a feature has usually already jumped from
+their perceived problem to a solution, and a developer who understood the
+problem would often propose something better. So a context-understanding
+dialogue would drastically improve the proposal — and "never ask" appears to
+forbid exactly that.
+
+It does not, and the distinction is the whole answer. The rule was ruled at
+2026-08-16 (asks#1786892582635, notes.md above) in these words: *"when an ask
+comes in, the user expects a feature in the next update. So you must never ask
+me about it here."* **Here** is the builder's channel, later, asynchronously,
+in a place the asker is not watching. That is a broken promise.
+
+A question asked *at the moment of asking, in the app, while the person is
+still holding the phone* is the opposite act. Their attention is never cheaper
+than in that second, and `/propose` already does a weak version of it — the
+drafted paragraph in an editable box IS a dialogue. It is simply a stupid one,
+because the drafter is a template with no idea what the person was doing.
+
+So the rule sharpens rather than bends:
+
+- **at ask time, in the app, synchronously**: questions are welcome, and
+  the flow already has the surface for them.
+- **after the ask, in the builder's channel**: never. Unchanged.
+
+### what the drafter would need to know
+
+Tom's developer knows the code and the other users. Most of that is already
+exported and can be handed over:
+
+- the feature tree — every node's name, purpose and `## user` paragraph,
+  already baked into `tree.json` and embedded for `/semantic-find`;
+- the birthplace — `/birthplace` already stamps the open tool and its node;
+- **the last minute of the person's own events** — `/blackbox` records every
+  tap, always. If somebody pressed reset five times before asking, the real
+  problem is in the record and not in their sentence. This is the strongest
+  signal available and today it is thrown away;
+- their own ask history, and other people's open asks — which is where the
+  rule of two (dedup, promotion) can fire at the moment of asking rather than
+  weeks later.
+
+### the shape of the conversation
+
+1. Local find runs first — instant, offline, free. A tool that already does
+   it ends the ask, as today.
+2. Otherwise the ask goes out with the context pack above.
+3. Three things come back at once: a proposed paragraph (as today), **at most
+   two questions** — only where the answer changes what gets built, offered as
+   taps rather than open prompts — or, sometimes, an answer instead of a
+   proposal ("that exists, here"; "that is a setting, changed").
+4. Pressing propose immediately skips all of it. Today's behaviour must stay
+   one tap.
+5. What is settled is the contract, unchanged (#p85's doctrine).
+6. **The whole exchange is filed, not only the final sentence** — so a node's
+   provenance records the problem, not just the request.
+
+Offline, step 3 does not happen and the template drafts as it does now. The
+flow is never gated on the net (`/propose`'s standing rule).
+
+Two constraints held firm. **Questions must be cheap** — two maximum, tappable;
+more is an interrogation and people stop asking. **A better idea is offered,
+never substituted** — the law above the laws was paid for by the non-map, and
+the fix is not to propose worse things but to put the alternative in front of
+the person as a choice. Silent substitution stays forbidden; the difference
+here is that the asker is present to say yes.
+
+### the wider machine: traces, tasks, emergent tools (#p9)
+
+Ash's vision: a person is pursuing a goal ("book a trip to China") and
+sub-goals ("find a hotel in Shanghai"), using tools in aid of them. From the
+trace of tool use we should be able to (a) infer the task tree, or (b) let
+them represent tasks as first-class objects — and then, from accumulated
+history, synthesise **emergent tools** ("book a hotel in [city]") that by and
+large do what the person would have done.
+
+**An ask and a trace are the same machine from two ends.** An ask is the user
+telling us the task; a trace is the user showing us it. The context pack above
+is the first rung of this ladder, which is why it pays before anything
+ambitious exists.
+
+**Three substrates are already built**, for other reasons, on days two and
+three: `/blackbox` (every event recorded, always, offline-first, shipped when
+possible), `/replay` (a recorded session re-driven through the same update
+chains — a trace is already an executable program), and `/drive` (an agent
+tapping the real UI). The `/loop`'s `(state, event) → state` purity is what
+makes traces replayable at all.
+
+**Infer, then offer — never make them file paperwork.** Ash's (a) and (b) are
+one thing joined by a move the ask flow already uses: a task becomes a
+first-class object when the user confirms a guess. Nobody creates task objects
+by hand; almost everyone will tap yes on "booking a trip to China?".
+
+**The second occurrence reveals the variable.** One trace is a recording and
+cannot say which parts are the point. A second trace — Osaka rather than
+Shanghai — puts the hole exactly where the two differ. So parameterisation is
+a diff, not a generalisation problem, and it is the promotion rule (#p18)
+arriving in a new domain: a constant earns a variable on its second showing.
+
+**An emergent tool should be a real node**, with a description, a toggle, and
+provenance — and the provenance is *the traces it came from*, a third citation
+kind beside `transcripts/…#pN` and `asks#<t>`. It then rides the machinery that
+exists: awaiting list, one OK, all devices, untickable if wrong.
+
+The ladder, roughest form: (1) traces the server can read back per user;
+(2) episode segmentation — tool opened, tool closed, long pause, no model
+needed; (3) naming an episode, offered for confirmation; (4) grouping episodes
+into goals; (5) spotting episodes that rhyme; (6) proposing the tool on the
+second rhyme, with the diff as parameters; (7) shipping it as a node. Rungs
+1–2 improve the ask box immediately; rung 3 is the first thing a user notices;
+5–6 are the payoff.
+
+### where this meets reality, named in advance
+
+**The current tools are toys.** Taps and dictate generate no trace worth
+mining. The mechanism can be proven on them — the precedent is `/compute`
+shipping a multiply kernel it did not need — but the value waits for tools
+that do things with consequences.
+
+**Replaying is safe for looking and dangerous for acting.** Searching,
+filtering and reading can be re-driven; booking, paying and messaging cannot.
+An emergent tool should run to the last step and stop. This belongs in the
+design from birth, not after the first bad surprise.
+
+**Traces are private, and ash has ruled on it (#p10): only you can see your
+traces.** That is a stronger constraint than the ask conversation's, and it
+bounds the design rather than decorating it — an ask is a sentence somebody
+chose to write, a trace is everywhere they went. Whether the ask text itself
+may leave the device for the drafter is a separate and still-open decision,
+and for the campaign app's trust ring it may be no.
+
+**The cheap experiment, before any of it.** Real blackbox logs exist on the
+mini. Take a day of recorded sessions and ask a model to say what the person
+was doing, from the events alone. If a task cannot be named from a real trace,
+rungs 3–6 do not exist yet — and that is an afternoon's answer, not a
+quarter's.
+
+### open, and ash's to rule
+
+- Does the ask text (and any trace context) leave the device to a third-party
+  model? For everyone, or per user, or only ash?
+- Who pays, and is the template fallback honest enough when the model is
+  unreachable?
+- Does a conversation that ends in an answer rather than a build count as
+  done? Proposed: a new lifecycle state, `answered`, distinct from `shipped`.
+- The fourth moment nobody uses: after shipping. The awaiting list already
+  shows what was built; "is this what you meant?" is one tap, and a no could
+  reopen the conversation instead of becoming a fresh ask.
+
 ## ideas parking lot
 
 Superseded — passing whims now live in `ideas.md` at the repo root.
