@@ -103,7 +103,10 @@ forge. The relay audience does come from `m["_from"]` — messaging's
 `sender_of` — which is the four-digit tag with the collision this ladder recorded
 at rung 5; so the *authority* (which world is written) is collision-free and the
 *relay* inherits messaging's existing defect. Fixing it is the queued
-`sender_of` migration, not this rung.
+`sender_of` migration, not this rung. (`/to-owner` later moved the audience off
+`m["_from"]` and onto the edited world's owner — the four-digit tag is still how
+that owner is spelled on the wire, so the collision is still messaging's to
+retire.)
 
 **What the relay carries is the resolved value, not the op.** `CtxUpdate` is
 `{path, name, value}` after the merge, and the client applies it with rung 3's
@@ -209,7 +212,13 @@ mid-update, so a link that wants to know what this turn changed looks here —
 
 `converge.rs`, `handle_msg()` /extension/: the server's half. A `CtxOp` is
 applied to the sender's world by declared merge, and the resolved value is
-published to that user's audience and returned as the reply.
+published to the audience `ctx_relay_audience()` names and returned as the
+reply.
+
+`converge.rs`, `ctx_relay_audience()`: the seam that answers who hears a
+relay. Its base is the sender's own audience — `user.<_from>`, and nothing at
+all for an unsigned edit — which is the expression the publish used to carry
+inline; `/to-owner` extends it to answer with the edited world's owner instead.
 
 `tools/fmlink.py`, `emit_context_ops` (scaffolding, per the standing
 arrangement): under the fifth hook, `Context::edit_op` and `Context::apply_op`,

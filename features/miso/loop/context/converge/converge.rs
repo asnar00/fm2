@@ -89,11 +89,23 @@ impl feature_Converge {
         // already filters on. The reply carries the same record, so the
         // originator confirms immediately and the relay is a duplicate it can
         // absorb — a resolved value applied twice is the value.
-        let from = m["_from"].as_str().unwrap_or("").to_string();
-        if !from.is_empty() {
-            publish(format!("user.{}", from), update.clone());
+        let audience = ctx_relay_audience(m["_from"].as_str().unwrap_or("").to_string());
+        if !audience.is_empty() {
+            publish(audience, update.clone());
         }
         update
+    }
+
+    // who hears a relayed edit — a seam, so a later node can answer it
+    // differently without this file changing its mind. The base answers the
+    // SENDER's own audience, which is exactly what the relay above always did,
+    // and an unsigned edit reaches nobody.
+    fn ctx_relay_audience(from: String) -> String {
+        if from.is_empty() {
+            String::new()
+        } else {
+            format!("user.{}", from)
+        }
     }
 
     fn ctx_op_error(msg: String) -> String {

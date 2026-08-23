@@ -1,0 +1,2 @@
+#build.attention { color: #d9c9a4; animation: fm_attn 1.6s ease-in-out infinite; }
+@keyframes fm_attn { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
