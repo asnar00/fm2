@@ -21,8 +21,15 @@ pub struct response {
 
 struct feature_Serve;
 impl feature_Serve {
+    // the interface to bind. Base is all-interfaces (dev convenience); the
+    // /loopback subfeature overrides this to 127.0.0.1 so only same-host
+    // callers (cloudflared, local tooling) can reach the port at all.
+    fn bind_host() -> String {
+        "0.0.0.0".to_string()
+    }
+
     fn serve() {
-        let listener = std::net::TcpListener::bind(("0.0.0.0", 8095u16))
+        let listener = std::net::TcpListener::bind((bind_host(), 8095u16))
             .expect("miso: cannot bind port 8095");
         println!("miso serving site/ on http://localhost:8095");
         for stream in listener.incoming() {

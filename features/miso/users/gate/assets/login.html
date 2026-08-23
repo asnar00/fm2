@@ -34,8 +34,8 @@
     <br><button>send code</button>
   </form>
   <form id="pinStep" class="hide">
-    <input id="pin" inputmode="numeric" maxlength="4" pattern="[0-9]*"
-           placeholder="····" autocomplete="one-time-code">
+    <input id="pin" inputmode="numeric" maxlength="6" pattern="[0-9]*"
+           placeholder="······" autocomplete="one-time-code">
   </form>
   <!-- fm:body -->
   <div id="err"></div>
@@ -57,7 +57,7 @@
     const r = await post("/auth/request", { phone });
     if (!r.ok) { $("err").textContent = r.error || "something went wrong"; return; }
     $("phoneStep").classList.add("hide"); $("pinStep").classList.remove("hide");
-    $("hint").textContent = "enter the 4-digit code we texted you";
+    $("hint").textContent = "enter the code we texted you";
     $("pin").focus();
   };
   // iOS autofill (or the Go key) SUBMITS the pin form — a navigation that tears
@@ -65,7 +65,7 @@
   // through verify(), and the form never navigates.
   let busy = false;
   const verify = async () => {
-    if (busy || $("pin").value.length !== 4) return;
+    if (busy || $("pin").value.length !== $("pin").maxLength) return;
     busy = true; $("err").textContent = "checking…";
     const r = await post("/auth/verify", { phone, pin: $("pin").value });
     busy = false;
