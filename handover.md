@@ -65,6 +65,21 @@ lines, Opus workers in worktrees, delivered on estimate, zero review
 returns. The attention brief's three map errors are `misses.md`'s
 third entry — the ledger fed by the pipeline it governs, same day.
 
+4. **Agent instructions are the tree's third language** (ash's ruling,
+   plans #p29, simplifying the Aug 15 skillset design): a node may
+   carry `<name>.agent.md`, and fmlink assembles the included nodes'
+   fragments into `products/<product>/build/skillset.md` — provenance
+   order, provenance comments, toggles obeyed. Three fragments live:
+   **`/taste`** (the first agent-only node — the nine-principle
+   aesthetic standard, extracted at #p25, its whole implementation one
+   `.agent.md`; shell is now genuinely at the six-child cap),
+   `/did-you-mean` (the ambiguity-test discretion) and `/attention`
+   (nothing-rings-about-nothing). Consumers: agents.md 4a, the brief
+   template, CLAUDE.md's session-start read. NEXT SESSION: read the
+   composed skillset alongside agents.md. Named foundations, not owed:
+   per-user skillset selection, exchange-by-consent of agent features,
+   decomposing agents.md/hybrid.md into the tree.
+
 ## FOR ASH (summit-review-sized, when convenient)
 
 - **Fire a real did-you-mean at your phone**: file an ambiguous ask

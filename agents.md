@@ -53,8 +53,10 @@ broke. Re-tick. A feature that cannot be turned off is not a feature yet.
 **4a. Look at it, and ask if it is good enough.** Proving a thing works and
 judging it good are different acts; only the first is a test. Anything with
 a visual result gets rendered and *looked at* before it ships — a screenshot
-of the real surface, not a description of it. Then the question, out loud:
-*is this good enough?* The bar moves over time; asking at all is the
+of the real surface, not a description of it. Judge it against the composed
+skillset (`products/<product>/build/skillset.md` — the tree's assembled
+agent instructions; `/taste` carries the aesthetic standard). Then the
+question, out loud: *is this good enough?* The bar moves over time; asking at all is the
 discipline. Two things that repeatedly answer "no": a filter working hard to
 correct an asset (choose a source that gives you what you want instead), and
 a surface that ignores what the user's own ask history says they like.

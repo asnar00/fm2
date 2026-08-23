@@ -357,7 +357,8 @@ def contributes(directory: Path) -> bool:
     if (real / "assets").is_dir() or (real / "deps.toml").exists():
         return True
     return any(f.is_file() and (f.suffix in (".rs", ".vars")
-                                or f.suffix[1:] in EXT_SLOT)
+                                or f.suffix[1:] in EXT_SLOT
+                                or f.name.endswith(".agent.md"))
                for f in real.iterdir())
 
 
@@ -489,6 +490,14 @@ class FeatureCode:
             if rs.name.endswith(".lib.rs"):
                 continue
             self._parse(rs)
+        # agent instruction fragments: the tree's third language (#p29 of
+        # 2026-08-23-plans). Markdown the composition machinery never parses —
+        # assembled verbatim, provenance-ordered, into the product's skillset;
+        # toggleable with the node like any other implementation file.
+        self.agent = []          # (src_rel, text)
+        for af in sorted(feature_dir.glob("*.agent.md")):
+            self.agent.append((str(af.resolve().relative_to(REPO)),
+                               af.read_text()))
         # context var declarations: sidecar files the chain parser never sees
         self.vars = []           # dicts: name, type, default, scope/merge/inherit
         for sf in sorted(feature_dir.glob("*.vars")):
@@ -1741,6 +1750,34 @@ def build_places(product: str, places: list, base: Emitter, chains: dict,
         run_binary(native_binaries[0], build_dir)
 
 
+def write_skillset(product: str, features: list):
+    """Assemble the product's agent instructions — every included node's
+    `<name>.agent.md`, verbatim, in the same provenance order the chains
+    compose in — into products/<product>/build/skillset.md. The skillset is
+    the tree's third language made loadable: untick a node and the builder
+    forgets how to serve it; the file regenerates on every link, so editing
+    it by hand is editing a build artifact."""
+    build_dir = REPO / "products" / product / "build"
+    out = build_dir / "skillset.md"
+    parts = []
+    for f in features:
+        for src_rel, text in f.agent:
+            parts.append(f"<!-- {node_path(f.rel)} — from {src_rel}; "
+                         f"toggles with the node -->\n{text.rstrip()}\n")
+    if not parts:
+        if out.exists():
+            out.unlink()
+        return
+    build_dir.mkdir(parents=True, exist_ok=True)
+    head = (f"# {product} skillset\n"
+            f"*assembled by fmlink from the feature tree, provenance order — "
+            f"a build artifact: edit the nodes' `.agent.md` files, never "
+            f"this file*\n\n")
+    out.write_text(head + "\n".join(parts))
+    print(f"skillset: {len(parts)} instruction fragment(s) -> "
+          f"{out.relative_to(REPO)}")
+
+
 def write_coverage(build_dir: Path, features: list):
     """The coverage record beside the build, for whoever wants it as data —
     today `tools/export_features.py`, which stamps it onto each node of the
@@ -2033,6 +2070,7 @@ def main():
     if args.chains:
         print_chains(chains, features)
         return
+    write_skillset(args.product, features)
     places = read_places(product_dir)
     if places is None:
         build_legacy(args.product, base, chains, args.run)

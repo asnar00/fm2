@@ -155,7 +155,10 @@ to the recorded misses repeats them. It must contain:
 - **scope**: the literal ask; generalisations parked, with the promotion
   rule cited if a tunable is in play.
 - **taste notes**: anything the asker's history says they like or dislike
-  that touches this surface.
+  that touches this surface — on top of the standing standard: the brief
+  points the worker at the composed skillset
+  (`products/<product>/build/skillset.md`), where `/taste` and every
+  other agent-instruction node land in provenance order.
 - **standing law restated**: deliver the ask; doctrine compliance is
   eventual; never hand the ask back as a question.
 

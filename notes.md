@@ -2499,6 +2499,45 @@ status, the option chips, the answer event, the stamp tool's question
 mode — built through the hybrid pipeline itself; its record is in the
 node and the session transcript.
 
+### the third language (#p25–#p29, landed the same evening)
+
+Ash asked for an aesthetic standard "so visual stuff doesn't have to
+keep being re-litigated" (#p25); nine principles were extracted from
+the shipped surface and reviewed live. Then the reframe (#p26): the
+standard is *a per-user feature that affects agents only* — and the
+recall (#p27) of the 2026-08-15 skillset design ("the builder is a
+feature-modular skillset", fm-spec-2 #p21). Ash's ruling (#p29) cut
+the design smaller than the Aug 15 sketch: no slot vocabulary, no
+skeleton — **agent instructions are simply the tree's third language**,
+`<name>.agent.md` beside `.rs` and `.js`, governing build-agent AND
+future in-app agent behaviour, assembled per product like everything
+else.
+
+Landed: fmlink collects `.agent.md` from included nodes and emits
+`products/<product>/build/skillset.md`, provenance-ordered,
+provenance-commented, toggle-obeying (a node carrying only agent
+instructions counts as contributing and needs a real anchor). Three
+fragments prove it: `/taste` — the first agent-only node in the tree's
+history, the nine principles as its entire implementation, under
+`/shell` (which is now genuinely at the six-child cap) — plus
+`/did-you-mean` carrying the ambiguity-test discretion and
+`/attention` carrying the nothing-rings-about-nothing rule, each
+instruction living with the node it governs, exactly as the Aug 15
+entry predicted. Toggle proven: untick `/taste` and the standard
+leaves the skillset. Consumers wired: agents.md 4a judges against the
+composed skillset; the brief template points workers at it; CLAUDE.md
+says to read it at session start.
+
+Deliberately not built (foundations named, not owed): per-user
+selection of agent instructions (the world-object makes it possible —
+overlay chains over doctrine); exchange-by-consent of agent features
+(#p13's design applies unchanged); the decomposition of agents.md and
+hybrid.md into the tree (the monolith-to-fragments move, index.html's
+precedent). The old "open for ruling" items from Aug 15 — slot
+vocabulary, whether the session loads skillset in place of agents.md —
+are half-answered: no slots (ruled #p29), and the session loads it
+*alongside* agents.md until the decomposition happens.
+
 Then ash, reading the ship report, stated the rule the delivery was
 missing (#p17–#p19): a builder message reaches you in place if the
 panel is open, as a gentle lozenge pulse if the app is foreground, as

@@ -3,3 +3,4 @@
 - [x] pwa
 - [x] panel
 - [x] tools
+- [x] taste

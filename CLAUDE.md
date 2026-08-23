@@ -13,6 +13,13 @@ end; trust it over older prose in notes.md when they disagree.
 deploy.sh does, the mini, tunnel, state locations, and how to check on the
 live system.
 
+**Agent instructions are the tree's third language** (2026-08-23, plans
+#p29): a node may carry `<name>.agent.md` — instructions to agents,
+build-time or in-app — which fmlink assembles, provenance-ordered and
+toggle-obeying, into `products/<product>/build/skillset.md`. Read the
+composed skillset at session start alongside this file; `/taste` (the
+aesthetic standard) lives there, not in a root doc.
+
 ## Claude-specific operational notes
 
 - Documents: `notes.md` is co-written and freely editable — agent-originated
