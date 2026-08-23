@@ -1,111 +1,122 @@
 # handover
-*state of play for the next session — written 2026-08-21 at the top of the
-contexts ladder and its residuals campaign
-(transcripts/2026-08-21-hybrid.md, builds 182→240).
-Discipline in `agents.md`; ops in `deploy.md`; the pipeline in `hybrid.md`;
-the day's ledger in `redo.md` and notes.md.*
+*state of play for the next session — written 2026-08-23 at the end of
+the plans-meet-terrain session (transcripts/2026-08-23-plans.md).
+Discipline in `agents.md`; ops in `deploy.md`; the pipeline — now with
+intake, tripwires and the replan path — in `hybrid.md`; the day's design
+in notes.md ("the plan meets the terrain"); the new ledger is
+`misses.md` at the repo root.*
 
-## THE HEADLINE: the rewind, the hybrid, and the ladder
+## THE HEADLINE: plans meet terrain, and the builder learned to ask
 
-Three things happened in one day, each built on the last:
+A Sunday that was meant to be all conversation and ended with one node
+shipped. Ash confirmed the summit review first: the phone walkthrough
+of the feature-untick workflow worked perfectly — the contexts ladder
+is proven end-to-end by its owner.
 
-1. **The rewind.** The Aug 16 session's code (Fable morning and Opus
-   afternoon) was expunged on ash's ruling — main rewound to the Aug 15
-   handover, archive on `archive/aug16-pre-rewind`, doctrine and records
-   kept. The forensic model comparison that motivated it is in notes.md;
-   `redo.md` is the ledger of what came back and how.
-2. **The hybrid pipeline** (`hybrid.md`): Fable triage writes per-ask
-   briefs, Opus workers build in isolated worktrees, Fable reviews
-   against named acceptance evidence before integrate → deploy → stamp.
-   Run all day: ~15 worker deliveries, zero review returns, one correct
-   triage-return, two workers (the first retired honestly at its context
-   budget after seven rungs). Persistent workers (one warm instance,
-   briefs as follow-up messages) cut the per-rung cold-start.
-3. **THE CONTEXTS LADDER — DONE.** Eleven rungs, builds 187–212, the
-   full design in notes.md ("the world-object", "the absorption
-   ladder"): `.vars` declarations → typed per-user `Context` worlds →
-   the turn boundary → implicit `enabled` gates → merge-disciplined ops
-   → persistence → the overlay chain → the migration (payload bridge +
-   epoch counters) → the context join → **the chooser's ticks mean it
-   and SyncVar is deleted**. The done sentence was proven nine stages
-   on the real UI: untick a feature, it's off for you only, on all
-   your devices, survives restarts, reaches new devices, and re-tick
-   finds your state intact. ASH: the phone walkthrough is your summit
-   review — untick something in the feature list and watch.
+Then two interlinked designs, talked through and landed the same day:
 
-Live: **build 240** at miso.nøøb.org. 128 nodes, ~130 vars per world.
+1. **The build process self-corrects now.** Ash's diagnosis: runaway
+   complexity and residual tails are both "no plan survives contact
+   with the enemy" — the right move is to modify the plan and retry,
+   not push through. So: briefs carry an **estimate** (nodes, vars,
+   seams) and a **problem line**; workers carry a **tripwire**
+   (touching the unnamed, fix-needs-a-fix, ~2× estimate → STOP) and
+   return a **contact report** — a corrected map, not a failed
+   delivery; review gained a depth check and the **replan path**.
+   `misses.md` is the ledger that closes the loop: triage MUST read it
+   before writing any brief. Its first two entries are retrospectives —
+   the feature-untick ladder ("X should just work" is a foundation
+   ask) and the two squares (an unwritable in-hand line is the signal
+   to ask). Escalation rule: a choice must be expressible in
+   ask-language or it is the agent's, decided by doctrine and recorded.
 
-## THE RESIDUALS CAMPAIGN — CLOSED (builds 217–238, same day)
+2. **The ask workflow recovers the problem.** Users ask for solutions;
+   the request object now holds the reconstructed problem (with
+   confirmed/edited/silent status). Intake discretion is the ambiguity
+   test — "italic" with a word selected builds now; "square" inside
+   taps earns one question. **`/did-you-mean` shipped** (live at build
+   255, node at ask/lifecycle/did-you-mean): the bench stamps a question
+   with tap-sized readings (`stamp_ask.py --question/--option/--likely/
+   --note`), the asker's requests list shows a quiet row with chips,
+   one tap stamps the answer and flips the ask back to `asked` so the
+   monitor fires unchanged. Silence gets the likelier reading at the
+   asker's scope with the hedge in the stamp — the literal ask at own
+   scope is a zero-consequence floor, so the guess ladder never blocks.
+   The full task-tree guesser (three-stage y/n/edit from tool-use
+   history) is deliberately NOT built: it is rungs 1–4 of the
+   emergent-tools ladder and leans on the open trace-privacy ruling.
 
-Under ash's zeno rule (a task is not done until residuals are done —
-hybrid.md checklist 7, #p57), everything the ladder left behind was
-fixed the same evening by a third persistent worker: the sender-tag
-isolation leak (opaque relay tokens, blob adoption), fragments obeying
-`enabled` (census-led, 105 fragments, four shapes), the gate-coverage
-report (`fmlink --coverage`; 71/122 nodes gate something, the silent
-rest announced), the tooling POST through the one op door, sole-tenant
-state dirs (boot refuses a second server, crash-safe), un-mixed
-blackbox streams, nested-turn safety, boot-as-a-turn, single-broadcast
-global ops, eviction that genuinely frees memory (99.9% back, counted
-by allocator), and the bridge's lost-write complaint. 57-check
-regression green including the done-sentence rig. The parked-residuals
-register (notes.md) holds nine entries, each with a reason and revisit
-trigger — the only legitimate leftovers. NOTE for hand-runs: a server
-now refuses to start on a claimed state dir (MISO_ALLOW_SHARED_STATE=1
-overrides); the LaunchAgent holds the mini's.
+The did-you-mean build was the first run under the new doctrine: brief
+with problem + estimate lines, Opus worker in a worktree, delivered on
+estimate, zero review returns, one honest hypothesis (below).
 
-## THE NEXT WORK (queue emptied — these are chosen, not owed)
+## FOR ASH (summit-review-sized, when convenient)
 
-1. The tunables conversation + the grid asks re-fired live from the
-   app (redo.md item 8) — the promotion rule's machinery all exists
-   now; a tunable ask is a `.vars` line and data forever after.
-2. The webgpu restart (`webgpu.md` from scratch — redo.md item 7);
-   transcript mirroring + self-heal, picker fix, logging cluster
-   (redo.md items 3–5) — still unredone from the rewind.
-3. The fragment-authorship / seam-occupancy design conversation (the
-   register's items 7–8 revisit here, census attached in notes.md).
+- **Fire a real did-you-mean at your phone**: file an ambiguous ask
+  from the field, let the bench stamp a question, tap an answer. The
+  live-arrival half is a *hypothesis*: localhost rigs verified the row
+  renders after a page load, but "the question walks into an
+  already-open panel" is unobserved (the relay needs a logged-in
+  `_from`; localhost callers have none — pre-existing, not new).
+- **The rewind experiment stays named and deferred** (your call to
+  run): rewind to 501e7fe, keep attempt one as a branch, replay the
+  square-tap-evening asks under the new doctrine, measure against 36
+  files / ~1,400 lines / next-day fallout.
+- `origin/main` still holds pre-rewind history — publishing the rewind
+  is still a deliberate force-push, still pending, still yours.
 
 ## tooling state
 
-- **Server state moved**: per-user context op logs live in
-  `~/.miso-context/` on the mini (`MISO_CONTEXT_DIR` overrides).
-  `/tmp/miso-vars` IS NO LONGER WRITTEN.
-- **The ask monitor is a script now** (2026-08-22): `python3
-  tools/ask_monitor.py`, armed through the Monitor tool at the start of
-  every session. It reads each asker's world (`~/.miso-context/<user
-  key>.log`, where asks are `set` ops on the `asks` var), prints a
-  BACKLOG line per ask already standing and an ASK line per arrival or
-  restamp. It re-reads a log whenever it moves rather than tailing it —
-  `remember` writes by temp file and rename, so an open handle goes
-  silent after the first write. `--local` watches a dev state dir;
-  `--all-statuses` includes building/shipped. It used to be an inline
-  one-liner retyped each session, which is how its bugs kept coming back.
-- deploy.sh's unaddressed-ask warning reads the same logs (fixed
-  2026-08-22 — it had been reading the deleted var store, so it reported
-  "nothing outstanding" whatever was true).
-- **Agent instruments**: `GET/POST /diag/context[?user=]` (localhost
-  open, tunnel cookie-gated) — the world as JSON, and the repair path
-  for a user who unticks their own chooser. `/diag/readout` — DOM as
-  JSON (screenshots are ruled out; readout is the eyes).
-- **Speed** (deploy.md "Speed"): `fmlink.py --quick` = debug builds
-  (1.2s warm) for proof cycles; export_features skips an unchanged
-  bake; workers should share `CARGO_TARGET_DIR` across worktrees.
-- Dev server on 8095 runs the summit binary from products/miso/build.
-  `/tmp/miso-broadcast.json` is process-global and survives state-dir
-  wipes — rigs should mint fresh user names, not reuse.
-- `.claude/worktrees/` is gitignored (persistent workers live there).
-- `origin/main` still holds pre-rewind history — publishing the rewind
-  is a deliberate force-push, ash's call, still pending.
+- **Ask monitor**: `python3 tools/ask_monitor.py`, armed via the
+  Monitor tool at session start. An answered did-you-mean fires it with
+  no monitor changes (the answer flips status back to `asked`).
+- **stamp_ask.py** grew the question mode and `--note` (the hedge), and
+  honours `MISO_CONTEXT_DIR` for `--local`.
+- **CARGO_TARGET_DIR advice RETRACTED** (deploy.md): fmlink reads
+  `<crate>/target` literally, so the shared target dir breaks the link
+  step after a successful compile. Workers build cold in their
+  worktrees until fmlink honours the variable.
+- **Worker worktrees can spawn stale** — one arrived 72 commits behind
+  main. The preamble now orders a fast-forward before writing; keep an
+  eye on it.
+- Rigs: fresh `MISO_CONTEXT_DIR` + fresh user names, always
+  (`/tmp/miso-broadcast.json` is process-global); port 8095 is
+  hardcoded in serve.rs, so rigs and the dev server cannot run
+  concurrently — parallel workers cannot both rig.
+- Server state: per-user op logs in `~/.miso-context/` on the mini;
+  `/tmp/miso-vars` is dead. Sole-tenant boot refusal stands
+  (`MISO_ALLOW_SHARED_STATE=1` overrides; the LaunchAgent holds the
+  mini's dir).
+- Agent instruments unchanged: `GET/POST /diag/context[?user=]`,
+  `/diag/readout` (readout is the eyes; screenshots ruled out for
+  evidence, still fine for 4a taste checks).
+
+## THE NEXT WORK (chosen, not owed)
+
+1. The tunables conversation + the grid asks re-fired live from the
+   app (redo.md item 8) — unchanged from last handover.
+2. The webgpu restart; transcript mirroring + self-heal, picker fix,
+   logging cluster (redo.md items 3–5) — still unredone from the
+   rewind.
+3. The fragment-authorship / seam-occupancy design conversation.
+4. New candidates from today: the rewind experiment (ash fires it);
+   the emergent-tools cheap experiment (can a model name what a person
+   was doing from a day of real blackbox events? — an afternoon's
+   answer, gated on the trace-privacy ruling); fmlink honouring
+   CARGO_TARGET_DIR.
 
 ## standing doctrine landed today
 
-- The regroup law's invariant is COMPOSITION ORDER (ash, #p46):
-  grouping nodes may carry vars (a group's enabled is a feature);
-  chains must not move; defaults must not change behaviour.
-- The model comparison, the absorption ladder, the world-object design,
-  the tag-collision finding, and the ladder's completion record are all
-  in notes.md with anchors.
-- From rung 7 on, `loop/context` is a dependency of migrated features:
-  unticking it is a loud link failure, not a degraded app — by design.
+- No plan survives contact: tripwire → contact report → replan;
+  stopping is correct behaviour. `misses.md` read before every brief;
+  consolidation over accumulation (the regroup law for rules).
+- Never-ask, sharpened: no design homework to users, but ONE
+  did-you-mean (concrete readings, one tap) at agent discretion;
+  which thing they *meant* is theirs alone. Unconfirmed problems never
+  license departing from the literal ask (the map guard).
+- The literal ask at the asker's own scope is a zero-consequence
+  floor; better-for-everyone is post-hoc, via confirmed problems that
+  rhyme (rule of two at the problem level).
 - `context` and `shell` sit at the 6-child cap; context's next child
-  forces the holding/changing regroup (now legal under #p46).
+  forces the holding/changing regroup (legal under #p46). `/lifecycle`
+  now has two children (being-built, did-you-mean).

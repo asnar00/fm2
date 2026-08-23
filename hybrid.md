@@ -161,6 +161,11 @@ to the recorded misses repeats them. It must contain:
 
 ## the worker preamble (prepended to every Opus worker)
 
+> Before anything else, confirm your worktree's base is current main and
+> fast-forward if it is not — a stale base means building against an
+> expunged tree (found the hard way 2026-08-23: a worktree spawned 72
+> commits behind).
+>
 > Follow agents.md steps 1–5 including 4a; the brief you carry is the
 > contract. Deliver its in-hand line. If doctrine and the ask conflict,
 > find the move that satisfies both — proxy it, cache it, vendor it,
