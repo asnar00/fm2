@@ -24,3 +24,7 @@ Every button in a control row is black on a palette colour (`/tinted`,
 `/plus-tinted` are the precedents), and `/undo`'s button stays **last**
 in every row — a newer node inserts in front of it (`before_undo`),
 never after.
+
+A tool's **new** button (the one that makes a thing) wears the tool's own
+colour, not undo's blue — so the two control buttons read as two things
+(`/posts` and `/projects` both arrived at this independently, 2026-08-25).

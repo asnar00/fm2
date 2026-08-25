@@ -225,3 +225,17 @@ and briefed the design instead of the ask.
 **The lesson:** the mirror of "estimate the foundation, not the feature":
 when the ask IS the feature, build the feature, shaped for the foundation
 — seams (`exchange_copy`, `exchange_give`), not builds. Now `/anticipation`.
+
+## the clock in wasm (2026-08-25) — a trap with no sign on it
+
+**The ask:** `/projects`' ✕ (remove a role) — the first cut stamped the
+time inside `update` with `SystemTime::now()`.
+
+**The actual:** `SystemTime` panics on `wasm32-unknown-unknown`; the client
+loop died silently. Fixed in the run: the page half sends `t: Date.now()`
+with the event, as every other card event does (`/revert` had met the
+same wall and used "newest stamp + 1").
+
+**The lesson:** inside the loop's `update`/`render` there is no clock —
+time arrives on the event from the page. Nothing in the tree said so;
+now the ledger does, and a `loop` agent-instruction should when one exists.
