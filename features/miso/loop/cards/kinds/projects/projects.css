@@ -1,0 +1,98 @@
+/* the people section, inside the project's own scrolling box. It joins the
+   page rather than founding a box of its own (/taste 6 — the less-busy
+   doctrine): one quiet heading, then .crow rows. */
+.proj-people { display: flex; flex-direction: column; margin-top: 2px; }
+.proj-head {
+  color: #77777e; font-size: 12px; letter-spacing: 0.02em;
+  padding: 2px 2px 4px;
+}
+/* status where the number sits: what they do, not who they are */
+.proj-role {
+  color: #9a9aa2; font-weight: 400; min-width: 62px; text-align: right;
+}
+.proj-name { color: #eee; font-weight: 600; }
+.proj-people .crow:last-of-type { border-bottom: none; }
+.proj-x {
+  flex: none; width: 22px; text-align: center;
+  color: #77777e; font-size: 13px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+.proj-add {
+  align-self: flex-start; margin-top: 8px;
+  padding: 6px 14px; border-radius: 999px;
+  background: #1a1a1d; border: 1px solid #3a3a3f;
+  color: #c9c9d2; font-size: 13px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+
+/* the role lines under a person's mission: "canvasser  for miso" */
+.proj-roles { display: flex; flex-direction: column; margin-top: 2px; }
+.proj-roles .crow:last-child { border-bottom: none; }
+.proj-rolerow { cursor: pointer; }
+.proj-rolerow .ctext { color: #c9c9d2; }
+
+/* the add sheet: the screen goes quiet and one box stays lit. Furniture
+   outside #app, display:none until it is asked for (/frame's precedent). */
+#projSheet {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(16, 16, 18, 0.92);
+  z-index: 60;
+  align-items: center; justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 16px) 16px
+           calc(env(safe-area-inset-bottom) + 16px);
+}
+#projSheet.show { display: flex; }
+
+#projBox {
+  width: 100%; max-width: 320px;
+  box-sizing: border-box;
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 14px 16px 16px;
+  border-radius: 14px;
+  background: #161619; border: 1px solid #202026;
+}
+#projBox .proj-sheet-head {
+  color: #77777e; font-size: 12px; letter-spacing: 0.02em;
+}
+#projWho {
+  max-height: 40vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+#projWho .crow:last-child { border-bottom: none; }
+.proj-pick { cursor: pointer; color: #c9c9d2; }
+/* the one accent, meaning what it means everywhere else: chosen */
+.proj-pick.on .ctext { color: #9db7d8; font-weight: 600; }
+.proj-none { padding: 7px 2px; color: #77777e; font-size: 12px; }
+
+#projRole {
+  padding: 8px 10px; border-radius: 8px;
+  background: #121215; border: 1px solid #202026;
+  color: #eee; font: inherit; font-size: 13px;
+  outline: none;
+}
+#projRole::placeholder { color: #77777e; }
+#projRole:focus { border-color: #9db7d8; }
+
+#projBar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+#projCancel {
+  padding: 8px 16px; border-radius: 999px;
+  background: transparent; border: 1px solid #3a3a3f;
+  color: #9a9aa2; font-size: 13px; font-family: inherit;
+  cursor: pointer;
+  transition: color 0.18s ease-out, border-color 0.18s ease-out;
+}
+#projCancel:hover { color: #c9c9d2; border-color: #4a4a50; }
+/* the one primary action, in the accent that already means chosen */
+#projAdd {
+  padding: 8px 22px; border-radius: 999px;
+  background: #9db7d8; border: 1px solid #9db7d8;
+  color: #101012; font-size: 13px; font-weight: 600; font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.18s ease-out;
+}
+#projAdd:hover { opacity: 0.88; }
+/* a control that will do nothing does not look like a control (/taste 7) */
+#projAdd.off {
+  background: transparent; border-color: #2a2a31; color: #55555c;
+  cursor: default;
+}

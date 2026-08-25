@@ -1,2 +1,3 @@
 - [x] new
 - [x] posts
+- [x] projects
