@@ -119,6 +119,19 @@ impl feature_Invite {
         existing.route(r)
     }
 
+    // the seam for which names an inviter may mint: empty means fine, else
+    // the sentence to show. A leading underscore marks a TEST user whose codes
+    // go to the server log instead of by SMS (/users); an inviter must not be
+    // able to mint one, or they could read the invitee's codes off the mini.
+    // (/pretend lets an admin.)
+    fn invite_name_ok(name: String, who: String) -> String {
+        let _ = who;
+        if name.starts_with('_') {
+            return "a name can't start with _".to_string();
+        }
+        String::new()
+    }
+
     // add: authority, then shape, then the lock. The duplicate check is inside
     // the lock with the append, so two sends at once cannot both pass it.
     fn invite_add(r: request) -> response {
@@ -135,11 +148,9 @@ impl feature_Invite {
         if name.is_empty() {
             return invite_say(400, "that invite needs a name".to_string());
         }
-        // a leading underscore marks a TEST user whose codes go to the server
-        // log instead of by SMS (/users); an invite must not be able to mint
-        // one, or an inviter could read the invitee's codes off the mini
-        if name.starts_with('_') {
-            return invite_say(400, "a name can't start with _".to_string());
+        let bad = invite_name_ok(name.clone(), who.clone());
+        if !bad.is_empty() {
+            return invite_say(400, bad);
         }
         if phone.len() < 8 {
             return invite_say(400, "that doesn't look like a phone number".to_string());
