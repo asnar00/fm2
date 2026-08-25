@@ -2836,3 +2836,17 @@ things worth carrying forward:
   cheap fix is for `/cards`' focusout to send nothing when the text did not
   change (`/keep` has usually saved it 600ms earlier already); the general one
   is for the loop's delegated click to survive its own repaint.
+
+## the map fitted without a tweak: the skillset's first clear win (2026-08-26, #p99)
+
+Ash: "particularly loved how the map fitted our aesthetic without any
+tweaks — a sign that the feature-modular agent stuff is working." What
+happened: the `/map` worker read `/taste` from the composed skillset,
+and made two calls nobody briefed — it chose CARTO's dark render of
+OpenStreetMap over plain OSM rather than filter bright tiles into the
+house ground (principle 9, and the exact move that got the 2026-08-16 map
+withdrawn), and it caught Leaflet's white attribution pill by computed
+style because principle 1 says nothing arrives white. The instruction
+was a node; it composed; the worker obeyed it as it would code. That is
+the third language paying for itself, and the argument for moving more
+of agents.md/hybrid.md into the tree.
