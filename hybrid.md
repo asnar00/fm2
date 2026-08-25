@@ -234,6 +234,11 @@ worth one line saying "hypothesis — tell me if I'm wrong". Hazard entries
 go to `misses.md` when the miss was the plan's; this one was triage's.
 The port hazard is real regardless: a port the rig can choose is the fix.
 
+**Tear down by PID, never by pattern.** With workers rigging in parallel,
+`pkill -f miso_server` kills every rig on the machine (triage did exactly
+this on 2026-08-25 while proving `/roomier`). Keep the PID you started and
+kill that.
+
 ## the review checklist (Fable, before any ship)
 
 1. Every artifact the brief named is present. Read the readout — not
