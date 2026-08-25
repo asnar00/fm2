@@ -2703,3 +2703,13 @@ caret never does. `/keep` swallows its own repaint's focusout in the capture
 phase and sends the draft itself when the block does not come back. Anything
 else that saves on focusout should know that a repaint looks exactly like a
 tap-away unless it asks.
+
+## the accounts day, in one paragraph (2026-08-25, end of session)
+
+Five workers, four direct fixes, builds 261→279, all pushed. The card
+object exists and 👤 is your own page; invite works from the app; two
+field asks came off the phone, one through a live did-you-mean, and both
+shipped stamped. Two rulings from live misbehaviour became nodes the same
+hour (`fresh-words`, `present`). The ceiling to watch is the whole-list
+`cards` var (one op per edit, 56KB): var-per-card + a blob path is now the
+rung before projects. Tomorrow's first act is a phone: pinch the frame.

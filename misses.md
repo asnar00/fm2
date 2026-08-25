@@ -106,3 +106,51 @@ layouts must be read from the composed source at brief-writing time,
 never from specs or memory of them — the specs describe births, the
 composition describes now. And any feature that reacts to "an arrival"
 must ask what join-replay looks like before believing its trigger.
+
+## the stuck worker that wasn't (2026-08-25) — triage's miss, filed the same day
+
+**The ask:** ash, of the `cards` worker at 37 minutes: "seems like it's
+been running a rather long time. maybe it's got in a muddle?"
+
+**The estimate:** triage read the machine from outside — a two-day-old
+dev server holding 8095, the worker's own server gone — and diagnosed
+"its readouts are of a build without the feature". Killed the stale
+process, told the worker so.
+
+**The actual:** the worker had already routed round the busy port (own
+binary on 8096, own `site/`), its commit was in the worktree, its
+evidence was sound. The nudge cost it a full re-run of the acceptance
+list on 8095 — same commit, same results.
+
+**What the plan could not see:** a worker that runs long *with a commit
+and a live rig* is most likely working. The outside view showed a
+hazard (the stale server) and triage read it as a failure.
+
+**The lesson:** the check-in's diagnosis is a hypothesis, sent as one
+line the worker may refute; unblock (free the port) without
+prescribing (re-run everything). Now in hybrid.md's check-in section.
+
+---
+
+## the picture cap (2026-08-25) — an estimate miss, filed the same day
+
+**The ask:** the profile picture (#p7), briefed at "downscale to 256px,
+~25KB, state a hard cap".
+
+**The estimate:** a picture is a block; the budget is the disk's.
+
+**The actual:** the whole cards list travels as one `/msg` op, and
+`/messaging` truncated bodies at 16KB — an oversized message becomes
+invalid JSON, is answered `400 untyped`, and is retried forever, jamming
+every op the device will ever send. The worker found it live at a 40KB
+cap, dropped to 8KB; ash's first real photo then failed; `/roomier`
+raised the wire to 64KB the same afternoon.
+
+**What the plan could not see:** the brief sized the picture against
+storage and never asked what carries it. The attention brief's lesson
+("read wire formats from the composed source") applied here too and was
+not applied.
+
+**The lesson:** any brief that puts bytes into a var must name the
+op that carries the var and the cap on that op's wire; a var that is a
+list is one op, whole, per edit.
