@@ -138,8 +138,11 @@ third entry — the ledger fed by the pipeline it governs, same day.
   run): rewind to 501e7fe, keep attempt one as a branch, replay the
   square-tap-evening asks under the new doctrine, measure against 36
   files / ~1,400 lines / next-day fallout.
-- `origin/main` still holds pre-rewind history — publishing the rewind
-  is still a deliberate force-push, still pending, still yours.
+- **Published 2026-08-25**: `origin/main` is fast-forwarded to the
+  current work (it had sat at the rewind point `431b39a` all along — the
+  earlier claim that it held the Aug 16 history was wrong; that history
+  only ever lived on the local archive branch). The Opus-written Aug 16
+  session is now on GitHub too, as `origin/archive/aug16-pre-rewind`.
 
 ## tooling state
 

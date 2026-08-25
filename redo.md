@@ -105,7 +105,8 @@ that actually has it, ex-84babe3) rides along here.
 
 ## standing cautions
 
-- `origin/main` still holds the expunged history; publishing the rewind
-  is a deliberate force-push — ash's call.
+- The rewind was published 2026-08-25: `origin/main` fast-forwarded (it
+  was already at `431b39a`); the expunged session is on GitHub as
+  `origin/archive/aug16-pre-rewind`.
 - The features list showing 175 while the panel shows 182+ is honest
   (doc-only builds); item 2 is the fix.
