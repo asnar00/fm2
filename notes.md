@@ -2640,3 +2640,10 @@ default: no — only guest-list members can send); who may create a project
 (default anyone); who asserts "P has role R in X" (default: either side,
 no confirmation until `link`). Tara's guest-list entry and role (support
 or admin) still wanted before tomorrow.
+
+**Seed data, ash's (2026-08-25 #p14):** "miso" is a project — this project —
+and ash is *lead dev* of miso. So the first project card is `miso` (type
+`project`) and the first link is `ash.profile —role: lead dev→ miso.project`;
+Tara's will be `tara.profile —role: candidate→ sevenoaks-2029.project`. The
+`projects`/`link` brief should build exactly these as its worked example and
+the 👤 page should read "lead dev of miso" under the mission.
