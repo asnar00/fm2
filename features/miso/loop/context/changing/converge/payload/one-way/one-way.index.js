@@ -9,7 +9,7 @@ const feature_OneWay = {
       this.said[k] = 1;
       console.warn('miso: the page wrote state["' + k + '"] and the context '
         + 'overwrote it. That key is published BY the context and never read '
-        + 'back — send a CtxOp instead (see loop/context/converge/payload).');
+        + 'back — send a CtxOp instead (see loop/context/changing/converge/payload).');
     }
   },
 };

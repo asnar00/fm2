@@ -1,6 +1,2 @@
-- [x] alive
-- [x] edit
-- [x] enabled
-- [x] per-user
-- [x] converge
-- [x] remember
+- [x] holding
+- [x] changing

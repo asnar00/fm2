@@ -59,7 +59,7 @@ SLOT_COMMENT = {"head": "<!-- fm: {} -->", "style": "/* fm: {} */",
 # through to the function they replaced, its load-time furniture is marked
 # with its owner, and its stylesheet can be switched off. The runtime that
 # reads the map is the hook-bearing node's own fragment; everything here is
-# the wiring beneath it. See features/miso/loop/context/enabled/obey.
+# the wiring beneath it. See features/miso/loop/context/changing/enabled/obey.
 FRAGMENT_GATE_HOOK = "fm:fragment-gate"
 # an assignment to a method of an object: `feature_Review.releases = …`. The
 # JS chain link — the page's `existing.fn()`.
@@ -128,7 +128,7 @@ VAR_DECL_RE = re.compile(
     r"\(\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*\)"
     # optional fourth column: the legacy state key this var is republished at,
     # so a page fragment that reads `s.<key>` keeps working after the value has
-    # moved into the Context. See features/miso/loop/context/converge/payload.
+    # moved into the Context. See features/miso/loop/context/changing/converge/payload.
     r"(?:\s+js:([A-Za-z_][A-Za-z0-9_]*))?\s*$")
 VAR_SCOPE = {"global": "ScopeGlobal", "group": "ScopeGroup",
               "user": "ScopeUser", "device": "ScopeDevice"}
@@ -362,9 +362,40 @@ def contributes(directory: Path) -> bool:
                for f in real.iterdir())
 
 
+def tie_break(directory: Path, root: Path) -> tuple:
+    """The tie-break for two nodes citing the SAME prompt: (how deep in
+    CONTRIBUTING nodes, then the path with code-free grouping ancestors
+    removed).
+
+    Ties used to break by (depth, path) counting every node, which meant a
+    regroup — inserting a grouping node above tied siblings — pushed them a
+    level down and past nodes elsewhere in the tree that shared their prompt.
+    That rewires chains, which agents.md forbids a regroup from doing (found
+    2026-08-25: the holding/changing regroup moved `dictate/mirror/adopt`
+    through `converge`'s `handle_msg` links, all of them citing hybrid #p32).
+    A grouping node contributes nothing to the composition, so it is not
+    counted and not named here, and inserting or dissolving one is
+    order-neutral by construction.
+
+    A grouping node itself sorts immediately before its own subtree: it is one
+    level shallower than the children it does not count, and its own last
+    component is `\\x00`-prefixed for the nested case where two grouping nodes
+    land at the same depth.
+    """
+    parts = directory.relative_to(root).parts
+    cur, out = root, []
+    for i, name in enumerate(parts):
+        cur = cur / name
+        if i == len(parts) - 1:
+            out.append(name if contributes(cur) else "\x00" + name)
+        elif contributes(cur):
+            out.append(name)
+    return (len(out), tuple(out))
+
+
 def chronologise(feature_dirs: list, root: Path) -> list:
     """Sort the included nodes by provenance time. Ties (one prompt, several
-    nodes) resolve by containment (parent first) then path. A code-free
+    nodes) resolve by `tie_path` — containment first, tree position never. A code-free
     grouping node takes the earliest key in its subtree, so a late regroup
     never displaces old children. A contributing node must cite an anchor;
     a child citing an earlier prompt than its parent is a link error."""
@@ -387,9 +418,7 @@ def chronologise(feature_dirs: list, root: Path) -> list:
             fail(f"{d.resolve().relative_to(REPO)}: no provenance anywhere in "
                  f"its subtree")
         key[d] = min(cands)
-    depth = {d: len(d.relative_to(root).parts) for d in feature_dirs}
-    ordered = sorted(feature_dirs,
-                     key=lambda d: (key[d], depth[d], str(d)))
+    ordered = sorted(feature_dirs, key=lambda d: (key[d], tie_break(d, root)))
     pos = {d: i for i, d in enumerate(ordered)}
     for d in feature_dirs:
         if d.parent in pos and pos[d.parent] > pos[d]:
@@ -898,33 +927,33 @@ def emit_context(features: list, out: Emitter):
                      f"('{token}') but no composed node provides the var "
                      f"family — tick loop/context, or untick the asking node")
         return
-    # the gates read the turn's frozen view, which is loop/context/edit's
+    # the gates read the turn's frozen view, which is loop/context/changing/edit's
     # machinery: no frozen read, no gate. Loudly, because a silently ungated
     # build is one whose tickboxes do nothing.
     if asks_gate and not asks_set:
         fail(f"{asks_gate[0][0]} asks for the enabled gates ('{GATE_HOOK}') but "
              f"no composed node provides the frozen-read machinery "
-             f"('{SET_HOOK}') — tick loop/context/edit, or untick the gates")
+             f"('{SET_HOOK}') — tick loop/context/changing/edit, or untick the gates")
     # an arriving CtxUpdate is applied through set_from_json, and a local edit
-    # is made under edit_context: both are loop/context/edit's.
+    # is made under edit_context: both are loop/context/changing/edit's.
     if asks_op and not asks_set:
         fail(f"{asks_op[0]} asks for the var op methods ('{OP_HOOK}') but no "
              f"composed node provides the write path ('{SET_HOOK}') — tick "
-             f"loop/context/edit, or untick the op methods")
+             f"loop/context/changing/edit, or untick the op methods")
     # a log replays through apply_op and through nothing else: no op methods,
     # no recovery, and a persisted world that could not be rebuilt would be
     # worse than one that was never written.
     if asks_remember and not asks_op:
         fail(f"{asks_remember[0]} persists contexts ('{REMEMBER_HOOK}') but no "
              f"composed node provides the op methods ('{OP_HOOK}') that a log "
-             f"replays through — tick loop/context/converge, or untick it")
+             f"replays through — tick loop/context/changing/converge, or untick it")
     # the overlay resolves a var by falling from the user's own value through
     # the shared layer, and both halves of that are op machinery: `clear` is an
     # op verb, and a global var's authority is reached by routing its ops.
     if asks_overlay and not asks_op:
         fail(f"{asks_overlay[0]} asks for the overlay chain ('{OVERLAY_HOOK}') "
              f"but no composed node provides the op methods ('{OP_HOOK}') it "
-             f"resolves and routes through — tick loop/context/converge, or "
+             f"resolves and routes through — tick loop/context/changing/converge, or "
              f"untick the overlay")
     if not asks_overlay:
         # global scope has no layer to live in without the overlay composed, so
@@ -934,7 +963,7 @@ def emit_context(features: list, out: Emitter):
                 if s["scope"] == VAR_SCOPE_LAYER:
                     fail(f"{s['src']}:{s['line']}: scope 'global' needs the "
                          f"overlay chain ('{OVERLAY_HOOK}') — tick "
-                         f"loop/context/converge/overlay, or declare user")
+                         f"loop/context/changing/converge/overlay, or declare user")
     # a `js:` column is a promise to a page fragment, and a promise nothing
     # keeps is worse than one nobody made: a build whose declarations claim
     # legacy keys but whose bridge is absent would render blank rather than
@@ -943,7 +972,7 @@ def emit_context(features: list, out: Emitter):
     if asks_bridge and not asks_overlay:
         fail(f"{asks_bridge[0]} republishes bridged vars ('{BRIDGE_HOOK}') but "
              f"no composed node provides the resolved read ('{OVERLAY_HOOK}') "
-             f"it republishes — tick loop/context/converge/overlay, or untick "
+             f"it republishes — tick loop/context/changing/converge/overlay, or untick "
              f"the bridge")
     bridged = {}
     for feature in features:
@@ -955,7 +984,7 @@ def emit_context(features: list, out: Emitter):
                 fail(f"{s['src']}:{s['line']}: '{s['name']}' claims the page "
                      f"key '{key}' (js:), but no composed node provides the "
                      f"payload bridge ('{BRIDGE_HOOK}') — tick "
-                     f"loop/context/converge/payload, or drop the js: column")
+                     f"loop/context/changing/converge/payload, or drop the js: column")
             if key in bridged:
                 prev = bridged[key]
                 fail(f"{s['src']}:{s['line']}: page key '{key}' is already "
@@ -977,7 +1006,7 @@ def emit_context(features: list, out: Emitter):
             if plan and s["name"] == GATE_VAR["name"]:
                 fail(f"{s['src']}:{s['line']}: node "
                      f"'{Path(feature.rel).name}' declares its own 'enabled' "
-                     f"var, but loop/context/enabled gives every composed node "
+                     f"var, but loop/context/changing/enabled gives every composed node "
                      f"one — remove the declaration, or untick the gates")
             fields.append((f"{node}_{s['name']}", node_path(feature.rel), s))
     out.emit("// ---- context: vars declared by composed nodes (<name>.vars)")
@@ -1164,7 +1193,7 @@ def emit_edit_reset(fields: list, out: Emitter, overlay: bool):
 def emit_context_ops(fields: list, asks_op: list, out: Emitter,
                      overlay: bool = False):
     """The merge discipline's two generated halves. Scaffolding: mechanism here,
-    design in features/miso/loop/context/converge.
+    design in features/miso/loop/context/changing/converge.
 
     `edit_op` is a LOCAL edit — it reaches for the write method the var's
     DECLARED merge earned (`set_at` on MergeLastWrite, `add_at` on
@@ -1299,7 +1328,7 @@ def emit_context_ops(fields: list, asks_op: list, out: Emitter,
 def emit_context_set(fields: list, asks_set: list, out: Emitter,
                      overlay: bool = False):
     """The Context's generated write path, plus the Clone a turn's frozen view
-    needs. Scaffolding: mechanism here, design in features/miso/loop/context/edit.
+    needs. Scaffolding: mechanism here, design in features/miso/loop/context/changing/edit.
 
     set_from_json is a match over every declared var keyed by (node path, var
     name) — the same two strings the snapshot reports — deserialising the given
@@ -1359,7 +1388,7 @@ def gate_line(fn: dict, key: tuple, heads: dict, plan_entry: dict) -> str:
     """The gate injected at the head of a chain-extending, state-carrying
     function: if this node is not effectively on in the turn's frozen view,
     hand the previous link's answer back untouched. `gate_open` is
-    loop/context/enabled's own read primitive, so the frozen-view rule lives in
+    loop/context/changing/enabled's own read primitive, so the frozen-view rule lives in
     one place; the predicate is a method call rustc resolves statically."""
     args = ", ".join(fn["pnames"])
     return (f"        if !gate_open(|c| c.{plan_entry['ident']}_on()) "
@@ -1498,7 +1527,7 @@ def emit_op_glue(name: str, n: int, e: dict, out: Emitter):
 def check_turn_end(features: list):
     """A node that has handed work to the turn-end phase must not be composed
     without it. Scaffolding, per the standing arrangement: the mechanism is
-    here, the design is in features/miso/loop/context/edit/turn-end.
+    here, the design is in features/miso/loop/context/changing/edit/turn-end.
 
     This is the one dependency in the family that rustc cannot catch. Every
     other hook removes a generated function, so an asker without its provider
@@ -1513,7 +1542,7 @@ def check_turn_end(features: list):
     if needs and not has:
         fail(f"{needs[0]} has moved its end-of-turn work onto the turn-end "
              f"phase ('{TURN_END_NEEDS}') but no composed node provides it "
-             f"('{TURN_END_HOOK}') — tick loop/context/edit/turn-end. Without "
+             f"('{TURN_END_HOOK}') — tick loop/context/changing/edit/turn-end. Without "
              f"it a local edit's op is queued and never shipped, which nothing "
              f"in the build would complain about.")
 

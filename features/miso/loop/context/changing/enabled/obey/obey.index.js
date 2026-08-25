@@ -5,7 +5,7 @@
 // is what they did before this node existed.
 const feature_Obey = {
   // this node's own address, for the one question it asks about itself
-  path: 'miso/loop/context/enabled/obey',
+  path: 'miso/loop/context/changing/enabled/obey',
   raw: null,
   map: {},
   // answers for this frozen view, thrown away when the view changes. A gated
