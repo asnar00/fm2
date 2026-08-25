@@ -2794,3 +2794,19 @@ Two smaller things found in passing, neither fixed:
   next-work item about rig ports asked for. It is still a constant: making it
   read an environment variable would be a behaviour change and wants its own
   node.
+
+## seeing each other: exchange, rung one (2026-08-25, #p69–#p71)
+
+The alice/bob walkthrough (pretend people, admin-invited, logged in via
+the mini's log; #p63–#p68) proved the invite loop end to end with no SSH,
+and surfaced the next rung in one sentence: alice and bob each have a card
+and cannot see each other's, or ash's, or the `miso` project. Ash's ruling
+(#p71): **invite makes people visible to each other automatically**; the
+other visibility cue is **shared membership of a project — later**. Rung
+one, briefed: a per-person inbox on the server; *send a card to a person*
+(by number, or from the people you hold); received cards land in your own
+`cards` var as copies (foreign ids, `from`, `received`) and appear in the
+cards tool; a copy stays fresh when its owner edits (re-offer to the
+sent-to set); invite seeds both directions; other people's cards are
+read-only; no accept tap, no directory beyond the cards you hold. Parked:
+withdrawing a card, an accept tap, links, rings, project membership.
