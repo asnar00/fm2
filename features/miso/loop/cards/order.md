@@ -4,3 +4,4 @@
 - [x] layout
 - [x] tag
 - [x] guard
+- [x] location

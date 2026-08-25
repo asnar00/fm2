@@ -1,0 +1,51 @@
+/* the pill: the quiet family (/taste 1, 4) — a card's place, one tap away.
+   Dim is the whole of "no place yet"; there is no second sentence. */
+.card-place {
+  align-self: flex-start;
+  padding: 7px 12px; border-radius: 999px;
+  background: #1a1a1d; border: 1px solid #3a3a3f;
+  color: #c9c9d2; font-size: 13px; line-height: 1;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+  transition: color 0.18s ease-out, border-color 0.18s ease-out;
+}
+.card-place.dim { color: #77777e; border-color: #2a2a30; }
+.card-place:hover { border-color: #4a4a50; }
+
+/* the place, as a sheet on the dark ground: furniture outside #app, hidden
+   until it is asked for. A placeholder for a map — see location.md; the
+   surface itself says only what it knows. */
+#placeSheet {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(16, 16, 18, 0.92);
+  z-index: 60;
+  align-items: center; justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 16px) 16px
+           calc(env(safe-area-inset-bottom) + 16px);
+}
+#placeSheet.show { display: flex; }
+
+#placeBox {
+  background: #161619; border: 1px solid #202026; border-radius: 14px;
+  padding: 22px 24px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  min-width: 220px; max-width: 100%;
+}
+
+/* the thing itself, in the brightest step; everything else beneath it */
+#placeWhere {
+  color: #fff; font-size: 19px; font-weight: 600;
+  letter-spacing: -0.01em; text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+#placeMeta { color: #77777e; font-size: 12px; text-align: center; }
+
+#placeClose {
+  margin-top: 6px;
+  padding: 8px 20px; border-radius: 999px;
+  background: transparent; border: 1px solid #3a3a3f;
+  color: #9a9aa2; font-size: 13px; font-family: inherit;
+  cursor: pointer;
+  transition: color 0.18s ease-out, border-color 0.18s ease-out;
+}
+#placeClose:hover { color: #c9c9d2; border-color: #4a4a50; }
