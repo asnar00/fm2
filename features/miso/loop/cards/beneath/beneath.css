@@ -1,0 +1,6 @@
+/* depth order, stated once: the display surface (the card page) sits at the
+   bottom, the toolbar and the lozenge above it, the panel's shade and sheet
+   above those (#shade 10, #panel 11 are /panel's own), the toast highest. */
+.card-page { z-index: 1; }
+.toolbar { z-index: 5; }
+#build { z-index: 6; }

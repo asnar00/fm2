@@ -11,6 +11,15 @@ const feature_Account = {
   closeTool() {
     if (typeof feature_Panel !== 'undefined') feature_Panel.close();
   },
+  // the dismissal seam: what a shade-tap on the panel means for the tool.
+  // Default: while the panel IS the account tool's sheet, dismissing it
+  // leaves the tool too, so toolbar state never lies. A feature that gives
+  // 👤 its own surface replaces this (see /me's /stay).
+  dismissed() {
+    let s = {};
+    try { s = JSON.parse(feature_Loop.state || '{}'); } catch (e) {}
+    if (s.open_tool === 'account') feature_Loop.send({ type: 'click', ev: 'tools_home' });
+  },
   // the page half: the account tool's open state drives whatever the seam says
   watch() {
     let s = {};
@@ -33,9 +42,7 @@ const feature_Account = {
       const fm_acctClose = feature_Panel.close.bind(feature_Panel);
       feature_Panel.close = function () {
         fm_acctClose();
-        let s = {};
-        try { s = JSON.parse(feature_Loop.state || '{}'); } catch (e) {}
-        if (s.open_tool === 'account') feature_Loop.send({ type: 'click', ev: 'tools_home' });
+        self.dismissed();
       };
       // the corner logo button's tap is parked for the future agent interface
       feature_Panel.buttonTap = () => {};
