@@ -1,1 +1,2 @@
 - [x] people
+- [x] portrait

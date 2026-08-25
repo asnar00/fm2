@@ -1,0 +1,17 @@
+/* the picture-led row: face left, name and excerpt right (/taste 2 — the
+   name is the thing itself, the excerpt is prose, the word and date are
+   ignorable) */
+.browse-list.portrait .portrait-row { align-items: center; gap: 12px; padding: 9px 2px; }
+.portrait-face {
+  flex: none; width: 46px; height: 46px; border-radius: 10px; overflow: hidden;
+  background: #121215; border: 1px solid #202026;
+  display: flex; align-items: center; justify-content: center;
+  color: #77777e; font-size: 18px; font-weight: 600;
+}
+.portrait-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.portrait-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.portrait-line { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.portrait-title { color: #eee; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.portrait-word { color: #77777e; font-size: 12px; flex: none; }
+.portrait-line .browse-when { margin-left: auto; flex: none; }
+.portrait-excerpt { color: #9a9aa2; font-size: 13px; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
