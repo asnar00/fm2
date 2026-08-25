@@ -10,6 +10,12 @@ const feature_NoobButton = {
     }
   },
 };
+// decline /account's parking of the corner button at LOAD, before any init
+// timer fires: the lozenge's tap is this node's, whatever order the timers
+// take (with /world-cache the order changed and the button went dead)
+if (typeof feature_Account !== 'undefined') {
+  feature_Account.parkTap = function () {};
+}
 const fm_noobInit = setInterval(() => {
   if (typeof feature_Loop !== 'undefined' && feature_Loop.state !== null) {
     clearInterval(fm_noobInit);

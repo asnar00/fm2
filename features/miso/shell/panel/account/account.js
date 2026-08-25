@@ -11,6 +11,11 @@ const feature_Account = {
   closeTool() {
     if (typeof feature_Panel !== 'undefined') feature_Panel.close();
   },
+  // the parking seam: what happens to the corner button's tap while this
+  // tool owns the panel. Default: parked.
+  parkTap() {
+    if (typeof feature_Panel !== 'undefined') feature_Panel.buttonTap = () => {};
+  },
   // the dismissal seam: what a shade-tap on the panel means for the tool.
   // Default: while the panel IS the account tool's sheet, dismissing it
   // leaves the tool too, so toolbar state never lies. A feature that gives
@@ -45,7 +50,11 @@ const feature_Account = {
         self.dismissed();
       };
       // the corner logo button's tap is parked for the future agent interface
-      feature_Panel.buttonTap = () => {};
+      // — through a seam, so a feature that gives the button a job again
+      // (/noob-button) can decline the parking at load, whatever order the
+      // init timers fire in (the lozenge went dead on the phone when
+      // /world-cache changed that order, 2026-08-25)
+      self.parkTap();
     }
   },
 };

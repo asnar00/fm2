@@ -19,3 +19,5 @@ The #p54 doctrine lands: the **nøøb button** (ash's name for the corner logo l
 ## code description
 
 `noob-button.js` composes after `/account` (provenance order) and re-points two of its decisions at init: `feature_Panel.buttonTap` returns to `feature_Panel.open` (the seam's original default), and `feature_Account.watch` becomes a no-op so opening the 👤 tool no longer drives the panel — the tool opens onto the empty surface. `/account`'s shade-close wrap stays live and harmless: dismissing the panel while the empty tool is open also returns to the launcher. The init uses the same poll-until-loop-ready pattern; both fragments gate on the same condition, and composition order runs `/account` first, so the re-pointing always lands on the parked state.
+
+*(Fix, 2026-08-25 #p95: the lozenge went dead on the phone — `/account` parked its tap from a timer-installed init and this node un-parked it from another, and `/world-cache` changed which fired last. `/account` now parks through a `parkTap` seam, which this node replaces with a no-op at load; the tap is deterministic.)*
