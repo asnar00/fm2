@@ -1,0 +1,43 @@
+/* the invite rows sit under your card, inside its own scrolling box, and
+   borrow the .crow list grammar whole (/taste 6) — status where the number
+   sits, no headers, no prose. */
+.invite {
+  display: flex; flex-direction: column;
+  margin-top: 6px;
+}
+.invite-new { gap: 6px; }
+.invite-name, .invite-phone {
+  flex: 1; min-width: 0;
+  padding: 7px 9px; border-radius: 8px;
+  background: #121215; border: 1px solid #202026;
+  color: #eee; font: inherit; font-size: 13px;
+  outline: none;
+}
+.invite-name { flex: 1.1; }
+.invite-phone { flex: 1.3; }
+.invite-name::placeholder, .invite-phone::placeholder { color: #77777e; }
+/* the one accent, meaning what it means everywhere else: this is the thing
+   you have chosen */
+.invite-name:focus, .invite-phone:focus { border-color: #9db7d8; }
+
+.invite-send {
+  flex: none;
+  padding: 7px 12px; border-radius: 999px;
+  background: #1a1a1d; border: 1px solid #3a3a3f;
+  color: #c9c9d2; font-size: 13px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+
+.invite-status {
+  color: #9a9aa2; font-weight: 400; min-width: 46px; text-align: right;
+}
+.invite-row .ctext { color: #c9c9d2; }
+.invite-x {
+  flex: none; width: 22px; text-align: center;
+  color: #77777e; font-size: 13px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+.invite-say {
+  padding: 6px 2px;
+  color: #9a9aa2; font-size: 12px; line-height: 1.35;
+}

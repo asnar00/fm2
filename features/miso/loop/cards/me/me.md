@@ -94,6 +94,12 @@ outermost by construction.
 `card_page_html` of the first `profile`-type card in the world, or a quiet
 "making your card…" line in the moment before the first ensure lands.
 
+`me_under(state)` is the seam for things that belong under your card on this
+page — it returns the empty string, and its result is placed INSIDE the card
+page's box rather than after it, because `.card-page` is fixed and scrolls its
+own contents so a sibling would land off-screen. Nobody filling it means the
+page renders exactly as it did; `/invite` is its first filler.
+
 `me.js` is the page half. It takes `/account`'s open seam — `openTool` and
 `closeTool` become no-ops, so the panel sheet stays shut — and it wraps
 `feature_Loop.apply` to watch `open_tool`, sending one `CardEnsure` on the

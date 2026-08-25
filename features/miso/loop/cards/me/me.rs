@@ -16,6 +16,22 @@ impl feature_Me {
                 "{}<div class=\"card-page card-waiting\">making your card…</div>",
                 base);
         }
-        format!("{}{}", base, card_page_html(card))
+        let page = card_page_html(card);
+        let under = me_under(state);
+        if under.is_empty() {
+            return format!("{}{}", base, page);
+        }
+        // inside the card page's own box, not after it: .card-page is fixed
+        // and scrolls its own contents, so a sibling would land off-screen
+        let inner = page.strip_suffix("</div>").unwrap_or(page.as_str()).to_string();
+        format!("{}{}{}</div>", base, inner, under)
+    }
+
+    // the seam for things that belong UNDER your card on this page. The
+    // default is nothing at all, so with no one filling it 👤 renders exactly
+    // as it did; /invite is its first filler.
+    fn me_under(state: String) -> String {
+        let _ = state;
+        String::new()
     }
 }

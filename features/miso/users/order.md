@@ -3,3 +3,4 @@
 - [x] whole-number
 - [x] harden
 - [x] authority
+- [x] invite
