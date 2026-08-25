@@ -6,81 +6,89 @@ prompts). Discipline in `agents.md`; ops in `deploy.md`; the pipeline in
 this — it now carries five agent-instruction nodes: /taste, /did-you-mean,
 /attention, /glyphs, /anticipation.*
 
-## THE HEADLINE: live at build 322, deploys no longer restart the server
+## THE HEADLINE: the hitlist is live — projects, posts, map — deploys never restart
 
-Tara (the customer) visits 2026-08-26. The day built the account surface,
-the card object under it, the invite loop, and made people visible to each
-other; it also removed the deploy cliff and the data-loss class. Eleven
-Opus workers, ~25 direct builds, builds 261→322, all pushed.
+Tara (the customer) visits 2026-08-26. Build 332 is live. The day built
+the account surface, the card object, invite, people seeing each other,
+projects with roles, posts, a real map — and removed the deploy cliff and
+the data-loss class. Fourteen Opus workers, ~30 direct builds, builds
+261→332, all pushed.
 
 **What a user has now (in the order they meet it):**
 - Install the PWA, log in with a texted code; 👤 shows **the people**: your
-  card first, then whoever the invites put nearest (`/people`, grid ⇄ list
-  pill top-left level with the lozenge; a map view can join it later).
-- Your **card** (`/cards`, `/page/me`): name, picture (framed by pinch —
-  `/frame`; from the photo's own GPS tag — `/from-picture`; full width —
-  `/wide`), mission, a `profile` tag in its colour (`/tag`), **map
-  location** with a pin (`/location`, `/map-pin`), on a dark ground that
-  hugs it (`/ground`, `/hug`), edited in place with words kept as you type
-  and Enter that keeps its line and its caret (`/keep`, `/newline`); undo
-  works on it (`/undo/late`, `/guard/revert`).
-- **Invite** (`/invite`, sub-tool of 👤 with a drawn plus): support/admin
-  add a person by name + number; *invited* → *joined*; admin may invite
-  pretend `_` people (`/pretend`). **Invite makes you visible to each
-  other** (`/exchange` stage one: your card is copied into your inviter's
-  and invitees' worlds on every write, seeded at join; foreign cards are
-  read-only; `via` is an opaque tag, never a number).
-- Nothing rings twice and nothing rings while you're looking
-  (`/fresh-words`, `/present`).
+  card first, then whoever the invites put nearest (`/people`), as a grid,
+  a picture-led list (`/portrait`), or a **real map** (`/map`: CARTO's dark
+  render of OpenStreetMap through the mini's own tile proxy `/tiles`,
+  Leaflet vendored, pins with faces, tap to open) — the picker top-left.
+- Your **card** (`/cards`, `/page/me`): name, picture (framed — `/frame`;
+  place from the photo's GPS tag — `/from-picture`), mission, a coloured
+  type tag, **map location** with a pin, on a dark ground; edited in place
+  with words kept as you type, Enter keeping its line and caret; undo
+  works on it. Roles you hold show under the mission ("lead dev for miso").
+- **Invite** (sub-tool of 👤): support/admin add by name + number;
+  *invited* → *joined*; admin may invite pretend `_` people. **Invite
+  makes you visible to each other** (`/exchange`: your cards are copied
+  into your inviter's and invitees' worlds on every write; foreign cards
+  read-only).
+- **Projects** (flag tool, `/kinds/projects`): "something we're trying to
+  get done"; **new**; a **people** section on a project you own — add a
+  person you hold with a role; roles are links on the project card; a
+  project travels only to its members. **Posts** (bubble tool,
+  `/kinds/posts`): **+** → say something, from where you are; newest
+  first; flows to invite-linked people. Both share `/kinds/new`'s
+  `CardNew` door.
+- Nothing rings twice, nothing rings while you're looking.
 
-**Foundations landed:** `/guard` (a cards write can never drop a card;
-blank duplicates discarded; `/owner`: an id keeps its owner);
-`/world-cache` (the device keeps its world, hydrates before first paint,
-wipes on sign-out — no empty-world window exists any more); `/reuseport` +
-`/handover` (SO_REUSEPORT, drain, deploy waits for the successor — the
-plist is INSTALLED on the mini, backup at `com.noob.miso.plist.pre-handover`;
-the first handover deploy was build 322, 0 requests in flight); the linker
-tie-break fix (regroups are order-neutral by construction now; `serve_port()`
-is a seam); `/roomier` + `/wider` (192KB messages, a 160KB cards list).
+**Foundations landed:** `/guard` (+ `/owner`, `/revert`, `/singleton`: a
+cards write can never drop a card; an id keeps its owner; only a profile
+is one-per-owner); `/world-cache` (the device keeps its world, no empty
+window, wiped on sign-out); `/reuseport` + `/handover` (**installed on the
+mini** — every deploy since build 322 has been a handover with 0 requests
+in flight; backup plist `com.noob.miso.plist.pre-handover`); the linker:
+tie-break by contributing depth (regroups are order-neutral, nested
+groupings included), `serve_port()` seam, stale-asset sweep on untick;
+`/roomier` + `/wider` (192KB messages, 160KB list).
 
 **Rehearsal state on the live mini:** `_alice` (+15551234567) and `_bob`
-(+15551234741) are on the guest list, invited by ash, each with a card;
-ash's phone has a second home-screen icon logged in as alice. Their codes
-are read off `/tmp/miso.log` (`scratchpad/walk/person.py` drives them
-headless against the live site). Ash's own entry is `admin`.
+(+15551234741), invited by ash, each with a card; ash's phone has a second
+icon logged in as alice; `scratchpad/walk/person.py` drives them headless
+against the live site (codes off `/tmp/miso.log`). Ash is `admin`.
 
-## FOR ASH
+## FOR ASH (tomorrow morning, before Tara)
 
-- **Edit your card once** if you haven't since build 319: that hands your
-  card to alice and bob (they joined before the seed existed).
-- Tomorrow with Tara: invite her from 👤 (real number → real SMS); she
-  installs, logs in, sees you and her card; you see hers. She is `member`;
-  make her `support` on the mini if she should invite her team.
-- Things I judged and you may want to re-rule: no accept tap on a card
-  arriving (only invite-linked people can reach you); distance word in the
-  list is "you / n away"; non-profile cards are not on 👤 (projects get
-  their own surface).
+- Update the phone. 👤 → the map glyph: pins for you, alice, bob. The flag
+  tool: **new** → "miso", add yourself as lead dev, add alice as
+  canvasser → alice's 👤 card reads "canvasser for miso". The bubble tool:
+  **+** → a post from where you stand.
+- With Tara: invite her (real number → SMS); she installs, logs in, sees
+  you; make a project "sevenoaks 2029", add her as candidate. She is
+  `member`; make her `support` on the mini if she should invite her team.
+- Two rulings you may want to make: CARTO dark tiles vs plain OSM (one env
+  var, `MISO_TILE_URL`); a project reaching only its members (not your
+  whole invite tree).
 
 ## THE NEXT WORK (chosen, not owed)
 
-1. **Projects + links** (#p7, #p14, #p71): `miso` project card, `ash —lead
-   dev→ miso`, Tara `—candidate→ sevenoaks 2029`; a projects surface reusing
-   `/browse`'s two seams (`browse_cards`, `browse_row_left`); **shared
-   project membership as the second visibility cue** (joins `people_order`
-   and `users/near`); "current project" as a per-user var feeding the
-   contexts machinery.
-2. **Exchange stage two**, only when asked: send to a number, an inbox,
-   withdrawing a card (`exchange_copy`/`exchange_give` are the seams).
-3. **Var-per-card + blob path** — every edit still resends the whole list
-   (picture included) to every invite-linked person; `/wider` bought room,
-   not a fix.
-4. Named foundations: a rename map for vars when a declaring node moves
-   (path-keyed op log + cache); `/remember`'s append is read-modify-write
-   (single writer only — the handover sequences around it); `/tmp/miso-
-   broadcast.json` is a fixed path shared by every server on a machine;
-   `/tap`'s undo/redo counter semantics; a relative "3h ago" needs a clock
-   in `render`.
-5. Older: tunables, webgpu restart, redo.md items 3–5, the rewind experiment.
+1. **Known bug, fix first:** `/keep` — typing right after a fresh repaint
+   can land a character one place early ("buildin — v2g"); seen in two
+   rigs; the keystroke races the caret restore. Reproduce with
+   `scratchpad/invite-rig/caret.py`'s pattern and a keystroke inside the
+   600ms debounce window.
+2. **Project membership as the second visibility cue** (#p71 "later"):
+   members of a project see each other (`people_order`, `users/near`,
+   `exchange_give` are the seams). Posts in a project (`links:[{kind:"in"}]`
+   reserved). Current-project filtering.
+3. **Exchange stage two** only when asked: send to a number, withdrawal,
+   an inbox.
+4. **Var-per-card + blob path**: every edit resends the whole list to every
+   invite-linked person and project member (four world reads per write).
+5. Named foundations: a var rename map when a declaring node moves;
+   `/remember`'s append is read-modify-write (single writer); the fixed
+   `/tmp/miso-broadcast.json`; vector tiles we style ourselves; a `loop`
+   agent-instruction ("no clock inside update — time rides on the event");
+   a singleton/`guard` note for new types.
+6. Older: tunables, webgpu restart, redo.md items 3–5, the rewind
+   experiment.
 
 ## standing doctrine landed today
 
