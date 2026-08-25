@@ -3,5 +3,6 @@
    its ground rather than the ground stretching past the screen */
 .card-page {
   bottom: auto;
+  box-sizing: border-box;   /* the cap includes the ground's padding and border */
   max-height: calc(100vh - env(safe-area-inset-top, 0px) - 48px - 72px);
 }

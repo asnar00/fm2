@@ -16,7 +16,7 @@ Your card's dark panel fits its contents — name, picture, mission, the invite 
 
 `/ground` gave the card page a panel, but `/cards` had pinned the page to both the top and the bottom of the screen, so the panel stretched to the toolbar however little it held. Ash asked for the ground to be as small as its contents, and, in the same breath on the depth ask, that a view taller than the room should scroll. One reading, so it builds.
 
-This node releases the page's bottom edge and caps its height instead: `max-height` is the viewport minus the top offset `/raised` sets (safe-area + 48px) minus the 72px the toolbar keeps. `/cards`' own `overflow-y: auto` then scrolls the blocks inside the panel when they outgrow it. Untick and the panel stretches to the toolbar again.
+This node releases the page's bottom edge and caps its height instead: `max-height` is the viewport minus the top offset `/raised` sets (safe-area + 48px) minus the 72px the toolbar keeps. The box is sized border-box so the cap includes the ground's padding and border (measured: without it the panel ran 34px under the toolbar). `/cards`' own `overflow-y: auto` then scrolls the blocks inside the panel when they outgrow it. Untick and the panel stretches to the toolbar again.
 
 ## glossary
 
