@@ -228,3 +228,5 @@ page, the foreign picture made unreachable by the pointer, and a default
 cursor over blocks that are not text fields. There is no `exchange.js`: the
 page half of this node is nothing at all, because nothing on the page needs to
 know it exists.
+
+*(Review fix, same day: `via` is an HMAC tag of the world key, not the key itself — a phone number must not land in other people's worlds. `from` stays the person's name, which they chose to share.)*

@@ -278,7 +278,12 @@ impl feature_Exchange {
     fn exchange_copy(card: &serde_json::Value, from: String, via: String) -> serde_json::Value {
         let mut c = card.clone();
         c["from"] = serde_json::json!(from);
-        c["via"] = serde_json::json!(via);
+        // `via` names the person the copy came through — as an opaque tag,
+        // never their number: a world key is a phone, and it must not land in
+        // other people's worlds (review, 2026-08-25). The same key always
+        // hashes the same, which is all proximity needs.
+        let tag: String = hmac_sha256(secret(), format!("exchange:{}", via)).chars().take(16).collect();
+        c["via"] = serde_json::json!(tag);
         c["received"] = serde_json::json!(now_ms());
         c
     }
