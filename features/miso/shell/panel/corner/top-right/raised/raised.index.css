@@ -1,0 +1,8 @@
+/* the lozenge goes as high as the safe area allows, and the card page begins
+   below it, so the main display and the button never share a pixel */
+#build {
+  top: calc(env(safe-area-inset-top, 0px) + 2px);
+}
+.card-page {
+  top: calc(env(safe-area-inset-top, 0px) + 48px);
+}

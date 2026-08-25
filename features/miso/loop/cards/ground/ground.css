@@ -1,0 +1,10 @@
+/* the card sits on its own ground: a dark grey rounded rectangle that covers
+   the dot grid, so the page reads as one object and not as blocks floating
+   on the graph paper. /taste 1: the page family's #161619, 1px border, 14px
+   radius, no shadow. The blocks keep their own slightly darker pills. */
+.card-page {
+  background: #161619;
+  border: 1px solid #202026;
+  border-radius: 14px;
+  padding: 16px;
+}
