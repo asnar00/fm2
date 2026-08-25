@@ -1,0 +1,48 @@
+/* the framing sheet: the whole screen goes quiet and one square stays lit.
+   Furniture outside #app, so it is display:none until a photo is chosen. */
+#frameSheet {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(16, 16, 18, 0.92);
+  z-index: 60;
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 22px;
+  padding: calc(env(safe-area-inset-top) + 16px) 16px
+           calc(env(safe-area-inset-bottom) + 16px);
+  -webkit-user-select: none; user-select: none;
+}
+#frameSheet.show { display: flex; }
+
+/* the window: the photo is inside it and nothing else is. touch-action none
+   so a drag frames the picture instead of scrolling the page under it. */
+#frameWindow {
+  width: 300px; height: 300px;
+  border-radius: 14px; overflow: hidden;
+  background: #121215; border: 1px solid #202026;
+  touch-action: none; cursor: grab;
+  flex: none;
+}
+#frameWindow:active { cursor: grabbing; }
+#frameCanvas { display: block; width: 100%; height: 100%; }
+
+#frameBar { display: flex; align-items: center; gap: 14px; }
+
+/* quiet, and it is the one that undoes nothing */
+#frameCancel {
+  padding: 9px 18px; border-radius: 999px;
+  background: transparent; border: 1px solid #3a3a3f;
+  color: #9a9aa2; font-size: 14px; font-family: inherit;
+  cursor: pointer;
+  transition: color 0.18s ease-out, border-color 0.18s ease-out;
+}
+#frameCancel:hover { color: #c9c9d2; border-color: #4a4a50; }
+
+/* the one primary action, in the accent that already means *chosen* */
+#frameKeep {
+  padding: 9px 24px; border-radius: 999px;
+  background: #9db7d8; border: 1px solid #9db7d8;
+  color: #101012; font-size: 14px; font-weight: 600; font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.18s ease-out;
+}
+#frameKeep:hover { opacity: 0.88; }
