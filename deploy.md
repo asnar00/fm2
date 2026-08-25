@@ -66,3 +66,11 @@ On restart the server announces the new build to push subscribers by itself
   own worktrees.
 - `export_features.py` skips the ~4.5s bake when nothing under features/
   or transcripts/ changed since the last stamp; `--force` overrides.
+
+## Scripting the linker (added 2026-08-25)
+
+`fmlink.py` exits 1 on any link error — but `python3 tools/fmlink.py miso
+--quick | tail -1` reports `tail`'s status, not the linker's. Use `set -o
+pipefail` (or test for `build OK` in the output) in every rig script;
+twice today a link error scrolled past a `| tail` and a rig ran the
+previous binary, proving nothing.

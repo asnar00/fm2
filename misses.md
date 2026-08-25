@@ -185,3 +185,23 @@ less than the server holds is a bug to fix before the next deploy, never a
 residual to record — and a store whose merge is "last write wins on the
 whole list" must be guarded at the server the day it holds anything a
 person would miss.
+
+## the hidden link error (2026-08-25, twice) — triage's rig discipline
+
+**The ask:** none — two direct builds (`map-pin`, `world-cache/forget`).
+
+**The estimate:** trivial nodes; link, rig, commit.
+
+**The actual:** both first links FAILED — a tree-global name collision
+(`pin` vs `users/login/pin`) and a child citing an anchor older than its
+parent's — and both failures were invisible: `fmlink … | tail -1` hides
+the exit status, so the rig ran the previous binary, printed plausible
+numbers, and a broken tree was committed (once amended, once re-committed).
+
+**What the plan could not see:** nothing — the linker said "fm link
+error" in plain text one line above the one I kept.
+
+**The lesson:** a rig that does not assert the link succeeded proves
+nothing about the change; `set -o pipefail` and an explicit "the fragment
+is in the composed output" check before any evidence is read. In
+deploy.md.
