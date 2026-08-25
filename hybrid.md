@@ -204,6 +204,30 @@ to the recorded misses repeats them. It must contain:
 > Return: the diff, the evidence artifacts, one paragraph of outcome,
 > and open risks by name.
 
+## the check-in (triage, while a worker runs) — 2026-08-25, accounts #p16
+
+A worker that has gone quiet is not evidence of anything; a worker that has
+run past its estimate is. Every brief's estimate implies a wall time (a
+one-node ask ~20 min; a two-node build with rig evidence ~40). **At about 2×
+that, triage checks from outside** — never by reading the worker's
+transcript, which would flood the main context:
+
+- `git -C <worktree> log --oneline -3` and `status --short`: has it
+  committed? is it mid-edit?
+- `lsof -i :8095` and `ps` for `miso_server` / headless Chrome with their
+  elapsed times: is it in the evidence phase, and is the server on the port
+  actually *its* server?
+- the age of anything new under the scratchpad's evidence dir.
+
+Then one message to the worker with the diagnosis, or nothing. The case
+that wrote this rule: the `cards` worker had committed and was thirty
+minutes into rig evidence against a **stale two-day-old dev server** that
+still held 8095 — its own server could not bind and its readouts were of a
+build without the feature. The brief's "don't kill a server you didn't
+start" was right for the worker and the check-in is how triage learns to
+kill it instead. Hazard entries go to `misses.md` when the miss was the
+plan's; this one was the rig's, and its fix is a port the rig can choose.
+
 ## the review checklist (Fable, before any ship)
 
 1. Every artifact the brief named is present. Read the readout — not
