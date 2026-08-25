@@ -127,12 +127,21 @@ impl feature_Browse {
 
     // ---- the display surface ----------------------------------------------
 
+    // the seam for WHICH cards this surface draws: the whole set you hold,
+    // in the order the world holds it. A node that re-aims the surface at a
+    // subset — /people, and the project surface after it — redefines this
+    // and returns its own list; the default is unchanged.
+    fn browse_cards(state: String) -> String {
+        let _ = state;
+        cards_read()
+    }
+
     fn render(state: String) -> String {
-        let base = existing.render(state);
+        let base = existing.render(state.clone());
         if open_tool_read() != "cards" {
             return base;
         }
-        let list: serde_json::Value = serde_json::from_str(&cards_read())
+        let list: serde_json::Value = serde_json::from_str(&browse_cards(state))
             .unwrap_or(serde_json::json!([]));
         let empty: Vec<serde_json::Value> = Vec::new();
         let cards = list.as_array().unwrap_or(&empty);
@@ -191,7 +200,7 @@ impl feature_Browse {
         let mut out = String::from("<div class=\"browse-list\">");
         for c in cards.iter() {
             let id = card_esc(c["id"].as_str().unwrap_or("").to_string());
-            let kind = card_esc(c["type"].as_str().unwrap_or("").to_string());
+            let kind = browse_row_left(c);
             let title = browse_title_of(c);
             let when = browse_when(c["edited"].as_u64().unwrap_or(0), this_year);
             out.push_str(&format!(
@@ -200,6 +209,14 @@ impl feature_Browse {
         }
         out.push_str("</div>");
         out
+    }
+
+    // the seam for the left cell of a list row — where /taste 6 puts the
+    // number. The default is the card's type, which is what the set of
+    // everything you hold wants; a surface whose cards are all one type
+    // redefines this and says something less redundant instead.
+    fn browse_row_left(card: &serde_json::Value) -> String {
+        card_esc(card["type"].as_str().unwrap_or("").to_string())
     }
 
     // the first title block's text, escaped. An untitled card gets nothing —

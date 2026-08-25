@@ -176,6 +176,14 @@ write `view` and clear `open`. `browse_open:<id>` writes `open`. `tool_cards`
 is the way back, handled after `/tools` has already closed the tool, as the
 spec describes; any other `tool_` click, and `tools_home`, clears `open`.
 
+`browse_cards(state)` is the seam for WHICH cards the surface draws — the
+default is `cards_read()`, everything you hold, and a node that re-aims the
+surface at a subset redefines it. `browse_row_left(card)` is the seam for the
+left cell of a list row, where `/taste` 6 puts the number: the default is the
+card's type, and a surface whose cards are all one type says something less
+redundant there. Both were added for `/people` with their defaults unchanged,
+so this tool renders exactly as it did.
+
 `browse.rs` extends `render`: with the cards tool open it appends the picker
 and then either the card page for `open` or the whole set.
 `browse_set_html` is the grid/list switch and the empty case;

@@ -2810,3 +2810,29 @@ cards tool; a copy stays fresh when its owner edits (re-offer to the
 sent-to set); invite seeds both directions; other people's cards are
 read-only; no accept tap, no directory beyond the cards you hold. Parked:
 withdrawing a card, an accept tap, links, rings, project membership.
+
+## the people surface, and two things it left behind (2026-08-25, #p76)
+
+`/people` re-aims `/browse`'s surface at 👤 and retires the cards tool. Two
+things worth carrying forward:
+
+- **Which tool is open is read two ways, and they can disagree.** Most render
+  links ask the live context (`open_tool_read()`); `/me` and `/under-account`
+  read `open_tool` out of the loop *state string* they are handed. `/people`
+  exploits that: it hands the chain beneath a copy of the state with
+  `open_tool` cleared so `/me` does not draw its own-card page as 👤's landing
+  surface, and puts the live value back in `tool_controls` so the invite plus
+  is unaffected. It works and is proven, but it is a contract rather than a
+  seam: **the honest form is a seam in `/me`** — "am I the landing surface?",
+  two lines, default true — and until it exists, a new node that decides what
+  to render by testing the state string for `account` must be told about the
+  mute.
+- **The focusout repaint eats the very next tap.** Type in a card block, then
+  tap a toolbar button: the `focusout` fires first, `/cards` sends `CardEdit`,
+  the loop repaints `#app`, the button element is replaced between mousedown
+  and mouseup, and no `click` ever fires. The second tap works. Rig-proved to
+  **predate `/people`** — it reproduces on the cards tool with `/people`
+  unticked — so it is `/cards`' or `/loop`'s to fix, not this node's. The
+  cheap fix is for `/cards`' focusout to send nothing when the text did not
+  change (`/keep` has usually saved it 600ms earlier already); the general one
+  is for the loop's delegated click to survive its own repaint.
