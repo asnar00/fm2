@@ -1,6 +1,5 @@
-- [x] pin
+- [x] login
 - [x] gate
-- [x] passkey
 - [x] whole-number
 - [x] harden
 - [x] authority
