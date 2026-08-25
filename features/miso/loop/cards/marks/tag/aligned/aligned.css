@@ -1,0 +1,3 @@
+/* the tag's top edge meets the title's: the page pads 16px, the title's
+   line box starts there, the tag sits on that same line */
+.card-tag { top: 16px; }
