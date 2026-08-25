@@ -219,14 +219,20 @@ transcript, which would flood the main context:
   actually *its* server?
 - the age of anything new under the scratchpad's evidence dir.
 
-Then one message to the worker with the diagnosis, or nothing. The case
-that wrote this rule: the `cards` worker had committed and was thirty
-minutes into rig evidence against a **stale two-day-old dev server** that
-still held 8095 — its own server could not bind and its readouts were of a
-build without the feature. The brief's "don't kill a server you didn't
-start" was right for the worker and the check-in is how triage learns to
-kill it instead. Hazard entries go to `misses.md` when the miss was the
-plan's; this one was the rig's, and its fix is a port the rig can choose.
+Then one message to the worker with the diagnosis, or nothing — and
+**the diagnosis is a hypothesis until the worker confirms it**. The case
+that wrote this rule cut both ways: the `cards` worker had been running
+37 minutes; from outside, a two-day-old dev server still held 8095 and
+the worker's own server was gone, which read as "its readouts are of a
+build without the feature". Triage killed the stale process and said so.
+The worker's reply: it had already routed round the busy port (its own
+server on 8096, its own `site/`), its evidence was sound, and the nudge
+cost it a full re-run on 8095 to prove it. So: a long run with a commit
+in the worktree and a rig alive is most likely *working*; the check-in's
+first job is to find out, its second to unblock, and a kill or a nudge is
+worth one line saying "hypothesis — tell me if I'm wrong". Hazard entries
+go to `misses.md` when the miss was the plan's; this one was triage's.
+The port hazard is real regardless: a port the rig can choose is the fix.
 
 ## the review checklist (Fable, before any ship)
 
