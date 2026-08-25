@@ -205,3 +205,23 @@ error" in plain text one line above the one I kept.
 nothing about the change; `set -o pipefail` and an explicit "the fragment
 is in the composed output" check before any evidence is read. In
 deploy.md.
+
+## the exchange brief (2026-08-25) — the foundation built where the feature was asked
+
+**The ask:** "let's talk about making people able to see each other" →
+"invite should automatically make things visible" (#p69, #p71).
+
+**The estimate:** triage briefed an inbox file, a send-to sheet, freshness
+to a sent-to set, and the invite seed — about a day.
+
+**The actual:** ash (#p72): "a *day*? just to make two users see each
+other? I'd have thought a few minutes!" The cut-down build — server copies
+a card along invite links on every write, foreign cards read-only — took
+one worker a couple of hours and is what shipped.
+
+**What the plan could not see:** nothing; it saw the whole design (#p70)
+and briefed the design instead of the ask.
+
+**The lesson:** the mirror of "estimate the foundation, not the feature":
+when the ask IS the feature, build the feature, shaped for the foundation
+— seams (`exchange_copy`, `exchange_give`), not builds. Now `/anticipation`.
