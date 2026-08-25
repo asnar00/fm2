@@ -117,7 +117,7 @@ impl feature_People {
             // under it — nothing muted, nothing redrawn here
             return format!("{}{}", existing.render(state), browse_picker_html());
         }
-        let base = existing.render(people_muted(state.clone()));
+        let base = existing.render(state.clone());
         let picker = browse_picker_html();
         let cards: serde_json::Value = serde_json::from_str(&browse_cards(state))
             .unwrap_or(serde_json::json!([]));
@@ -147,28 +147,12 @@ impl feature_People {
         c["id"].as_str().unwrap_or("").to_string()
     }
 
-    // /me draws its page by reading open_tool out of the state STRING, so this
-    // is how it is told not to be the landing surface. Every other render link
-    // reads the open tool from the live context, so the mute reaches /me and
-    // nothing else — see tool_controls below for the one exception.
-    fn people_muted(state: String) -> String {
-        let mut s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        s["open_tool"] = serde_json::json!("");
-        s.to_string()
-    }
-
-    // the repair: /under-account decides whether to draw the invite plus by
-    // reading open_tool out of the same string. render_toolbar is inside the
-    // muted call, so the live value is put back before the chain beneath sees
-    // it and the plus behaves exactly as it did.
-    fn tool_controls(state: String) -> String {
-        let mut s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        if s["open_tool"].as_str().unwrap_or("").is_empty() {
-            s["open_tool"] = serde_json::json!(open_tool_read());
-        }
-        existing.tool_controls(s.to_string())
+    // /me's landing seam: while the people surface is showing, /me does not
+    // draw its page. It still does when your own card is open (that page IS
+    // /me's) and before your first card exists (its "making your card…").
+    fn me_landing() -> bool {
+        let own = people_own_id();
+        own.is_empty() || browse_open_read() == own
     }
 
     // ---- the events --------------------------------------------------------

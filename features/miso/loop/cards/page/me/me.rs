@@ -1,5 +1,12 @@
 struct feature_Me;
 impl feature_Me {
+    // whether this page is what 👤 lands on. A seam (2026-08-25, for /people):
+    // the default is yes; a feature that puts another surface under 👤 says
+    // no while that surface is showing, without touching this file.
+    fn me_landing() -> bool {
+        true
+    }
+
     // the 👤 tool's surface: your own card, rendered as a page of blocks by
     // /cards. The owner test is empty — a world holds only its owner's cards
     // today; exchange is what earns it.
@@ -7,7 +14,7 @@ impl feature_Me {
         let base = existing.render(state.clone());
         let s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
-        if s["open_tool"].as_str().unwrap_or("") != "account" {
+        if s["open_tool"].as_str().unwrap_or("") != "account" || !me_landing() {
             return base;
         }
         let card = card_of_type(cards_read(), String::new(), "profile".to_string());

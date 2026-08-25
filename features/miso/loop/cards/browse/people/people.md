@@ -52,7 +52,7 @@ and the button is back, with its own tool behind it.
 its `CardEnsure` and its patience are untouched, so the first tap on 👤 still
 makes your card if you have none, and `/me`'s under-the-card seam still holds
 whatever fills it. What changes is that `/me`'s page is no longer the
-*landing* surface: it is one tap in. The mechanism is a **muted state**. `/me`
+*landing* surface: it is one tap in. The mechanism is `/me`'s **`me_landing()` seam** (added for this node), which this node answers false while the people surface shows. `/me`
 decides whether to draw by reading `open_tool` out of the loop state string it
 is handed; this node is provenance-newer, so its render link is outermost and
 hands the chain beneath a copy of the state with `open_tool` cleared whenever
@@ -68,7 +68,7 @@ did.
 
 *(A seam in `/me` — "am I the landing surface?" — would be the honest form of
 this and is a two-line change; it was out of this brief's bounds. Until then
-the mute is a documented one-node contract: a later node that decides what to
+the seam is `/me`'s own — no contract needed: a later node that decides what to
 render by reading `open_tool` from the state string rather than from
 `open_tool_read()` must be told about it.)*
 
@@ -122,7 +122,7 @@ edge ran (a richer `users/near`).
 - **You hold nobody.** The set is your own tile, alone. Nothing says so — one
   tile is not an empty state.
 - **No card of your own yet** (the first tap on 👤, before `CardEnsure`
-  lands): the state is not muted at all, so `/me`'s own "making your card…"
+  lands): `me_landing()` answers true, so `/me`'s own "making your card…"
   line is what you see, unchanged.
 - **`near` has not arrived** (the first paint after 👤 opens): every distance
   is unknown, so you are first and the rest keep the world's order; the fetch
@@ -195,3 +195,5 @@ sends it into the loop as `PeopleNear`. It watches for the surface with a
 `MutationObserver` on `#app` rather than by wrapping `feature_Loop.apply` —
 that idiom races and orphans other fragments' wrappers (notes.md, "the
 apply-wrapper race"), and `/invite`'s page half already reacts this way.
+
+*(Review, same day: the muted-state copy and the `tool_controls` repair are gone — `/me` grew a `me_landing()` seam and this node answers it: false while the people surface shows, true when your own card is open or before it exists.)*

@@ -112,3 +112,5 @@ the node does not depend on the panel being composed.
 rather than a second listener for `VarJoin`, because the mark already means
 "the world is as current as it is going to get" — including the timeout case,
 which a `VarJoin` listener would wait through forever.
+
+*(Seam added 2026-08-25 for `/people`: `me_landing()` — true by default — decides whether 👤 lands on this page; `/people` answers false while its people surface is showing.)*
