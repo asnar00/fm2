@@ -2647,3 +2647,32 @@ and ash is *lead dev* of miso. So the first project card is `miso` (type
 Tara's will be `tara.profile —role: candidate→ sevenoaks-2029.project`. The
 `projects`/`link` brief should build exactly these as its worked example and
 the 👤 page should read "lead dev of miso" under the mission.
+## the apply-wrapper race: `/account`'s watch is orphaned on today's build
+
+*Found 2026-08-25 while proving `/me`'s toggle (transcripts/2026-08-25-accounts.md#p10).
+Filed here because it belongs to nobody this brief built.*
+
+Several page fragments extend `feature_Loop.apply` from inside an `init()` that
+a 100ms `setInterval` calls once the loop has state — `/account`, `/phone`,
+`/mirror`, and now `/me`. They are supposed to chain: each captures the current
+`apply` and installs its own, so the last one installed is outermost and calls
+the rest.
+
+They do not chain. On this build the outermost wrapper is `/phone`'s or
+`/mirror`'s — it varies between page loads — and `/account`'s link is not in the
+chain at all: `feature_Account.wasOpen` stays `true` for the life of the page,
+`watch()` never runs again after the first paint, and **tapping 👤 does not open
+or close the system panel**. Reproduced at the tree baseline with `/cards` and
+`/me` both unticked and `account.js` untouched, so it predates both.
+
+Two things make it possible: the guard (`feature_Loop.state !== null`) is not
+the same instant for every fragment, and a fragment that captures `apply` on an
+earlier tick than another fragment installs on will drop that fragment's link
+when it installs. It is the JS half of the problem chains solve in Rust, and it
+wants the same answer: one place that owns the extension, rather than four
+copies of a capture-and-replace idiom racing each other.
+
+`/me` is not affected — it is the newest index fragment, so it installs last and
+is outermost by construction — which is exactly why the bug was invisible until
+its toggle was proven. Anything else that wraps `apply` from a timer is a
+coin-toss.

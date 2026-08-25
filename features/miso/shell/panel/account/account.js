@@ -1,12 +1,23 @@
 const feature_Account = {
   wasOpen: false,
-  // the page half: the account tool's open state drives the panel sheet
+  // the open seam: WHAT the account tool shows is a decision, and this pair is
+  // where it is made. The default is the one this node was born with — the
+  // system panel sheet — so a composition with nothing else in it behaves
+  // exactly as before. A feature that gives 👤 a surface of its own replaces
+  // the pair (see /me).
+  openTool() {
+    if (typeof feature_Panel !== 'undefined') feature_Panel.open();
+  },
+  closeTool() {
+    if (typeof feature_Panel !== 'undefined') feature_Panel.close();
+  },
+  // the page half: the account tool's open state drives whatever the seam says
   watch() {
     let s = {};
     try { s = JSON.parse(feature_Loop.state || '{}'); } catch (e) {}
     const isOpen = (s.open_tool === 'account');
-    if (isOpen && !this.wasOpen && typeof feature_Panel !== 'undefined') feature_Panel.open();
-    if (!isOpen && this.wasOpen && typeof feature_Panel !== 'undefined') feature_Panel.close();
+    if (isOpen && !this.wasOpen) this.openTool();
+    if (!isOpen && this.wasOpen) this.closeTool();
     this.wasOpen = isOpen;
   },
   init() {
