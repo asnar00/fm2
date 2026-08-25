@@ -21,6 +21,6 @@ Miso's client stops being a render-once poster: DOM events flow into wasm, a Rus
 
 `events.rs` owns the loop's Rust side: `init()` (base state `{}`), `update(state, event)` (base: unchanged state), `boot()` (init → render → payload), `on_event(input)` (unwrap `{state, event}` → update → render → payload), and `event_payload` (the `{state, html}` JSON both exports return).
 
-`events.js` owns the page side: `feature_Loop.boot()` fetches and instantiates the wasm, applies the boot payload, and installs one delegated click listener for `[data-ev]` elements; `send(event)` wraps state+event, calls `fm_event`, and applies the result; string passage uses the linker-generated `fm_alloc`.
+`events.js` owns the page side: `feature_Loop.boot()` fetches and instantiates the wasm, applies the boot payload, and installs one delegated click listener for `[data-ev]` elements; `send(event)` wraps state+event, calls `fm_event`, and applies the result; string passage uses the linker-generated `fm_alloc`. `apply` puts the new html on the screen through `paint(html)` — one extension point whose default is `$('app').innerHTML = html`, so a feature that must not be blind to what a repaint is about to destroy (a caret, an unsaved draft) can replace `paint` and call the captured default in the middle. `/keep` is its first taker.
 
 The wasm exports themselves (`fm_entry` → `boot`, `fm_event` → `on_event`, `fm_alloc`) are linker-generated glue, declared by the product's places.md.

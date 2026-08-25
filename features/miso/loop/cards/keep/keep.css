@@ -1,0 +1,12 @@
+/* the remove pill: one plain word, raised above the picture you are holding.
+   Full-round because it is small and interactive, on the button ground, and
+   it borrows no accent — an accent is a word, and this one is already said. */
+#cardRemove {
+  position: fixed; z-index: 30;
+  padding: 8px 16px; border-radius: 999px;
+  background: #1a1a1d; border: 1px solid #3a3a3f;
+  color: #eee; font-size: 13px; line-height: 1;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+  opacity: 0; transition: opacity 0.18s ease-out;
+}
+#cardRemove.show { opacity: 1; }

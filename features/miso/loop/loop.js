@@ -28,6 +28,13 @@ const feature_Loop = {
   apply(payloadJson) {
     const p = JSON.parse(payloadJson);
     this.state = p.state;
-    $('app').innerHTML = p.html;
+    this.paint(p.html);
+  },
+  // the one seam for putting html on the screen: a feature that must not be
+  // blind to what is under the repaint (a caret, a draft) replaces this and
+  // calls the captured default in the middle. The default is the whole of
+  // what apply used to do inline.
+  paint(html) {
+    $('app').innerHTML = html;
   },
 };

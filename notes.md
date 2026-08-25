@@ -2676,3 +2676,30 @@ copies of a capture-and-replace idiom racing each other.
 is outermost by construction — which is exactly why the bug was invisible until
 its toggle was proven. Anything else that wraps `apply` from a timer is a
 coin-toss.
+
+### the answer's first half: a named seam instead of a wrapper (2026-08-25, #p20)
+
+`/keep` needed to see the repaint, and took `feature_Loop.paint(html)` — a new
+one-line extension point in `loop.js` whose default is what `apply` used to do
+inline — by **replacing the property at load**, the way `/me` replaces
+`feature_Account.openTool`. Load-time replacement of a named seam cannot race:
+there is no window in which two fragments both hold the old value, because the
+value they capture is the file's own, not another timer's guess.
+
+That is the shape the note above is asking for, one seam at a time. `apply`
+itself still has four timer-installed wrappers and still coin-tosses; the fix
+for those is the same move — give the thing they want a name, and let them
+replace it at load.
+
+### a repaint DOES fire focusout, and that is a hazard, not a safety net
+
+Measured while building `/keep` (`t6-focusout-probe`): Chrome fires `focusout`
+synchronously when `$('app').innerHTML = …` destroys the focused
+contenteditable. So `/cards`' focusout save runs from **inside** a repaint and
+re-enters `apply` — a nested `innerHTML` assignment to the same node, once per
+repaint, whose result the outer assignment then overwrites. It has been doing
+this since `/cards` shipped; it is why the words usually survive today and the
+caret never does. `/keep` swallows its own repaint's focusout in the capture
+phase and sends the draft itself when the block does not come back. Anything
+else that saves on focusout should know that a repaint looks exactly like a
+tap-away unless it asks.
