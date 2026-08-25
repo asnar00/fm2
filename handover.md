@@ -69,6 +69,16 @@ against the live site (codes off `/tmp/miso.log`). Ash is `admin`.
 
 ## THE NEXT WORK (chosen, not owed)
 
+0. **The smoke gate is in deploy.sh** (`tools/smoke.py`, accounts #p96):
+   nine steps × three passes must be green or nothing ships. Next rungs:
+   (a) tree-owned steps — each node carries `<name>.smoke.py`, fmlink
+   composes them; (b) a boot self-check on the device reporting through
+   `/diag` (the tap seam is `open()`, the veil lifted, no orphaned
+   wrapper) — the only layer that sees the real phone; (c) check the
+   update-policy default a NEW user gets (`update_policy` is the empty
+   string — find what that means) so a dead control can never trap
+   someone on an old build: the lozenge was the only road to an update
+   when it died (#p95).
 1. **Known bug, fix first:** `/keep` — typing right after a fresh repaint
    can land a character one place early ("buildin — v2g"); seen in two
    rigs; the keystroke races the caret restore. Reproduce with

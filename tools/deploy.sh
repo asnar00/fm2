@@ -43,6 +43,17 @@ WebAssembly.instantiate(fs.readFileSync(process.argv[1]), {})
   .catch(e => { console.error("deploy: wasm smoke test FAILED:", e.message); process.exit(1); })
 ' "$SRC/products/miso/build/site/client.wasm"
 
+# the smoke gate (tools/smoke.py, accounts #p96): the ten things a user does,
+# headless, against this build on a scratch port — cold, warm (world cache
+# primed) and throttled — so a boot-timing race that one pass hides and
+# another shows is caught here and not on a phone. Green or nothing ships.
+# SMOKE=skip bypasses it for a hotfix whose rig is known to be the problem;
+# say so in the commit.
+if [ "${SMOKE:-run}" != "skip" ]; then
+  python3 "$SRC/tools/smoke.py" --port "${SMOKE_PORT:-8140}" || {
+    echo "deploy: the smoke gate failed — nothing shipped" >&2; exit 1; }
+fi
+
 # provenance visibility: which feature nodes does this release touch, and did
 # any capability ship without a node? informational — the judgment stays
 # human, but the omission becomes visible at the moment of shipping

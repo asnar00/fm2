@@ -16,6 +16,14 @@
 2. links the miso product;
 3. smoke-tests that `client.wasm` instantiates with ZERO imports (a
    dependency's wasm-bindgen glue once shipped a black screen);
+3a. **runs the smoke gate** (`tools/smoke.py`, added 2026-08-25): the ten
+   things a user does — lozenge, people, edit, undo, invite, post, project,
+   map — headless against this build on port 8140, three passes (cold, warm
+   with the world cache primed, throttled network). Any failure stops the
+   deploy. `SMOKE=skip ./tools/deploy.sh` bypasses it for a hotfix whose rig
+   is the known problem — say so in the commit. Add a step to `STEPS` when a
+   surface ships; the tree-owned form (`<name>.smoke.py` per node, composed
+   by fmlink) is the named next rung;
 4. prints the feature nodes this release touches and warns if a release
    contains no new nodes;
 5. exports the feature tree to `site/features/` (public at /features/);
