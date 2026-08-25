@@ -3,3 +3,4 @@
 - [x] frame
 - [x] ground
 - [x] beneath
+- [x] wide

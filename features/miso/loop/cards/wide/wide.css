@@ -1,0 +1,9 @@
+/* the picture takes the card's full width, inside the ground's margins, at
+   its own aspect ratio — never cropped, never stretched. The empty box keeps
+   a modest height so "add a picture" is an invitation, not a void. */
+.card-pic {
+  align-self: stretch;
+  width: auto; height: auto;
+}
+.card-pic img { height: auto; object-fit: contain; }
+.card-pic.empty { height: 148px; }
