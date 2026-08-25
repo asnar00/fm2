@@ -1,0 +1,11 @@
+/* one quiet row until asked: the form is folded unless .invite-open */
+.invite .invite-new { display: none; }
+.invite.invite-open .invite-new { display: flex; }
+.invite-someone { justify-content: flex-start; }
+.invite-someone-btn {
+  padding: 7px 12px; border-radius: 999px;
+  background: #1a1a1d; border: 1px solid #3a3a3f;
+  color: #c9c9d2; font-size: 13px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+.invite.invite-open .invite-someone-btn { color: #77777e; }
