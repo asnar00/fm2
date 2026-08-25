@@ -32,7 +32,8 @@ import subprocess
 import sys
 import urllib.parse
 
-MINI = "microserver@microservers-Mac-mini.local"
+import os
+MINI = os.environ.get("MISO_HOST") or "microserver@microservers-Mac-mini.local"
 ASKS_PATH = "miso/shell/panel/noob-button/ask"
 CTX_DIR = "${MISO_CONTEXT_DIR:-$HOME/.miso-context}"
 
