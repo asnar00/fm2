@@ -22,7 +22,7 @@ A post is a `/card` of type `post` (#p9 — a card is the same for a post, for a
 
 **The place.** Nothing new. `/location`'s page half reacts to a dim place pill appearing inside any `.card-page` and asks the phone once; a new post's page appears the moment it is made, so the fix lands on it. A picture with a GPS tag beats the device fix through `/from-picture`, unchanged. No seam was added to `location.js`.
 
-**The surface.** `/browse`'s, whole: the picker, the grid, the list, the open-a-card path, the way back. The tool registers as `posts` in `tools_list`; `render` draws the surface while it is open, on **`posts_set()`** — the cards of type `post`, newest first by `created`, with the id as the tie-break so every device agrees. That set is read from `/cards`' store rather than through `browse_cards`: that chain has already been narrowed to profiles for 👤, and a second surface asking it a different question would have to undo that. `browse.rs` is untouched.
+**The surface.** `/browse`'s, whole: the picker, the grid, the list, `/map`'s map, the open-a-card path, the way back. Drawing the set through `browse_set_html` rather than choosing a view here is what puts the posts on the map for nothing — `/map` took that seam, and a fourth view will be free the same way. The tool registers as `posts` in `tools_list`; `render` draws the surface while it is open, on **`posts_set()`** — the cards of type `post`, newest first by `created`, with the id as the tie-break so every device agrees. That set is read from `/cards`' store rather than through `browse_cards`: that chain has already been narrowed to profiles for 👤, and a second surface asking it a different question would have to undo that. `browse.rs` is untouched.
 
 **The row.** A post has no title, so `/browse`'s two row seams are re-aimed, keyed on the card's type rather than on which tool is open — a post says who wrote it wherever it is drawn. `browse_title_of` returns the author's name, which `/portrait` puts in the bold cell that is the row's identity; `browse_row_left` returns nothing, because "post" on a surface of nothing but posts is the redundancy `/people` already ruled on. The date is `/browse`'s right-hand cell and the excerpt is `/portrait`'s, both untouched. In the grid, `card_tile_html`'s caption and its empty face come out blank for a post (they are drawn from the title), and the author goes into them.
 
@@ -38,10 +38,12 @@ A post is a `/card` of type `post` (#p9 — a card is the same for a post, for a
 
 Shapes reserved, not built (`/anticipation`). A post's **project**: `links: [{kind:"in", to:<project card id>}]` on the card — `/cards`' `card_new` already gives every card an empty `links` array, so a post in a project is a link, not a new field and not a new type. **Rings**: a `ring` field on the card, absent meaning `"invited"` — today's audience is exactly the invite links, which is what `"invited"` will mean, so the default is what already happens and no post has to be rewritten. Comments and withdrawal are named and parked.
 
+Named and NOT this node's to fix: on `/map`'s view a post with no picture draws a blank pin, because `map_initial_of` reads the card's own title block and a post has none. `/map` is provenance-newer than this node, so its chain cannot be extended from here; the one-line answer — fall back to the owner's name, as `browse_title_of` does — belongs in `map.rs`.
+
 ## hostile cases
 
 - **A post with no words and no picture.** It renders: an empty paragraph saying *say something*, an empty picture, a dim place pill; its row is the author, the date and no excerpt.
-- **Nothing posted yet.** One quiet line where the set would be — *say something* — not a box round nothing.
+- **Nothing posted yet.** One quiet line where the set would be — *say something* — not a box round nothing. Except in the map view, where `/map`'s own ruling stands: an empty map is still a map.
 - **Forty posts.** The list and the grid scroll inside their own ground, `/browse`'s measurements unchanged.
 - **A foreign post.** No contenteditable anywhere, no empty picture block and no dim pill (`/exchange` takes all three away), so the words-above-picture move finds no picture and leaves the page as it is.
 - **The post that is open is deleted, or is not a post.** The set is drawn instead, silently.

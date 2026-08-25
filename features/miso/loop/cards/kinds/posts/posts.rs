@@ -280,7 +280,10 @@ impl feature_Posts {
             // the post is gone, or what is open is not a post: the set is the
             // honest fallback, silently — /browse's own rule.
         }
-        if set.is_empty() {
+        // nothing written yet: one quiet line where the set would be. Not in
+        // the map view — /map's ruling is that an empty map is still a map,
+        // and that is its call to make, not this node's.
+        if set.is_empty() && browse_view_read() != "map" {
             return format!("{}{}<div class=\"browse-empty\">say something</div>",
                            base, picker);
         }
