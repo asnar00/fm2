@@ -270,7 +270,11 @@ kill that.
    (#p6) — a report filed where no future triage looks is a diary,
    not a feedback loop.
 7. **A task is not done while residuals stand** (ash's ruling, hybrid
-   #p57). Workers naming residuals mid-run is the pipeline's best
+   #p57; sharpened 2026-08-25, accounts #p49: "always fix residuals before
+   calling a job done"). A residual is fixed in the run — not listed for
+   signature. The only things that may be parked are ones ash parks by
+   name, and a documented way to lose or corrupt a user's data is never
+   parkable (misses.md, "the lost card"). Workers naming residuals mid-run is the pipeline's best
    behaviour — but a run does not end with a queue attached: every
    named residual is either fixed within the run or explicitly parked
    by ash as accepted-and-recorded. Without this, every request leaves
