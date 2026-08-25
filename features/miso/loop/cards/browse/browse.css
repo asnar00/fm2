@@ -1,0 +1,91 @@
+/* the two views take the display surface: fixed between the safe area and
+   the toolbar, scrolling their own contents, so the toolbar stays put and
+   the page body never scrolls. The grid inherits .card-tiles from /cards;
+   the list is placed here by the same measurements.
+
+   All three sit clear of the nøøb lozenge, at the 48px /raised measured for
+   the card page — the lozenge's 36px height, its 2px offset and a 10px gap.
+   /cards puts .card-tiles at 16px, which was fine while the grid was a dev
+   mount nobody looked at and is not fine now that it is a tool's surface. */
+.browse-grid, .browse-list, .browse-empty {
+  top: calc(env(safe-area-inset-top) + 48px);
+  z-index: 1;
+}
+.browse-list, .browse-empty {
+  position: fixed;
+  left: calc(env(safe-area-inset-left) + 16px);
+  right: calc(env(safe-area-inset-right) + 16px);
+  text-align: left;
+}
+/* the list sits on its own ground, for /ground's reason: rows floating on
+   the graph paper read as debris rather than as one thing. It hugs what it
+   holds and scrolls inside itself when the set outgrows the room (/hug). */
+.browse-list {
+  box-sizing: border-box;
+  max-height: calc(100vh - env(safe-area-inset-top, 0px) - 48px - 72px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 2px 16px;
+  background: #161619;
+  border: 1px solid #202026;
+  border-radius: 14px;
+}
+/* the list ends with its last row, not with a line under nothing */
+.browse-list .crow:last-child { border-bottom: none; }
+
+/* a tap target, and nothing else: the tile inside keeps its own look */
+.browse-tap { min-width: 0; cursor: pointer; }
+
+/* the list borrows the .crow grammar whole (/taste 6) — status where the
+   number sits, title, no headers, no prose. */
+.browse-row { cursor: pointer; }
+.browse-type {
+  color: #9a9aa2; font-weight: 400; min-width: 52px; text-align: right;
+}
+.browse-title { color: #eee; font-weight: 600; }
+/* the dimmest thing on the line: when, and only when */
+.browse-when {
+  flex: none; color: #77777e; font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* an empty world says so once, quietly, where the grid would be — one line,
+   no ground: a box round nothing is ceremony. */
+.browse-empty { padding: 2px; color: #77777e; font-size: 13px; }
+
+/* the view picker: top left of the screen, mirroring the nøøb lozenge across
+   the top strip. Same top offset (/raised's inset + 2px), the same left
+   margin the lozenge keeps on the right, the lozenge's own pill — #121215 on
+   a #3a3a3f hairline, fully round — and the same 33px height, made of the
+   lozenge's 15px line, its 8px padding and its border. A third view (a map)
+   joins as one more child: the row grows, nothing moves. */
+.browse-picker {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 2px);
+  left: calc(env(safe-area-inset-left, 0px) + 16px);
+  display: flex; gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: #121215; border: 1px solid #3a3a3f;
+  z-index: 6;
+  user-select: none; -webkit-user-select: none;
+}
+.browse-view {
+  width: 28px; height: 25px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 999px;
+  color: #c9c9d2; opacity: 0.45;
+  cursor: pointer;
+}
+/* the one accent, meaning what it means everywhere else: this is the thing
+   you have chosen (/taste 3) */
+.browse-view.browse-on {
+  opacity: 1;
+  color: #101012; background: #9db7d8;
+}
+.browse-view .icon-svg { width: 17px; height: 17px; display: block; }
+
+/* the tool's own drawn glyph sits in its button like an emoji does — same
+   box, same ink. Repeated from /arrow's rule so a toggle of that node cannot
+   leave it unsized. */
+.tool-button .icon-svg { width: 22px; height: 22px; display: block; margin: auto; }

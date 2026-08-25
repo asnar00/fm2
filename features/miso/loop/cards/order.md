@@ -2,3 +2,4 @@
 - [x] layout
 - [x] marks
 - [x] guard
+- [x] browse
