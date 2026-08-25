@@ -2732,3 +2732,31 @@ lose user data is a defect, never a residual. Also today: `/glyphs`, the
 fourth agent-instruction node (toolbar icons are ink — filtered emoji or
 drawn SVG — never an emoji-presentation character), after the undo arrow
 shipped as a colour bitmap on iOS while a desktop rig called it black.
+
+## a regroup CAN rewire behaviour, and now cannot (2026-08-25, #p54)
+
+The holding/changing regroup that made room for `/world-cache` produced a
+`--chains` diff, which is supposed to be impossible: `dictate/mirror/adopt`
+moved through `converge`'s `handle_msg` links. The cause is proposal 9's
+tie-break rather than proposal 9 itself. Nodes citing the SAME prompt have
+identical provenance keys — twelve of them cite hybrid #p32, the "keep going
+until all rungs are built" ladder — and fmlink broke those ties by
+`(depth, path)`. Pushing six nodes one level down therefore moved every one of
+them past every tied node in the rest of the tree.
+
+The fix is `tie_break()`: ties resolve by how deep a node is in **contributing**
+nodes and by its path **with code-free grouping ancestors removed**. A grouping
+node contributes nothing to the composition, so inserting or dissolving one is
+now order-neutral by construction rather than by luck — including for
+yesterday's `users/login` and `cards/page` regroups, which the new rule
+retroactively neutralises (both moved a tied node; neither happened to move one
+that shared a chain with it). Chains before and after the regroup are identical,
+modulo paths.
+
+The residue worth remembering: **a regroup is free for chains and not free for
+stored state.** Vars are addressed by node path, in `/remember`'s op log and now
+in the device's cache, so moving a node that DECLARES a var orphans that var's
+stored value. Nothing declared a var inside this regroup, so nothing was lost —
+but `context`'s open question about versioning across builds now has a second
+reason to exist, and the answer probably has to be a rename map that a moved
+node carries.

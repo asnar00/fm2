@@ -1,3 +1,4 @@
 - [x] alive
 - [x] per-user
 - [x] remember
+- [x] world-cache

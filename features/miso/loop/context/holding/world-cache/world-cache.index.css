@@ -1,0 +1,6 @@
+/* a hydrated world is worth showing: /veil hides #app until `fm-joined`, and
+   this is the one other reason to lift it. Same specificity as veil's rule, so
+   this file must come after it — which provenance order guarantees, this node
+   being the newer of the two. */
+body.fm-cached #app { visibility: visible; }
+body.fm-cached #veil { display: none; }
