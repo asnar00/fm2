@@ -27,7 +27,8 @@ import argparse
 import subprocess
 import sys
 
-MINI = "microserver@microservers-Mac-mini.local"
+import os
+MINI = os.environ.get("MISO_HOST") or "microserver@microservers-Mac-mini.local"
 
 # Runs on whichever machine holds the state dir; stdout is the event stream.
 REMOTE = r'''
