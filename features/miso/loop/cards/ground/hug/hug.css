@@ -1,0 +1,7 @@
+/* the ground hugs the card: as tall as its blocks and no taller, and when
+   the blocks outgrow the room above the toolbar, the card scrolls inside
+   its ground rather than the ground stretching past the screen */
+.card-page {
+  bottom: auto;
+  max-height: calc(100vh - env(safe-area-inset-top, 0px) - 48px - 72px);
+}
