@@ -1,0 +1,2 @@
+/* the emoji goes black through /ember's icon filter; the drawn + follows */
+.tool-button.tinted[data-ev="tool_invite"] { color: #000; }
