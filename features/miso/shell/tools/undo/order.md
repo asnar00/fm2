@@ -1,1 +1,2 @@
 - [x] arrow
+- [x] tinted

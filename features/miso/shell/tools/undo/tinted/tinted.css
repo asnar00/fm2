@@ -1,0 +1,4 @@
+/* the glyph is text, not an emoji span, so /ember's icon filter never
+   reaches it: black on the tint, like every other tool button */
+.tool-button.ctrl.tinted { color: #000; }
+.tool-button.ctrl.tinted.dim { opacity: 0.32; }
