@@ -1,0 +1,23 @@
+/* exchange — a card somebody handed you */
+
+/* who it came from: the dimmest thing on the page (/taste 2), directly under
+   the name, in the prose size, so it reads as a caption and not as a block */
+.card-from {
+  margin: -2px 0 2px;
+  font-size: 12px;
+  color: #77777e;
+}
+
+/* a picture you do not own opens nothing: /cards' chooser and /keep's
+   long-press both delegate on .card-pic, and neither can fire on a thing the
+   pointer never reaches. The blocks are already inert — the renderer draws no
+   contenteditable on a foreign card at all. */
+.foreign .card-pic {
+  pointer-events: none;
+}
+
+/* nothing here is a text field, so nothing should say it is */
+.foreign .card-title,
+.foreign .card-text {
+  cursor: default;
+}
