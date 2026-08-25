@@ -28,13 +28,32 @@ impl feature_Serve {
         "0.0.0.0".to_string()
     }
 
+    // the port to listen on. A seam because the number was inline until
+    // 2026-08-25, which cost a rig worker real time; nothing about serve
+    // changes, the constant simply has a name a feature can redefine.
+    fn serve_port() -> u16 {
+        8095
+    }
+
+    // how the listener is made, separated from the accept loop so a feature
+    // can change the socket without owning the loop. /reuseport redefines it
+    // to a socket two processes may share during a handover.
+    fn bind_listener() -> std::net::TcpListener {
+        std::net::TcpListener::bind((bind_host(), serve_port()))
+            .expect("miso: cannot bind the server port")
+    }
+
     fn serve() {
-        let listener = std::net::TcpListener::bind((bind_host(), 8095u16))
-            .expect("miso: cannot bind port 8095");
-        println!("miso serving site/ on http://localhost:8095");
+        let listener = bind_listener();
+        println!("miso serving site/ on http://localhost:{}", serve_port());
         for stream in listener.incoming() {
-            if let Ok(s) = stream {
-                handle(s);
+            match stream {
+                Ok(s) => handle(s),
+                // never spin on a broken listener: /handover closes this
+                // socket to leave the port, after which accept fails at once
+                // and forever, and a hot loop would eat the box on the way
+                // out. In ordinary running this arm is never taken.
+                Err(_) => std::thread::sleep(std::time::Duration::from_millis(20)),
             }
         }
     }

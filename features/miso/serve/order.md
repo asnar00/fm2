@@ -1,3 +1,4 @@
 - [x] features
 - [x] threads
 - [x] loopback
+- [x] reuseport

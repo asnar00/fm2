@@ -112,6 +112,15 @@ impl feature_Messaging {
 
     // long-poll: return as soon as the slot moves past `since`, or time out.
     // sleeps only this connection's /threads thread.
+    // how many 200ms ticks one long-poll may park for; 125 = the 25s
+    // horizon. Read every tick, not once, so a feature can shorten the
+    // horizon while a poll is already parked — /handover returns a small
+    // number while the server is draining, and every parked wait answers
+    // with its ordinary empty reply instead of dying with the process.
+    fn msg_wait_ticks() -> u32 {
+        125
+    }
+
     fn msg_wait(r: request) -> response {
         if !msg_guarded(&r) {
             return json_response(401, "{\"ok\":false,\"error\":\"log in first\"}".to_string());
@@ -120,8 +129,8 @@ impl feature_Messaging {
             .unwrap_or(serde_json::Value::Null);
         let since = b["since"].as_u64().unwrap_or(0);
         let me = sender_of(r.cookie.clone());
-        let mut i = 0;
-        while i < 125 {
+        let mut i: u32 = 0;
+        while i < msg_wait_ticks() {
             let now = broadcast_now();
             if now["v"].as_u64().unwrap_or(0) > since {
                 let hearable = wait_filter(now, since, me.clone());

@@ -22,10 +22,40 @@
 6. stamps the build number (= commit count) into `site/version` and writes
    `changes.json` from recent commit subjects — **commit subjects are the
    changelog and the push-notification text; write them for the user**;
-7. rsyncs the server binary + `site/` to the mini and kickstarts the agent.
+7. ships it — see **the handover** below.
 
 On restart the server announces the new build to push subscribers by itself
 (miso/push extends the serve chain) — no deploy-side notification step.
+
+## The handover (2026-08-25, accounts #p54)
+
+A release no longer leaves port 8095 unheld. `features/miso/serve/reuseport`
+binds with `SO_REUSEPORT` so two processes may hold the port, and its child
+`/handover` is the sequence: the successor binds *beside* the incumbent, then
+SIGTERMs it; the incumbent stops accepting, answers its parked `/msg/wait`
+polls with their ordinary empty reply, finishes what is in flight and exits 0.
+Sub-second, and no connection is refused.
+
+deploy.sh ships the **binary first**, hands over twice (once to a background
+process started from the new binary, once back to launchd so the LaunchAgent
+owns it), and rsyncs **`site/` last** — so `/version`, the stamp every device
+compares, flips only when the new server is already answering.
+
+Two things gate it, and if either is false deploy falls back to the old
+kickstart-in-place and says so rather than failing:
+
+- the running build must answer `/admin/whoami` (localhost only; it reports
+  `{pid, build, draining}` — the pid is what tells two processes apart, since
+  they share one `site/`);
+- `~/Library/LaunchAgents/com.noob.miso.plist` must carry
+  `KeepAlive = {SuccessfulExit: false}` (a drained server exits 0 and must
+  stay down; a crashed one must still restart) and `MISO_HANDOVER=1` (this
+  job is always the one arriving). **`tools/com.noob.miso.plist` is that
+  plist — install it by hand, once**, after checking its paths against the
+  live one. Until then every release deploys the old way.
+
+`POST /admin/drain` (localhost, POST) is the same drain by hand, for stopping
+a server with no successor waiting — the port does go quiet then.
 
 ## The mini (the public server)
 

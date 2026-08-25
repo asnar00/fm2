@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  The miso LaunchAgent, as /handover needs it. This is a REFERENCE COPY: the
+  live plist is ~/Library/LaunchAgents/com.noob.miso.plist on the mini, and
+  deploy.sh only ever reads it (it refuses the handover path and says so if
+  these two keys are missing). Install it by hand, once, after checking the
+  paths below against the live one:
+
+    scp tools/com.noob.miso.plist <mini>:Library/LaunchAgents/com.noob.miso.plist
+    ssh <mini> 'launchctl bootout gui/$(id -u)/com.noob.miso;
+                launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.noob.miso.plist'
+
+  Do NOT touch com.noob.muon-server — different thing (deploy.md).
+
+  The two keys /handover depends on:
+
+  * KeepAlive = { SuccessfulExit: false }. A drained server exits 0 and must
+    STAY down, because its successor is already listening on the port; a
+    crashed server exits non-zero and must still be restarted. Plain
+    KeepAlive=true would restart the drained one into a state directory the
+    successor now holds, and /sole-tenant would refuse it in a loop.
+
+  * MISO_HANDOVER = 1. This job is always the one arriving: at boot it asks
+    whoever holds the state directory to leave, having first bound the port
+    beside them.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.noob.miso</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/microserver/miso/miso_server</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/microserver/miso</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>MISO_HANDOVER</key>
+        <string>1</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/miso.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/miso.log</string>
+</dict>
+</plist>

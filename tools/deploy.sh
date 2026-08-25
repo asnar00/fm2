@@ -137,15 +137,121 @@ for root, _, files in os.walk(site):
 print(json.dumps(hashes, sort_keys=True))
 PY
 
-rsync -a --delete \
-  "$SRC/products/miso/build/server/target/release/miso_server" \
-  "$SRC/products/miso/build/site" \
-  "$HOST:miso/"
+# ---- shipping it, without the port ever going quiet (features/miso/serve/
+# reuseport/handover, accounts #p54) --------------------------------------
+#
+# The binary goes first and the site goes last, with the handover between
+# them. That order is deliberate:
+#
+#   * the binary is rsynced by rename, so the running server keeps executing
+#     the inode it started with and nothing about it changes;
+#   * the successor starts from the NEW file, binds beside the incumbent
+#     (SO_REUSEPORT) and asks it to leave, so the port is held throughout;
+#   * site/ lands only once the new server is answering, so /version — the
+#     deploy stamp every device compares — flips at the moment the release is
+#     actually live, and never announces a build the server is not serving.
+#
+# Two handovers, not one, because the LaunchAgent must end up owning the new
+# process: the first is to a plain background process started from the new
+# binary, the second hands it back to launchd. Each is sub-second.
 
-ssh "$HOST" '
-  launchctl kickstart -k "gui/$(id -u)/com.noob.miso" 2>/dev/null ||
-    launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.noob.miso.plist
-'
+miso_pid() {  # the pid answering the port right now, or empty
+  ssh "$HOST" 'curl -s --max-time 3 http://127.0.0.1:8095/admin/whoami' 2>/dev/null \
+    | sed -n 's/.*"pid":\([0-9]*\).*/\1/p'
+}
+
+wait_for_pid() {  # $1 = the pid that must be answering, $2 = seconds
+  n=0
+  while [ "$n" -lt "$2" ]; do
+    [ "$(miso_pid)" = "$1" ] && return 0
+    n=$((n + 1))
+    sleep 1
+  done
+  return 1
+}
+
+wait_for_change() {  # $1 = the pid that must STOP answering, $2 = seconds
+  n=0
+  while [ "$n" -lt "$2" ]; do
+    p="$(miso_pid)"
+    [ -n "$p" ] && [ "$p" != "$1" ] && return 0
+    n=$((n + 1))
+    sleep 1
+  done
+  return 1
+}
+
+# is the live system ready for a handover? Three things must be true, and any
+# of them being false is a reason to deploy the old way rather than to fail:
+# the running build must carry /handover (it answers /admin/whoami), and the
+# LaunchAgent must carry the two keys tools/com.noob.miso.plist explains.
+LIVEPID="$(miso_pid)"
+PLIST=$(ssh "$HOST" 'cat ~/Library/LaunchAgents/com.noob.miso.plist' 2>/dev/null || true)
+HANDOVER=no
+case "$PLIST" in
+  *SuccessfulExit*) case "$PLIST" in *MISO_HANDOVER*) [ -n "$LIVEPID" ] && HANDOVER=yes ;; esac ;;
+esac
+
+if [ "$HANDOVER" = yes ]; then
+  echo "handover: pid $LIVEPID is serving; shipping the binary first"
+  rsync -a "$SRC/products/miso/build/server/target/release/miso_server" "$HOST:miso/"
+
+  # 1. a successor from the new binary, beside the incumbent. Its pid is not
+  #    read back over ssh: a backgrounded remote command keeps the channel
+  #    open until it exits, so `echo $!` through ssh hangs for the life of the
+  #    server. All three descriptors are detached and the pid is learned the
+  #    honest way — by asking the port who is answering it now.
+  ssh "$HOST" 'cd ~/miso && MISO_HANDOVER=1 nohup ./miso_server \
+                 < /dev/null >> /tmp/miso.log 2>&1 &' > /dev/null 2>&1
+  echo "handover: a successor is starting beside it"
+  if ! wait_for_change "$LIVEPID" 40; then
+    echo "deploy: the successor never took over — pid $(miso_pid) is still" >&2
+    echo "  serving, which means nothing is down. Check /tmp/miso.log." >&2
+    exit 1
+  fi
+  NEWPID="$(miso_pid)"
+  echo "handover: pid $NEWPID is answering the port"
+
+  # 2. hand it back to launchd, which starts from the same new binary and
+  #    evicts the successor in turn (its plist carries MISO_HANDOVER=1)
+  ssh "$HOST" '
+    launchctl kickstart "gui/$(id -u)/com.noob.miso" 2>/dev/null ||
+      launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.noob.miso.plist
+  '
+  AGENTPID=$(ssh "$HOST" '
+    launchctl print "gui/$(id -u)/com.noob.miso" 2>/dev/null |
+      sed -n "s/^[[:space:]]*pid = \([0-9]*\).*/\1/p" | head -1')
+  echo "handover: launchd took it back as pid ${AGENTPID:-?}"
+  if [ -n "$AGENTPID" ] && ! wait_for_pid "$AGENTPID" 40; then
+    echo "deploy: WARNING: the LaunchAgent is not the process answering the port." >&2
+    echo "  pid $(miso_pid) is serving; check /tmp/miso.log before the next release." >&2
+  fi
+
+  # 3. and only now the site, so /version names a build that is being served
+  rsync -a --delete "$SRC/products/miso/build/site" "$HOST:miso/"
+else
+  # the old way: rsync everything, restart in place. Used on the release that
+  # first ships /handover (the running build has no /admin/whoami yet), and
+  # any time the LaunchAgent has not been updated.
+  rsync -a --delete \
+    "$SRC/products/miso/build/server/target/release/miso_server" \
+    "$SRC/products/miso/build/site" \
+    "$HOST:miso/"
+
+  ssh "$HOST" '
+    launchctl kickstart -k "gui/$(id -u)/com.noob.miso" 2>/dev/null ||
+      launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.noob.miso.plist
+  '
+  if [ -z "$LIVEPID" ]; then
+    echo "  NOTE: the running build has no /admin/whoami — this release restarts"
+    echo "  the server the old way. The next one can hand over."
+  else
+    echo "  NOTE: ~/Library/LaunchAgents/com.noob.miso.plist is missing KeepAlive"
+    echo "  {SuccessfulExit:false} and/or MISO_HANDOVER=1, so this release"
+    echo "  restarts the server the old way. tools/com.noob.miso.plist is the"
+    echo "  version that hands over; install it once, by hand."
+  fi
+fi
 
 # one server per state directory (6a's ruling). The refusal itself lives at
 # boot, where a second process actually appears — features/miso/loop/context/

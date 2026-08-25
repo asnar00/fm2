@@ -2760,3 +2760,37 @@ stored value. Nothing declared a var inside this regroup, so nothing was lost �
 but `context`'s open question about versioning across builds now has a second
 reason to exist, and the answer probably has to be a rename map that a moved
 node carries.
+
+## 2026-08-25 — what the handover leaned on, and what it found there
+
+`serve/reuseport` + `/handover` (accounts #p54) rest on one invariant, and it
+is worth writing down because it is now load-bearing rather than advisory:
+**two servers may be bound to the port, but only one may ever be accepting.**
+
+The reason is `context_log_append` in `remember.lib.rs`. It is not an append —
+it reads the whole log, pushes one record, and rewrites the file through a
+temp and a rename. Two processes doing that concurrently lose each other's
+records outright, compaction or no compaction. `/sole-tenant`'s refusal is
+therefore the *only* thing standing between a second process and silent data
+loss, which is why the handover sequences that refusal (evict, wait for the
+pid to actually be gone, then claim) rather than relaxing it. The rig proves
+the property it can prove — 100 card edits straddling two handovers, 100
+records in the log, none missing — but the proof is "the writers never
+overlapped", not "overlapping writers are safe".
+
+The foundation this wants, when something needs genuinely concurrent writers
+(a second place, a read replica, a hot-swap that keeps both halves live): a
+cross-process lock — `flock` on the log, or an O_APPEND single-line append with
+compaction behind that lock. It belongs to `/remember`, not to `serve`.
+
+Two smaller things found in passing, neither fixed:
+
+- `/tmp/miso-broadcast.json` is a fixed path with no `MISO_CONTEXT_DIR`
+  equivalent, so every server on one machine shares one broadcast slot —
+  including two workers' rigs, which is a real source of confusing rig
+  results. The handover *wants* the two processes to share it; a rig does not
+  want to share with a stranger.
+- `/serve`'s port is now a named seam (`serve_port`), which is what the
+  next-work item about rig ports asked for. It is still a constant: making it
+  read an environment variable would be a behaviour change and wants its own
+  node.
