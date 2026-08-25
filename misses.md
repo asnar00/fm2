@@ -154,3 +154,34 @@ not applied.
 **The lesson:** any brief that puts bytes into a var must name the
 op that carries the var and the cap on that op's wire; a var that is a
 list is one op, whole, per edit.
+
+## the lost card (2026-08-25, build 292) — a named risk that was allowed to ship
+
+**The ask:** none — ash's profile card (picture, mission) vanished after the
+build-292 update (#p47). Ruling (#p48): "let's make sure that never happens
+again — data loss is a sure way to kill user trust."
+
+**The estimate:** `me.md` had described this exact failure at build time —
+an ensure before the join makes a blank card and last-write sends it over
+the real one — and parked it as "the offline duplicate; per-card identity is
+the rung that closes it". Triage read that paragraph, listed it as a
+residual for ash's signature, and shipped eleven more releases on top.
+
+**The actual:** an update reloads the page while the server restarts; the
+join times out at two seconds; `fm-joined` is set by the timeout too; the
+ensure fires against an empty world; one op replaces the whole list. Line
+127 of the op log. Recovered from line 91 through the diag door; fixed the
+same hour with `/guard` (server-side merge: a set can never drop a held
+card, blank duplicates discarded) and `/me/patient` (ensure waits for a real
+join or does nothing).
+
+**What the plan could not see:** nothing — it saw it and priced it as a
+later rung. The miss is a category error: a *documented* way to lose user
+data is not a residual, it is a defect, and "parked pending signature"
+does not apply to it.
+
+**The lesson:** any write path that can replace a user's stored value with
+less than the server holds is a bug to fix before the next deploy, never a
+residual to record — and a store whose merge is "last write wins on the
+whole list" must be guarded at the server the day it holds anything a
+person would miss.

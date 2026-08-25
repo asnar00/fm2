@@ -2713,3 +2713,22 @@ shipped stamped. Two rulings from live misbehaviour became nodes the same
 hour (`fresh-words`, `present`). The ceiling to watch is the whole-list
 `cards` var (one op per edit, 56KB): var-per-card + a blob path is now the
 rung before projects. Tomorrow's first act is a phone: pinch the frame.
+
+## the lost card, and the guard (2026-08-25, #p47–#p48)
+
+Build 292 dropped ash's profile picture and mission: the update reloaded
+the page during the server restart, `/veil`'s join timed out (which also
+sets `fm-joined`), `/me`'s ensure ran against an empty world and made a
+blank card, and the `cards` var's last-write merge sent that one-card list
+over the real one — the failure `me.md` had described and parked. Recovered
+from the op log (line 91 → the diag door). Fixed structurally the same
+hour: `/guard` extends `handle_msg` ahead of `/converge` and merges every
+`cards` set into what the server holds — union by id, newer `edited` per
+card, blank profile duplicates discarded — so **a set cannot delete a
+card** (deletion, when it comes, is its own op); `/me/patient` makes the
+ensure wait for a real join (`feature_Veil.joined`, not the timeout's
+class) or do nothing. misses.md carries the lesson: a documented way to
+lose user data is a defect, never a residual. Also today: `/glyphs`, the
+fourth agent-instruction node (toolbar icons are ink — filtered emoji or
+drawn SVG — never an emoji-presentation character), after the undo arrow
+shipped as a colour bitmap on iOS while a desktop rig called it black.
