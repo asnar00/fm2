@@ -2590,3 +2590,53 @@ subtree model is a data-and-check extension, not a rewrite.
 
 `users` hit the 6-child cap doing this (harden, authority added) — next child
 regroups.
+
+## cards: the universal object, owned and exchanged (2026-08-25, accounts #p7–#p12)
+
+Tara (the customer) visits 2026-08-26; ash chose to spend the day on user
+accounts. The morning's critique had named the gaps: two guest-list entries
+(ash + `_test`), adding a person means SSH, the 👤 tool an empty placeholder.
+The conversation moved the design three times in twenty minutes, each move
+smaller and more general than the last:
+
+1. **The proposal (#p7):** a user page — name, picture, mission statement,
+   all editable — then *projects*: "something we're trying to get done", from
+   "book a trip to China" to "campaign for MP in 2029"; "person P has role R
+   in project X", stored and interrogable; projects filter posts and tools.
+   Triage's first read: the page is the first *public* record and cannot live
+   in the private world-object, so it wants a server-side store; projects are
+   the post store arriving — estimate the foundation, not the feature.
+
+2. **Users own their data and exchange it (#p8).** Ash's redirect, and it
+   dissolved the "public store": a profile lives in its owner's world like
+   every other var; other people see it because the owner *sent a copy*.
+   A directory is the cards you've been handed; a link is a mutual exchange;
+   a project is somebody's card, its members the accept-set. Consequences:
+   no new store, the exchange primitive is `share`'s mechanism arriving
+   early, unwanted contact is structurally impossible, and the campaign's
+   special-category-data story is one sentence ("only what you were given").
+   Honest caveat recorded: the server still holds every world; ownership
+   means sole write + copies-by-consent + withdrawable, not a blind server.
+
+3. **The card (#p9–#p11).** One object for post, profile, group, project,
+   recording: `{id, owner, type, created, edited, blocks[], links[]}`. `type`
+   is a field, never a subclass (#p10 — "profile" is a value). Cards are 1–5
+   phone screens: a page, not a row — so a card has two renderings, *tile*
+   (grid/list thumbnail, the `.crow` form) and *page*. Blocks are text or
+   blob references; the dictaphone's grid of recordings (audio + transcript,
+   IndexedDB + `/mirror`) is the standing prototype of both the tile grid
+   and the blob path (#p11) — it migrates by the absorption ladder later,
+   not now.
+
+**Placement:** `loop/cards` (loop's sixth child — cards are state + render,
+the loop's business; no root regroup needed today) with `cards/me` taking
+the 👤 tool's open seam. Built through the hybrid pipeline; brief in the
+session scratchpad, worker in a worktree. Parked and named: exchange /
+send-card, the people list, links, projects, dictate's migration,
+per-card merge (the `cards` list is last-write whole today, like `asks`).
+
+**Open, ash's:** whether a received card needs an accept tap (triage's
+default: no — only guest-list members can send); who may create a project
+(default anyone); who asserts "P has role R in X" (default: either side,
+no confirmation until `link`). Tara's guest-list entry and role (support
+or admin) still wanted before tomorrow.
