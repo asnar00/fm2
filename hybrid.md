@@ -270,7 +270,7 @@ kill that.
    (#p6) — a report filed where no future triage looks is a diary,
    not a feedback loop.
 7. **A task is not done while residuals stand** (ash's ruling, hybrid
-   #p57; sharpened 2026-08-25, accounts #p49: "always fix residuals before
+   #p57; sharpened 2026-08-25, accounts #p50: "always fix residuals before
    calling a job done"). A residual is fixed in the run — not listed for
    signature. The only things that may be parked are ones ash parks by
    name, and a documented way to lose or corrupt a user's data is never
