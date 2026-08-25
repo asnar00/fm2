@@ -1779,6 +1779,7 @@ def build_places(product: str, places: list, base: Emitter, chains: dict,
                         if len(rel.parts) > 1})
         print(f"  site/ assets: {', '.join(top + trees)}")
     remove_stale_pages(site, {str(rel) for _, rel in asset_files})
+    remove_stale_assets(build_dir, site, {str(rel) for _, rel in asset_files})
     compose_assets(site, features)
     write_coverage(build_dir, features)
 
@@ -1832,6 +1833,34 @@ def remove_stale_pages(site: Path, copied: set):
         if (site / page).exists():
             (site / page).unlink()
             print(f"  removed stale site/{page} (owner not in this composition)")
+
+
+def remove_stale_assets(build_dir: Path, site: Path, copied: set):
+    """Delete site/ files this composition did not copy but the previous one
+    did. A node's assets/ are its own outright, so unticking it must take its
+    files off the served surface — otherwise a toggle proof reads 'gone from
+    the page' while the file is still downloadable (found 2026-08-25, unticking
+    /map left Leaflet in site/). Driven by a manifest of what the LAST link
+    wrote, so nothing the linker did not put there is ever at risk."""
+    manifest = build_dir / "assets.json"
+    was = set()
+    if manifest.exists():
+        try:
+            was = set(json.loads(manifest.read_text()))
+        except Exception:
+            was = set()
+    for rel in sorted(was - copied):
+        path = site / rel
+        if path.is_file():
+            path.unlink()
+            print(f"  removed stale site/{rel} (owner not in this composition)")
+        # prune the directories the file left empty, up to site/
+        parent = path.parent
+        while parent != site and parent.is_dir() and not any(parent.iterdir()):
+            parent.rmdir()
+            parent = parent.parent
+    manifest.parent.mkdir(parents=True, exist_ok=True)
+    manifest.write_text(json.dumps(sorted(copied), indent=1) + "\n")
 
 
 def js_patches(text: str) -> list:

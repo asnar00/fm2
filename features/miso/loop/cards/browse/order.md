@@ -1,2 +1,3 @@
 - [x] people
 - [x] portrait
+- [x] map

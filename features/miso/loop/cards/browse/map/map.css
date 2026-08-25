@@ -1,0 +1,81 @@
+/* the map takes the whole surface and sits UNDER the furniture: /beneath's
+   depth order puts the display surface at 1, the toolbar at 5 and the
+   lozenge and the view picker at 6, so the map is a ground the controls
+   float on rather than a panel between them. */
+#misoMap {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 1;
+  background: #101012;
+}
+/* Rust's whole contribution to this view is an argument, not a picture */
+#mapData { display: none; }
+
+/* Leaflet ships a light-grey container and blue links. Both are overwritten
+   once, here, so the map arrives in the house palette instead of arriving
+   bright and being filtered afterwards (/taste 9). */
+.leaflet-container {
+  background: #101012;
+  font: 12px -apple-system, system-ui, sans-serif;
+  outline: none;
+}
+.leaflet-container a { color: #9a9aa2; }
+
+/* the credit, quietest thing on the screen (/taste 2), clear of the toolbar
+   and of the corner stamp. `.leaflet-container` in the selector because
+   Leaflet's own white pill is written that way and would otherwise win on
+   specificity — a white box on a near-black map is precisely the class of
+   thing that got the last map withdrawn. */
+.leaflet-container .leaflet-control-attribution {
+  background: rgba(16, 16, 18, 0.72);
+  color: #77777e;
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid #202026;
+}
+.leaflet-container .leaflet-control-attribution a {
+  color: #77777e; text-decoration: none;
+}
+.leaflet-bottom {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 56px);
+}
+.leaflet-right {
+  right: calc(env(safe-area-inset-right, 0px) + 12px);
+}
+
+/* ---- the pin: a card's own face, standing on the place --------------------
+   No colour. The 2026-08-16 map put a blue marker and a blue accuracy disc on
+   a monochrome shell — the only colour in the app, imported unthinkingly from
+   every map anyone has seen (notes.md). A pin here is the same face the grid
+   draws, ringed so it reads against the streets, on a grey stem. */
+.map-pin-icon { background: none; border: none; }
+.map-pin {
+  width: 40px; height: 50px;
+  display: flex; flex-direction: column; align-items: center;
+  cursor: pointer;
+}
+.map-pin-face {
+  width: 34px; height: 34px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #1a1a1d;
+  border: 1px solid #3a3a3f;
+  box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  color: #c9c9d2; font-size: 15px; font-weight: 600;
+  /* one dark halo so a face never dissolves into a pale building */
+  outline: 2px solid #101012;
+}
+.map-pin-face img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+/* the point of the pin: a small triangle, the same line the app draws its
+   borders with */
+.map-pin-stem {
+  width: 0; height: 0; margin-top: 1px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 12px solid #3a3a3f;
+  filter: drop-shadow(0 1px 0 #101012);
+}
