@@ -8,6 +8,8 @@ const feature_Keep = {
   timer: null,
   editing: null,   // {card, block} — re-resolved at fire time, never a stale node
   painting: false,
+  // the held (off-screen) text passes through /cards' own text rule
+  textOfHeld(held) { const el = { innerText: held.text || '' }; return feature_Cards.textOf(el); },
   hold_t: null,
   armed: null,
   fired: false,
@@ -106,7 +108,7 @@ const feature_Keep = {
       if (typeof feature_Loop === 'undefined' || !feature_Loop.state) return;
       feature_Loop.send({ type: 'CardEdit', data: {
         id: held.card, i: Number(held.block),
-        text: (held.text || '').trim(), t: Date.now() } });
+        text: feature_Keep.textOfHeld(held), t: Date.now() } });
     }, 0);
   },
 
@@ -118,7 +120,7 @@ const feature_Keep = {
     feature_Loop.send({ type: 'CardEdit', data: {
       id: el.getAttribute('data-card'),
       i: Number(el.getAttribute('data-block')),
-      text: (el.innerText || '').trim(),
+      text: feature_Cards.textOf(el),
       t: Date.now() } });
   },
 

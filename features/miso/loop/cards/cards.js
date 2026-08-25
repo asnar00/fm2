@@ -12,6 +12,12 @@ const feature_Cards = {
   toast: null,
   target: null,
 
+  // the seam for what a block's text IS when it is saved: the default trims
+  // both ends. A later node may keep more (a trailing newline, say).
+  textOf(el) {
+    return (el.innerText || '').trim();
+  },
+
   say(words) {
     if (!this.toast) return;
     this.toast.textContent = words;
@@ -122,7 +128,7 @@ const feature_Cards = {
     feature_Loop.send({ type: 'CardEdit', data: {
       id: el.getAttribute('data-card'),
       i: Number(at),
-      text: (el.innerText || '').trim(),
+      text: feature_Cards.textOf(el),
       t: Date.now() } });
   });
 

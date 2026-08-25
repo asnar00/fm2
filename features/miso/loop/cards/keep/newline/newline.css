@@ -1,0 +1,2 @@
+/* a stored line break is a line break on the page, not a collapsed space */
+.card-text { white-space: pre-wrap; }
