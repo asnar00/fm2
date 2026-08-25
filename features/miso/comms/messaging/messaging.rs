@@ -22,13 +22,21 @@ impl feature_Messaging {
         !r.tunnel || authed(r.cookie.clone())
     }
 
+    // the seam for how large one message may be: a body over this many
+    // bytes is truncated before parsing. Extracted 2026-08-25 so a later
+    // feature can widen it (cards carry pictures) without editing this file.
+    fn msg_body_cap() -> usize {
+        16384
+    }
+
     fn msg_endpoint(r: request) -> response {
         if !msg_guarded(&r) {
             return json_response(401, "{\"ok\":false,\"error\":\"log in first\"}".to_string());
         }
         let mut body = r.body;
-        if body.len() > 16384 {
-            body = body.chars().take(16384).collect();
+        let cap = msg_body_cap();
+        if body.len() > cap {
+            body = body.chars().take(cap).collect();
         }
         let mut m: serde_json::Value = serde_json::from_str(&body)
             .unwrap_or(serde_json::Value::Null);

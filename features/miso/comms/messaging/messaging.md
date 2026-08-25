@@ -23,3 +23,7 @@ Miso's one crossing point. Client-side: features *send* by appending type-tagged
 `messaging.rs`: the `handle_msg` chain base (unknown tags → `{}`); a `route` /extension/ — `POST msg` (guard: localhost free, tunnel needs a cookie) parses the body and returns the chain's reply; `POST msg/wait` long-polls the broadcast slot (5 checks/second, ~25s timeout, sleeping only its own `/threads` thread); `publish()` bumps the versioned slot other features call.
 
 `messaging.js`: `feature_Messaging` wraps `feature_Loop.apply` (lazily — comms linearises before loop, so the wrap installs by a short poll once `feature_Loop` exists): after every turn, `drain()` moves `_send` into the outbox and flushes; `flush()` posts FIFO, injecting non-empty replies via `feature_Loop.send`; `wait()` is the perpetual long-poll injecting broadcasts; both stand down while `/replay` is active.
+
+*(Refactored 2026-08-25, accounts #p21, behaviour unchanged: the 16KB body
+limit in `msg_endpoint` moved into `msg_body_cap()` so a later feature can
+widen it — `/roomier` is the first.)*

@@ -7,6 +7,7 @@ const feature_Cards = {
   // either, the picture is refused out loud rather than quietly stored.
   CAP: 8192,
   LIST_CAP: 14000,
+  EDGE: 256,
   input: null,
   toast: null,
   target: null,
@@ -51,7 +52,7 @@ const feature_Cards = {
         im.src = url;
       });
       const long = Math.max(img.width, img.height) || 1;
-      const scale = Math.min(1, 256 / long);
+      const scale = Math.min(1, this.EDGE / long);
       const cv = document.createElement('canvas');
       cv.width = Math.max(1, Math.round(img.width * scale));
       cv.height = Math.max(1, Math.round(img.height * scale));
