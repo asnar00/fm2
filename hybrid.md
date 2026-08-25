@@ -153,7 +153,10 @@ to the recorded misses repeats them. It must contain:
   beautiful, is it on-brand — are not agent-verifiable evidence at all:
   they go to ash interactively.
 - **scope**: the literal ask; generalisations parked, with the promotion
-  rule cited if a tunable is in play.
+  rule cited if a tunable is in play. Then the anticipation test
+  (`/anticipation` in the skillset, accounts #p74): name the next three
+  asks this user's task will produce, and check each would extend a seam
+  the brief creates rather than change what it builds.
 - **taste notes**: anything the asker's history says they like or dislike
   that touches this surface — on top of the standing standard: the brief
   points the worker at the composed skillset
