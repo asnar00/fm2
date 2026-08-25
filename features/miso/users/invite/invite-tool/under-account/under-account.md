@@ -13,7 +13,7 @@ The toolbar no longer has an invite button of its own. Open 👤 and the person-
 
 `/invite-tool` registered inviting as a top-level tool. Ash asked for it to be a sub-tool of the user tool. One reading, so it builds.
 
-Two chains. `tools_list` drops the `invite` entry, so the launcher never shows it and — because `render_toolbar` only draws the open tool's icon from that list — an open invite page shows no icon of its own. `tool_controls` supplies what the row needs instead: with 👤 open (and the server having said you may invite) the person-with-a-plus, which fires `tool_invite` exactly as the old button did; with the invite page open, a 👤 button (`tool_account`, the way back to the card) followed by the plus, selected. The page itself, its fetch and its rows are `/invite-tool`'s unchanged. Untick and the top-level button returns.
+Two chains. `tools_list` drops the `invite` entry, so the launcher never shows it and — because `render_toolbar` only draws the open tool's icon from that list — an open invite page shows no icon of its own. `tool_controls` supplies what the row needs instead: with 👤 open (and the server having said you may invite) the person-with-a-plus, which fires `tool_invite` exactly as the old button did; with the invite page open, a 👤 button (`tool_account`, the way back to the card) followed by the plus, selected. Both go in front of `/undo`'s button, never after it: undo is the last button in every control row, and a newer node's links land after undo's by provenance, so keeping the invariant is the newcomer's job (`before_undo`; the first build appended and broke it — accounts #p36). The page itself, its fetch and its rows are `/invite-tool`'s unchanged. Untick and the top-level button returns.
 
 ## hostile cases
 

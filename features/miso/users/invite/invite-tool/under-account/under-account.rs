@@ -21,14 +21,31 @@ impl feature_UnderAccount {
             .unwrap_or(serde_json::json!({}));
         let open = s["open_tool"].as_str().unwrap_or("");
         let may = s["invite"]["may"].as_bool().unwrap_or(false);
+        let mut mine = String::new();
         if open == "account" && may {
-            html.push_str(&invite_sub_button(false));
+            mine.push_str(&invite_sub_button(false));
         }
         if open == "invite" {
-            html.push_str("<div class=\"tool-button ctrl\" data-ev=\"tool_account\" title=\"account\"><span class=\"icon\">👤</span></div>");
-            html.push_str(&invite_sub_button(true));
+            mine.push_str("<div class=\"tool-button ctrl\" data-ev=\"tool_account\" title=\"account\"><span class=\"icon\">👤</span></div>");
+            mine.push_str(&invite_sub_button(true));
         }
-        html
+        before_undo(html, mine)
+    }
+
+    // /undo's button is the last in every control row — an invariant every
+    // later node must keep, since provenance puts newer links after it. So
+    // anything this node adds goes in front of the undo button, not after.
+    fn before_undo(row: String, add: String) -> String {
+        if add.is_empty() {
+            return row;
+        }
+        match row.find("data-ev=\"ctx_undo\"") {
+            Some(at) => match row[..at].rfind("<div") {
+                Some(start) => format!("{}{}{}", &row[..start], add, &row[start..]),
+                None => format!("{}{}", row, add),
+            },
+            None => format!("{}{}", row, add),
+        }
     }
 
     fn invite_sub_button(sel: bool) -> String {

@@ -1,0 +1,2 @@
+/* a drawn glyph sits in the button like an emoji does: same box, same ink */
+.tool-button .icon-svg { width: 22px; height: 22px; display: block; margin: auto; }
