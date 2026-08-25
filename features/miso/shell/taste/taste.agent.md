@@ -23,9 +23,7 @@ file; nothing else may.*
    chips); the blue pulse = a build is waiting; the parchment pulse
    (`#d9c9a4`) = a message for you. Adding a colour means adding a
    meaning. All accents are desaturated — dusty, never neon. Emoji
-   render monochrome via filters; colour stays reserved for meaning. A toolbar glyph is a filtered emoji or a drawn inline SVG in
-   `currentColor` — never a character with an emoji presentation (↩︎,
-   ✅, ⚠️…): those arrive as colour bitmaps no CSS can ink (#p36).
+   render monochrome via filters; colour stays reserved for meaning.
 
 4. **Rounded pill or soft card.** 999px full-round for small
    interactive things, 12–14px radii for cards and sheets, 4–9px for

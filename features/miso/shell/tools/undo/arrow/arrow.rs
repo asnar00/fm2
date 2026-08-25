@@ -2,7 +2,7 @@ struct feature_Arrow;
 impl feature_Arrow {
     // the undo glyph becomes a drawn back-curving arrow. Not a character:
     // ↩ (U+21A9) carries an emoji presentation on iOS and arrives as a colour
-    // bitmap that no CSS colour can touch (accounts #p36). An inline SVG in
+    // bitmap that no CSS colour can touch (accounts #p44). An inline SVG in
     // currentColor is black on a tint and white on plain, like a filtered
     // emoji icon — the shape the ask wanted, in the toolbar's own ink.
     fn tool_controls(state: String) -> String {
