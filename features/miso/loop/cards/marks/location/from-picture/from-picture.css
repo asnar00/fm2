@@ -1,0 +1,7 @@
+/* the source line: the quietest step in the sheet (/taste 2) — under the
+   accuracy, above the close, three words and no sentence. Empty until the
+   place is opened, so it takes no room of its own before then. */
+#placeSource {
+  color: #5c5c63; font-size: 12px; text-align: center;
+}
+#placeSource:empty { display: none; }
