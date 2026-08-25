@@ -1,6 +1,6 @@
 - [x] page
-- [x] layout
-- [x] marks
+- [x] look
 - [x] guard
 - [x] browse
 - [x] exchange
+- [x] kinds
