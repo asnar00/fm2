@@ -185,3 +185,5 @@ with no colour anywhere on it.
 `assets/map/leaflet.js` and `assets/map/leaflet.css` are Leaflet 1.9.4's
 `dist` files, verbatim but for the stripped source-map comment, served from
 `site/map/`.
+
+*(Same-day fix: a picture-less card with no title — a post — pins with its owner's initial rather than a blank face.)*

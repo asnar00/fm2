@@ -113,7 +113,15 @@ impl feature_Map {
     }
 
     fn map_initial_of(card: &serde_json::Value) -> String {
-        map_title_of(card).chars().take(1).collect()
+        // a card with no title (a post) pins with its owner's initial, as
+        // /browse's row does (found by /posts, same day)
+        let title = map_title_of(card);
+        let from = if title.is_empty() {
+            card["owner"].as_str().unwrap_or("").to_string()
+        } else {
+            title
+        };
+        from.chars().take(1).collect()
     }
 
     // ---- the glyph -----------------------------------------------------------

@@ -1,2 +1,3 @@
 - [x] revert
 - [x] owner
+- [x] singleton
