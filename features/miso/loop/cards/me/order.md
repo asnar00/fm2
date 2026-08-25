@@ -1,1 +1,2 @@
 - [x] stay
+- [x] patient
