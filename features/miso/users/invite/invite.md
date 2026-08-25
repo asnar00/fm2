@@ -101,7 +101,9 @@ card along with it (the `exchange` rung).
   country code" — rather than stored as an entry nobody can use. Found on the
   rig, where the duplicate test spelled the same number two ways and got two
   entries.
-- **An empty name.** Refused: "that invite needs a name". The name is what the
+- **A name starting with `_`.** Refused: "a name can't start with _" — that
+  prefix marks a test user whose login codes go to the server log, and an
+  inviter must not be able to mint one (review fix, same day). The name is what the
   row says and what the login says, so it cannot be blank.
 - **The same number twice.** Refused with "they're already on the list",
   whether they were invited or hand-added; the page shows the sentence.

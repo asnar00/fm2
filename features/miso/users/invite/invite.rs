@@ -135,6 +135,12 @@ impl feature_Invite {
         if name.is_empty() {
             return invite_say(400, "that invite needs a name".to_string());
         }
+        // a leading underscore marks a TEST user whose codes go to the server
+        // log instead of by SMS (/users); an invite must not be able to mint
+        // one, or an inviter could read the invitee's codes off the mini
+        if name.starts_with('_') {
+            return invite_say(400, "a name can't start with _".to_string());
+        }
         if phone.len() < 8 {
             return invite_say(400, "that doesn't look like a phone number".to_string());
         }
