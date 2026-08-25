@@ -1,1 +1,2 @@
 - [x] invite-someone
+- [x] invite-tool

@@ -1,0 +1,11 @@
+/* the person with a plus: the badge is drawn, not an emoji, so it stays
+   monochrome and inverts with the button's selected state */
+.tool-button[data-ev="tool_invite"] { position: relative; }
+.tool-button[data-ev="tool_invite"]::after {
+  content: "+"; position: absolute; right: 5px; top: 1px;
+  font-size: 13px; font-weight: 700; line-height: 1; color: inherit;
+}
+/* on the tool's own page the form is the page: no fold, no button */
+.invite-page .invite-someone { display: none; }
+.invite-page .invite .invite-new { display: flex; }
+.invite-page .invite { margin-top: 0; }

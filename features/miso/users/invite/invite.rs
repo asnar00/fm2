@@ -345,6 +345,13 @@ impl feature_Invite {
         if !inv["may"].as_bool().unwrap_or(false) {
             return base;
         }
+        format!("{}{}", base, invite_rows_html(inv))
+    }
+
+    // the rows themselves, from the fetched `invite` state: the send row,
+    // the message, one .crow per invitee. Extracted 2026-08-25 so a tool
+    // page can draw them too (/invite-tool).
+    fn invite_rows_html(inv: serde_json::Value) -> String {
         let mut out = String::from("<div class=\"invite\">");
         out.push_str("<div class=\"crow invite-new\">");
         out.push_str("<input class=\"invite-name\" placeholder=\"name\" autocomplete=\"off\">");
@@ -372,7 +379,7 @@ impl feature_Invite {
                 status, name, x));
         }
         out.push_str("</div>");
-        format!("{}{}", base, out)
+        out
     }
 
     // the fetched answer, straight into the loop state under this node's own
