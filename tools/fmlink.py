@@ -383,13 +383,21 @@ def tie_break(directory: Path, root: Path) -> tuple:
     land at the same depth.
     """
     parts = directory.relative_to(root).parts
-    cur, out = root, []
+    cur, out, groups = root, [], []
     for i, name in enumerate(parts):
         cur = cur / name
         if i == len(parts) - 1:
-            out.append(name if contributes(cur) else "\x00" + name)
+            # a grouping node's own component carries the grouping ancestors
+            # between it and its nearest contributing ancestor, so a grouping
+            # node nested in another sorts AFTER its parent (a prefix sorts
+            # first) rather than by name against it — found 2026-08-25 when
+            # cards/look/layout linearised before cards/look
+            out.append(name if contributes(cur)
+                       else "\x00" + "\x00".join(groups + [name]))
         elif contributes(cur):
             out.append(name)
+        else:
+            groups.append(name)
     return (len(out), tuple(out))
 
 

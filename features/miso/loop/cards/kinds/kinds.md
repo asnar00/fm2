@@ -1,8 +1,7 @@
 # kinds
 *the card types and their surfaces: projects, posts*
 
-> (transcripts/2026-08-25-accounts.md#p88)
-> my hitlist before tara comes in: 1) projects; 2) posts; 3) map view.
+*Created under the 4–6 children rule (fm.md), 2026-08-25, when the hitlist asks (accounts #p87) needed room under `cards`; no prompt of its own.*
 
 ## user
 
