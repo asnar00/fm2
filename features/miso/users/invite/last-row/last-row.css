@@ -1,0 +1,2 @@
+/* the list ends with its last row, not with a line under nothing */
+.invite .crow:last-child { border-bottom: none; }
