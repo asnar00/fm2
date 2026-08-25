@@ -1,0 +1,14 @@
+/* a post has no name, so its words are the thing itself and take the weight
+   the name carries on a profile (/taste 2 — hierarchy is dimness): brighter
+   and a size up, on the same ground, with the same accent when chosen. */
+.card-page.post .card-text {
+  font-size: 17px; line-height: 1.45; color: #eee;
+}
+/* an empty post reserves one line less than a profile's mission: a post is
+   often one sentence, and a tall box round nothing reads as a form. */
+.card-page.post .card-text:empty { min-height: 2.2em; }
+
+/* the drawn plus in the new control goes black on /ember's tint, the way the
+   filtered emoji beside it does (/glyphs; /plus-tinted's rule). With /ember
+   unticked the button is not tinted and this never matches. */
+.tool-button.tinted[data-ev="posts_new"] { color: #000; }

@@ -1,1 +1,2 @@
 - [x] new
+- [x] posts
