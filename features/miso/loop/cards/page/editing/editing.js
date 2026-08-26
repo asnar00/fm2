@@ -6,12 +6,14 @@
 const feature_Editing = {
   open: {},   // card id -> true while being edited
   pill: null,
+  openNext: false,   // the card about to be made opens in edit
 
   page() { return document.querySelector('.card-page:not(.foreign)'); },
   id(page) { return page && (page.getAttribute('data-card') || ''); },
 
   apply() {
     const page = this.page();
+    if (page && this.openNext) { this.open[this.id(page)] = true; this.openNext = false; }
     const editing = page && !!this.open[this.id(page)];
     if (page) {
       page.classList.toggle('locked', !editing);
@@ -45,6 +47,11 @@ const feature_Editing = {
   document.body.appendChild(fm_editPill);
   feature_Editing.pill = fm_editPill;
   fm_editPill.addEventListener('pointerdown', (e) => { e.preventDefault(); feature_Editing.edit(); });
+
+  // a card you make opens ready to write: the new buttons mark the next page
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.closest && e.target.closest('[data-ev="posts_new"], [data-proj="new"]')) feature_Editing.openNext = true;
+  }, true);
 
   // /manual's save pill locks again, once the blur that saves has happened
   document.addEventListener('pointerdown', (e) => {
