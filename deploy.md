@@ -113,7 +113,10 @@ pipefail` (or test for `build OK` in the output) in every rig script;
 twice today a link error scrolled past a `| tail` and a rig ran the
 previous binary, proving nothing.
 
-**Nothing links while a deploy runs** (2026-08-26): `products/miso/build` is
-one directory — deploy.sh links into it and the smoke gate serves from it.
-A `fmlink` or a rig started during a deploy hands the gate a half-written
-site and it fails for the wrong reason. Wait for `deployed —`, then link.
+**Nothing links in `products/miso/build` while a deploy runs** (2026-08-26):
+deploy.sh links into it and the smoke gate serves from it — a relink hands
+the gate a half-written site. Triage proves its own work from the rig
+worktree `.claude/worktrees/triage-rig` (its own build dir). Rigs in other
+directories are safe alongside a deploy since `/own-slot`: before it, every
+server on the machine shared `/tmp/miso-broadcast.json` and a rig's stream
+reached the gate's page (three failed gates that morning).
