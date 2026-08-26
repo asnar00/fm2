@@ -353,6 +353,8 @@ everyone?" — and rule of two usually answers even that).
   ranked remainder — dedup counts attached — so ash spends decisions,
   not attention.
 
+**Ship as built (ash, 2026-08-26 #p110).** A proven node deploys at once — never held for a batch; the user decides urgency, not the queue. Deploys serialise through one build dir, so triage's own rigs live in a separate checkout and never touch it while a deploy runs.
+
 **Serialisation stays sacred.** Workers parallel in worktrees; integrate →
 deploy → stamp single-file through the main session (the flywheel rule).
 Two extra habits at scale: deploys batch quiet data-only deltas rather
