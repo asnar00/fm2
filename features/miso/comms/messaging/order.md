@@ -1,1 +1,2 @@
 - [x] roomier
+- [x] own-slot
