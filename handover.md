@@ -23,13 +23,14 @@ first), reorder (hold-then-drag, per user, `tools_order_chosen()` seam),
 quiet, build-below, and **manual save** (`/keep/manual`: autosave off —
 it was losing keystrokes on the phone; a save pill, or tap away).
 
-**Known and open:** on a *cold, fresh world* the gate has seen the first
-lozenge tap do nothing (warm and throttled passes green). On a clean
-single server it did not reproduce; two servers sharing a port (reuseport)
-did reproduce it. Watch the gate's cold pass on a clean machine; if it
-fails again, keep its server (`smoke.py --keep`) and read the page.
-Nine deploys today went out with `SMOKE=skip` for this reason — each said
-so in its commit.
+**The gate is green** (`tools/smoke.py`, three passes). Its morning of
+crying wolf had four causes, all the gate's or triage's, none the app's:
+rigs talking into its stream (fixed by `/own-slot`), a relink of the
+shared build dir mid-run (deploy.md rule), a fixed boot wait too short
+under load (now waits for the loop), and fixed 2-second waits on the
+panel and the map on a fresh world's first page (now polled; they open in
+~200 ms). Six deploys shipped with `SMOKE=skip` while this was found; each
+said so. From here: a gate failure means the app.
 
 **Also open:** transcript anchors are stamped UTC and ask anchors local
 (post-time worker) — a one-line fix in one reader plus a whole-tree
