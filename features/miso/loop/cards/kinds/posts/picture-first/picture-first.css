@@ -1,0 +1,3 @@
+/* on a post's page the picture comes first and the words follow: the page
+   is a flex column, so the order is a rule, not a rewrite */
+.card-page.post .card-pic { order: -1; }
