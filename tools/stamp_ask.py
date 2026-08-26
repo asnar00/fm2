@@ -26,7 +26,7 @@ asker answers it with one tap in their panel.
 hedge reaches the asker beside the build they did not quite ask for.
 """
 
-import argparse
+import argparse, time
 import json
 import subprocess
 import sys
@@ -49,9 +49,47 @@ def sh(cmd, local):
     return r.stdout
 
 
+PORT = os.environ.get("MISO_PORT", "8095")
+BUILDS_PATH = "miso/shell/panel/noob-button/ask/lifecycle/being-built/announced"
+
+
+def announce(a):
+    """the global `builds` list: one entry per announced build, keyed by its words"""
+    q = "_global"
+    snap = sh(f"curl -s 'localhost:{PORT}/diag/context?user={q}'", a.local)
+    try:
+        vars_ = json.loads(snap)
+    except json.JSONDecodeError:
+        sys.exit(f"stamp_ask: bad snapshot for {q}: {snap[:120]}")
+    row = next((v for v in vars_
+                if v["name"] == "builds" and v["path"] == BUILDS_PATH), None)
+    builds = json.loads(row.get("value") or "[]") if row else []
+    key = a.announce.strip().lower()
+    entry = next((b for b in builds if str(b.get("text", "")).strip().lower() == key), None)
+    if entry is None:
+        entry = {"t": int(time.time() * 1000), "text": a.announce.strip()}
+        builds.append(entry)
+    if entry.get("status") == a.status and (a.build is None or entry.get("build") == a.build):
+        print(f"announced already: {a.status}")
+        return
+    entry["status"] = a.status
+    if a.build is not None:
+        entry["build"] = a.build
+    builds = sorted(builds, key=lambda b: b.get("t", 0))[-40:]
+    body = json.dumps({"path": BUILDS_PATH, "name": "builds", "value": json.dumps(builds)})
+    body_sh = body.replace("'", "'\\''")
+    out = sh(f"curl -s -X POST 'localhost:{PORT}/diag/context?user={q}' -d '{body_sh}'", a.local)
+    if '"ok":true' not in out:
+        sys.exit(f"stamp_ask: POST refused for {q}: {out}")
+    print(f"announced: {entry['text']!r} -> {a.status}" + (f" (build {a.build})" if a.build is not None else ""))
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--text", required=True, help="substring of the ask's text")
+    ap.add_argument("--text", help="substring of the ask's text")
+    ap.add_argument("--announce", metavar="TEXT",
+                    help="a build asked for in conversation: put it on everyone's sheet "
+                         "(global `builds` var); the words match a later shipping call")
     ap.add_argument("--status",
                     choices=["asked", "proposed", "building", "shipped"])
     ap.add_argument("--build", default=None, type=int,
@@ -66,6 +104,12 @@ def main():
 
     if bool(a.status) == bool(a.question):
         ap.error("give exactly one of --status and --question")
+    if bool(a.text) == bool(a.announce):
+        ap.error("give exactly one of --text and --announce")
+    if a.announce:
+        if a.status not in ("building", "shipped"):
+            ap.error("--announce takes --status building or shipped")
+        return announce(a)
     question = None
     if a.question:
         if not a.option:
@@ -97,7 +141,7 @@ def main():
         # the server does no percent-decoding (one parser to keep honest):
         # by-key takes the raw key, whose chars are all query- and shell-safe
         q = user
-        snap = sh(f"curl -s 'localhost:8095/diag/context?user={q}'", a.local)
+        snap = sh(f"curl -s 'localhost:{PORT}/diag/context?user={q}'", a.local)
         try:
             vars_ = json.loads(snap)
         except json.JSONDecodeError:
@@ -130,7 +174,7 @@ def main():
         body = json.dumps({"path": ASKS_PATH, "name": "asks",
                            "value": json.dumps(asks)})
         body_sh = body.replace("'", "'\\''")
-        out = sh(f"curl -s -X POST 'localhost:8095/diag/context?user={q}' "
+        out = sh(f"curl -s -X POST 'localhost:{PORT}/diag/context?user={q}' "
                  f"-d '{body_sh}'", a.local)
         if '"ok":true' not in out:
             sys.exit(f"stamp_ask: POST refused for {user}: {out}")
