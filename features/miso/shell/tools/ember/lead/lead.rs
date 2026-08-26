@@ -6,6 +6,12 @@ impl feature_Lead {
     // outside this and wins.
     fn tools_list(state: String) -> String {
         let prev = existing.tools_list(state);
+        // a default yields to a person's own arrangement, whichever way round
+        // provenance puts the two links (`tools_order_chosen`, a seam on
+        // /tools; false unless something lets someone order the row)
+        if tools_order_chosen() {
+            return prev;
+        }
         let list: serde_json::Value = serde_json::from_str(&prev)
             .unwrap_or(serde_json::json!([]));
         let empty: Vec<serde_json::Value> = Vec::new();

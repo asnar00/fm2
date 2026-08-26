@@ -20,3 +20,5 @@ Tools registered in the order their nodes were written, so the launcher read tap
 ## code description
 
 `lead.rs` — `tools_list` calls `existing` and re-sorts: the lead ids, then the rest.
+
+It asks `tools_order_chosen()` first (the order seam on `/tools`, base `false`) and returns `existing`'s list untouched when the answer is yes. This is the yield the spec above promises, made real: the two asks arrived six minutes apart and provenance put this one OUTSIDE `/reorder`, so chain position alone would have had the default overrule the person. With `/reorder` unticked the seam still answers `false` and this node is exactly what it was.

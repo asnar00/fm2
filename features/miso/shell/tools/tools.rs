@@ -13,6 +13,15 @@ impl feature_Tools {
         String::new()
     }
 
+    // the order seam: has this person arranged the row themselves? The base
+    // answer is no, so whatever default order the composition produces stands.
+    // A feature that lets someone order the row redefines this, and a feature
+    // that imposes a default order asks before imposing it — which is how a
+    // chosen order beats a default whichever way round provenance puts them.
+    fn tools_order_chosen() -> bool {
+        false
+    }
+
     // the colour seam: what colour a tool's button wears (empty = the base
     // monochrome discipline). A styling feature redefines this per tool id.
     fn tool_colour(id: String) -> String {

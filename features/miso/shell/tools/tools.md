@@ -97,6 +97,14 @@ the toolbar becomes the tool's control surface — `‹`, the open tool's icon
 nothing; the open tool redefines it to add its own buttons). Renders are
 whole-DOM swaps, so the "slide" is a mount animation on mode change.
 
+`tools_order_chosen()` is the order seam (base: `false`). A feature that lets
+someone arrange the row redefines it; a feature that imposes a default order
+asks it before imposing one. It exists because two such features cannot rely on
+chain position to settle which wins — provenance may put the default outside the
+choice, as `/lead`'s ask (00:36) did to `/reorder`'s (00:30) — and a chosen order
+must beat a default either way round. With neither composed the base answers no
+and nothing changes.
+
 `tool_colour(id)` is the colour seam (base: empty — the monochrome
 discipline): a styling feature redefines it per tool id, and `render_toolbar`
 emits the colour as a `--tool-colour` custom property with a `tinted` class.

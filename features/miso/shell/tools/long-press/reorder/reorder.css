@@ -1,0 +1,16 @@
+/* a held button must own the finger: without this the browser claims the
+   sideways move as a scroll and the drag never starts on a phone */
+.toolbar .tool-button[data-ev^="tool_"] { touch-action: none; }
+
+/* the held button follows the finger with no easing — easing here would lag
+   behind the hand — and rides above its neighbours while it travels */
+.toolbar .tool-button.dragging {
+  transition: none;
+  position: relative;
+  z-index: 4;
+}
+/* the others part to open a slot, at the toolbar's own pace (/taste 5) */
+.toolbar .tool-button.shifting {
+  transition: transform 0.18s ease-out;
+  animation: none;
+}
