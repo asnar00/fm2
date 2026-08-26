@@ -23,4 +23,4 @@ Nothing to see. The builder's rig can put a real finger on any control by name.
 
 ## code description
 
-`rects.page.js` — wraps `feature_Readout.capture`.
+`rects.page.js` — wraps `feature_Readout.capture`; reposts on viewport resize/scroll, scroll, and focus changes.

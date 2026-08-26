@@ -28,3 +28,16 @@ if (typeof feature_Readout !== 'undefined') {
     return out;
   };
 }
+// where things are changes without the DOM changing: the keyboard's rise and
+// fall, a scroll, a focus — each reposts the readout so a finger never aims
+// by a stale viewport
+if (typeof feature_Readout !== 'undefined') {
+  const fm_rectsRepost = () => { if (feature_Readout.active) feature_Readout.schedule(); };
+  if (window.visualViewport) {
+    visualViewport.addEventListener('resize', fm_rectsRepost);
+    visualViewport.addEventListener('scroll', fm_rectsRepost);
+  }
+  window.addEventListener('scroll', fm_rectsRepost, { passive: true });
+  document.addEventListener('focusin', fm_rectsRepost);
+  document.addEventListener('focusout', fm_rectsRepost);
+}
