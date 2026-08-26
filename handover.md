@@ -30,7 +30,10 @@ shared build dir mid-run (deploy.md rule), a fixed boot wait too short
 under load (now waits for the loop), and fixed 2-second waits on the
 panel and the map on a fresh world's first page (now polled; they open in
 ~200 ms). Six deploys shipped with `SMOKE=skip` while this was found; each
-said so. From here: a gate failure means the app.
+said so. A fifth (build 365): the cold pass's lozenge poll timed out
+while a rig's cargo build on the same laptop was still running — a rerun
+with the machine quiet was green. So: a gate failure on a quiet machine
+means the app; on a busy one, rerun `tools/smoke.py` once before believing it.
 
 **Also open:** transcript anchors are stamped UTC and ask anchors local
 (post-time worker) — a one-line fix in one reader plus a whole-tree
