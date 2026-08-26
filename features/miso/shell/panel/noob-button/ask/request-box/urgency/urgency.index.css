@@ -1,0 +1,4 @@
+/* two buttons, one row; urgency is weight, not colour (/taste 3) */
+.askfile { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.askwhy { color: #77777e; font-size: 12px; margin-right: auto; }
+#askUrgent { font-weight: 700; }

@@ -64,7 +64,7 @@ def asks_in(line):
 def report(user, a, tag):
     t = a.get("t")
     say("%s %s user=%s t=%s tool=%s at=%s" % (
-            tag, a.get("status", "?"), user, t,
+            tag + (" URGENT" if a.get("urgency") == "urgent" else ""), a.get("status", "?"), user, t,
             a.get("tool") or "-", a.get("at") or "-"),
         "    text: %s" % (a.get("text") or "").replace("\n", " "),
         "    proposal: %s" % (a.get("proposal") or "-").replace("\n", " "))
