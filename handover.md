@@ -8,7 +8,15 @@ this — it now carries five agent-instruction nodes: /taste, /did-you-mean,
 
 ## THE HEADLINE: Tara's morning — a live user, ~20 asks shipped from the phone in real time
 
-*Updated 2026-08-26 mid-morning.* Build 357+ is live. Since the evening
+*Updated 2026-08-26 afternoon.* Build 377 is live. Afternoon additions:
+`posts/titled/above` (title over photo), `page/editing/toolbar` (edit/save
+are toolbar buttons — pencil/tick, nothing floats over a card),
+`page/keep/lands` (a tap while writing still lands: ‹ and the picker on
+the first press), `chooser/arrives` (the nøøb sheet opens on the tap; the
+gate's flake was this — see below), and `being-built/announced` (a global
+`builds` list on everyone's sheet, fed by `stamp_ask.py --announce` at
+build start and ship; its agent.md is in the skillset — use it for every
+conversation ask). Since the evening
 handover: the smoke gate (`tools/smoke.py` in deploy.sh — waits for the
 loop to boot, three passes), the deploy rule **ship as built** (`/ship-as-
 built`, an agent-instruction node), `/own-slot` (each world's broadcast
