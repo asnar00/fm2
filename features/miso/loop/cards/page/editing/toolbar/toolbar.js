@@ -54,8 +54,18 @@ if (typeof feature_Editing !== 'undefined') {
       feature_Editing.edit();
     }
   }, true);
+  // the click that follows the pointerdown is swallowed WHEREVER it lands:
+  // on the phone, edit() focuses the words, the keyboard rises, the toolbar
+  // moves up under the finger, and the click hit-tests the ground instead —
+  // which /backdrop reads as "close the card" (#p140). So the pointerdown arms
+  // a swallow for the one click that follows it, for half a second.
+  let fm_swallow = 0;
+  document.addEventListener('pointerdown', (e) => {
+    if (e.target && e.target.closest && e.target.closest('[data-ctl="card_edit"]')) fm_swallow = Date.now() + 600;
+  }, true);
   document.addEventListener('click', (e) => {
-    if (e.target && e.target.closest && e.target.closest('[data-ctl="card_edit"]')) { e.stopPropagation(); e.preventDefault(); }
+    const own = e.target && e.target.closest && e.target.closest('[data-ctl="card_edit"]');
+    if (own || Date.now() < fm_swallow) { fm_swallow = 0; e.stopPropagation(); e.preventDefault(); }
   }, true);
 
   feature_Editing.apply();
