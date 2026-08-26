@@ -129,7 +129,10 @@ async def s_people(pg):
 async def s_edit(pg):
     await pg.click(".card-tile"); await pg.wait_for_timeout(2000)
     # a card opens read-only since /editing: press edit first if it is offered
-    if await pg.evaluate("(() => { const e=document.getElementById('cardEdit'); return !!e && e.classList.contains('show'); })()"):
+    # since /editing/toolbar the control is the pencil in the toolbar; the pill before it
+    if await pg.evaluate("!!document.querySelector('.toolbar [data-ctl=card_edit]')"):
+        await pg.dispatch_event('.toolbar [data-ctl=card_edit]', 'pointerdown'); await pg.wait_for_timeout(600)
+    elif await pg.evaluate("(() => { const e=document.getElementById('cardEdit'); return !!e && e.classList.contains('show'); })()"):
         await pg.dispatch_event('#cardEdit', 'pointerdown'); await pg.wait_for_timeout(600)
     if not await pg.evaluate("!!document.querySelector('.card-page .card-text[contenteditable=true]')"): return False
     await pg.click(".card-text"); await pg.keyboard.press("End"); await pg.keyboard.type(" smoke"); await pg.click(".card-title"); await pg.wait_for_timeout(1500)
