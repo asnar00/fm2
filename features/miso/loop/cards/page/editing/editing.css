@@ -1,0 +1,14 @@
+/* locked blocks read as content, not fields: no border, no focus ring */
+.card-page.locked .card-title, .card-page.locked .card-text { border-color: transparent; cursor: default; }
+.card-page.locked .card-text:empty::before, .card-page.locked .card-title:empty::before { color: #3a3a3f; }
+.card-page.locked .card-pic { cursor: default; }
+/* the edit pill: the quiet pill family, above the toolbar, own cards only */
+#cardEdit {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom) + 72px);
+  padding: 8px 16px; border-radius: 999px;
+  background: #1a1a1d; border: 1px solid #3a3a3f; color: #c9c9d2; font-size: 13px;
+  opacity: 0; pointer-events: none; transition: opacity 0.18s ease-out; z-index: 7;
+  user-select: none; -webkit-user-select: none; cursor: pointer;
+}
+#cardEdit.show { opacity: 1; pointer-events: auto; }

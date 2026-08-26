@@ -3,3 +3,4 @@
 - [x] plus-at-home
 - [x] post-time
 - [x] delete
+- [x] titled
