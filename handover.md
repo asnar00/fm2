@@ -8,7 +8,7 @@ this — it now carries five agent-instruction nodes: /taste, /did-you-mean,
 
 ## THE HEADLINE: Tara's morning — a live user, ~20 asks shipped from the phone in real time
 
-*Updated 2026-08-26 evening.* Build 388 is live. THE SIMULATOR RIG exists
+*Updated 2026-08-26 evening.* Build 398 is live. THE SIMULATOR RIG exists
 (deploy.md, `tools/simrig.py`, `tests/sim/`): the installed app on an
 iPhone 17 simulator, real touches by selector, eyes through /readout+/rects,
 hands through /drive (+js), four tests green (pencil on post/profile/project;
