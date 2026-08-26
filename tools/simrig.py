@@ -10,6 +10,7 @@ in the loop (one is taken on a failure).
   python3 tools/simrig.py tapxy 201 814           # a real finger at a point
   python3 tools/simrig.py text 'hello'            # type on the sim keyboard
   python3 tools/simrig.py drive '{"tap":"#build"}' # a /drive command (synthetic)
+  python3 tools/simrig.py js 'return feature_Loop.state.length' # run JS on the page, get its value
   python3 tools/simrig.py login _bob              # through the login page, by /drive
   python3 tools/simrig.py run tests/sim/pencil.json
   python3 tools/simrig.py shot name               # a screenshot to the evidence dir
@@ -181,6 +182,19 @@ def drive(cmd):
         return r.read().decode()
 
 
+def js(code, timeout=6.0):
+    """run a script on the page (rig only) and return its value"""
+    before = readout().get("t")
+    drive({"js": code})
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        snap = readout()
+        if snap.get("t") != before and "js" in snap:
+            return snap.get("js")
+        time.sleep(0.1)
+    return None
+
+
 def shot(name):
     EVIDENCE.mkdir(parents=True, exist_ok=True)
     p = EVIDENCE / f"{name}.png"
@@ -269,6 +283,12 @@ def run(path):
             text(st["text"]); print(f"  text {st['text']!r}")
         elif "drive" in st:
             drive(st["drive"]); print(f"  drive {st['drive']}")
+        elif "js" in st:
+            v = js(st["js"]); print(f"  js -> {json.dumps(v)[:120]}")
+            if "expect" in st and v != st["expect"]:
+                print(f"  [FAIL] {st.get('name', st['js'][:60])} — got {json.dumps(v)[:80]}"); fails += 1; shot(f"{label}-fail")
+            elif "expect" in st:
+                print(f"  [PASS] {st.get('name', st['js'][:60])}")
         elif "login" in st:
             login(st["login"])
         elif "wait" in st:
@@ -305,6 +325,8 @@ def main():
         tapxy(rest[0], rest[1])
     elif cmd == "text":
         text(rest[0])
+    elif cmd == "js":
+        print(json.dumps(js(rest[0])))
     elif cmd == "drive":
         print(drive(json.loads(rest[0])))
     elif cmd == "login":
