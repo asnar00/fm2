@@ -1,0 +1,311 @@
+#!/usr/bin/env python3
+"""The simulator rig: user-level tests of the installed app on an iPhone
+simulator, at speed — real touches through idb, eyes through /readout (with
+/rects), hands through /drive, the record through /blackbox — no screenshots
+in the loop (one is taken on a failure).
+
+  python3 tools/simrig.py readout                 # the screen as JSON (summary)
+  python3 tools/simrig.py find '[ctl=card_edit]'  # where a selector is
+  python3 tools/simrig.py tap '[ev=tool_posts]'   # a real finger on it
+  python3 tools/simrig.py tapxy 201 814           # a real finger at a point
+  python3 tools/simrig.py text 'hello'            # type on the sim keyboard
+  python3 tools/simrig.py drive '{"tap":"#build"}' # a /drive command (synthetic)
+  python3 tools/simrig.py login _bob              # through the login page, by /drive
+  python3 tools/simrig.py run tests/sim/pencil.json
+  python3 tools/simrig.py shot name               # a screenshot to the evidence dir
+
+Selectors (a mini-language over the readout tree, first match depth-first):
+  #id  .cls  [ev=…]  [ctl=…]  [face=…]  tag  text=…  — joined with spaces
+  for descent: '.toolbar [ctl=card_edit]'. `hidden` nodes never match.
+
+Environment: SIM_UDID (the device), MISO_PORT (the rig server, default 8099),
+SIM_RIG_LOG (the rig server's log, for login codes), SIM_EVIDENCE (dir).
+Written 2026-08-26 (#p164a) after the pencil bug that three desktop rigs
+missed and one phone black box explained.
+"""
+import json, os, pathlib, subprocess, sys, time, urllib.request
+
+UDID = os.environ.get("SIM_UDID", "")
+PORT = os.environ.get("MISO_PORT", "8099")
+BASE = f"http://localhost:{PORT}"
+LOG = os.environ.get("SIM_RIG_LOG", "")
+EVIDENCE = pathlib.Path(os.environ.get("SIM_EVIDENCE", "/tmp/miso-simrig"))
+
+
+def sh(args, **kw):
+    return subprocess.run(args, capture_output=True, text=True, **kw)
+
+
+def udid():
+    if UDID:
+        return UDID
+    out = sh(["xcrun", "simctl", "list", "devices", "booted"]).stdout
+    for line in out.splitlines():
+        if "iPhone" in line and "Booted" in line:
+            return line.split("(")[1].split(")")[0]
+    sys.exit("simrig: no booted iPhone simulator (set SIM_UDID)")
+
+
+# ---- eyes -------------------------------------------------------------------
+
+def readout():
+    try:
+        with urllib.request.urlopen(f"{BASE}/diag/readout", timeout=5) as r:
+            return json.loads(r.read().decode())
+    except Exception as e:
+        sys.exit(f"simrig: no readout from {BASE}: {e}")
+
+
+def parse_sel(sel):
+    steps = []
+    for part in sel.split():
+        want = {}
+        rest = part
+        while rest:
+            if rest.startswith("#"):
+                rest = rest[1:]; i = _end(rest); want["id"] = rest[:i]; rest = rest[i:]
+            elif rest.startswith("."):
+                rest = rest[1:]; i = _end(rest); want.setdefault("cls", []).append(rest[:i]); rest = rest[i:]
+            elif rest.startswith("["):
+                j = rest.index("]"); k, v = rest[1:j].split("=", 1); want[k] = v; rest = rest[j + 1:]
+            elif rest.startswith("text="):
+                want["text"] = rest[5:]; rest = ""
+            else:
+                i = _end(rest); want["tag"] = rest[:i]; rest = rest[i:]
+        steps.append(want)
+    return steps
+
+
+def _end(s):
+    for i, c in enumerate(s):
+        if c in "#.[":
+            return i
+    return len(s)
+
+
+def matches(node, want):
+    if node.get("hidden"):
+        return False
+    for k, v in want.items():
+        if k == "cls":
+            have = set((node.get("cls") or "").split())
+            if not all(c in have for c in v):
+                return False
+        elif k == "text":
+            if v.lower() not in (node.get("text") or "").lower():
+                return False
+        elif str(node.get(k, "")) != v:
+            return False
+    return True
+
+
+def find_all(tree, steps):
+    """depth-first; each step must match a descendant of the previous match"""
+    def walk(node, i, out):
+        if node is None:
+            return
+        if matches(node, steps[i]):
+            if i == len(steps) - 1:
+                out.append(node)
+            else:
+                for k in node.get("kids", []):
+                    walk(k, i + 1, out)
+        for k in node.get("kids", []):
+            walk(k, i, out)
+    out = []
+    walk(tree, 0, out)
+    return out
+
+
+def find(sel, snap=None):
+    snap = snap or readout()
+    body = snap.get("body") or {}
+    hits = find_all(body, parse_sel(sel))
+    return hits[0] if hits else None, body
+
+
+def summary(node, depth=0, out=None, limit=400):
+    out = [] if out is None else out
+    if len(out) >= limit:
+        return out
+    bits = [node.get("tag", "?")]
+    if node.get("id"): bits.append("#" + node["id"])
+    if node.get("cls"): bits.append("." + ".".join(node["cls"].split()[:3]))
+    if node.get("ev"): bits.append(f"[ev={node['ev']}]")
+    if node.get("ctl"): bits.append(f"[ctl={node['ctl']}]")
+    if node.get("face"): bits.append(f"[face={node['face']}]")
+    if node.get("ce"): bits.append("[ce]")
+    if node.get("hidden"): bits.append("(hidden)")
+    if node.get("r"): bits.append(str(node["r"]))
+    if node.get("text"): bits.append(repr(node["text"][:50]))
+    out.append("  " * depth + " ".join(bits))
+    for k in node.get("kids", []):
+        summary(k, depth + 1, out, limit)
+    return out
+
+
+# ---- hands ------------------------------------------------------------------
+
+def tapxy(x, y):
+    r = sh(["idb", "ui", "tap", "--udid", udid(), str(int(x)), str(int(y))])
+    if r.returncode != 0:
+        sys.exit(f"simrig: idb tap failed: {r.stderr.strip()[:200]}")
+
+
+def tap(sel, snap=None):
+    node, body = find(sel, snap)
+    if not node or not node.get("r"):
+        return False
+    x, y, w, h = node["r"]
+    # the rectangle is layout-viewport; if the keyboard has moved the screen
+    # (visual viewport offset) the point on glass is lower by that much
+    vv = body.get("vv") or [0, 0]
+    tapxy(x + w / 2, y + h / 2 - (vv[0] or 0))
+    return True
+
+
+def text(s):
+    sh(["idb", "ui", "text", "--udid", udid(), s])
+
+
+def key(code):
+    sh(["idb", "ui", "key", "--udid", udid(), str(code)])
+
+
+def drive(cmd):
+    data = json.dumps(cmd).encode()
+    req = urllib.request.Request(f"{BASE}/diag/drive", data=data, method="POST",
+                                 headers={"content-type": "application/json"})
+    with urllib.request.urlopen(req, timeout=5) as r:
+        return r.read().decode()
+
+
+def shot(name):
+    EVIDENCE.mkdir(parents=True, exist_ok=True)
+    p = EVIDENCE / f"{name}.png"
+    sh(["xcrun", "simctl", "io", udid(), "screenshot", str(p)])
+    return p
+
+
+def wait_for(sel, timeout=8.0, absent=False):
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        node, _ = find(sel)
+        if (node is not None) != absent:
+            return node
+        time.sleep(0.15)
+    return None
+
+
+# ---- the login page, driven ------------------------------------------------
+
+PHONES = {"_alice": "+15551234567", "_bob": "+15551234741", "_smoke": "+15550000999"}
+
+
+def login(name):
+    phone = PHONES.get(name) or name
+    drive({"type": "#phone", "value": phone})
+    time.sleep(0.4)
+    drive({"tap": "#phoneStep button"})
+    pin = ""
+    for _ in range(40):
+        time.sleep(0.25)
+        try:
+            for line in pathlib.Path(LOG).read_text().splitlines():
+                if f"test user {name} pin" in line:
+                    pin = line.split()[-1]
+        except Exception:
+            pass
+        if pin and wait_for("#pin", 0.1):
+            break
+    if not pin:
+        sys.exit("simrig: no login code in the rig log (SIM_RIG_LOG)")
+    drive({"type": "#pin", "value": pin})
+    print(f"login {name}: code {pin} typed")
+
+
+# ---- scripts ----------------------------------------------------------------
+
+def check(a, snap):
+    body = snap.get("body") or {}
+    sel = a.get("find")
+    node = find_all(body, parse_sel(sel))[0] if sel and find_all(body, parse_sel(sel)) else None
+    if a.get("exists") is False:
+        return node is None, f"{sel} absent"
+    if node is None:
+        return False, f"{sel} not found"
+    if "text" in a and a["text"].lower() not in (node.get("text") or "").lower():
+        return False, f"{sel} text {node.get('text')!r} != {a['text']!r}"
+    if "face" in a and node.get("face") != a["face"]:
+        return False, f"{sel} face {node.get('face')} != {a['face']}"
+    if "ce" in a and bool(node.get("ce")) != a["ce"]:
+        return False, f"{sel} editable {bool(node.get('ce'))} != {a['ce']}"
+    return True, f"{sel} ok"
+
+
+def run(path):
+    steps = json.loads(pathlib.Path(path).read_text())
+    name = pathlib.Path(path).stem
+    fails = 0
+    for i, st in enumerate(steps):
+        label = f"{name}[{i}]"
+        if "tap" in st:
+            ok = tap(st["tap"])
+            print(f"  tap {st['tap']}: {'ok' if ok else 'NOT FOUND'}")
+            if not ok: fails += 1; shot(f"{label}-notfound")
+        elif "tapxy" in st:
+            tapxy(*st["tapxy"]); print(f"  tap at {st['tapxy']}")
+        elif "text" in st:
+            text(st["text"]); print(f"  text {st['text']!r}")
+        elif "drive" in st:
+            drive(st["drive"]); print(f"  drive {st['drive']}")
+        elif "login" in st:
+            login(st["login"])
+        elif "wait" in st:
+            time.sleep(st["wait"] / 1000)
+        elif "wait_for" in st:
+            node = wait_for(st["wait_for"], st.get("timeout", 8))
+            print(f"  wait_for {st['wait_for']}: {'ok' if node else 'TIMEOUT'}")
+            if not node: fails += 1; shot(f"{label}-timeout")
+        elif "assert" in st:
+            time.sleep(0.4)
+            ok, why = check(st["assert"], readout())
+            print(f"  [{'PASS' if ok else 'FAIL'}] {st.get('name', why)}" + ("" if ok else f" — {why}"))
+            if not ok: fails += 1; shot(f"{label}-fail")
+        elif "shot" in st:
+            print(f"  shot {shot(st['shot'])}")
+        elif "note" in st:
+            print(f"  -- {st['note']}")
+    print(f"{name}: {'all green' if not fails else f'{fails} failure(s)'}")
+    return fails
+
+
+def main():
+    a = sys.argv[1:]
+    if not a:
+        sys.exit(__doc__)
+    cmd, rest = a[0], a[1:]
+    if cmd == "readout":
+        print("\n".join(summary(readout().get("body") or {})))
+    elif cmd == "find":
+        node, _ = find(rest[0]); print(json.dumps(node)[:400] if node else "not found")
+    elif cmd == "tap":
+        print("ok" if tap(rest[0]) else "not found")
+    elif cmd == "tapxy":
+        tapxy(rest[0], rest[1])
+    elif cmd == "text":
+        text(rest[0])
+    elif cmd == "drive":
+        print(drive(json.loads(rest[0])))
+    elif cmd == "login":
+        login(rest[0])
+    elif cmd == "shot":
+        print(shot(rest[0]))
+    elif cmd == "run":
+        sys.exit(1 if sum(run(p) for p in rest) else 0)
+    else:
+        sys.exit(__doc__)
+
+
+if __name__ == "__main__":
+    main()

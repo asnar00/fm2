@@ -1,3 +1,4 @@
 - [x] standalone
 - [x] readout
 - [x] blackbox
+- [x] rig
