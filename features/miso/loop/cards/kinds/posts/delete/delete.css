@@ -1,0 +1,20 @@
+/* the drawn bin goes black on /ember's tint, the way the plus beside it does
+   (/glyphs; /plus-tinted's rule). With /ember unticked the button is not
+   tinted and this never matches. */
+.tool-button.tinted[data-ev="posts_delete"] { color: #000; }
+
+/* asked rather than drawn: the button holds a word for three seconds, so it
+   grows to the word and drops to the size text is read at. Same ground, same
+   colour — the question is the change, not a new alarm (/taste 3). */
+.tool-button[data-ev="posts_delete"][data-sure="1"] {
+  width: auto; min-width: 50px; padding: 0 12px;
+  font-size: 13px; font-weight: 600; letter-spacing: 0.01em;
+}
+
+/* a card that is a tombstone, drawn as a page anyway: one line at the
+   ignorable step of /taste 2, on the page's own ground. */
+.card-page.deleted { min-height: 0; }
+.card-gone {
+  color: #77777e; font-size: 14px;
+  padding: 18px 2px;
+}

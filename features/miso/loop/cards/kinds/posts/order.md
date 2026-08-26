@@ -2,3 +2,4 @@
 - [x] tile-words
 - [x] plus-at-home
 - [x] post-time
+- [x] delete
