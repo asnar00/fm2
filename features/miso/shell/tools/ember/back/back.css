@@ -1,0 +1,4 @@
+/* the ‹ is quiet: plain ink on the dark ground, no tint — it is a door,
+   not a tool. It sits first; the open tool's button keeps its auto margin
+   so ‹ + tool still own the left edge together (ember's open-tool layout) */
+.toolbar .tool-button.back { background: #1a1a1d; border: 1px solid #3a3a3f; color: #c9c9d2; }
