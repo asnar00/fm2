@@ -132,7 +132,12 @@ async def s_undo(pg):
 @step("the admin sees the invite plus; a tap opens the invite page")
 async def s_invite(pg):
     await pg.click('[data-ev="tool_account"]'); await pg.wait_for_timeout(1000)   # back to the set
-    if not await pg.evaluate("!!document.querySelector('.toolbar [data-ev=\"tool_invite\"]')"): return False
+    # the plus appears once users/invited has answered — on a slow network that is later
+    for _ in range(10):
+        if await pg.evaluate("!!document.querySelector('.toolbar [data-ev=\"tool_invite\"]')"): break
+        await pg.wait_for_timeout(500)
+    else:
+        return False
     await pg.click('.toolbar [data-ev="tool_invite"]'); await pg.wait_for_timeout(1500)
     ok = await pg.evaluate("!!document.querySelector('.invite-page .invite-new')")
     await go_home(pg)
