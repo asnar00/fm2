@@ -118,6 +118,9 @@ async def s_people(pg):
 @step("the own tile opens an editable card and an edit is saved")
 async def s_edit(pg):
     await pg.click(".card-tile"); await pg.wait_for_timeout(2000)
+    # a card opens read-only since /editing: press edit first if it is offered
+    if await pg.evaluate("(() => { const e=document.getElementById('cardEdit'); return !!e && e.classList.contains('show'); })()"):
+        await pg.dispatch_event('#cardEdit', 'pointerdown'); await pg.wait_for_timeout(600)
     if not await pg.evaluate("!!document.querySelector('.card-page .card-text[contenteditable=true]')"): return False
     await pg.click(".card-text"); await pg.keyboard.press("End"); await pg.keyboard.type(" smoke"); await pg.click(".card-title"); await pg.wait_for_timeout(1500)
     txt = await pg.evaluate("(document.querySelector('.card-text')||{}).innerText || ''")
