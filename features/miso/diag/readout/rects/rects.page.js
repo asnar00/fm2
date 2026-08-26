@@ -19,6 +19,9 @@ if (typeof feature_Readout !== 'undefined') {
       const vv = window.visualViewport;
       out.vv = vv ? [Math.round(vv.offsetTop), Math.round(vv.height)] : null;
       out.sy = Math.round(window.scrollY);
+      // the web view is not the screen: a standalone app sits under the status
+      // bar, so a finger needs screen.height - innerHeight added to y
+      out.screen = [screen.width, screen.height, window.innerWidth, window.innerHeight];
       out.focus = document.activeElement && document.activeElement !== document.body
         ? (document.activeElement.tagName.toLowerCase() + (document.activeElement.className ? '.' + String(document.activeElement.className).split(' ')[0] : '')) : '';
     }

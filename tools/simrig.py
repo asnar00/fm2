@@ -162,7 +162,9 @@ def tap(sel, snap=None):
     # the rectangle is layout-viewport; if the keyboard has moved the screen
     # (visual viewport offset) the point on glass is lower by that much
     vv = body.get("vv") or [0, 0]
-    tapxy(x + w / 2, y + h / 2 - (vv[0] or 0))
+    sc = body.get("screen") or [0, 0, 0, 0]
+    inset = max(0, (sc[1] or 0) - (sc[3] or 0)) if sc[1] and sc[3] else 0   # the status bar above the web view
+    tapxy(x + w / 2, y + h / 2 - (vv[0] or 0) + inset)
     return True
 
 
