@@ -2,3 +2,4 @@
 - [x] features-button
 - [x] fresh-catalog
 - [x] enforced
+- [x] everywhere

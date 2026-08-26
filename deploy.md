@@ -112,3 +112,8 @@ a server with no successor waiting — the port does go quiet then.
 pipefail` (or test for `build OK` in the output) in every rig script;
 twice today a link error scrolled past a `| tail` and a rig ran the
 previous binary, proving nothing.
+
+**Nothing links while a deploy runs** (2026-08-26): `products/miso/build` is
+one directory — deploy.sh links into it and the smoke gate serves from it.
+A `fmlink` or a rig started during a deploy hands the gate a half-written
+site and it fails for the wrong reason. Wait for `deployed —`, then link.

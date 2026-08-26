@@ -91,3 +91,5 @@ no results at all the ask files immediately and the box says so.
 Deploy's warning lives in deploy.sh (scaffolding): after shipping, it
 reads `/tmp/miso-vars/user.*.asks.json` on the mini and prints every
 entry still `"asked"`.
+
+*(Seam added 2026-08-26 for `/everywhere`: `feature_Ask.stripTicks(box)` — the default strips the ticks from result rows; a click on a tick is ignored by the row handler, as the chooser's own is.)*

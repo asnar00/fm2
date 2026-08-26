@@ -1,4 +1,8 @@
 const feature_Ask = {
+  // what happens to the ticks on result rows (default: they go)
+  stripTicks(box) {
+    for (const t of box.querySelectorAll('.ctick')) t.remove();
+  },
   norm(t) { return String(t).toLowerCase().match(/[a-z0-9]+/g) || []; },
 
   // query words: drop the little words ("do", "my", "me") unless that
@@ -67,8 +71,10 @@ const feature_Ask = {
     if (html) {
       html += '<div class="askfile"><button id="askSend">not it? send to the builder</button></div>';
       box.innerHTML = html;
-      // result rows introduce, they don't configure: the tick stays home
-      for (const t of box.querySelectorAll('.ctick')) t.remove();
+      // the tick seam: result rows introduce, they don't configure — the
+      // default strips the ticks. A feature that lets a found feature be
+      // switched right here replaces this (/everywhere, 2026-08-26).
+      feature_Ask.stripTicks(box);
       $('askSend').onclick = () => {
         feature_Ask.file(text);
         box.innerHTML = '<div class="asknote">filed — the builder will see it</div>';
@@ -113,6 +119,7 @@ const feature_Ask = {
       if (typeof feature_Chooser === 'undefined') return;
       const read = e.target.closest('[data-read]');
       if (read) { feature_Chooser.reader(read.getAttribute('data-read')); return; }
+      if (e.target.closest('.ctick')) return; // a tick is the loop's business (the chooser's own rule)
       const row = e.target.closest('.crow[data-path]');
       if (row) feature_Chooser.more(row.getAttribute('data-path'));
     });
