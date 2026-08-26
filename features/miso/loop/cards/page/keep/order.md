@@ -1,2 +1,3 @@
 - [x] newline
 - [x] unchanged
+- [x] manual
