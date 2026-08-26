@@ -56,14 +56,18 @@ BUILDS_PATH = "miso/shell/panel/noob-button/ask/lifecycle/being-built/announced"
 def announce(a):
     """the global `builds` list: one entry per announced build, keyed by its words"""
     q = "_global"
-    snap = sh(f"curl -s 'localhost:{PORT}/diag/context?user={q}'", a.local)
-    try:
-        vars_ = json.loads(snap)
-    except json.JSONDecodeError:
-        sys.exit(f"stamp_ask: bad snapshot for {q}: {snap[:120]}")
-    row = next((v for v in vars_
-                if v["name"] == "builds" and v["path"] == BUILDS_PATH), None)
-    builds = json.loads(row.get("value") or "[]") if row else []
+    # the door writes the shared layer but reads it as a fresh world, so the
+    # current list is the last `set` in the layer's own log (rig-found,
+    # 2026-08-26)
+    last = sh(f"grep '\"name\":\"builds\"' {CTX_DIR}/_global.log 2>/dev/null | tail -1 || true", a.local)
+    builds = []
+    if last.strip():
+        try:
+            op = json.loads(last.strip())
+            if op.get("path") == BUILDS_PATH:
+                builds = json.loads(op.get("value") or "[]")
+        except json.JSONDecodeError:
+            sys.exit(f"stamp_ask: bad op in _global.log: {last[:120]}")
     key = a.announce.strip().lower()
     entry = next((b for b in builds if str(b.get("text", "")).strip().lower() == key), None)
     if entry is None:
@@ -75,6 +79,8 @@ def announce(a):
     entry["status"] = a.status
     if a.build is not None:
         entry["build"] = a.build
+    elif a.status == "building":
+        entry.pop("build", None)
     builds = sorted(builds, key=lambda b: b.get("t", 0))[-40:]
     body = json.dumps({"path": BUILDS_PATH, "name": "builds", "value": json.dumps(builds)})
     body_sh = body.replace("'", "'\\''")
