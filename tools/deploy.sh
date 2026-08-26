@@ -50,8 +50,12 @@ WebAssembly.instantiate(fs.readFileSync(process.argv[1]), {})
 # SMOKE=skip bypasses it for a hotfix whose rig is known to be the problem;
 # say so in the commit.
 if [ "${SMOKE:-run}" != "skip" ]; then
-  python3 "$SRC/tools/smoke.py" --port "${SMOKE_PORT:-8140}" || {
-    echo "deploy: the smoke gate failed — nothing shipped" >&2; exit 1; }
+  # the whole gate transcript is kept beside the build, so a failure can be
+  # read pass by pass afterwards (three first-attempt failures on 2026-08-26
+  # went undiagnosed because only a grep of the output survived)
+  python3 "$SRC/tools/smoke.py" --port "${SMOKE_PORT:-8140}" 2>&1 | tee "$SRC/products/miso/build/smoke.log"
+  if [ "${PIPESTATUS[0]}" != "0" ]; then
+    echo "deploy: the smoke gate failed — nothing shipped (products/miso/build/smoke.log)" >&2; exit 1; fi
 fi
 
 # provenance visibility: which feature nodes does this release touch, and did
