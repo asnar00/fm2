@@ -1,2 +1,3 @@
-- [x] from-picture
 - [x] map-pin
+- [x] from-picture
+- [x] to-map

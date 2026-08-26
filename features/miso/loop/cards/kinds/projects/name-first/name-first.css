@@ -1,4 +1,5 @@
 /* in a project's people list the name leads and the role follows: the
    person is the thing itself (/taste 2), the role is what they do */
-.proj-rolerow .proj-role { order: 1; text-align: left; min-width: 0; }
-.proj-rolerow .ctext { order: 0; flex: none; }
+.proj-row .proj-name { order: 0; flex: none; }
+.proj-row .proj-role { order: 1; flex: 1; min-width: 0; text-align: left; }
+.proj-row .proj-x { order: 2; }
