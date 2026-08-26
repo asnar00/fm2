@@ -239,3 +239,15 @@ same wall and used "newest stamp + 1").
 **The lesson:** inside the loop's `update`/`render` there is no clock —
 time arrives on the event from the page. Nothing in the tree said so;
 now the ledger does, and a `loop` agent-instruction should when one exists.
+
+## 2026-08-26 — four theories before one log
+
+The deploy gate failed its first attempt five times; I published a cause
+for it three times (a busy laptop, a background shell, a rig beforehand)
+and retracted each, because I had grepped the gate's output down to a few
+lines and thrown the rest away. The sixth failure was diagnosed in one run
+once the gate kept its whole transcript and dumped the page's state at
+the failing step: a stuck `no-store` fetch of `tree.json`. Rule: a flaky
+gate is diagnosed from a full log and a state dump at the failure, never
+from correlation with what I happened to be doing; and nothing goes into
+deploy.md as a cause until the log shows it.

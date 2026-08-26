@@ -113,13 +113,18 @@ pipefail` (or test for `build OK` in the output) in every rig script;
 twice today a link error scrolled past a `| tail` and a rig ran the
 previous binary, proving nothing.
 
-**The gate sometimes fails a first attempt and passes the rerun** (2026-08-26,
-three times on builds 365→370: cold pass — lozenge, projects, map, lozenge
-again). Not the app, not a busy machine, not a background shell, not a rig
-beforehand — each was tested and cleared. Undiagnosed because no full log
-survived; deploy.sh now keeps the gate's transcript at
-`products/miso/build/smoke.log`. On a failure: read that log first, and
-rerun once before believing it.
+**The gate's first-attempt failures were the app** (2026-08-26, five
+times on builds 365→370, diagnosed on the sixth): under a freshly installed
+service worker with new content, the chooser's `cache: 'no-store'` fetch of
+`features/tree.json` never returned, `/panel`'s open awaited it, the sheet
+never showed, and when the stuck open finally resolved it raised the shade
+over the page — every later click timed out. Only a real change reproduced
+it (a relink is old content). Fixed by `/chooser/arrives`. The gate now
+keeps its full transcript at `products/miso/build/smoke.log`, and on a
+lozenge failure dumps what is under it, the panel's state, fetch timings
+and service-worker probes (`SMOKE_DUMP=1` forces the dump on a pass, for
+comparison). On a failure: read the log first; theories without a log
+went wrong four times that day.
 
 **Nothing links in `products/miso/build` while a deploy runs** (2026-08-26):
 deploy.sh links into it and the smoke gate serves from it — a relink hands

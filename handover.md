@@ -33,11 +33,12 @@ panel and the map on a fresh world's first page (now polled; they open in
 said so. A fifth (build 365): the cold pass's lozenge poll timed out
 while a rig's cargo build on the same laptop was still running — a rerun
 with the machine quiet was green. So: a gate failure on a quiet machine
-means the app — except that a FIRST attempt sometimes fails its cold pass
-(lozenge, projects, map) and the rerun passes; three times today, causes
-tested and cleared: busy machine, background shell, a rig beforehand.
-deploy.sh now keeps the gate's full log at products/miso/build/smoke.log;
-the next failure gets read there, not theorised (deploy.md).
+means the app — and the five first-attempt failures of 2026-08-26 WERE the
+app: a `no-store` re-fetch of `features/tree.json` that hangs under a fresh
+service worker, holding the nøøb sheet shut (the phone's "doesn't press"
+of that morning, too). Fixed by `/chooser/arrives`; the gate's failure
+dump and full log (`products/miso/build/smoke.log`) are what found it
+(deploy.md).
 
 **Also open:** transcript anchors are stamped UTC and ask anchors local
 (post-time worker) — a one-line fix in one reader plus a whole-tree
