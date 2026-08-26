@@ -7,15 +7,17 @@
 // within the same tap sends it, and is stopped before /backdrop reads the
 // bare ground as "close the card".
 {
-  let fm_downEv = '', fm_downAt = 0;
+  // no time window (#p158: the keyboard's rise can delay the click past any
+  // budget) — the press remembers, the next click consumes, a new press
+  // overwrites
+  let fm_downEv = '';
   document.addEventListener('pointerdown', (e) => {
     const el = e.target && e.target.closest ? e.target.closest('[data-ev]') : null;
     fm_downEv = el ? (el.getAttribute('data-ev') || '') : '';
-    fm_downAt = Date.now();
   }, true);
   document.addEventListener('click', (e) => {
     const ev = fm_downEv; fm_downEv = '';
-    if (!ev || Date.now() - fm_downAt > 700) return;
+    if (!ev) return;
     if (e.target && e.target.closest && e.target.closest('[data-ev]')) return;   // it landed: /loop sends it
     if (typeof feature_LongPress !== 'undefined' && feature_LongPress.fired) return;   // a hold, not a tap
     if (typeof feature_Loop === 'undefined' || !feature_Loop.state) return;

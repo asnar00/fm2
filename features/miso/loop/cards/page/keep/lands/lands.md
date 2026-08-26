@@ -10,13 +10,13 @@ Writing in a card, tap ‹ or the grid/list/map picker: it works the first time.
 
 ## spec
 
-A tap is a pointerdown and then a click. While a block is being written the pointerdown blurs it; the blur is `/keep`'s save; the save repaints the screen; and the button under the finger is a new element by the time the click arrives — the click lands on nothing, and `/backdrop` may even read the bare ground as "close the card". Ash saw it on ‹ and on the picker (#p150); `/editing/toolbar` had met the same thing on its pencil and swallowed its own click. One reading, so it builds, and generally: the pointerdown remembers the `data-ev` under the finger; a click within the same tap (700 ms) that finds no `data-ev` sends that event itself and stops there. A click that lands is left to `/loop`; a hold that `/long-press` fired is not a tap. Untick and the second press is needed again.
+A tap is a pointerdown and then a click. While a block is being written the pointerdown blurs it; the blur is `/keep`'s save; the save repaints the screen; and the button under the finger is a new element by the time the click arrives — the click lands on nothing, and `/backdrop` may even read the bare ground as "close the card". Ash saw it on ‹ and on the picker (#p150); `/editing/toolbar` had met the same thing on its pencil and swallowed its own click. One reading, so it builds, and generally: the pointerdown remembers the `data-ev` under the finger; the next click that finds no `data-ev` sends that event itself and stops there — no time window (#p158: the keyboard's rise delays the click past any budget); a new press overwrites the memory. A click that lands is left to `/loop`; a hold that `/long-press` fired is not a tap. Untick and the second press is needed again.
 
 ## hostile cases
 
 - A tap that lands normally: `/loop` sends it once; this node sees a button under the click and stays out.
 - A long-press on a tool button: `/long-press` marks `fired`; no resend.
-- Pointerdown on a button, finger dragged off, released elsewhere: the click lands off-button within 700 ms and the event is sent — the same as a repainted button; a drag cancels by taking longer.
+- Pointerdown on a button, finger dragged off, released elsewhere: the click lands off-button and the event is sent — the same as a repainted button. A hold is not a tap: `/long-press` marks it and no event is sent.
 
 ## glossary
 

@@ -15,7 +15,7 @@ Open one of your own cards: a pencil sits in the toolbar. Tap it and the card un
 ## hostile cases
 
 - A repaint mid-edit: `apply` runs again, finds the control gone, puts it back with the right face.
-- On the phone, the pencil's tap closed the post instead (#p140): `edit()` focuses the words, the keyboard rises, the toolbar shifts, and the tap's click hit-tests the ground — `/backdrop`'s cue to close. The pointerdown arms a swallow for the one click that follows, wherever it lands.
+- On the phone, the pencil's tap closed the post instead (#p140): `edit()` focuses the words, the keyboard rises, the toolbar shifts, and the tap's click hit-tests the ground — `/backdrop`'s cue to close. The pointerdown arms a swallow for the one click that follows, wherever it lands — not for a time (600 ms was still too short with the keyboard rising, #p158) but until that click comes or another press lands elsewhere.
 - A foreign card: `/editing` has no page for it, so no control.
 - A tool without a colour: the control is untinted, like undo before `/tinted`.
 

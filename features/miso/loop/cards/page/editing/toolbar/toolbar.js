@@ -59,13 +59,16 @@ if (typeof feature_Editing !== 'undefined') {
   // moves up under the finger, and the click hit-tests the ground instead —
   // which /backdrop reads as "close the card" (#p140). So the pointerdown arms
   // a swallow for the one click that follows it, for half a second.
-  let fm_swallow = 0;
+  // Not a time window: a 600 ms one was still too short on the phone, where
+  // the keyboard's rise delays the click (#p158). The press arms; the next
+  // click anywhere is the one consumed; a press anywhere else disarms.
+  let fm_swallow = false;
   document.addEventListener('pointerdown', (e) => {
-    if (e.target && e.target.closest && e.target.closest('[data-ctl="card_edit"]')) fm_swallow = Date.now() + 600;
+    fm_swallow = !!(e.target && e.target.closest && e.target.closest('[data-ctl="card_edit"]'));
   }, true);
   document.addEventListener('click', (e) => {
     const own = e.target && e.target.closest && e.target.closest('[data-ctl="card_edit"]');
-    if (own || Date.now() < fm_swallow) { fm_swallow = 0; e.stopPropagation(); e.preventDefault(); }
+    if (own || fm_swallow) { fm_swallow = false; e.stopPropagation(); e.preventDefault(); }
   }, true);
 
   feature_Editing.apply();
