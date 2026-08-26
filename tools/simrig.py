@@ -14,6 +14,8 @@ in the loop (one is taken on a failure).
   python3 tools/simrig.py login _bob              # through the login page, by /drive
   python3 tools/simrig.py run tests/sim/pencil.json
   python3 tools/simrig.py shot name               # a screenshot to the evidence dir
+  python3 tools/simrig.py native                  # is a native alert/sheet over the page?
+  python3 tools/simrig.py press Allow             # press a native button by label
 
 Selectors (a mini-language over the readout tree, first match depth-first):
   #id  .cls  [ev=…]  [ctl=…]  [face=…]  tag  text=…  — joined with spaces
@@ -140,6 +142,7 @@ def summary(node, depth=0, out=None, limit=400):
     if node.get("hidden"): bits.append("(hidden)")
     if node.get("r"): bits.append(str(node["r"]))
     if node.get("text"): bits.append(repr(node["text"][:50]))
+    if node.get("tag") == "body": bits.append(f"vv={node.get('vv')} sy={node.get('sy')} screen={node.get('screen')} focus={node.get('focus')!r}")
     out.append("  " * depth + " ".join(bits))
     for k in node.get("kids", []):
         summary(k, depth + 1, out, limit)
@@ -164,8 +167,65 @@ def tap(sel, snap=None):
     vv = body.get("vv") or [0, 0]
     sc = body.get("screen") or [0, 0, 0, 0]
     inset = max(0, (sc[1] or 0) - (sc[3] or 0)) if sc[1] and sc[3] else 0   # the status bar above the web view
-    tapxy(x + w / 2, y + h / 2 - (vv[0] or 0) + inset)
+    px, py = x + w / 2, y + h / 2 - (vv[0] or 0) + inset
+    print(f"      (finger at {int(px)},{int(py)}: rect {node['r']} vv {vv} inset {inset})")
+    tapxy(px, py)
     return True
+
+
+# ---- the native eye ---------------------------------------------------------
+# the readout sees the DOM; a permission alert, the passkey sheet, a share
+# sheet are native and invisible to it. `idb ui describe-point` names the
+# native element under a point, so the rig can see them without a screenshot.
+
+def describe(x, y):
+    r = sh(["idb", "ui", "describe-point", "--udid", udid(), str(int(x)), str(int(y))])
+    try:
+        return json.loads(r.stdout)
+    except Exception:
+        return {}
+
+
+PREFER = ["Allow While Using App", "Allow", "Cancel", "Not Now", "OK", "Don\u2019t Allow", "Don't Allow", "Continue"]
+
+
+def native_alert():
+    """is something native covering the page? the element at the screen's
+    centre is the web view unless an alert is up"""
+    d = describe(201, 437)
+    if not d:
+        return None
+    if (d.get("type") == "Application") or (d.get("AXLabel") == "Web"):
+        return None
+    return d
+
+
+def press_native(labels=PREFER, ys=range(300, 860, 32), xs=(70, 140, 201, 262, 332)):
+    """scan the alert band for a button with one of the labels; press the first found"""
+    seen = {}
+    for y in ys:
+        for x in xs:
+            d = describe(x, y)
+            lab = d.get("AXLabel") or ""
+            if d.get("type") == "Button" and lab and lab not in seen:
+                seen[lab] = d.get("frame") or {}
+    for want in labels:
+        if want in seen:
+            f = seen[want]
+            tapxy(f["x"] + f["width"] / 2, f["y"] + f["height"] / 2)
+            print(f"      (native: pressed {want!r})")
+            return want
+    if seen:
+        print(f"      (native buttons seen: {list(seen)})")
+    return None
+
+
+def native_guard():
+    d = native_alert()
+    if d:
+        print(f"      (native element over the page: {d.get('type')} {d.get('AXLabel')!r})")
+        press_native()
+        time.sleep(1.2)
 
 
 def text(s):
@@ -296,6 +356,7 @@ def run(path):
     for i, st in enumerate(steps):
         label = f"{name}[{i}]"
         if "tap" in st:
+            native_guard()
             ok = tap(st["tap"])
             print(f"  tap {st['tap']}: {'ok' if ok else 'NOT FOUND'}")
             if not ok: fails += 1; shot(f"{label}-notfound")
@@ -347,6 +408,10 @@ def main():
         node, _ = find(rest[0]); print(json.dumps(node)[:400] if node else "not found")
     elif cmd == "tap":
         print("ok" if tap(rest[0]) else "not found")
+    elif cmd == "native":
+        print(native_alert() or "nothing native over the page")
+    elif cmd == "press":
+        print(press_native([rest[0]] if rest else PREFER))
     elif cmd == "tapxy":
         tapxy(rest[0], rest[1])
     elif cmd == "text":
