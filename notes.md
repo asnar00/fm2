@@ -2850,3 +2850,24 @@ style because principle 1 says nothing arrives white. The instruction
 was a node; it composed; the worker obeyed it as it would code. That is
 the third language paying for itself, and the argument for moving more
 of agents.md/hybrid.md into the tree.
+
+## two clocks in provenance order (2026-08-26, found building `/post-time`)
+
+`node_key` reads a transcript anchor's timestamp from the line
+`*YYYY-MM-DD HH:MM*` that `export_transcript.py` writes, and that line comes
+from the session log's ISO timestamp — **UTC**. A field ask's anchor is
+`asks#<ms>`, and fmlink turns it into a stamp with
+`datetime.fromtimestamp(ms/1000)` — **local**. In August that is an hour
+apart, so a prompt and an ask a minute apart in real time can linearise an
+hour out of order.
+
+Caught, not suffered: `/post-time` cites #p103 (01:12 BST, written into the
+transcript as 00:12) and composes *before* three asks filed at 01:02–01:10.
+Its links touch none of the same chains, so the composed behaviour is
+identical either way — but the next collision may not be so lucky, and it
+would present as a chain silently in the wrong order rather than as an error.
+
+The fix is one line in one of the two readers — either export the transcript
+stamp in local time, or read the ask's ms as UTC — and it reorders nodes
+across the whole tree, so it wants a `--chains` diff and a deliberate run of
+its own rather than a drive-by.

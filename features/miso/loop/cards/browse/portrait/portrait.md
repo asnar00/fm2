@@ -10,7 +10,7 @@ In the list view each row shows the card's picture on the left (or its initial, 
 
 ## spec
 
-`/browse`'s list was the bare `.crow` grammar: a word, a bold title, a date. Ash asked for a picture-led row (#p85). One reading, so it builds. This node redefines `browse_list_html`: each row is the card's face — the first picture block, cropped square at 46px, or the title's initial dimmed — then a body with the name, `browse_row_left`'s word (the distance under `/people`, the type elsewhere) and the date on one line, and an **excerpt** beneath: the first text block with words, whitespace folded, cut at a word boundary before 80 characters with an ellipsis, one line. The row keeps `.crow`, `.browse-row` and its `browse_open:` event, so `/people` and the open path are untouched. Untick and the bare row returns.
+`/browse`'s list was the bare `.crow` grammar: a word, a bold title, a date. Ash asked for a picture-led row (#p85). One reading, so it builds. This node redefines `browse_list_html`: each row is the card's face — the first picture block, cropped square at 46px, or the title's initial dimmed — then a body with the name, `browse_row_left`'s word (the distance under `/people`, the type elsewhere) and the date — `browse_when_of`'s time, so a card type that dates itself differently reads the same here as in the bare row — on one line, and an **excerpt** beneath: the first text block with words, whitespace folded, cut at a word boundary before 80 characters with an ellipsis, one line. The row keeps `.crow`, `.browse-row` and its `browse_open:` event, so `/people` and the open path are untouched. Untick and the bare row returns.
 
 ## hostile cases
 

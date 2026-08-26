@@ -6,7 +6,7 @@ impl feature_Portrait {
     fn browse_list_html(cards: &Vec<serde_json::Value>) -> String {
         let mut newest = 0u64;
         for c in cards.iter() {
-            let t = c["edited"].as_u64().unwrap_or(0);
+            let t = browse_when_of(c);
             if t > newest {
                 newest = t;
             }
@@ -17,7 +17,7 @@ impl feature_Portrait {
             let id = card_esc(c["id"].as_str().unwrap_or("").to_string());
             let word = browse_row_left(c);
             let title = browse_title_of(c);
-            let when = browse_when(c["edited"].as_u64().unwrap_or(0), this_year);
+            let when = browse_when(browse_when_of(c), this_year);
             let face = portrait_face(c);
             let excerpt = portrait_excerpt(c);
             out.push_str(&format!(

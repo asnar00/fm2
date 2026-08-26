@@ -191,7 +191,7 @@ impl feature_Browse {
     fn browse_list_html(cards: &Vec<serde_json::Value>) -> String {
         let mut newest = 0u64;
         for c in cards.iter() {
-            let t = c["edited"].as_u64().unwrap_or(0);
+            let t = browse_when_of(c);
             if t > newest {
                 newest = t;
             }
@@ -202,13 +202,23 @@ impl feature_Browse {
             let id = card_esc(c["id"].as_str().unwrap_or("").to_string());
             let kind = browse_row_left(c);
             let title = browse_title_of(c);
-            let when = browse_when(c["edited"].as_u64().unwrap_or(0), this_year);
+            let when = browse_when(browse_when_of(c), this_year);
             out.push_str(&format!(
                 "<div class=\"crow browse-row\" data-ev=\"browse_open:{}\"><span class=\"cnum browse-type\">{}</span><div class=\"ctext browse-title\">{}</div><span class=\"browse-when\">{}</span></div>",
                 id, kind, title, when));
         }
         out.push_str("</div>");
         out
+    }
+
+    // the seam for WHICH of a card's times its row shows. The default is
+    // `edited`, which is what the set of everything you hold wants: the row
+    // says when you last touched it. A card type whose date means something
+    // else — a post is dated by the moment it records, not the moment it was
+    // typed into — redefines this and says so. The default is unchanged, so
+    // with no one redefining it every row reads exactly as it did.
+    fn browse_when_of(card: &serde_json::Value) -> u64 {
+        card["edited"].as_u64().unwrap_or(0)
     }
 
     // the seam for the left cell of a list row — where /taste 6 puts the

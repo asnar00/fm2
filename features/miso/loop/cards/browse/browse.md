@@ -184,6 +184,12 @@ card's type, and a surface whose cards are all one type says something less
 redundant there. Both were added for `/people` with their defaults unchanged,
 so this tool renders exactly as it did.
 
+`browse_when_of(card)` is the seam for WHICH of a card's times its row shows —
+the default is `edited`, which is what the set of everything you hold wants,
+and a card type whose date means something else redefines it (`/post-time`
+is the first). Added with its default unchanged, and read by this node's row
+and by `/portrait`'s alike.
+
 `browse.rs` extends `render`: with the cards tool open it appends the picker
 and then either the card page for `open` or the whole set.
 `browse_set_html` is the grid/list switch and the empty case;
