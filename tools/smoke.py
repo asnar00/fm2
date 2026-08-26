@@ -198,7 +198,18 @@ async def passes(port: int, cookie: str) -> int:
                     await route.continue_()
                 await ctx.route("**/*", slow)
             await pg.goto(f"http://localhost:{port}/", wait_until="load")
-            await pg.wait_for_timeout(5000 if label.startswith("throttled") else 3500)
+            # wait for the loop itself, not a timer: under load the debug wasm
+            # boots slowly and a fixed wait taps a page that has not started
+            booted = False
+            for _ in range(120):
+                try:
+                    if await pg.evaluate("typeof feature_Loop !== 'undefined' && feature_Loop.state !== null"): booted = True; break
+                except Exception:
+                    pass
+                await pg.wait_for_timeout(250)
+            if not booted:
+                print(f"  [FAIL] the app did not boot within 30s ({label})"); failures += 1; continue
+            await pg.wait_for_timeout(1500)
             print(f"== {label}")
             await go_home(pg)
             # start every pass on the grid, whatever the last pass left behind
