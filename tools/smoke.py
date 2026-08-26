@@ -163,7 +163,10 @@ async def s_map(pg):
     await open_tool(pg, "account")
     await pg.evaluate("(() => { const v=document.querySelector('[data-ev=\"browse_map\"]'); if (v) v.click(); })()"); await pg.wait_for_timeout(2500)
     ok = await pg.evaluate("!!document.querySelector('.leaflet-container') && getComputedStyle(document.querySelector('.leaflet-container')).display !== 'none'")
-    await pg.evaluate("(() => { const v=document.querySelector('[data-ev=\"browse_grid\"]'); if (v) v.click(); })()"); await pg.wait_for_timeout(800)
+    await pg.evaluate("(() => { const v=document.querySelector('[data-ev=\"browse_grid\"]'); if (v) v.click(); })()"); await pg.wait_for_timeout(1200)
+    # the view is a device var the world cache remembers across passes: leave it on the grid, proven
+    if await pg.evaluate("!!document.querySelector('.leaflet-container') && getComputedStyle(document.querySelector('.leaflet-container')).display !== 'none'"):
+        print("      (map still showing after switching to grid)"); ok = False
     await go_home(pg)
     return ok
 
@@ -192,6 +195,10 @@ async def passes(port: int, cookie: str) -> int:
             await pg.goto(f"http://localhost:{port}/", wait_until="load")
             await pg.wait_for_timeout(5000 if label.startswith("throttled") else 3500)
             print(f"== {label}")
+            await go_home(pg)
+            # start every pass on the grid, whatever the last pass left behind
+            await open_tool(pg, "account")
+            await pg.evaluate("(() => { const v=document.querySelector('[data-ev=\"browse_grid\"]'); if (v) v.click(); })()"); await pg.wait_for_timeout(800)
             await go_home(pg)
             for name, fn in STEPS:
                 try:
