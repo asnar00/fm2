@@ -1,0 +1,58 @@
+/* the play row: a pill on the page's own ground, the way every small
+   interactive thing here is a pill (/taste 4). The glyph carries the posts
+   colour — the one accent this surface already means — and the duration is
+   the dim cell beside it (/taste 2, hierarchy is dimness). */
+.post-play {
+  align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 14px 7px 11px; border-radius: 999px;
+  background: #121215; border: 1px solid #202026;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+  transition: border-color 0.18s ease-out;
+}
+.post-play:active { border-color: #3a3a3f; }
+.post-play .post-play-glyph {
+  display: inline-flex; color: #C3779A; line-height: 0;
+}
+.post-play .post-play-glyph .icon-svg { width: 17px; height: 17px; }
+.post-dur { font-size: 13px; color: #9a9aa2; font-variant-numeric: tabular-nums; }
+
+/* both glyphs are drawn and this chooses: which recording is playing lives in
+   the loop state, not on the card, so `render` puts the class on the row. */
+.post-play .post-play-glyph.stop { display: none; }
+.post-play.playing .post-play-glyph.play { display: none; }
+.post-play.playing .post-play-glyph.stop { display: inline-flex; }
+
+/* a copy's audio stays with its owner: the control says so rather than
+   pretending (/taste 7). No pointer, because there is no data-ev on it. */
+.post-play.dim {
+  cursor: default; background: transparent; border-color: transparent;
+  padding-left: 0;
+}
+.post-play.dim .post-play-glyph { color: #4a4a50; }
+.post-play.dim .post-dur { color: #77777e; }
+.post-play-note { font-size: 12px; color: #77777e; }
+
+/* the tile mark: a recording is recognisable in the grid without opening it.
+   Small, over the corner of the face, on the same quiet ground the tile is. */
+.card-tile { position: relative; }
+.tile-audio {
+  position: absolute; top: 6px; left: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 999px;
+  background: rgba(16, 16, 18, 0.72);
+  color: #C3779A; line-height: 0;
+}
+.tile-audio .icon-svg { width: 11px; height: 11px; }
+
+/* the two toolbar glyphs go black on /ember's tint, the way the drawn plus
+   beside them does (/glyphs; /posts' own rule). With /ember unticked the
+   button is not tinted and neither rule matches. */
+.tool-button.tinted[data-ev="dict_rec"],
+.tool-button.tinted[data-ev="dict_stop"] { color: #000; }
+
+/* /dictate's recording dot is red on amber, where it reads at a glance. On
+   the posts tool's pink it very nearly disappeared (looked at, 2026-08-26),
+   so it gets the page's own near-black as a ring: the same dot, the same
+   pulse, legible on a tint. */
+.tool-button.tinted.recording .rec-dot { box-shadow: 0 0 0 2px #101012; }
