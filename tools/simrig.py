@@ -19,7 +19,8 @@ Selectors (a mini-language over the readout tree, first match depth-first):
   for descent: '.toolbar [ctl=card_edit]'. `hidden` nodes never match.
 
 Environment: SIM_UDID (the device), MISO_PORT (the rig server, default 8099),
-SIM_RIG_LOG (the rig server's log, for login codes), SIM_EVIDENCE (dir).
+SIM_RIG_LOG (the rig server's log, for login codes), SIM_RIG_HOME (its HOME,
+for the user list), SIM_EVIDENCE (dir).
 Written 2026-08-26 (#p164a) after the pencil bug that three desktop rigs
 missed and one phone black box explained.
 """
@@ -199,11 +200,20 @@ def wait_for(sel, timeout=8.0, absent=False):
 
 # ---- the login page, driven ------------------------------------------------
 
-PHONES = {"_alice": "+15551234567", "_bob": "+15551234741", "_smoke": "+15550000999"}
+def phone_of(name):
+    """the rig's own user list (SIM_RIG_HOME/.miso-auth/users.json), else the name as a phone"""
+    home = os.environ.get("SIM_RIG_HOME", "")
+    try:
+        for u in json.loads((pathlib.Path(home) / ".miso-auth" / "users.json").read_text()):
+            if u.get("name") == name:
+                return u.get("phone")
+    except Exception:
+        pass
+    return name
 
 
 def login(name):
-    phone = PHONES.get(name) or name
+    phone = phone_of(name)
     drive({"type": "#phone", "value": phone})
     time.sleep(0.4)
     drive({"tap": "#phoneStep button"})
