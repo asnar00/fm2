@@ -1,0 +1,4 @@
+/* the pills are off the page: a control belongs in the row (#p136) */
+#cardEdit, #cardSave { display: none !important; }
+/* the drawn pencil and tick go black on the tint, as /delete's bin does */
+.tool-button.tinted[data-ctl="card_edit"] { color: #000; }
