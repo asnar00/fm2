@@ -6,6 +6,11 @@ const feature_RigPage = {
   on: false,
   arm() {
     this.on = true;
+    // a rig runs the code it was given: no service worker, no cache, so
+    // every cold launch fetches the site as it is now (the version-driven
+    // reload does not fire in a standalone app on a relaunch)
+    if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => r.unregister())).catch(() => {});
+    if (window.caches) caches.keys().then((ks) => ks.forEach((k) => caches.delete(k))).catch(() => {});
     if (typeof feature_Readout !== 'undefined' && !feature_Readout.active) {
       feature_Readout.active = true;
       new MutationObserver(() => feature_Readout.schedule()).observe(
