@@ -133,3 +133,43 @@ worktree `.claude/worktrees/triage-rig` (its own build dir). Rigs in other
 directories are safe alongside a deploy since `/own-slot`: before it, every
 server on the machine shared `/tmp/miso-broadcast.json` and a rig's stream
 reached the gate's page (three failed gates that morning).
+
+## The simulator rig (2026-08-26, #p164a)
+
+User-level tests of the **installed** app on an iPhone simulator, with real
+touches and no screenshots in the loop. `tools/simrig.py`; tests in
+`tests/sim/*.json`; the tree's side is `/diag/rig` (a server started with
+`MISO_RIG=1 MISO_PORT=8099` tells every page to switch on `/readout`,
+`/drive`, a 1 s black-box flush, and to drop its service worker — a rig runs
+the code it was given), `/readout/rects` (every element's rectangle, so a
+finger goes by selector), and `/blackbox/touches` (what the finger did).
+
+Bring-up, once per device:
+1. Rig server from a worktree build: `MISO_RIG=1 MISO_PORT=8099 HOME=<scratch>
+   MISO_CONTEXT_DIR=<scratch>/ctx ./server/target/debug/miso_server` — never
+   the main checkout's build dir. `fmlink --quick` rebuilds the binary; the
+   port lives in the environment, not the source. One rig at a time: readout
+   and drive share `/tmp/miso-readout.json` and `/tmp/miso-drive.json`.
+2. `xcrun simctl erase <udid>; boot`, `simctl openurl <udid> http://localhost:8099/`,
+   then the share sheet (iOS 26 points: … 343,814 → Share 201,542 → More
+   332,778 → Add to Home Screen 150,590 → Add 357,110). Home; Spotlight
+   (201,717; type miso; top hit 63,149) launches it.
+3. `simrig login _ash` types the login through `/drive` and reads the code
+   from the rig's log; `simrig press Cancel` dismisses the passkey sheet.
+   Grant location first: `simctl privacy <udid> grant location-always
+   com.apple.WebKit.PushBundle.<id>` (the web clip's bundle, from `listapps`).
+
+Running: `SIM_UDID=… MISO_PORT=8099 SIM_RIG_LOG=… SIM_RIG_HOME=…
+python3 tools/simrig.py run tests/sim/pencil-post.json`. Steps: `tap`
+(real finger at a selector's rectangle, plus the 62 px status-bar inset of a
+standalone app and minus the keyboard's viewport shift), `text` (the sim's
+keyboard), `js` (run on the page, value back; setup and assertions only),
+`drive`, `home`, `relaunch` (a reboot — iOS keeps a home-screen app alive, so
+its icon reloads nothing), `wait_for`, `assert` (`find`/`text`/`face`/`ce`/
+`exists`), `shot`. Before every finger the rig checks for a native alert
+with `idb ui describe-point` and presses Allow/Cancel/… by label.
+
+Known limits: the iOS 18.6 simulator never raises its soft keyboard (26 does);
+`idb ui text` cannot type into the login's tel field on 18 (use the keypad
+or `/drive`); a real phone bug is diagnosed from `/touches` first, then
+replayed here, then in `tools/smoke.py`.

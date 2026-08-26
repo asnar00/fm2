@@ -8,7 +8,14 @@ this — it now carries five agent-instruction nodes: /taste, /did-you-mean,
 
 ## THE HEADLINE: Tara's morning — a live user, ~20 asks shipped from the phone in real time
 
-*Updated 2026-08-26 afternoon.* Build 377 is live. Afternoon additions:
+*Updated 2026-08-26 evening.* Build 388 is live. THE SIMULATOR RIG exists
+(deploy.md, `tools/simrig.py`, `tests/sim/`): the installed app on an
+iPhone 17 simulator, real touches by selector, eyes through /readout+/rects,
+hands through /drive (+js), four tests green (pencil on post/profile/project;
+‹ and the picker after writing). The pencil bug was found by /touches — the
+phone's black box: the finger lands on the glyph's <svg>, the face swap
+detached it, the swallow disarmed — and its exact sequence is a gate step.
+Build 377 was live at noon. Afternoon additions:
 `posts/titled/above` (title over photo), `page/editing/toolbar` (edit/save
 are toolbar buttons — pencil/tick, nothing floats over a card),
 `page/keep/lands` (a tap while writing still lands: ‹ and the picker on
