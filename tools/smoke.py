@@ -98,12 +98,22 @@ async def open_tool(pg, tool):
     await pg.wait_for_timeout(1500)
 
 
+async def until(pg, js, limit_ms=10000, every=200):
+    """poll a condition; return the ms it took, or -1"""
+    waited = 0
+    while waited <= limit_ms:
+        if await pg.evaluate(js): return waited
+        await pg.wait_for_timeout(every); waited += every
+    return -1
+
+
 @step("the lozenge opens the system panel on a tap")
 async def s_lozenge(pg):
-    await pg.click("#build"); await pg.wait_for_timeout(2000)
-    ok = await pg.evaluate("getComputedStyle(document.getElementById('panel')).display") == "block"
+    await pg.click("#build")
+    took = await until(pg, "getComputedStyle(document.getElementById('panel')).display === 'block'")
+    print(f"      (panel opened in {took} ms)" if took >= 0 else "      (panel never opened)")
     await pg.evaluate("feature_Panel.close()")
-    return ok
+    return took >= 0
 
 
 @step("👤 lands on the people surface with the picker")
@@ -169,8 +179,10 @@ async def s_project(pg):
 @step("the map view mounts Leaflet")
 async def s_map(pg):
     await open_tool(pg, "account")
-    await pg.evaluate("(() => { const v=document.querySelector('[data-ev=\"browse_map\"]'); if (v) v.click(); })()"); await pg.wait_for_timeout(2500)
-    ok = await pg.evaluate("!!document.querySelector('.leaflet-container') && getComputedStyle(document.querySelector('.leaflet-container')).display !== 'none'")
+    await pg.evaluate("(() => { const v=document.querySelector('[data-ev=\"browse_map\"]'); if (v) v.click(); })()")
+    took = await until(pg, "!!document.querySelector('.leaflet-container') && getComputedStyle(document.querySelector('.leaflet-container')).display !== 'none'")
+    print(f"      (map mounted in {took} ms)" if took >= 0 else "      (map never mounted)")
+    ok = took >= 0
     await pg.evaluate("(() => { const v=document.querySelector('[data-ev=\"browse_grid\"]'); if (v) v.click(); })()"); await pg.wait_for_timeout(1200)
     # the view is a device var the world cache remembers across passes: leave it on the grid, proven
     if await pg.evaluate("!!document.querySelector('.leaflet-container') && getComputedStyle(document.querySelector('.leaflet-container')).display !== 'none'"):
