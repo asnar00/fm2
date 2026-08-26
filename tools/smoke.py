@@ -188,6 +188,30 @@ async def s_edit(pg):
     return txt.endswith("smoke")
 
 
+@step("the pencil survives the phone's tap: press on the glyph, click on the ground")
+async def s_pencil_phone(pg):
+    # from ash's black box, 2026-08-26 15:08:17 (#p160): pointerdown lands on the
+    # pencil's <svg>, the words focus, the keyboard shifts the page, and the
+    # click that follows lands on <html>. The card must open for editing, not close.
+    if not await pg.evaluate("!!document.querySelector('.card-page')"): return False
+    await pg.evaluate("(() => { const b = document.querySelector('.toolbar [data-ctl=card_edit]'); if (b && b.getAttribute('data-face') === 'save') { document.activeElement && document.activeElement.blur && document.activeElement.blur(); } })()")
+    await pg.wait_for_timeout(400)
+    if await pg.evaluate("(document.querySelector('.toolbar [data-ctl=card_edit]')||{getAttribute:()=>null}).getAttribute('data-face')") != 'edit':
+        await pg.evaluate("feature_Editing.lock()"); await pg.wait_for_timeout(300)
+    ok = await pg.evaluate("""(() => {
+      const path = document.querySelector('.toolbar [data-ctl=card_edit] svg path');
+      if (!path) return 'no glyph';
+      path.dispatchEvent(new PointerEvent('pointerdown', {bubbles: true, cancelable: true, pointerType: 'touch', clientX: 249, clientY: 754}));
+      document.documentElement.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, clientX: 249, clientY: 754}));
+      return 'sent'; })()""")
+    if ok != 'sent': print(f"      ({ok})"); return False
+    await pg.wait_for_timeout(1200)
+    still = await pg.evaluate("!!document.querySelector('.card-page')")
+    editable = await pg.evaluate("!!document.querySelector('.card-page .card-text[contenteditable=true]')")
+    if not (still and editable): print(f"      (card open: {still}, editable: {editable})")
+    return still and editable
+
+
 @step("undo lights after a card edit")
 async def s_undo(pg):
     return not await pg.evaluate("document.querySelector('[data-ev=\"ctx_undo\"]').classList.contains('dim')")

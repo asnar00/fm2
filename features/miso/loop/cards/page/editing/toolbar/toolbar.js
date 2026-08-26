@@ -40,10 +40,18 @@ if (typeof feature_Editing !== 'undefined') {
   // and the save repaints the toolbar, so by the time a click would fire the
   // button it was aimed at is gone (rig-found, 2026-08-26). preventDefault
   // keeps the block focused until the blur below, which IS the save
-  // (/cards' focusout); the lock follows once it has landed. The click that
-  // follows is swallowed in the capture phase so /loop never sees it.
+  // (/cards' focusout); the lock follows once it has landed.
+  //
+  // ONE listener, and the hit is decided before anything moves. The phone's
+  // black box (#p160) showed why two listeners failed: the finger lands on
+  // the glyph's <svg>; the first listener swapped the face, which detached
+  // that <svg>; the second asked the detached node what it was inside, got
+  // nothing, and disarmed the swallow — so the click that landed on the
+  // ground once the keyboard had shifted the page went to /backdrop.
+  let fm_swallow = false;
   document.addEventListener('pointerdown', (e) => {
     const hit = e.target && e.target.closest ? e.target.closest('[data-ctl="card_edit"]') : null;
+    fm_swallow = !!hit;
     if (!hit) return;
     e.preventDefault(); e.stopPropagation();
     if (hit.getAttribute('data-face') === 'save') {
@@ -54,18 +62,9 @@ if (typeof feature_Editing !== 'undefined') {
       feature_Editing.edit();
     }
   }, true);
-  // the click that follows the pointerdown is swallowed WHEREVER it lands:
-  // on the phone, edit() focuses the words, the keyboard rises, the toolbar
-  // moves up under the finger, and the click hit-tests the ground instead —
-  // which /backdrop reads as "close the card" (#p140). So the pointerdown arms
-  // a swallow for the one click that follows it, for half a second.
-  // Not a time window: a 600 ms one was still too short on the phone, where
-  // the keyboard's rise delays the click (#p158). The press arms; the next
-  // click anywhere is the one consumed; a press anywhere else disarms.
-  let fm_swallow = false;
-  document.addEventListener('pointerdown', (e) => {
-    fm_swallow = !!(e.target && e.target.closest && e.target.closest('[data-ctl="card_edit"]'));
-  }, true);
+  // the click that follows is consumed wherever it lands — on the phone the
+  // keyboard's rise moves the toolbar out from under the finger — and a
+  // press anywhere else disarms
   document.addEventListener('click', (e) => {
     const own = e.target && e.target.closest && e.target.closest('[data-ctl="card_edit"]');
     if (own || fm_swallow) { fm_swallow = false; e.stopPropagation(); e.preventDefault(); }
