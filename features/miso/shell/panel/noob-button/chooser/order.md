@@ -3,3 +3,4 @@
 - [x] fresh-catalog
 - [x] enforced
 - [x] everywhere
+- [x] arrives

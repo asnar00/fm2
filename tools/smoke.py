@@ -112,8 +112,56 @@ async def s_lozenge(pg):
     await pg.click("#build")
     took = await until(pg, "getComputedStyle(document.getElementById('panel')).display === 'block'")
     print(f"      (panel opened in {took} ms)" if took >= 0 else "      (panel never opened)")
+    if took < 0 or os.environ.get("SMOKE_DUMP"):
+        await dump(pg, "lozenge")
     await pg.evaluate("feature_Panel.close()")
     return took >= 0
+
+
+async def dump(pg, tag):
+    """what is on top: the element under the lozenge, and every large fixed or
+    absolute box that is visible — a failure that says 'covered' names the cover"""
+    info = await pg.evaluate("""(() => {
+      const b = document.getElementById('build'); const r = b ? b.getBoundingClientRect() : {x:0,y:0,width:0,height:0};
+      const under = document.elementFromPoint(r.x + r.width/2, r.y + r.height/2);
+      const path = []; for (let e = under; e && e !== document.body; e = e.parentElement) path.push(e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (e.className && typeof e.className === 'string' ? '.' + e.className.split(' ').join('.') : ''));
+      const covers = [];
+      for (const e of document.querySelectorAll('body *')) {
+        const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') continue;
+        if (cs.position !== 'fixed' && cs.position !== 'absolute') continue;
+        const q = e.getBoundingClientRect(); if (q.width * q.height < 40000) continue;
+        covers.push(`${e.tagName.toLowerCase()}${e.id ? '#' + e.id : ''}${typeof e.className === 'string' && e.className ? '.' + e.className.split(' ').join('.') : ''} ${Math.round(q.width)}x${Math.round(q.height)} z=${cs.zIndex} pe=${cs.pointerEvents}`);
+      }
+      return {under: path.join(' < '), covers, panel: (document.getElementById('panel')||{}).className, shade: (document.getElementById('shade')||{}).className};
+    })()""")
+    print(f"      (under the lozenge: {info['under']})")
+    for c in info["covers"]: print(f"      (cover: {c})")
+    print(f"      (panel class: {info['panel']!r}, shade class: {info['shade']!r})")
+    more = await pg.evaluate("""(() => ({build: (document.getElementById('build')||{}).className, misoVersion: localStorage.misoVersion, running: typeof feature_Update !== 'undefined' ? feature_Update.running : null, server: typeof feature_Update !== 'undefined' ? feature_Update.server : null, sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller), parked: typeof feature_Account !== 'undefined' ? !!feature_Account.parked : null, tool: JSON.parse(feature_Loop.state||'{}').open_tool, panelOpen: typeof feature_Panel !== 'undefined' && !!feature_Panel.open}))()""")
+    print(f"      (state: {more})")
+    panel = await pg.evaluate("""(() => { const p=document.getElementById('panel'); const cs=getComputedStyle(p); return {display: cs.display, visibility: cs.visibility, opacity: cs.opacity, cls: p.className, style: p.getAttribute('style'), sheets: [...document.styleSheets].map(s => (s.href||'inline').split('/').pop() + ':' + (() => { try { return s.cssRules.length } catch (e) { return 'x' } })()).join(' ')}; })()""")
+    print(f"      (panel: {panel})")
+    slow = await pg.evaluate("performance.getEntriesByType('resource').filter(r => r.duration > 800).map(r => r.name.split('/').pop() + ' ' + Math.round(r.duration) + 'ms').slice(0, 12)")
+    print(f"      (slow resources: {slow})")
+    timing = await pg.evaluate("""(async () => { const out = {}; for (const f of ['changes.json', 'version', 'hashes.json', 'features/tree.json']) { const t0 = performance.now(); try { const r = await Promise.race([fetch(f, {cache: 'no-store'}), new Promise((_, rej) => setTimeout(() => rej(new Error('8s')), 8000))]); out[f] = r.status + ' in ' + Math.round(performance.now() - t0) + 'ms'; } catch (e) { out[f] = 'FAILED ' + e.message + ' after ' + Math.round(performance.now() - t0) + 'ms'; } } return out; })()""")
+    print(f"      (fetch now: {timing})")
+    hist = await pg.evaluate("performance.getEntriesByType('resource').filter(r => /changes|version|hashes|tree/.test(r.name)).map(r => r.name.split('/').pop() + ' ' + Math.round(r.duration) + 'ms')")
+    print(f"      (fetch history: {hist})")
+    probes = await pg.evaluate("""(async () => { const out = {}; const t = async (k, f) => { const t0 = performance.now(); try { const r = await Promise.race([f(), new Promise((_, rej) => setTimeout(() => rej(new Error('6s')), 6000))]); out[k] = (r.status || r) + ' in ' + Math.round(performance.now() - t0) + 'ms'; } catch (e) { out[k] = 'FAILED ' + e.message; } };
+      await t('tree?bust', () => fetch('features/tree.json?b=' + Math.random(), {cache: 'no-store'}));
+      await t('tree default-cache', () => fetch('features/tree.json'));
+      await t('tree xhr', () => new Promise((res, rej) => { const x = new XMLHttpRequest(); x.open('GET', 'features/tree.json'); x.onload = () => res(x.status); x.onerror = rej; x.send(); }));
+      await t('cache.match tree', async () => { const c = await caches.open('miso'); const m = await c.match('features/tree.json'); return m ? 'hit' : 'miss'; });
+      await t('cache keys', async () => { const c = await caches.open('miso'); return (await c.keys()).length; });
+      const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+      out.sw = reg ? {installing: !!reg.installing, waiting: !!reg.waiting, active: !!reg.active, state: reg.active && reg.active.state} : null;
+      if (reg) { await reg.unregister(); await t('tree after unregister', () => fetch('features/tree.json?u=1', {cache: 'no-store'})); }
+      return out; })()""")
+    print(f"      (probes: {probes})")
+    print(f"      (navigations so far: {pg._smoke_navs})")
+    for l in pg._smoke_logs[-12:]: print(f"      (console: {l})")
+    await pg.screenshot(path=str(SCRATCH / f"fail-{tag}.png"))
+    print(f"      (screenshot: {SCRATCH / f'fail-{tag}.png'})")
 
 
 @step("👤 lands on the people surface with the picker")
@@ -209,12 +257,16 @@ async def passes(port: int, cookie: str) -> int:
         pg = await ctx.new_page()
         errors = []
         pg.on("pageerror", lambda e: errors.append(str(e)[:200]))
+        navs, logs = [], []
+        pg.on("framenavigated", lambda f: navs.append(f.url) if f == pg.main_frame else None)
+        pg.on("console", lambda m: logs.append(f"{m.type}: {m.text[:160]}"))
         for label in ("cold", "warm (world cache primed)", "throttled"):
             if label.startswith("throttled"):
                 async def slow(route):
                     await asyncio.sleep(0.25)
                     await route.continue_()
                 await ctx.route("**/*", slow)
+            pg._smoke_navs, pg._smoke_logs = navs, logs
             await pg.goto(f"http://localhost:{port}/", wait_until="load")
             # wait for the loop itself, not a timer: under load the debug wasm
             # boots slowly and a fixed wait taps a page that has not started
