@@ -113,6 +113,14 @@ pipefail` (or test for `build OK` in the output) in every rig script;
 twice today a link error scrolled past a `| tail` and a rig ran the
 previous binary, proving nothing.
 
+**Run deploy.sh in the foreground** (2026-08-26): the smoke gate's headless
+Chrome fails its first pass (lozenge, projects, map) when deploy.sh is
+launched as a background shell task, and passes every time in the
+foreground — twice each way on build 365→368. A gate failure from a
+background deploy is not evidence about the app; rerun in the foreground.
+Keep the gate's full output (no `| grep | tail` over it) so a failure
+names its pass.
+
 **Nothing links in `products/miso/build` while a deploy runs** (2026-08-26):
 deploy.sh links into it and the smoke gate serves from it — a relink hands
 the gate a half-written site. Triage proves its own work from the rig

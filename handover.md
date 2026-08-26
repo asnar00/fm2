@@ -33,7 +33,9 @@ panel and the map on a fresh world's first page (now polled; they open in
 said so. A fifth (build 365): the cold pass's lozenge poll timed out
 while a rig's cargo build on the same laptop was still running — a rerun
 with the machine quiet was green. So: a gate failure on a quiet machine
-means the app; on a busy one, rerun `tools/smoke.py` once before believing it.
+means the app. A sixth: deploys launched as BACKGROUND shell tasks fail
+the gate's first pass (twice), foreground runs pass (four) — run deploy.sh
+in the foreground, always (deploy.md).
 
 **Also open:** transcript anchors are stamped UTC and ask anchors local
 (post-time worker) — a one-line fix in one reader plus a whole-tree
