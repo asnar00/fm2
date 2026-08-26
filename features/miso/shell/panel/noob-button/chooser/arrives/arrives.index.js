@@ -36,12 +36,20 @@ const feature_Arrives = { late: false, budget: 2500 };
   }
 
   if (typeof feature_Panel !== 'undefined') {
-    // 3. the sheet is on screen before anything is awaited
+    // 3. the sheet is on screen before anything is awaited — and an open
+    //    that was closed while it was still filling closes itself again when
+    //    it completes, because /panel's own open shows the sheet last (the
+    //    gate's warm pass found the shade back over the page, 2026-08-26)
+    let fm_arrivesSeq = 0;
+    const fm_arrivesClose = feature_Panel.close.bind(feature_Panel);
+    feature_Panel.close = function () { fm_arrivesSeq++; fm_arrivesClose(); };
     const fm_arrivesOpen = feature_Panel.open.bind(feature_Panel);
     feature_Panel.open = async function () {
+      const mine = ++fm_arrivesSeq;
       $('shade').style.display = 'block';
       $('panel').style.display = 'block';
       await fm_arrivesOpen();
+      if (fm_arrivesSeq !== mine) fm_arrivesClose();
     };
   }
 }

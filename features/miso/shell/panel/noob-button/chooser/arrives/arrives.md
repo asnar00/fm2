@@ -18,6 +18,7 @@ Tap the nøøb button and the sheet is there. If the feature list is slow to arr
 ## hostile cases
 
 - The fetch stalls for good: the sheet opens in one frame with the who-line; at 2.5 s the list row says still arriving; the next open retries with a fresh request.
+- Closed while still filling: `/panel`'s own `open` shows the sheet last, so a tap-away during the fill would bring it back. An open remembers its turn; if a close came after it, it closes again on completion.
 - `/review`'s own `tree.json` fetch: the same rule covers it — one budget, no `no-store`.
 - Offline with a cached tree: the worker serves the copy inside its deadline; the budget is longer than the deadline, so the copy arrives in time.
 - `vectors.json` (`/semantic-find`) is fetched `no-store` too and is not covered; it is not on the tap's path.
