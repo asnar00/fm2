@@ -10,7 +10,7 @@ Nothing to see on a real install. On the builder's test rig, the app reports its
 
 ## spec
 
-`/readout` and `/drive` switch on with `?readout=1&drive=1` — and a home-screen app opens with no query string, so an installed app on a simulator could only be observed by screenshot (#p164a). A **rig** is a server started with `MISO_RIG=1`; it answers `diag/rig` with `{rig:true}` on localhost (never through the tunnel — a rig is a laptop talking to itself). Every page asks once at load, and on a rig arms itself: the readout's observer and its first post, the drive poll, and a one-second `/blackbox` flush so the finger (`/touches`) and the loop are readable at once. On a rig a drive command may also carry `js` — a script run on the page whose value comes back through the readout's door — for setup and assertions, never for the interaction under test, which is the finger's. The login page is a page too, so a rig can type a `_` user in through `/drive`. A rig is plain `http://localhost`, and WebKit drops a `Secure` cookie there (Chrome keeps it, which is why no desktop rig ever saw it), so on a rig a localhost response's login cookie loses the flag. Untick and the rig is a plain dev server.
+`/readout` and `/drive` switch on with `?readout=1&drive=1` — and a home-screen app opens with no query string, so an installed app on a simulator could only be observed by screenshot (#p164a). A **rig** is a server started with `MISO_RIG=1` (and `MISO_PORT` for its port — a relink rebuilds the binary, so the port must not live in the source); it answers `diag/rig` with `{rig:true}` on localhost (never through the tunnel — a rig is a laptop talking to itself). Every page asks once at load, and on a rig arms itself: the readout's observer and its first post, the drive poll, and a one-second `/blackbox` flush so the finger (`/touches`) and the loop are readable at once. On a rig a drive command may also carry `js` — a script run on the page whose value comes back through the readout's door — for setup and assertions, never for the interaction under test, which is the finger's. The login page is a page too, so a rig can type a `_` user in through `/drive`. A rig is plain `http://localhost`, and WebKit drops a `Secure` cookie there (Chrome keeps it, which is why no desktop rig ever saw it), so on a rig a localhost response's login cookie loses the flag. Untick and the rig is a plain dev server.
 
 ## hostile cases
 
@@ -24,4 +24,4 @@ Nothing to see on a real install. On the builder's test rig, the app reports its
 
 ## code description
 
-`rig.rs` — the `diag/rig` route. `rig.page.js` — the ask at load, the arming, and the rig's own drive poll with `js`.
+`rig.rs` — the `diag/rig` route; `serve_port()` from `MISO_PORT`; the plain cookie. `rig.page.js` — the ask at load, the arming, and the rig's own drive poll with `js`.

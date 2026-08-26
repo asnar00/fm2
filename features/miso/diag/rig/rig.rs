@@ -3,6 +3,15 @@ impl feature_Rig {
     // a server started with MISO_RIG=1 is a test rig: every page it serves may
     // switch its eyes and hands on without a query string. Never through the
     // tunnel — a rig is a laptop talking to itself.
+    // a rig picks its port from the environment: MISO_PORT=8099 — so a
+    // relink (which rebuilds the binary) never puts a rig back on 8095
+    fn serve_port() -> u16 {
+        match std::env::var("MISO_PORT").ok().and_then(|p| p.parse::<u16>().ok()) {
+            Some(p) => p,
+            None => existing.serve_port(),
+        }
+    }
+
     fn rig_on() -> bool {
         std::env::var("MISO_RIG").unwrap_or_default() == "1"
     }
