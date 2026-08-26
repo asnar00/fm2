@@ -6,53 +6,37 @@ prompts). Discipline in `agents.md`; ops in `deploy.md`; the pipeline in
 this — it now carries five agent-instruction nodes: /taste, /did-you-mean,
 /attention, /glyphs, /anticipation.*
 
-## THE HEADLINE: the hitlist is live — projects, posts, map — deploys never restart
+## THE HEADLINE: Tara's morning — a live user, ~20 asks shipped from the phone in real time
 
-Tara (the customer) visits 2026-08-26. Build 332 is live. The day built
-the account surface, the card object, invite, people seeing each other,
-projects with roles, posts, a real map — and removed the deploy cliff and
-the data-loss class. Fourteen Opus workers, ~30 direct builds, builds
-261→332, all pushed.
+*Updated 2026-08-26 mid-morning.* Build 357+ is live. Since the evening
+handover: the smoke gate (`tools/smoke.py` in deploy.sh — waits for the
+loop to boot, three passes), the deploy rule **ship as built** (`/ship-as-
+built`, an agent-instruction node), `/own-slot` (each world's broadcast
+slot under `context_dir()` — before it every server on a machine shared
+`/tmp/miso-broadcast.json`, which is why the gate cried wolf), `/urgency`
+(urgent / whenever on the ask box), ticks in the ask box's results
+(`/everywhere`), and the morning's field asks: posts picture-first,
+tile-words, plus-at-home, post-time (EXIF date orders posts), delete
+(tombstones; undo restores), name-first, map-location → map, backdrop
+(tap the ground to close), ‹ (`/back`), lead (projects, posts, people
+first), reorder (hold-then-drag, per user, `tools_order_chosen()` seam),
+quiet, build-below, and **manual save** (`/keep/manual`: autosave off —
+it was losing keystrokes on the phone; a save pill, or tap away).
 
-**What a user has now (in the order they meet it):**
-- Install the PWA, log in with a texted code; 👤 shows **the people**: your
-  card first, then whoever the invites put nearest (`/people`), as a grid,
-  a picture-led list (`/portrait`), or a **real map** (`/map`: CARTO's dark
-  render of OpenStreetMap through the mini's own tile proxy `/tiles`,
-  Leaflet vendored, pins with faces, tap to open) — the picker top-left.
-- Your **card** (`/cards`, `/page/me`): name, picture (framed — `/frame`;
-  place from the photo's GPS tag — `/from-picture`), mission, a coloured
-  type tag, **map location** with a pin, on a dark ground; edited in place
-  with words kept as you type, Enter keeping its line and caret; undo
-  works on it. Roles you hold show under the mission ("lead dev for miso").
-- **Invite** (sub-tool of 👤): support/admin add by name + number;
-  *invited* → *joined*; admin may invite pretend `_` people. **Invite
-  makes you visible to each other** (`/exchange`: your cards are copied
-  into your inviter's and invitees' worlds on every write; foreign cards
-  read-only).
-- **Projects** (flag tool, `/kinds/projects`): "something we're trying to
-  get done"; **new**; a **people** section on a project you own — add a
-  person you hold with a role; roles are links on the project card; a
-  project travels only to its members. **Posts** (bubble tool,
-  `/kinds/posts`): **+** → say something, from where you are; newest
-  first; flows to invite-linked people. Both share `/kinds/new`'s
-  `CardNew` door.
-- Nothing rings twice, nothing rings while you're looking.
+**Known and open:** on a *cold, fresh world* the gate has seen the first
+lozenge tap do nothing (warm and throttled passes green). On a clean
+single server it did not reproduce; two servers sharing a port (reuseport)
+did reproduce it. Watch the gate's cold pass on a clean machine; if it
+fails again, keep its server (`smoke.py --keep`) and read the page.
+Nine deploys today went out with `SMOKE=skip` for this reason — each said
+so in its commit.
 
-**Foundations landed:** `/guard` (+ `/owner`, `/revert`, `/singleton`: a
-cards write can never drop a card; an id keeps its owner; only a profile
-is one-per-owner); `/world-cache` (the device keeps its world, no empty
-window, wiped on sign-out); `/reuseport` + `/handover` (**installed on the
-mini** — every deploy since build 322 has been a handover with 0 requests
-in flight; backup plist `com.noob.miso.plist.pre-handover`); the linker:
-tie-break by contributing depth (regroups are order-neutral, nested
-groupings included), `serve_port()` seam, stale-asset sweep on untick;
-`/roomier` + `/wider` (192KB messages, 160KB list).
-
-**Rehearsal state on the live mini:** `_alice` (+15551234567) and `_bob`
-(+15551234741), invited by ash, each with a card; ash's phone has a second
-icon logged in as alice; `scratchpad/walk/person.py` drives them headless
-against the live site (codes off `/tmp/miso.log`). Ash is `admin`.
+**Also open:** transcript anchors are stamped UTC and ask anchors local
+(post-time worker) — a one-line fix in one reader plus a whole-tree
+`--chains` diff, its own run; `/kinds/new` writes after `/undo/late`'s
+scan, so making a post is not undoable (the `/late` → `/turn-end` rung);
+`/guard/singleton` vs tombstones for a deletable singleton (not reachable
+today).
 
 ## FOR ASH (tomorrow morning, before Tara)
 
