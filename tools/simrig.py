@@ -197,6 +197,8 @@ def native_alert():
         return None
     if (d.get("type") == "Application") or (d.get("AXLabel") == "Web"):
         return None
+    if "WebContent" in (d.get("traits") or []):     # the page itself
+        return None
     return d
 
 
