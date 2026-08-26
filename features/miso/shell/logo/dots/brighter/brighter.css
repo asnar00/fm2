@@ -1,0 +1,5 @@
+/* the dots step up from #555 to a lighter grey, and a touch wider so a
+   phone's pixels draw them rather than lose them (asks#1787750117273) */
+body {
+  background-image: radial-gradient(circle, #8c8c94 0.7px, transparent 0.8px);
+}
