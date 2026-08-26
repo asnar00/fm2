@@ -140,10 +140,11 @@ to the recorded misses repeats them. It must contain:
   its status — confirmed, edited, or silent. Silent means the literal
   ask is the whole contract.
 - **placement**: proposed node and parent, with the cap check done.
-- **the estimate**: nodes touched, new vars, seams crossed — a plan's
-  stated footprint, and the tripwire's baseline (#p5). An ask whose
-  honest estimate dwarfs its apparent size is a foundation ask; say so
-  here, before the build discovers it.
+- **the footprint** (no estimate — ash, 2026-08-26 #p157: "I've never
+  found them to be accurate"): nodes touched, new vars, seams crossed —
+  what the plan expects to change, which is the tripwire's baseline. An
+  ask whose honest footprint dwarfs its apparent size is a foundation
+  ask; say so here, before the build discovers it. No hours, no days.
 - **acceptance evidence, named**: which artifacts the reviewer will demand —
   a `/diag/readout` assertion on the real surface (DOM-as-JSON is the
   agent's instrument for seeing the screen; pixel-reading is not — ash's
@@ -194,8 +195,8 @@ to the recorded misses repeats them. It must contain:
 >
 > No plan survives contact with the terrain, and the brief is a plan
 > (#p5). The moment you are modifying things the brief never named, or
-> a fix needs a second fix to hold, or your actuals cross about twice
-> the brief's estimate — STOP. Do not ask permission to continue and do
+> a fix needs a second fix to hold, or you are well outside the brief's
+> footprint — STOP. Do not ask permission to continue and do
 > not grind on: stopping is the correct behaviour, not a failure. File
 > a **contact report** instead of a delivery: what the plan assumed,
 > what turned out false, what the tree actually needs before this ask
@@ -209,11 +210,11 @@ to the recorded misses repeats them. It must contain:
 
 ## the check-in (triage, while a worker runs) — 2026-08-25, accounts #p16
 
-A worker that has gone quiet is not evidence of anything; a worker that has
-run past its estimate is. Every brief's estimate implies a wall time (a
-one-node ask ~20 min; a two-node build with rig evidence ~40). **At about 2×
-that, triage checks from outside** — never by reading the worker's
-transcript, which would flood the main context:
+A worker that has gone quiet is not evidence of anything, and there is no
+estimate to have run past (ash dropped estimates on 2026-08-26, #p157).
+**Triage checks from outside on a fixed cadence — about every 45 minutes
+while a worker runs** — never by reading the worker's transcript, which
+would flood the main context:
 
 - `git -C <worktree> log --oneline -3` and `status --short`: has it
   committed? is it mid-edit?
@@ -258,10 +259,10 @@ kill that.
    and cap sound, spec paragraphs complete.
 6. Verdict: **ship** (integrate, deploy, stamp) or **return** with notes,
    once; twice → escalate to ash with both rounds' evidence.
-6a. **Depth check**: did the delivery's depth match the brief's
-   estimate? Excess that the terrain demanded is essential — record it
-   in `misses.md` as an estimate miss. Excess the terrain did not
-   demand is accidental — that is a return.
+6a. **Depth check**: did the delivery's footprint match the brief's?
+   Excess that the terrain demanded is essential — record it in
+   `misses.md` as a footprint miss. Excess the terrain did not demand is
+   accidental — that is a return.
 6b. **A contact report is not a failed delivery — it is a replan**
    (#p5). It skips the return-with-notes path entirely: triage reads
    the corrected map, writes a *new* brief (often "build the missing

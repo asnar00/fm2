@@ -114,7 +114,7 @@ today).
 - **Toolbar glyphs are ink** (`/glyphs`): filtered emoji or drawn SVG in
   currentColor; never an emoji-presentation character; undo stays last in
   every row — a newer node inserts before it.
-- hybrid.md: the check-in (2× estimate, from outside, diagnosis as
+- hybrid.md: the check-in (fixed cadence — estimates are dropped, #p157 — from outside, diagnosis as
   hypothesis); tear down rigs by PID; **`set -o pipefail` and assert the
   fragment composed before reading any evidence** (deploy.md) — four
   broken commits today came from a `| tail` hiding a link error.
