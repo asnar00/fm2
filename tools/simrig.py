@@ -248,6 +248,26 @@ def login(name):
     print(f"login {name}: code {pin} typed")
 
 
+# ---- the device -------------------------------------------------------------
+
+def relaunch():
+    """a cold launch of the installed app: iOS keeps a home-screen app alive
+    in the background, so tapping its icon reloads nothing — a reboot does"""
+    u = udid()
+    sh(["xcrun", "simctl", "shutdown", u]); time.sleep(2)
+    sh(["xcrun", "simctl", "boot", u]); sh(["xcrun", "simctl", "bootstatus", u, "-b"]); time.sleep(8)
+    sh(["idb", "ui", "button", "--udid", u, "HOME"]); time.sleep(1)
+    tapxy(201, 717); time.sleep(2)             # the home screen's Search pill
+    text("miso"); time.sleep(2.5)
+    tapxy(63, 149); time.sleep(10)             # Spotlight's top hit
+    return readout().get("url")
+
+
+def home():
+    """back to the launcher, by the loop (setup, not the interaction under test)"""
+    drive({"send": {"type": "click", "ev": "tools_home"}}); time.sleep(0.8)
+
+
 # ---- scripts ----------------------------------------------------------------
 
 def check(a, snap):
@@ -291,6 +311,10 @@ def run(path):
                 print(f"  [PASS] {st.get('name', st['js'][:60])}")
         elif "login" in st:
             login(st["login"])
+        elif "home" in st:
+            home(); print("  home")
+        elif "relaunch" in st:
+            print(f"  relaunch -> {relaunch()}")
         elif "wait" in st:
             time.sleep(st["wait"] / 1000)
         elif "wait_for" in st:
@@ -329,6 +353,10 @@ def main():
         print(json.dumps(js(rest[0])))
     elif cmd == "drive":
         print(drive(json.loads(rest[0])))
+    elif cmd == "relaunch":
+        print(relaunch())
+    elif cmd == "home":
+        home()
     elif cmd == "login":
         login(rest[0])
     elif cmd == "shot":
