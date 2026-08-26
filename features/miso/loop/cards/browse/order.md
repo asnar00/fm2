@@ -1,3 +1,4 @@
 - [x] people
 - [x] portrait
 - [x] map
+- [x] backdrop
