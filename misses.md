@@ -251,3 +251,20 @@ the failing step: a stuck `no-store` fetch of `tree.json`. Rule: a flaky
 gate is diagnosed from a full log and a state dump at the failure, never
 from correlation with what I happened to be doing; and nothing goes into
 deploy.md as a cause until the log shows it.
+
+## 2026-08-28 — the mini shipped six builds without the whisper model
+
+**What happened:** fm2 moved to the mini (a fresh clone) on the 28th. The
+on-device STT model and the semantic-find table are gitignored and fetched
+by `tools/fetch_stt.py` / `tools/fetch_find.py`; nobody ran them on the mini.
+Builds 401–406 shipped a `site/stt/` holding only `engine.js`: every phone's
+transcription failed silently, and the recordings-as-posts merge (406) was
+judged from a rig that never needed the model. Found when ash saw two posts
+with no words (#p10) — and the words turned out to be on the exchange all
+along (`words.json`), never asked for at boot.
+
+**The lesson:** a fetched artifact is part of the build; a move to a new
+machine is a fresh clone and a fresh clone has none of them. deploy.sh now
+refuses without the model (`STT=skip` to override, and say so). The general
+rule for the handover: list every gitignored artifact the site needs, with
+its recipe, under "tooling state" — the mini section of deploy.md now does.

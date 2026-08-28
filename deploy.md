@@ -193,5 +193,12 @@ python 3.12 with playwright (`~/.local/bin/python3` points at it; brew's
 lives at `~/.claude/projects/-Users-microserver-fm2/memory/` — a copy of
 this Mac's, made once; the mini's is the live one from here on.
 
+**Fetched artifacts the site needs** (gitignored; a fresh clone has none —
+builds 401–406 shipped without them, misses.md 2026-08-28): the whisper
+model (`tools/fetch_stt.py` → `features/miso/loop/dictate/phone/assets/stt/`,
+133 MB) and the semantic-find table (`tools/fetch_find.py` →
+`features/miso/loop/compute/semantic-find/assets/find/`). deploy.sh refuses
+to ship without the model.
+
 This Mac stays a working clone; nothing stops a local session, but the
 mini is where sessions start unless there's a reason.
