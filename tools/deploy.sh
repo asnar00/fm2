@@ -11,6 +11,9 @@ SRC="$(cd "$(dirname "$0")/.." && pwd)"
 # the mini on the home LAN, else its public address; MISO_HOST overrides both
 pick_host() {
   [ -n "${MISO_HOST:-}" ] && { echo "$MISO_HOST"; return; }
+  # running on the mini itself (fm2 lives there since 2026-08-28): ship to
+  # localhost — the ssh/rsync steps below then just loop back
+  [ "$USER" = microserver ] && [ -d "$HOME/miso" ] && { echo localhost; return; }
   for h in microserver@microservers-Mac-mini.local microserver@185.96.221.52; do
     if ssh -o BatchMode=yes -o ConnectTimeout=5 "$h" true 2>/dev/null; then echo "$h"; return; fi
   done

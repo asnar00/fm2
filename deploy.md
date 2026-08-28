@@ -173,3 +173,25 @@ Known limits: the iOS 18.6 simulator never raises its soft keyboard (26 does);
 `idb ui text` cannot type into the login's tel field on 18 (use the keypad
 or `/drive`); a real phone bug is diagnosed from `/touches` first, then
 replayed here, then in `tools/smoke.py`.
+
+## Working on the mini (2026-08-28)
+
+fm2 lives on the mini by default now: `~/fm2` on `microserver@` the mini,
+with a persistent tmux session `fm2` that claude runs inside. From this Mac
+type **`mini`** (`~/.local/bin/mini`, not in the repo) — it attaches over
+mosh via Tailscale when the mini is on the tailnet, else plain ssh to the
+public address, forwarding the ssh agent so `git push` on the mini uses
+this Mac's GitHub key. `mini <cmd>` runs a one-off command instead.
+Detach with `C-b d`; the session, and claude in it, keep running.
+
+On the mini `deploy.sh` notices it *is* the mini and ships to `localhost`
+(the box can ssh itself). Toolchain there: rustup + wasm32 target, brew
+python 3.12 with playwright (`~/.local/bin/python3` points at it; brew's
+3.14 pip is broken), Chrome for the smoke gate, Xcode, tmux, mosh, claude
+(native install in `~/.local/bin`; the old npm one is parked as
+`/usr/local/bin/claude.npm-2.1.56.old`). Claude's memory for the project
+lives at `~/.claude/projects/-Users-microserver-fm2/memory/` — a copy of
+this Mac's, made once; the mini's is the live one from here on.
+
+This Mac stays a working clone; nothing stops a local session, but the
+mini is where sessions start unless there's a reason.
