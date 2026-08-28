@@ -79,6 +79,14 @@ fi
 # the feature tree, statically rendered — served publicly at /features/
 python3 "$SRC/tools/export_features.py"
 
+# the on-device whisper model ships with the site; without it every phone's
+# transcription fails silently (the mini's fresh clone shipped six builds
+# without it, 2026-08-28). The recipe is tools/fetch_stt.py.
+if [ ! -d "$SRC/features/miso/loop/dictate/phone/assets/stt/models" ]; then
+  echo "deploy: the STT model is absent — run tools/fetch_stt.py first (or STT=skip)"
+  [ "${STT:-}" = "skip" ] || exit 1
+fi
+
 # catalog embeddings for on-device semantic find (loop/compute/semantic-find);
 # skipped gracefully if the potion table hasn't been fetched on this machine
 if [ -f "$SRC/features/miso/loop/compute/semantic-find/assets/find/table.bin" ]; then
