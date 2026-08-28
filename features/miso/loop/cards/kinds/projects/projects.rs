@@ -223,14 +223,8 @@ impl feature_Projects {
         if pid.is_empty() {
             return String::new();
         }
-        let all: serde_json::Value = serde_json::from_str(&cards_read())
-            .unwrap_or(serde_json::json!([]));
-        let empty: Vec<serde_json::Value> = Vec::new();
         let mut out = String::new();
-        for p in all.as_array().unwrap_or(&empty) {
-            if p["type"].as_str().unwrap_or("") != "project" {
-                continue;
-            }
+        for p in projects_roles_from().iter() {
             let title = browse_title_of(p);
             let pjid = card_esc(p["id"].as_str().unwrap_or("").to_string());
             for l in projects_members(p).iter() {
@@ -248,6 +242,22 @@ impl feature_Projects {
             return String::new();
         }
         format!("<div class=\"proj-roles\">{}</div>", out)
+    }
+
+    // the project cards a role line may come from: every project in the
+    // reader's own world. A seam — a later node says which of them still
+    // count (a deleted project's role is not a role).
+    fn projects_roles_from() -> Vec<serde_json::Value> {
+        let all: serde_json::Value = serde_json::from_str(&cards_read())
+            .unwrap_or(serde_json::json!([]));
+        let empty: Vec<serde_json::Value> = Vec::new();
+        let mut out: Vec<serde_json::Value> = Vec::new();
+        for p in all.as_array().unwrap_or(&empty) {
+            if p["type"].as_str().unwrap_or("") == "project" {
+                out.push(p.clone());
+            }
+        }
+        out
     }
 
     // ---- reading a card's links --------------------------------------------

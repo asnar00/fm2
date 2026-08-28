@@ -1,1 +1,2 @@
 - [x] name-first
+- [x] delete-project

@@ -140,7 +140,10 @@ the "is there an own post on screen" test the button is gated on.
 never reaches `/loop`'s delegated send: the first tap arms and repaints the
 button into the word *sure?*, a 100ms ticker keeps that word on the button
 through any repaint, three seconds disarms, and the second tap sends
-`CardDelete` with the id off the open `.card-page`.
+`CardDelete` with the id off the open `.card-page`. `feature_Delete` is also
+a **maker** (2026-08-28, for `/delete-project`): `make(ev)` returns the same
+two-tap bound to another button's `data-ev`, with its own armed state and
+listener; the posts bin is the instance the object already is.
 
 `delete.css` sizes the armed button for a word rather than a glyph and dims the
 *deleted* line to the ignorable step of `/taste` 2.

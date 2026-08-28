@@ -2,16 +2,30 @@ const feature_Delete = {
   // the question is the page half's and lives in no var: it is a thing being
   // asked, not a thing the world knows. Three seconds, and then the bin is
   // just a bin again.
+  //
+  // The two-tap is a MAKER: `feature_Delete` is itself the instance bound to
+  // the posts bin, and `make(ev)` gives a later type's bin (a project's) the
+  // same three seconds, the same word and the same capture-phase listener,
+  // bound to its own data-ev. Every method reads `this`, never the name, so
+  // an instance made this way owns its own armed state and timers.
+  ev: 'posts_delete',
   armed: false,
   timer: null,
   ticker: null,
   glyph: '',
 
-  button() {
-    return document.querySelector('.tool-button[data-ev="posts_delete"]');
+  make(ev) {
+    const it = Object.create(feature_Delete);
+    it.ev = ev; it.armed = false; it.timer = null; it.ticker = null; it.glyph = '';
+    it.listen();
+    return it;
   },
 
-  // the id of the post on screen. /browse draws exactly one .card-page and
+  button() {
+    return document.querySelector('.tool-button[data-ev="' + this.ev + '"]');
+  },
+
+  // the id of the card on screen. /browse draws exactly one .card-page and
   // stamps it with the card's id, which is the same id every card event uses.
   openId() {
     const page = document.querySelector('.card-page[data-card]');
@@ -25,12 +39,12 @@ const feature_Delete = {
     this.armed = true;
     this.wear();
     if (this.timer) clearTimeout(this.timer);
-    this.timer = setTimeout(() => feature_Delete.stand(), 3000);
+    this.timer = setTimeout(() => this.stand(), 3000);
     // every loop event repaints #app wholesale, and the toolbar is inside it —
     // a repaint that landed mid-question would answer it by putting the bin
     // back. Cheap for the three seconds it runs, and stopped the moment the
     // question is over.
-    if (!this.ticker) this.ticker = setInterval(() => feature_Delete.wear(), 100);
+    if (!this.ticker) this.ticker = setInterval(() => this.wear(), 100);
   },
 
   wear() {
@@ -64,9 +78,7 @@ const feature_Delete = {
     if (typeof feature_Loop === 'undefined' || !feature_Loop.state) return;
     feature_Loop.send({ type: 'CardDelete', data: { id, t: Date.now() } });
   },
-};
 
-{
   // taken in the CAPTURE phase so /loop's delegated click never sends it on:
   // one tap of this control is a question and not an event, and the second is
   // an event this half builds itself.
@@ -79,20 +91,23 @@ const feature_Delete = {
   // (rig-found, 2026-08-26). The target is read once, before anything moves.
   // A tap anywhere else withdraws the question: an unanswered "sure?" sitting
   // on the toolbar while you did something else is a control waiting to go off.
-  document.addEventListener('click', (e) => {
-    const hit = e.target && e.target.closest
-      ? e.target.closest('[data-ev="posts_delete"]')
-      : null;
-    if (!hit) {
-      if (feature_Delete.armed) feature_Delete.stand();
-      return;
-    }
-    e.stopPropagation();
-    e.preventDefault();
-    if (feature_Delete.armed) {
-      feature_Delete.go();
-    } else {
-      feature_Delete.ask();
-    }
-  }, true);
-}
+  listen() {
+    const sel = '[data-ev="' + this.ev + '"]';
+    document.addEventListener('click', (e) => {
+      const hit = e.target && e.target.closest ? e.target.closest(sel) : null;
+      if (!hit) {
+        if (this.armed) this.stand();
+        return;
+      }
+      e.stopPropagation();
+      e.preventDefault();
+      if (this.armed) {
+        this.go();
+      } else {
+        this.ask();
+      }
+    }, true);
+  },
+};
+
+feature_Delete.listen();

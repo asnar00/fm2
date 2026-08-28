@@ -164,6 +164,8 @@ half, because a role event carries a time and the wasm half of the loop has no
 clock (`now_ms` is `SystemTime`, which panics in a browser). For a
 `profile` card it appends one `.crow` per project in the reader's world that
 links to it — "canvasser / for miso" — tapping which sends `proj_open:<id>`.
+`projects_roles_from` is the seam those projects come from (every project
+card held; refactored out 2026-08-28 so `/delete-project` can sift it).
 
 `projects.rs` extends `update` with `RoleAdd {card, to, name, role, t}` and
 `RoleDrop {card, to, t}` — both write the project card's `links` through
