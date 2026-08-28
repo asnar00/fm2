@@ -1,0 +1,15 @@
+/* the ring: plain ink when not chosen, black on the projects tint when it is
+   (/glyphs; /plus-tinted's rule) */
+.tool-button.tinted[data-ev="proj_select"] { color: #000; }
+
+/* the chip in the picker: the one accent that means chosen (/taste 3), a
+   999px pill like its neighbours, the project's name carrying the weight */
+.proj-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-left: 6px; padding: 0 10px; height: 26px;
+  border-radius: 999px; border: 1px solid #2c2c33;
+  color: #9a9aa2; font-size: 12px; white-space: nowrap;
+  max-width: 46vw; overflow: hidden; text-overflow: ellipsis;
+  cursor: pointer;
+}
+.proj-chip b { color: #9db7d8; font-weight: 600; }
