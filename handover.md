@@ -130,6 +130,10 @@ today).
 
 ## tooling state
 
+- **fm2 lives on the mini** (2026-08-28): `~/fm2` there, tmux session
+  `fm2`, sessions start there; from ash's Mac type `mini`. deploy.sh on the
+  mini ships to localhost. See deploy.md "Working on the mini". Tailscale
+  login on both ends and the mini's GitHub key were left for ash.
 - Ask monitor via the Monitor tool; ~15 field asks today, every one
   stamped shipped with its build; one live did-you-mean answered on the
   phone.
