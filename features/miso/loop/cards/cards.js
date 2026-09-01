@@ -46,6 +46,18 @@ const feature_Cards = {
     }
   },
 
+  // WHICH pixels of a source become the stored picture, and how big: the
+  // whole frame, longest edge to EDGE. The seam every road that stores a
+  // picture goes through — a later node may take a crop instead, and does it
+  // here once rather than in each road.
+  frameOf(w, h) {
+    const long = Math.max(w, h) || 1;
+    const scale = Math.min(1, this.EDGE / long);
+    return { sx: 0, sy: 0, sw: w, sh: h,
+             dw: Math.max(1, Math.round(w * scale)),
+             dh: Math.max(1, Math.round(h * scale)) };
+  },
+
   // longest edge 256px, JPEG, quality stepping down until it fits. null means
   // "this cannot be brought under the cap" — the caller says so to the user.
   async shrink(file) {
@@ -57,12 +69,11 @@ const feature_Cards = {
         im.onerror = () => rej(new Error('not an image'));
         im.src = url;
       });
-      const long = Math.max(img.width, img.height) || 1;
-      const scale = Math.min(1, this.EDGE / long);
+      const f = this.frameOf(img.width, img.height);
       const cv = document.createElement('canvas');
-      cv.width = Math.max(1, Math.round(img.width * scale));
-      cv.height = Math.max(1, Math.round(img.height * scale));
-      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      cv.width = f.dw;
+      cv.height = f.dh;
+      cv.getContext('2d').drawImage(img, f.sx, f.sy, f.sw, f.sh, 0, 0, f.dw, f.dh);
       for (const q of [0.8, 0.65, 0.5, 0.4, 0.3, 0.2]) {
         const d = cv.toDataURL('image/jpeg', q);
         if (d.length <= this.CAP) return d;

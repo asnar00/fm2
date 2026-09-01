@@ -1,3 +1,4 @@
 - [x] photo
 - [x] video
 - [x] one-add
+- [x] square-crop

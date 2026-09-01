@@ -59,7 +59,9 @@ Per-card merge — a var per card, or a merge kind that folds lists — is a lat
 rung, not a surprise.
 
 **The picture cap is hard, visible, and set by the wire.** A chosen image is
-drawn to a canvas at 256px on its longest edge and encoded as JPEG, quality
+drawn to a canvas through `frameOf` — which pixels of a source become the
+stored picture, and how big; here the whole frame at `EDGE` on its longest
+edge, and the /extension point/ a crop replaces — and encoded as JPEG, quality
 stepping 0.8 → 0.65 → 0.5 → 0.4 → 0.3 → 0.2 until it fits. If the smallest
 attempt is still over, the picture is refused out loud — "that picture is too
 big to keep" — rather than stored.

@@ -1,0 +1,34 @@
+/* the poster stands where the picture stood: same width, same ground, same
+   corner (/wide, /taste 1 and 4) — a video post and a photo post read as the
+   same kind of thing in the same place. */
+.post-poster {
+  align-self: stretch;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.card-page.post .post-poster { order: -1; }
+
+.poster-frame {
+  position: relative; display: block;
+  border-radius: 12px; overflow: hidden;
+  background: #101012; border: 1px solid #202026;
+  cursor: pointer;
+}
+.poster-frame img { width: 100%; height: auto; display: block; }
+
+/* the play mark: drawn ink in a thin ring, the map pin's family. The only
+   ground it lays over the frame is inside the ring itself — no scrim. */
+.poster-play {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+  pointer-events: none; line-height: 0;
+}
+.poster-play .icon-svg { width: 54px; height: 54px; }
+
+.post-poster .post-dur {
+  font-size: 13px; color: #9a9aa2; font-variant-numeric: tabular-nums;
+}
+
+/* a copy shows the face and says the bytes stayed at home (/taste 7) */
+.post-poster.dim .poster-frame { cursor: default; }
+.post-poster.dim .post-dur { color: #77777e; }
