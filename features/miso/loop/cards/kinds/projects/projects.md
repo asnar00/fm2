@@ -189,11 +189,22 @@ reaches a world only if that world has a role in it. `projects_is_member` is the
 test, matching a link by the owner prefix of its `to` id and falling back to its
 `name`.
 
+`projects.rs` carries two extension points a later node takes (cut for
+`/audience`, 2026-09-01, and behaviour-neutral — each returns exactly the
+expression it replaced): `projects_role_link(d, to, name, role, now)` builds the
+role link a `RoleAdd` writes, and is handed the whole event data so a later node
+may take a field of its own off it; `projects_people_role(l)` is the role cell of
+a row on the project page — the page's own answer to "what does this person do",
+extensible without touching the row. The role lines on a *person's* card are a
+different question and read the link themselves.
+
 `projects.js` is the people sheet: furniture made at load outside `#app`, a row
 per profile card in the bridged `s.cards`, a role box, **add** and **cancel**.
 It also owns the **new** button, which reads the owner's name off their own
 profile card (falling back to `auth/whoami`) and sends `CardNew`, and the `✕`,
-which sends `RoleDrop`.
+which sends `RoleDrop`. `roleData()` is the page-half twin of
+`projects_role_link`: what the sheet says about the person it has picked, in its
+own function so a later node may add a field without rewriting the send.
 
 `projects.css` styles the section, the role lines and the sheet against
 `/taste`: the `#161619` ground, the `.crow` grammar, 999px pills, and the one

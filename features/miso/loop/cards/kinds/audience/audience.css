@@ -1,0 +1,37 @@
+/* the option list in /projects' add sheet: six pills that wrap, one lit in
+   the accent that already means chosen (/taste 3 — a colour is a word). Not
+   a form: no label, no select, nothing to submit. */
+#projGrade {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.grade-opt {
+  padding: 5px 11px; border-radius: 999px;
+  background: #121215; border: 1px solid #202026;
+  color: #77777e; font-size: 12px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+  transition: color 0.18s ease-out, border-color 0.18s ease-out;
+}
+.grade-opt:hover { color: #c9c9d2; border-color: #3a3a3f; }
+.grade-opt.on {
+  color: #9db7d8; border-color: #9db7d8; font-weight: 600;
+}
+
+/* the grade under the role word, on a project's own people rows. The words
+   stay the row's answer; this is the quieter second line (/taste 2). */
+.proj-grade {
+  display: block;
+  color: #77777e; font-size: 11px; font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* the one line under your own post saying who it reaches. Ignorable until
+   you look for it, which is the point: it is a fact, not an alarm. */
+.card-audience {
+  color: #77777e; font-size: 12px;
+  padding: 10px 2px 2px;
+}
+
+/* the drawn arrow goes black on /ember's tint, the way the bin and the plus
+   beside it do (/glyphs; /plus-tinted's rule). With /ember unticked the
+   button is not tinted and this never matches. */
+.tool-button.tinted[data-ev="posts_promote"] { color: #000; }

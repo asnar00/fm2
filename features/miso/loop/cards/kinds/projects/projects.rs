@@ -192,7 +192,7 @@ impl feature_Projects {
         for l in members.iter() {
             let to = card_esc(l["to"].as_str().unwrap_or("").to_string());
             let name = card_esc(projects_link_name(l));
-            let role = card_esc(l["role"].as_str().unwrap_or("").to_string());
+            let role = projects_people_role(l);
             // data-proj, not data-ev: the page half sends it, because the
             // event needs a clock and a wasm build has none — `now_ms` is
             // SystemTime, which panics in the browser half of the loop.
@@ -212,6 +212,15 @@ impl feature_Projects {
         }
         out.push_str("</div>");
         out
+    }
+
+    // what a row on THIS page says a person does. An extension point, not a
+    // decoration: the words are this node's answer, and a later node may say
+    // more about the same person here without touching the row's shape — or
+    // the role lines on a person's own card, which are a different question
+    // and read the link themselves.
+    fn projects_people_role(l: &serde_json::Value) -> String {
+        card_esc(l["role"].as_str().unwrap_or("").to_string())
     }
 
     // "person P has role R in project X", asked from P's side: every project
@@ -380,9 +389,8 @@ impl feature_Projects {
             }
             let dropped = was != links.len();
             if kind == "RoleAdd" {
-                links.push(serde_json::json!({
-                    "kind": "role", "to": to, "name": name,
-                    "role": role, "t": now }));
+                links.push(projects_role_link(d.clone(), to.clone(),
+                                              name.clone(), role.clone(), now));
             } else if !dropped {
                 continue;   // nothing to take away: not a write
             }
@@ -476,6 +484,17 @@ impl feature_Projects {
         if sent > 0 {
             println!("projects: {} handed a project to {} member world(s)", me, sent);
         }
+    }
+
+    // the role link a `RoleAdd` writes. The whole event's data is handed in
+    // so a later node may take a field of its own off it without this one
+    // learning what the field means: what a role link SAYS is extensible,
+    // where it is stored is not.
+    fn projects_role_link(d: serde_json::Value, to: String, name: String, role: String, now: u64) -> serde_json::Value {
+        let _ = d;
+        serde_json::json!({
+            "kind": "role", "to": to, "name": name,
+            "role": role, "t": now })
     }
 
     // a name to a world key, off the guest list — the one lookup this node

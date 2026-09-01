@@ -123,11 +123,17 @@ const feature_Projects = {
       data: { card, to, t: Date.now() } });
   },
 
+  // what the sheet says about the person it has picked. Its own function so a
+  // later node may add a field to the event without rewriting the send — the
+  // page-half twin of `projects_role_link`.
+  roleData() {
+    return { card: this.card, to: this.pick, name: this.named || '',
+             role: this.role.value.trim(), t: Date.now() };
+  },
+
   add() {
     if (!this.ready() || !this.card) return;
-    feature_Loop.send({ type: 'RoleAdd', data: {
-      card: this.card, to: this.pick, name: this.named || '',
-      role: this.role.value.trim(), t: Date.now() } });
+    feature_Loop.send({ type: 'RoleAdd', data: this.roleData() });
     this.close();
   },
 };
