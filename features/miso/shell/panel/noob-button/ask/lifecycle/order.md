@@ -2,3 +2,4 @@
 - [x] did-you-mean
 - [x] anticipation
 - [x] ship-as-built
+- [x] retrofit
