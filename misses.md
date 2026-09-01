@@ -268,3 +268,21 @@ machine is a fresh clone and a fresh clone has none of them. deploy.sh now
 refuses without the model (`STT=skip` to override, and say so). The general
 rule for the handover: list every gitignored artifact the site needs, with
 its recipe, under "tooling state" — the mini section of deploy.md now does.
+
+## the name-matching kill (2026-09-01) — a rig teardown took the live server down
+
+**The ask:** none — the reports worker tearing down its rig.
+
+**The estimate:** `pkill -f miso_server` ends the rig.
+
+**The actual:** it SIGTERMed the LaunchAgent's production server too;
+`/handover` read the TERM as a graceful drain and exited 0, so launchd's
+`KeepAlive{SuccessfulExit:false}` correctly kept it down. The public app
+was 502 for ~90 seconds until `launchctl kickstart -k gui/501/com.noob.miso`.
+
+**What the plan could not see:** nothing — hybrid.md already says tear
+down by PID; the rule existed and was not followed under teardown haste.
+
+**The lesson:** on this box a name-matching kill always hits the live app;
+a rig is started with its PID captured and ended by that PID, and worker
+preambles now carry the teardown-by-PID line verbatim.
