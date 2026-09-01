@@ -3,3 +3,4 @@
 - [x] frame
 - [x] editing
 - [x] one-medium
+- [x] clear-of-toolbar

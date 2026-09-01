@@ -1,0 +1,7 @@
+/* the page's floor, with the phone's safe area in it: the toolbar stands at
+   inset+8 with 50px buttons, so the flat 72px floor fell under it exactly
+   where the home indicator pushes everything up. Desktop resolves env() to
+   0 and keeps today's number. */
+.card-page {
+  bottom: calc(env(safe-area-inset-bottom) + 72px);
+}
