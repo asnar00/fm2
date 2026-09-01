@@ -1,3 +1,4 @@
 - [x] new
 - [x] posts
 - [x] projects
+- [x] reports

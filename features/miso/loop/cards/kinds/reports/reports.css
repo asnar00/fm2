@@ -1,0 +1,122 @@
+/* the reports surface. /browse fixes its list to the screen and scrolls it;
+   this tool has a box above the list, so the SURFACE is the fixed scroller and
+   the list inside it flows — otherwise a fixed list would ignore the box and
+   sit under it. Same measurements as /browse's: clear of the nøøb lozenge at
+   the top, clear of the toolbar at the bottom. */
+.rep-surface {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 48px);
+  left: calc(env(safe-area-inset-left) + 16px);
+  right: calc(env(safe-area-inset-right) + 16px);
+  bottom: 72px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  text-align: left;
+  z-index: 1;
+}
+.rep-surface .rep-list {
+  position: static;
+  left: auto; right: auto;
+  max-height: none;
+  margin-top: 12px;
+}
+.rep-surface .browse-empty {
+  position: static;
+  left: auto; right: auto;
+  margin-top: 12px;
+}
+
+/* the make box: one card, two fields and a button (/taste 4, 6 — a section
+   joins a box rather than founding a page of its own) */
+.rep-make {
+  box-sizing: border-box;
+  background: #161619;
+  border: 1px solid #202026;
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.rep-make input {
+  box-sizing: border-box;
+  width: 100%;
+  background: #121215;
+  border: 1px solid #202026;
+  border-radius: 10px;
+  padding: 9px 11px;
+  color: #eee;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  -webkit-appearance: none;
+}
+.rep-make input::placeholder { color: #77777e; }
+/* the one accent, meaning what it means everywhere else: this is the thing
+   you have chosen */
+.rep-make input:focus { border-color: #9db7d8; }
+
+/* the button is the house pill, lit when it can do something and dim when it
+   cannot — a control that does nothing must not look like a control */
+.rep-go, .rep-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  background: #1a1a1d;
+  border: 1px solid #3a3a3f;
+  border-radius: 999px;
+  padding: 7px 16px;
+  color: #eee;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  text-decoration: none;
+  transition: opacity .18s ease-out;
+}
+.rep-go.off, .rep-btn.off {
+  color: #77777e;
+  border-color: #202026;
+  pointer-events: none;
+}
+
+/* no key on the box: one quiet line, no ground, no button — a box round a
+   thing that cannot happen is ceremony */
+.rep-make.rep-nokey {
+  background: none;
+  border: none;
+  padding: 2px;
+}
+
+/* the list borrows /browse's grammar whole; only the left cell is this
+   node's, and it says the status. Hierarchy is dimness and nothing else —
+   a new colour would be a new meaning (/taste 2, 3). */
+.rep-status {
+  color: #77777e;
+  font-weight: 400;
+  min-width: 58px;
+  text-align: right;
+}
+.rep-status.on { color: #c9c9d2; }
+.rep-status.busy { color: #9a9aa2; }
+
+/* the state and its controls, inside the report's own page */
+.rep-state {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+}
+.rep-said {
+  color: #9a9aa2;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.rep-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.rep-row .rep-btn { align-self: auto; }
