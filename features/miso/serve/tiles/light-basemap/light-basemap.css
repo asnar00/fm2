@@ -1,0 +1,13 @@
+/* paper ground while tiles load, in place of the dark one */
+#misoMap { background: #eae8e4; }
+
+/* a ward's name on paper: ink, with a light halo doing what the dark halo
+   did on the dark ground — letting the word stand on busy cartography
+   without a box behind it */
+.ward-label {
+  color: #4c4c55;
+  text-shadow:
+     0 0  3px #f4f2ee,  0 0 3px #f4f2ee,
+     1px 0 2px #f4f2ee, -1px 0 2px #f4f2ee,
+     0 1px 2px #f4f2ee,  0 -1px 2px #f4f2ee;
+}
