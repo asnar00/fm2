@@ -1,0 +1,12 @@
+/* the set is seven buttons where /undo's note counted six: on a 390px phone
+   the bar has 296px between its insets, and flexbox takes the difference out
+   of their width. Six pixels of gap instead of eight gives the squares back
+   most of what the extra control costs. Scoped with :has() to a row that is
+   actually showing a capture control — with both kinds unticked no capture
+   button exists and this rule never matches. */
+.toolbar:has(.tool-button.capture) { gap: 6px; }
+
+/* the drawn glyphs go black on /ember's tint, the way the plus and the dot
+   beside them do (/glyphs). With /ember unticked nothing is tinted and this
+   does not match. */
+.tool-button.tinted.capture { color: #000; }
