@@ -1,0 +1,56 @@
+/* the way in: a second pill beside /qr's, in the same grammar so the two ways
+   to put someone in the app read as a pair */
+.ins-lead { display: flex; margin-bottom: 6px; }
+.ins-open {
+  padding: 7px 12px; border-radius: 999px;
+  background: #1a1a1d; border: 1px solid #3a3a3f;
+  color: #c9c9d2; font-size: 13px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+
+/* the sheet: /qr's, exactly — at a door the screen IS the code, so everything
+   else goes. /taste 1 on the ground (#101012), and the one bright thing in
+   miso: a camera needs contrast, so the module field is white and framed. */
+.ins-sheet {
+  position: fixed; inset: 0; z-index: 90;
+  background: #101012;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 14px;
+  padding: calc(env(safe-area-inset-top) + 24px) 24px
+           calc(env(safe-area-inset-bottom) + 24px);
+}
+
+/* one field and one button, on one line — the whole of the canvasser's work */
+.ins-ask { display: flex; gap: 8px; align-items: center; }
+.ins-name {
+  background: #121215; border: 1px solid #3a3a3f; border-radius: 9px;
+  color: #eee; font-size: 15px; padding: 8px 12px; width: 11rem;
+  outline: none; font-family: inherit;
+}
+.ins-name:focus { border-color: #888; }
+.ins-name::placeholder { color: #77777e; }
+
+.ins-frame {
+  background: #fff;
+  border: 1px solid #202026; border-radius: 14px;
+  padding: 14px; line-height: 0;
+}
+/* big enough to read from arm's length */
+.ins-code svg { display: block; width: min(78vw, 340px); height: auto; }
+.ins-code { color: #77777e; font-size: 13px; line-height: 1.4; }
+
+/* hierarchy is dimness: the name, then the controls */
+.ins-word { color: #c9c9d2; font-size: 15px; }
+.ins-say {
+  color: #9a9aa2; font-size: 14px; line-height: 1.4;
+  max-width: 20em; text-align: center;
+}
+.ins-controls { display: flex; gap: 10px; margin-top: 10px; }
+.ins-btn {
+  padding: 7px 14px; border-radius: 999px;
+  background: #1a1a1d; border: 1px solid #3a3a3f;
+  color: #c9c9d2; font-size: 13px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+/* the primary action is the only bright thing before the code exists */
+.ins-go { background: #eee; border-color: #eee; color: #101012; }
