@@ -2871,3 +2871,10 @@ The fix is one line in one of the two readers — either export the transcript
 stamp in local time, or read the ask's ms as UTC — and it reorders nodes
 across the whole tree, so it wants a `--chains` diff and a deliberate run of
 its own rather than a drive-by.
+
+## vocabulary ruling: "extensible function", not "seam" (2026-09-01, saturday #p2ff)
+
+Ash: from now on say **extensible function** for a joining point a feature
+leaves for others to plug into, and **function extension** for the code that
+plugs in. "Seam" is retired in conversation, briefs and new spec text; older
+documents keep their wording until rewritten anyway.
