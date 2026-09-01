@@ -20,10 +20,15 @@ const feature_Video = {
     return { videoBitsPerSecond: 1000000 };
   },
 
+  // what the camera is asked for — the seam a later node redefines to ask for
+  // a different one. The answer here is the one this node always asked for.
+  constraints() {
+    return { video: { facingMode: 'environment' }, audio: true };
+  },
+
   async start() {
     try {
-      this.media = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }, audio: true });
+      this.media = await navigator.mediaDevices.getUserMedia(this.constraints());
     } catch (e) {
       feature_Loop.send({ type: 'click', ev: 'vid_stop' });  // state must not lie
       if (typeof feature_Cards !== 'undefined') feature_Cards.say('no camera here');

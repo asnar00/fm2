@@ -99,8 +99,9 @@ play row, carrying `data-rec` so `/as-posts`' "transcribing…" hint finds a
 video too. A foreign copy gets the note instead. `card_tile_html` marks the
 grid tile, beside the audio mark rather than over it.
 
-`video.js` drives the camera off state's edges (replay-guarded, `/dictate`'s
-rule), runs the companion recorder, stores blob + companion + meta in
+`video.js` asks for the camera through `constraints()` — the /extension point/
+a later node redefines to ask for a different one, answering `environment` here
+— drives the camera off state's edges (replay-guarded, `/dictate`'s rule), runs the companion recorder, stores blob + companion + meta in
 `/dictate`'s own IndexedDB store — all three inside one `try`, meta last —
 and sends `RecSaved`, wraps `/phone`'s
 `pcm16k`, opens the viewfinder outside `#app`, and re-mounts the player after
