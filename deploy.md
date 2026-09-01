@@ -81,7 +81,9 @@ a server with no successor waiting — the port does go quiet then.
 
 - `~/.miso-auth/`: guest list `users.json` (`_`-prefixed names are test users
   whose PINs go to the log, no SMS), signing `secret`, `pending.txt`,
-  `passkeys.txt`, `push-subs.txt`, `challenges.txt`, `last-notified`.
+  `passkeys.txt`, `push-subs.txt`, `challenges.txt`, `last-notified`,
+  `invite-qr.json` (`/qr`'s live canvassing codes — one row per inviter,
+  expiring; deleting the file revokes every code and costs nothing else).
 - `~/.agent-config.json`: Vonage credentials (shared with ftr).
 
 ## Checking on it

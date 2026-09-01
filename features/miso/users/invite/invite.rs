@@ -132,6 +132,28 @@ impl feature_Invite {
         String::new()
     }
 
+    // the three shape rules, in one place so every road onto the guest list
+    // obeys the same ones (/qr's claim is the second road). Empty means fine,
+    // else the sentence to show. The phone is already normalised.
+    //
+    // "07700 900003" normalises to +07700900003, which is a DIFFERENT number to
+    // the whole tree — the guest list has always wanted the country code
+    // (users.md), and a person typed in without one could never log in. No
+    // country code begins with a zero, so this catches the trunk prefix without
+    // pretending to know which country you meant.
+    fn invite_shape_ok(name: String, phone: String) -> String {
+        if name.is_empty() {
+            return "that invite needs a name".to_string();
+        }
+        if phone.len() < 8 {
+            return "that doesn't look like a phone number".to_string();
+        }
+        if phone.starts_with("+0") {
+            return "that number needs its country code".to_string();
+        }
+        String::new()
+    }
+
     // add: authority, then shape, then the lock. The duplicate check is inside
     // the lock with the append, so two sends at once cannot both pass it.
     fn invite_add(r: request) -> response {
@@ -152,16 +174,9 @@ impl feature_Invite {
         if !bad.is_empty() {
             return invite_say(400, bad);
         }
-        if phone.len() < 8 {
-            return invite_say(400, "that doesn't look like a phone number".to_string());
-        }
-        // "07700 900003" normalises to +07700900003, which is a DIFFERENT
-        // number to the whole tree — the guest list has always wanted the
-        // country code (users.md), and a person typed in without one could
-        // never log in. No country code begins with a zero, so this catches
-        // the trunk prefix without pretending to know which country you meant.
-        if phone.starts_with("+0") {
-            return invite_say(400, "that number needs its country code".to_string());
+        let bad = invite_shape_ok(name.clone(), phone.clone());
+        if !bad.is_empty() {
+            return invite_say(400, bad);
         }
         with_store_lock(|| {
             let mut list = invite_list();

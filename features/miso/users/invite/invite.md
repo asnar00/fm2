@@ -148,6 +148,11 @@ the server has said `may`.
 `invite.rs` extends `update` with `InviteList`, whose data becomes that state
 key verbatim.
 
+`invite_shape_ok(name, phone)` is the three shape rules — a name, eight digits,
+a country code — as a seam rather than four inline `if`s, so a second road onto
+the guest list obeys exactly the same ones (`/qr`'s claim is the first such
+road). `invite_add` calls it where the checks used to sit, in the same order.
+
 `invite_list` / `invite_save` are the store pair: a JSON null means "do not
 write", and the save is temp-write, own-only, rename. `invite_caller` names the
 requester from the cookie as `phone:+44…`, the identity `/authority` reads, and
