@@ -2,3 +2,4 @@
 - [x] keep
 - [x] frame
 - [x] editing
+- [x] one-medium
