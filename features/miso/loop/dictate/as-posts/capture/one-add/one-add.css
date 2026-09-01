@@ -1,0 +1,10 @@
+/* the kind the add button will make wears the one accent that already means
+   CHOSEN everywhere else (/taste 3), drawn as a ring inside the button so the
+   tint underneath is still the posts colour. /browse's view picker is the
+   precedent; this is the same word in the same blue. */
+.tool-button.oneadd-on { box-shadow: inset 0 0 0 2px #9db7d8; }
+
+/* the mode control is the quiet half of the pair: it says what add will do,
+   and the add button is the thing you press (/taste 2 — hierarchy is
+   dimness). Untinted already, so this only softens its ink. */
+.tool-button.oneadd-mode { color: #d0d0d6; }
