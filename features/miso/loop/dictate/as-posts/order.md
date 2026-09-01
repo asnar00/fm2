@@ -1,1 +1,2 @@
 - [x] stored-words
+- [x] capture

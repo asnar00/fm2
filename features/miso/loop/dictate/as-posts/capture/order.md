@@ -1,0 +1,2 @@
+- [x] photo
+- [x] video

@@ -1,0 +1,59 @@
+/* the viewfinder: a soft card above the toolbar, on the page's own ground
+   (/taste 1 and 4). It lives outside #app so a repaint cannot take it away
+   mid-recording, which is why it is positioned rather than laid out. */
+#vidView {
+  display: none;
+  position: fixed;
+  left: calc(env(safe-area-inset-left) + 10px);
+  right: calc(env(safe-area-inset-right) + 10px);
+  bottom: calc(env(safe-area-inset-bottom) + 70px);
+  max-height: 46vh;
+  width: auto;
+  background: #101012;
+  border: 1px solid #202026;
+  border-radius: 14px;
+  object-fit: cover;
+  z-index: 40;
+}
+#vidView.show { display: block; animation: vid-in 0.18s ease-out; }
+@keyframes vid-in {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* the player on the card page: the same soft card, the same ground. */
+.post-video {
+  align-self: stretch;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.post-video video {
+  width: 100%; max-height: 52vh;
+  background: #101012;
+  border: 1px solid #202026;
+  border-radius: 12px;
+}
+.post-video .post-dur {
+  font-size: 13px; color: #9a9aa2; font-variant-numeric: tabular-nums;
+}
+
+/* a copy's bytes stay with their owner: the row says so rather than
+   pretending (/taste 7) — /as-posts' words, in /as-posts' shape. */
+.post-video.dim {
+  flex-direction: row; align-items: center; gap: 8px;
+  align-self: flex-start;
+}
+.post-video.dim .post-video-glyph { display: inline-flex; color: #4a4a50; line-height: 0; }
+.post-video.dim .post-video-glyph .icon-svg { width: 17px; height: 17px; }
+.post-video.dim .post-dur { color: #77777e; }
+
+/* the tile mark, beside /as-posts' — same size, same quiet ground, one
+   place along so a post with both is still readable. */
+.tile-video {
+  position: absolute; top: 6px; left: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 999px;
+  background: rgba(16, 16, 18, 0.72);
+  color: #C3779A; line-height: 0;
+}
+.tile-video .icon-svg { width: 12px; height: 12px; }
+.card-tile .tile-audio ~ .tile-video { left: 30px; }
