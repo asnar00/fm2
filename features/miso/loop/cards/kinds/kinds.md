@@ -5,7 +5,7 @@
 
 ## user
 
-Browse the children: making a card of a type (`/new`), projects (`/projects`), posts (`/posts`).
+Browse the children: making a card of a type (`/new`), projects (`/projects`), posts (`/posts`), reports (`/reports`), and who a post reaches (`/audience`).
 
 ## spec
 
