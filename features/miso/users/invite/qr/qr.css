@@ -1,0 +1,45 @@
+/* the way in: one pill above the invite rows, in /invite-someone's grammar so
+   the two ways to invite read as a pair */
+.qr-lead { display: flex; }
+.qr-open {
+  padding: 7px 12px; border-radius: 999px;
+  background: #1a1a1d; border: 1px solid #3a3a3f;
+  color: #c9c9d2; font-size: 13px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+
+/* the sheet: at a door the screen IS the code, so everything else goes.
+   /taste 1 on the ground (#101012, the panel's near-black), and the one
+   bright thing in miso — a camera needs contrast, so the module field is
+   white, framed and treated as content the way a photograph is. */
+.qr-sheet {
+  position: fixed; inset: 0; z-index: 90;
+  background: #101012;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 14px;
+  padding: calc(env(safe-area-inset-top) + 24px) 24px
+           calc(env(safe-area-inset-bottom) + 24px);
+}
+.qr-frame {
+  background: #fff;
+  border: 1px solid #202026; border-radius: 14px;
+  padding: 14px; line-height: 0;
+}
+/* big enough to read from arm's length at a door */
+.qr-code svg { display: block; width: min(78vw, 340px); height: auto; }
+.qr-code { color: #77777e; font-size: 13px; line-height: 1.4; }
+
+/* hierarchy is dimness: the word, then the count, then the controls */
+.qr-word { color: #c9c9d2; font-size: 15px; }
+.qr-count { color: #77777e; font-size: 13px; margin-top: -6px; }
+.qr-say {
+  color: #9a9aa2; font-size: 14px; line-height: 1.4;
+  max-width: 20em; text-align: center;
+}
+.qr-controls { display: flex; gap: 10px; margin-top: 10px; }
+.qr-btn {
+  padding: 7px 14px; border-radius: 999px;
+  background: #1a1a1d; border: 1px solid #3a3a3f;
+  color: #c9c9d2; font-size: 13px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}

@@ -232,6 +232,28 @@ async def s_invite(pg):
     return ok
 
 
+@step("the QR sheet draws a scannable code and puts itself away")
+async def s_qr(pg):
+    await pg.click('[data-ev="tool_account"]'); await pg.wait_for_timeout(1000)
+    for _ in range(10):
+        if await pg.evaluate("!!document.querySelector('.toolbar [data-ev=\"tool_invite\"]')"): break
+        await pg.wait_for_timeout(500)
+    else:
+        return False
+    await pg.click('.toolbar [data-ev="tool_invite"]'); await pg.wait_for_timeout(1200)
+    await pg.click('[data-qr="open"]'); await pg.wait_for_timeout(2000)
+    drawn = await pg.evaluate(
+        "!!document.querySelector('.qr-sheet .qr-code svg path')")
+    # done must close the sheet WITHOUT closing the invite page under it
+    await pg.click('[data-qr="done"]'); await pg.wait_for_timeout(1000)
+    gone = await pg.evaluate("!document.querySelector('.qr-sheet')")
+    still = await pg.evaluate("!!document.querySelector('.invite-page')")
+    if not (drawn and gone and still):
+        print(f"      (drawn: {drawn}, closed: {gone}, page kept: {still})")
+    await go_home(pg)
+    return drawn and gone and still
+
+
 @step("posts: + makes a post ready to write")
 async def s_post(pg):
     await open_tool(pg, "posts")

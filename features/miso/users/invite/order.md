@@ -2,3 +2,4 @@
 - [x] invite-tool
 - [x] last-row
 - [x] pretend
+- [x] qr
