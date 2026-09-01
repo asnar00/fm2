@@ -1,2 +1,3 @@
 - [x] photo
 - [x] video
+- [x] one-add
