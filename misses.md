@@ -311,3 +311,29 @@ old channel, prefer a value the channel already carries (digits longer
 than any real E.164 number) over teaching every reader a second shape.
 The contact report cost 20 minutes; the forced build would have cost the
 day.
+
+## the shared gate scratch (2026-09-01) — /own-slot in a new coat
+
+**The ask:** none — three deploy gates failed in an hour with shape-shifting
+failures (warm boot, throttled boot, then the QR step) while standalone runs
+were green.
+
+**The estimate:** machine load, per the 2026-08-26 precedent — and the first
+retry passing seemed to confirm it.
+
+**The actual:** `tools/smoke.py` kept its scratch world at a fixed
+`/tmp/miso-smoke`; a worker's gate and the deploy's gate ran concurrently,
+and each `start()` begins with `rmtree` of the shared dir — the runs deleted
+each other's `users.json` and service-worker state mid-pass. Found by `pgrep
+smoke.py` after the third failure; the failures' shifting shape (never the
+same step twice) was the tell that it was a shared resource, not the app or
+load.
+
+**What the plan could not see:** /own-slot had already taught this exact
+lesson for the broadcast file; the gate's scratch was the same fixed-path
+hazard, unlabelled.
+
+**The lesson:** every scratch resource a tool owns is keyed by the instance
+(the port, here) unless an env var overrides it — and a gate failure that
+changes shape between retries is a shared-resource smell, distinct from the
+load smell (same step, slower).

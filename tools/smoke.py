@@ -16,6 +16,9 @@ import argparse, asyncio, json, os, pathlib, shutil, signal, subprocess, sys, ti
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
 BUILD = REPO / "products" / "miso" / "build"
+# one scratch per port: two gates on one machine (a deploy's and a rig's) must
+# never share a world — a fixed path had them deleting each other's users.json
+# mid-pass (2026-09-01, three shape-shifting gate failures). Rebound in main().
 SCRATCH = pathlib.Path(os.environ.get("MISO_SMOKE_DIR") or "/tmp/miso-smoke")
 USER = {"name": "_smoke", "phone": "+15550000999", "authority": "admin"}
 
@@ -350,6 +353,9 @@ def main():
     ap.add_argument("--port", type=int, default=8140)
     ap.add_argument("--keep", action="store_true")
     a = ap.parse_args()
+    if not os.environ.get("MISO_SMOKE_DIR"):
+        global SCRATCH
+        SCRATCH = pathlib.Path(f"/tmp/miso-smoke-{a.port}")
     if sh(["lsof", "-t", "-i", f":{a.port}", "-sTCP:LISTEN"]).stdout.strip():
         sys.exit(f"smoke: port {a.port} is busy — pass --port")
     binary = build_on(a.port)
