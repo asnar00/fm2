@@ -286,3 +286,28 @@ down by PID; the rule existed and was not followed under teardown haste.
 **The lesson:** on this box a name-matching kill always hits the live app;
 a rig is started with its PID captured and ended by that PID, and worker
 preambles now carry the teardown-by-PID line verbatim.
+
+## the second key shape (2026-09-01) — a contact report bought the map cheap
+
+**The ask:** instant QR login (#p8–#p10) — name-only accounts with no phone.
+
+**The estimate:** the triage sketch said a synthetic world key like
+`user:<hex>` "changes what the key means in a few places".
+
+**The actual:** the worker's survey before building: 21 sites across 12
+features build or test `phone:`-shaped, digits-only keys — including
+`/harden`, which re-validates the guest list by digits inside token
+validity, so a `user:<hex>` account cannot hold a working cookie at all;
+`/to-owner` and `/attention` would fail silently for exactly these users.
+
+**What the plan could not see:** the identity channel is digits-only and
+enforced at both ends (`normalise_phone` keeps only digits; the gate
+re-derives the key). Nothing in the sketch checked the composed source —
+the attention-brief lesson, unapplied again at triage level.
+
+**The lesson:** an identity-shaped change is surveyed in the composed
+source before it is briefed; and when a synthetic value must live in an
+old channel, prefer a value the channel already carries (digits longer
+than any real E.164 number) over teaching every reader a second shape.
+The contact report cost 20 minutes; the forced build would have cost the
+day.
