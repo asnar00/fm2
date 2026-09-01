@@ -1,0 +1,5 @@
+/* the dimmest thing on the sheet, and the last: a label and its lines, no
+   border and no background — /taste 2, and /less-busy's quiet */
+#credits { margin: 12px 0 2px; font-size: 11px; line-height: 1.5; color: #77777e; }
+#credits .credit-head { margin-bottom: 2px; }
+#credits .credit-line { opacity: 0.8; }
