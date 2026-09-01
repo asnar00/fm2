@@ -1,0 +1,41 @@
+/* one quiet row under your own card, borrowing /invite's grammar whole so the
+   card reads as one thing (/taste 6): status where the number sits, no header,
+   no prose beyond the one six-word note. */
+.addnum {
+  display: flex; flex-direction: column;
+  margin-top: 6px;
+}
+.addnum-new { gap: 6px; }
+.addnum-phone, .addnum-pin {
+  flex: 1; min-width: 0;
+  padding: 7px 9px; border-radius: 8px;
+  background: #121215; border: 1px solid #202026;
+  color: #eee; font: inherit; font-size: 13px;
+  outline: none;
+}
+.addnum-phone::placeholder, .addnum-pin::placeholder { color: #77777e; }
+/* the one accent, meaning what it means everywhere else */
+.addnum-phone:focus, .addnum-pin:focus { border-color: #9db7d8; }
+
+.addnum-do {
+  flex: none;
+  padding: 7px 12px; border-radius: 999px;
+  background: #1a1a1d; border: 1px solid #3a3a3f;
+  color: #c9c9d2; font-size: 13px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+
+/* once it is yours it is just a fact on the card, at the dimness of a fact */
+.addnum-status {
+  color: #9a9aa2; font-weight: 400; min-width: 46px; text-align: right;
+}
+.addnum-row .ctext { color: #c9c9d2; }
+
+.addnum-say {
+  padding: 6px 2px;
+  color: #9a9aa2; font-size: 12px; line-height: 1.35;
+}
+.addnum-note {
+  padding: 4px 2px;
+  color: #77777e; font-size: 12px;
+}
