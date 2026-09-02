@@ -367,3 +367,5 @@ waiting (notes.md, "the builder is a feature-modular skillset", fm-spec-2
   beyond bug > duplicate-count > age needs any policy at all yet.
 
 **2026-09-02, evening (ash):** workers are back on **Opus at effort high** (`CLAUDE_CODE_SUBAGENT_MODEL=opus`, `.claude/agents/worker.md` model opus). One day of Fable 5.1 workers at medium — a typical day, ash said — cost a third of the week's Fable budget (3% → 39%). Fable stays the triage and review seat.
+
+**Switching a seat's model mid-session (2026-09-02):** `.claude/agents/worker.md` and `CLAUDE_CODE_SUBAGENT_MODEL` are read at session start; edited mid-session they change nothing until a restart — three workers spawned right after the edit ran on Fable. The Agent call's own `model` parameter takes precedence and is live at once: spawn with `model: "opus"` until the session restarts, and check `tools/usage_log.py --seats` (or the subagent transcript's `model`) after every spawn that follows a seat change.
