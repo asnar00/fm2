@@ -110,15 +110,15 @@ async def until(pg, js, limit_ms=10000, every=200):
     return -1
 
 
-@step("a bare card is gated until a picture and a line are in; the tour is offered once")
-async def s_profile_first(pg):
-    """/profile-first: the smoke user is a fresh world, so the first pass lands
-    on the card with no way off; the picture goes in through the loop's own
-    event (the chooser is a native sheet), the line is typed, the tick saves.
-    /tour then offers itself; it is ended here so later steps see the plain
-    screen. Later passes find the card complete and the gate down."""
-    has = await pg.evaluate("typeof feature_ProfileFirst !== 'undefined'")
-    if not has:
+async def pass_gate(pg):
+    """/profile-first, at boot and before any housekeeping tap: the smoke user
+    is a fresh world, so the first pass lands on the card with no way off — the
+    tool buttons are withheld, and a click on one would wait forever. The
+    picture goes in through the loop's own event (the chooser is a native
+    sheet), the line is typed, the tick saves. /tour then offers itself and is
+    ended here so later steps see the plain screen. Later passes find the
+    card complete and the gate down."""
+    if not await pg.evaluate("typeof feature_ProfileFirst !== 'undefined'"):
         return True
     if await pg.evaluate("feature_ProfileFirst.gated()"):
         for _ in range(20):
@@ -134,15 +134,21 @@ async def s_profile_first(pg):
         await pg.wait_for_timeout(800)
         await pg.click(".card-page .card-text"); await pg.keyboard.type("here to help")
         await pg.wait_for_timeout(400)
-        await pg.click('[data-ctl="card_edit"], [ctl="card_edit"]')
+        await pg.click('[data-ctl="card_edit"]')
         took = await until(pg, "!feature_ProfileFirst.gated()")
-        print(f"      (gate lifted in {took} ms)" if took >= 0 else "      (gate never lifted)")
+        print(f"      (profile gate lifted in {took} ms)" if took >= 0 else "      (profile gate never lifted)")
         if took < 0:
             await dump(pg, "profile-first"); return False
     if await pg.evaluate("typeof feature_Tour !== 'undefined' && feature_Tour.at >= 0"):
         await pg.evaluate("feature_Tour.end()"); await pg.wait_for_timeout(600)
-    await go_home(pg)
     return True
+
+
+@step("a bare card was gated until a picture and a line went in; the gate is down")
+async def s_profile_first(pg):
+    if not await pg.evaluate("typeof feature_ProfileFirst !== 'undefined'"):
+        return True
+    return not await pg.evaluate("feature_ProfileFirst.gated()")
 
 
 @step("the lozenge opens the system panel on a tap")
@@ -365,6 +371,8 @@ async def passes(port: int, cookie: str) -> int:
                 print(f"  [FAIL] the app did not boot within 30s ({label})"); failures += 1; continue
             await pg.wait_for_timeout(1500)
             print(f"== {label}")
+            if not await pass_gate(pg):
+                print("  [FAIL] the profile gate did not lift"); failures += 1; continue
             await go_home(pg)
             # start every pass on the grid, whatever the last pass left behind
             await open_tool(pg, "account")
