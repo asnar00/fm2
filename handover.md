@@ -7,7 +7,7 @@ the ledger is `misses.md`. Read the composed skillset alongside this — it
 carries nine agent-instruction nodes now; the newest are /retrofit and
 /confined.*
 
-## TODAY, LATER (2026-09-02, afternoon): build 462 is live; the simulator rig runs on the mini
+## TODAY, LATER (2026-09-02, afternoon): build 471 is live; the simulator rig runs on the mini
 
 - **Shipped:** build 460 `/diag/self-check` + `/engineer` (the gear on the
   nøøb sheet; engineer-level UI lives only there — `engineer.agent.md` is
@@ -22,11 +22,22 @@ carries nine agent-instruction nodes now; the newest are /retrofit and
   hashed 225 fragments from the cache and named the four a relink changed
   after the manifest — a rig's `hashes.json` is written by deploy.sh, not
   fmlink, so a relinked rig shows stale-manifest mismatches (expected).
-- **In flight (workers, worktrees):** (1) live device location on the
-  people map, ephemeral, focus-bounded (ash's field ask, announced);
-  (2) `auto` updates without the OK, never while recording or editing
-  (`consent-once/by-policy`, `seamless/while-editing`; announced). Review
-  and ship each as it lands; stamp `shipped`.
+- **Shipped later in the afternoon:** build 467 — `auto` updates without
+  the OK (`consent-once/by-policy`: the instance stamps the acceptance
+  itself; `seamless/while-editing`: an edit finishes first). Then build
+  471 — `map/live` — live device location on the people map, ephemeral (server
+  memory, 60 s), visible only to holders of your card, matched by card id
+  (review caught a same-name leak), and **visibility-only** on the phone:
+  the iPhone simulator proved an installed app never has window focus and
+  fires a stray blur at launch — two cuts that read focus never published.
+  Final iOS proof: own pin drawn on the people map; entry gone 5 s after
+  the home button; back 14 s after return.
+- **Residuals ash has not ruled on:** (a) the page's scroll resets on any
+  repaint (pre-existing, `loop.js paint` via innerHTML), so "same scroll"
+  after an update is not delivered — a `/keep`-shaped scroll hold under
+  `loop/cards/page` would do it; (b) under `auto` the pulse is suppressed
+  even if the acceptance stamp fails (the panel's update button remains
+  the road out); (c) the gear glyph reads as an asterisk at 16px.
 - **Usage watch** (`tools/usage_log.py`, CLAUDE.md): Fable 4% of the week
   at 10:21 UTC, lasts the week. `--seats` splits burn by model and seat.
 - Map look and feel: ash likes CARTO Voyager; CARTO raster needs a free

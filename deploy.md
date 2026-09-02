@@ -189,7 +189,17 @@ Bring-up, once per device:
    (`[{"name":"_ash","phone":"+15550000998","authority":"admin"}]`). On
    the iPhone 17 Pro (402×874) Safari's share route is: More (344,816) →
    Share (243,542) → View More (335,797) → Add to Home Screen (150,642) →
-   Add (352,111).
+   Add (352,111). Lessons of the live-location proof (2026-09-02): a web
+   clip cannot be launched by bundle id (`simctl launch` and idb both
+   refuse) — Spotlight is the only door, and its Top Hit row may carry a
+   ghost tile first, so look at the screenshot before tapping; a removed
+   clip lingers in `data/Library/WebClips/<id>.webclip` after
+   `simctl uninstall` — delete the directory with the sim shut down; a
+   Safari tab left on the rig's URL answers the drive door instead of the
+   app (`simctl terminate <udid> com.apple.mobilesafari` first); a fresh
+   clip asks for precise location once (`simrig press Allow`) before
+   `getCurrentPosition` resolves, and the sim's location resets to Apple's
+   default on reboot (`simctl location <udid> set lat,lon` after boot).
 2. `xcrun simctl erase <udid>; boot`, `simctl openurl <udid> http://localhost:8099/`,
    then the share sheet (iOS 26 points: … 343,814 → Share 201,542 → More
    332,778 → Add to Home Screen 150,590 → Add 357,110). Home; Spotlight
