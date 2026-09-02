@@ -376,6 +376,11 @@ async def passes(port: int, cookie: str) -> int:
         pg = await ctx.new_page()
         errors = []
         pg.on("pageerror", lambda e: errors.append(str(e)[:200]))
+        # a page that dies mid-pass says so, by name: a renderer crash and a
+        # close are different faults (2026-09-02, when a pass ended in a
+        # string of TargetClosed errors and nobody could say which)
+        pg.on("crash", lambda: print("  !! the page crashed (renderer)"))
+        pg.on("close", lambda: print("  !! the page closed"))
         navs, logs = [], []
         pg.on("framenavigated", lambda f: navs.append(f.url) if f == pg.main_frame else None)
         pg.on("console", lambda m: logs.append(f"{m.type}: {m.text[:160]}"))
