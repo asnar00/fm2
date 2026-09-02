@@ -166,6 +166,22 @@ Bring-up, once per device:
    the main checkout's build dir. `fmlink --quick` rebuilds the binary; the
    port lives in the environment, not the source. One rig at a time: readout
    and drive share `/tmp/miso-readout.json` and `/tmp/miso-drive.json`.
+   Add `MISO_RIG_KEEP=1` (`/diag/rig/keep-worker`, 2026-09-02) and the rig
+   keeps the page's service worker and caches, so the cache path — a mixed
+   cache after rapid updates, the self-check's hashing — is under test;
+   without it a rig drops both and every fragment reads `uncached`.
+   The mini's rig tooling (2026-09-02): `idb` is the fb-idb client in
+   `~/.local/rig-venv` (linked at `~/.local/bin/idb`) with the prebuilt
+   `idb_companion` from the facebook/idb GitHub release under
+   `~/.local/idb-companion` (Homebrew's formula needs newer command line
+   tools than the mini has). The web clip's bundle id comes from
+   `xcrun simctl listapps <udid>` (`com.apple.WebKit.PushBundle.<hex>`);
+   `simctl launch` refuses it — Spotlight is the launcher. The rig's HOME
+   needs `.miso-auth/users.json` with the `_` test user before login
+   (`[{"name":"_ash","phone":"+15550000998","authority":"admin"}]`). On
+   the iPhone 17 Pro (402×874) Safari's share route is: More (344,816) →
+   Share (243,542) → View More (335,797) → Add to Home Screen (150,642) →
+   Add (352,111).
 2. `xcrun simctl erase <udid>; boot`, `simctl openurl <udid> http://localhost:8099/`,
    then the share sheet (iOS 26 points: … 343,814 → Share 201,542 → More
    332,778 → Add to Home Screen 150,590 → Add 357,110). Home; Spotlight

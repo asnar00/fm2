@@ -4,13 +4,20 @@
 // so an installed home-screen app is under test from launch (#p164a).
 const feature_RigPage = {
   on: false,
-  arm() {
+  // the seam /keep-worker sets from the rig's answer: a rig that keeps the
+  // service worker and caches, so the cache path itself can be under test
+  keep: false,
+  arm(answer) {
     this.on = true;
+    this.keep = !!(answer && answer.keep);
     // a rig runs the code it was given: no service worker, no cache, so
     // every cold launch fetches the site as it is now (the version-driven
-    // reload does not fire in a standalone app on a relaunch)
-    if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => r.unregister())).catch(() => {});
-    if (window.caches) caches.keys().then((ks) => ks.forEach((k) => caches.delete(k))).catch(() => {});
+    // reload does not fire in a standalone app on a relaunch) — unless the
+    // rig said keep
+    if (!this.keep) {
+      if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => r.unregister())).catch(() => {});
+      if (window.caches) caches.keys().then((ks) => ks.forEach((k) => caches.delete(k))).catch(() => {});
+    }
     if (typeof feature_Readout !== 'undefined' && !feature_Readout.active) {
       feature_Readout.active = true;
       new MutationObserver(() => feature_Readout.schedule()).observe(
@@ -47,4 +54,4 @@ const feature_RigPage = {
   },
 };
 fetch('/diag/rig', { cache: 'no-store' }).then((r) => r.ok ? r.json() : null)
-  .then((j) => { if (j && j.rig) feature_RigPage.arm(); }).catch(() => {});
+  .then((j) => { if (j && j.rig) feature_RigPage.arm(j); }).catch(() => {});
