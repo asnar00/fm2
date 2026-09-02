@@ -226,9 +226,12 @@ async def s_edit(pg):
         await pg.dispatch_event('.toolbar [data-ctl=card_edit]', 'pointerdown'); await pg.wait_for_timeout(600)
     elif await pg.evaluate("(() => { const e=document.getElementById('cardEdit'); return !!e && e.classList.contains('show'); })()"):
         await pg.dispatch_event('#cardEdit', 'pointerdown'); await pg.wait_for_timeout(600)
-    if not await pg.evaluate("!!document.querySelector('.card-page .card-text[contenteditable=true]')"): return False
+    if not await pg.evaluate("!!document.querySelector('.card-page .card-text[contenteditable=true]')"):
+        print("      (no editable card text after the pencil)"); await dump(pg, "edit-open"); return False
     await pg.click(".card-text"); await pg.keyboard.press("End"); await pg.keyboard.type(" smoke"); await pg.click(".card-title"); await pg.wait_for_timeout(1500)
     txt = await pg.evaluate("(document.querySelector('.card-text')||{}).innerText || ''")
+    if not txt.endswith("smoke"):
+        print(f"      (card text after the edit: {txt[-60:]!r})"); await dump(pg, "edit-save")
     return txt.endswith("smoke")
 
 
