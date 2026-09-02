@@ -47,6 +47,12 @@ const feature_SelfCheck = {
       }
     } catch (e) { res = null; }
     if (!res) {
+      // not in the cache. Under a controlling worker the cache should have
+      // had it, and a fetch goes through the worker and repairs it; with no
+      // controller (a plain tab) fetching would pull every fragment a second
+      // time after paint — count it uncached and leave it alone
+      if (!(navigator.serviceWorker && navigator.serviceWorker.controller))
+        return { from: 'uncached', hash: null };
       from = 'fetch';
       try { res = await fetch(url); if (!res.ok) res = null; } catch (e) { res = null; }
     }
@@ -56,7 +62,7 @@ const feature_SelfCheck = {
   },
 
   async fragments() {
-    const out = { manifest: false, count: 0, cached: 0, mismatched: [], missing: [], unhashed: 0 };
+    const out = { manifest: false, count: 0, cached: 0, uncached: 0, mismatched: [], missing: [], unhashed: 0 };
     const m = await this.manifest();
     if (!m) return out;
     out.manifest = true;
@@ -64,6 +70,7 @@ const feature_SelfCheck = {
     out.count = paths.length;
     for (const p of paths) {
       const h = await this.hashOf(p);
+      if (h.from === 'uncached') { out.uncached++; continue; }
       if (h.from === 'missing') { out.missing.push(p); continue; }
       if (h.from === 'cache') out.cached++;
       if (h.hash === null) out.unhashed++;
@@ -116,18 +123,32 @@ const feature_SelfCheck = {
         running: up ? up.running : '?', server: up && up.server ? up.server : 'offline',
         sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller),
         pwa: typeof feature_Standalone !== 'undefined' && feature_Standalone.standalone(),
-        manifest: f.manifest, count: f.count, cached: f.cached, unhashed: f.unhashed,
+        manifest: f.manifest, count: f.count, cached: f.cached, uncached: f.uncached,
+        unhashed: f.unhashed,
         mismatched: f.mismatched, missing: f.missing,
+        nmismatched: f.mismatched.length, nmissing: f.missing.length,
         tap: b.tap, veil: b.veil, wrappers: b.wrappers, orphans: b.orphans,
         ms: Math.round(performance.now() - t0),
       };
       r.ok = f.manifest && !f.mismatched.length && !f.missing.length && b.tap && b.veil && b.wrappers;
       this.last = r;
       this.running = null;
-      if (typeof feature_Diag !== 'undefined') feature_Diag.report(r);
+      if (typeof feature_Diag !== 'undefined') feature_Diag.report(this.posted(r));
       return r;
     })();
     return this.running;
+  },
+
+  // what goes on the wire: the server keeps 2KB per report, and a wholly
+  // stale cache would name ~220 paths (≈4KB) — exactly the phone the report
+  // exists for. The lists are cut to their first `few` names; the full
+  // counts ride beside them, and text() keeps the whole lists locally.
+  few: 12,
+  posted(r) {
+    const p = Object.assign({}, r);
+    p.mismatched = r.mismatched.slice(0, this.few);
+    p.missing = r.missing.slice(0, this.few);
+    return p;
   },
 
   // the report as plain text, for the engineer section
@@ -139,7 +160,9 @@ const feature_SelfCheck = {
         + ' · sw ' + (r.sw ? 'controlled' : 'none') + (r.pwa ? ' · pwa' : '') + ' · ' + r.ms + 'ms',
       r.manifest
         ? 'fragments ' + r.count + ' · cached ' + r.cached + ' · mismatched ' + r.mismatched.length
-          + ' · missing ' + r.missing.length + (r.unhashed ? ' · unhashed ' + r.unhashed : '')
+          + ' · missing ' + r.missing.length
+          + (r.uncached ? ' · uncached ' + r.uncached + ' (no worker: not fetched)' : '')
+          + (r.unhashed ? ' · unhashed ' + r.unhashed : '')
         : 'fragments: no manifest (hashes.json) — a dev build, or offline',
       'tap ' + (r.tap ? 'ok' : 'FAIL') + ' · veil ' + (r.veil ? 'ok' : 'FAIL')
         + ' · wrappers ' + (r.wrappers ? 'ok' : 'FAIL: ' + r.orphans.join(' ')),

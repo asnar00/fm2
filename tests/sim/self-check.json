@@ -21,5 +21,13 @@
   {"js": "const p = Object.keys(await feature_SelfCheck.manifest()).filter(x => x.startsWith('f/') && x.endsWith('.css'))[0]; return JSON.stringify(feature_SelfCheck.last.mismatched) === JSON.stringify([p])", "expect": true, "name": "the report names exactly the poisoned fragment"},
   {"js": "return feature_SelfCheck.last.ok", "expect": false, "name": "and the report is not ok"},
   {"js": "const p = feature_SelfCheck.last.mismatched[0]; const c = await caches.open('miso'); await c.delete(new URL(p, location.href).href, {ignoreSearch: true}); feature_SelfCheck.last = null; const r = await feature_SelfCheck.run(); return r.mismatched.length", "expect": 0, "name": "the poison removed, the check is clean again"},
+  {"note": "hostile: every cached fragment stale at once — the report must still fit the server's 2KB cap and be kept"},
+  {"js": "const m = await feature_SelfCheck.manifest(); const c = await caches.open('miso'); let n = 0; for (const p of Object.keys(m).filter(x => feature_SelfCheck.code(x))) { await c.put(new URL(p, location.href).href, new Response('/* stale */', {headers: {'content-type': 'text/plain'}})); n++; } return n", "name": "poison every code fragment"},
+  {"js": "feature_SelfCheck.last = null; const r = await feature_SelfCheck.run(); return r.nmismatched === r.count && r.count > 12", "expect": true, "name": "the local result names every fragment"},
+  {"js": "return JSON.stringify({t: new Date().toISOString(), ...feature_SelfCheck.posted(feature_SelfCheck.last)}).length < 2048", "expect": true, "name": "the posted report serialises under 2048 bytes"},
+  {"js": "return feature_SelfCheck.posted(feature_SelfCheck.last).mismatched.length", "expect": 12, "name": "the wire carries the first 12 names"},
+  {"wait": 800},
+  {"js": "const list = await fetch('/diag/self-check?n=5').then(r => r.json()); const mine = list.find(e => e.device === feature_SelfCheck.last.device); return !!mine && mine.nmismatched === feature_SelfCheck.last.count && mine.mismatched.length === 12", "expect": true, "name": "the server kept it, counts intact"},
+  {"js": "await caches.delete('miso'); feature_SelfCheck.last = null; const r = await feature_SelfCheck.run(); return r.mismatched.length + r.missing.length", "expect": 0, "name": "cache dropped: refetched through the worker, clean again"},
   {"home": true}
 ]
