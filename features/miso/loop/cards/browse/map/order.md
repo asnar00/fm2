@@ -2,3 +2,4 @@
 - [x] quiet-credits
 - [x] live
 - [x] stand-in
+- [x] stocked

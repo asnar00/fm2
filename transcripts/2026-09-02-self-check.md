@@ -1,4 +1,4 @@
-# transcript: self-check
+# transcript: self-check session
 *session `6004deb9-d2ef-4b9a-8b15-ef1e406b9cb8`, exported by tools/export_transcript.py — do not edit; anchors `#pN` are stable*
 
 ### p1
