@@ -110,6 +110,41 @@ async def until(pg, js, limit_ms=10000, every=200):
     return -1
 
 
+@step("a bare card is gated until a picture and a line are in; the tour is offered once")
+async def s_profile_first(pg):
+    """/profile-first: the smoke user is a fresh world, so the first pass lands
+    on the card with no way off; the picture goes in through the loop's own
+    event (the chooser is a native sheet), the line is typed, the tick saves.
+    /tour then offers itself; it is ended here so later steps see the plain
+    screen. Later passes find the card complete and the gate down."""
+    has = await pg.evaluate("typeof feature_ProfileFirst !== 'undefined'")
+    if not has:
+        return True
+    if await pg.evaluate("feature_ProfileFirst.gated()"):
+        for _ in range(20):
+            if await pg.evaluate("!!document.querySelector('.card-page .card-text')"): break
+            await pg.wait_for_timeout(250)
+        await pg.evaluate("""(() => {
+            const s = JSON.parse(feature_Loop.state); const cards = JSON.parse(s.cards || '[]');
+            const me = cards.find(c => c.type === 'profile' && !c.from); if (!me) return;
+            const i = me.blocks.findIndex(b => b.kind === 'picture');
+            const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAF0lEQVR4nGP4z8DwHwyBGEIwMKBQMDAAAJ9YD/HG9V3DAAAAAElFTkSuQmCC';
+            feature_Loop.send({ type: 'CardPic', data: { id: me.id, i: i, data: png, t: Date.now() } });
+        })()""")
+        await pg.wait_for_timeout(800)
+        await pg.click(".card-page .card-text"); await pg.keyboard.type("here to help")
+        await pg.wait_for_timeout(400)
+        await pg.click('[data-ctl="card_edit"], [ctl="card_edit"]')
+        took = await until(pg, "!feature_ProfileFirst.gated()")
+        print(f"      (gate lifted in {took} ms)" if took >= 0 else "      (gate never lifted)")
+        if took < 0:
+            await dump(pg, "profile-first"); return False
+    if await pg.evaluate("typeof feature_Tour !== 'undefined' && feature_Tour.at >= 0"):
+        await pg.evaluate("feature_Tour.end()"); await pg.wait_for_timeout(600)
+    await go_home(pg)
+    return True
+
+
 @step("the lozenge opens the system panel on a tap")
 async def s_lozenge(pg):
     await pg.click("#build")
