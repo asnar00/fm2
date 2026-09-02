@@ -1635,3 +1635,40 @@ Everything from this round is shipped and stamped. Summary:
 > the tooltips on the tools need to be brought up to date - the 'users' tool still shows "account" and talks about "a user page is coming". We should do a sweep through all tool button tips and check they're current
 
 Let me find where the tool tips live and what each says today.
+
+The sweep is deploying. Here are the new words, since wording is yours to judge:
+
+- **people** (the 👤 tool, was "account"): Your own page, name, picture, what you are here to do, and everyone whose card you hold, as a grid, a list, or a map. On the map, a person who has the app open right now stands where their phone is. The plus invites people: by name and number, or with a QR code for the room.
+- **invite:** Two ways in: type a name and number and they get a code by text, or show a QR code for the room and each person types their own. Under it, the people you have invited.
+- **posts:** The posts you hold, yours and the ones people you invited wrote, newest first, as pictures or a list. Tap + to write one, take a photo, or record a video from where you stand.
+- **projects:** The projects you are in, your own and the ones you have a part in. new makes one: a title, and what you are trying to get done.
+- **reports:** For support and above: your reports, newest first, with what each one asked and when it last answered.
+- **taps:** A shared counter everyone can tap. The first thing miso ever did, kept as the simplest way to see the app working across two phones.
+- **dictate:** Tap the record button and talk; tap stop. What you said becomes a post, words and all.
+
+One naming choice to flag: I called the 👤 tool "people" because that is what the tree calls the view. You have been saying "users". If you prefer "users", it is one word in one table. Anything else you would change, say the tool and the sentence.
+
+### p65
+*2026-09-02 15:26*
+
+*(edited and resent — superseded by the next prompt; do not cite)*
+
+> the description for each tool should describe what it's for - the description of all the sub-tools can be put in the sub-tool buttons' tips (same for map/list/grid button).
+
+### p66
+*2026-09-02 15:27*
+
+> the description for each tool should describe what it's for - the description of all the sub-tools can be put in the sub-tool buttons' tips (same for map/list/grid button). i.e. the description can be much more concise
+
+Understood: each tool's tip says what it is for, in a line, and the detail moves down to the buttons inside it and the grid/list/map picker. Reading how the sub-tool cards find their words so the same table can feed them.
+
+### p66a
+*2026-09-02 15:27*
+
+> <task-notification>
+> <task-id>b4phmgcrp</task-id>
+> <tool-use-id>toolu_01LSYpUH2q1NGz5X55YeRQ8J</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/b4phmgcrp.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Create the tool-words node with the swept tips, prove it confined, commit, and deploy" completed (exit code 0)</summary>
+> </task-notification>
