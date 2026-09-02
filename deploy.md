@@ -35,7 +35,7 @@
 On restart the server announces the new build to push subscribers by itself
 (miso/push extends the serve chain) — no deploy-side notification step.
 
-**The basemap (2026-09-02):** Stadia Alidade Smooth, set by `MISO_TILE_URL`
+**The basemap (2026-09-02):** Stadia Alidade Smooth Dark, set by `MISO_TILE_URL`
 (with ash's Stadia key) and `MISO_TILE_ATTRIBUTION` in the live plist's
 environment — the key is never in the repo (the reference plist carries
 `STADIA_KEY`). Changing the ground means: the env, then **`launchctl bootout` +

@@ -19,7 +19,7 @@ fetched ones came light. The cure is a new name: this node stamps a ground
 tag onto the tile url — `?g=1` — so every square is asked for under a name
 no cache has heard, and the old dark entries rot unused. The server's tile
 route reads coordinates from the path and ignores the query, verified live.
-A future ground change bumps the tag: `g=2` on 2026-09-02, when the ground became Stadia's Alidade Smooth (`MISO_TILE_URL` in the mini's plist; ash chose it from an audition, self-check #p36).
+A future ground change bumps the tag: `g=2` on 2026-09-02, when the ground became Stadia's Alidade Smooth (`MISO_TILE_URL` in the mini's plist; ash chose it from an audition, self-check #p36); `g=3` the same afternoon for Alidade Smooth Dark — the tool buttons did not pop on the grey (#p37).
 
 The page half takes `feature_Map.sync` the way `/boundaries` did — property
 replacement at load, one more wrapper on the chain — and once, when the map
