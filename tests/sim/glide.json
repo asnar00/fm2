@@ -1,66 +1,221 @@
 [
-  {"note": "going up a level, the toolbar's buttons slide smoothly to where they now belong (asks#1788371214988). The simulator has no frame sampler, so this file asserts the end state and the marks a glide leaves behind; the per-frame rectangles are in the headless rig (scratchpad/glide-rig, evidence/*.json)"},
-  {"home": true},
-
-  {"js": "window.__row = () => Array.from(document.querySelectorAll('.toolbar .tool-button')).map(b => (b.getAttribute('data-ev') || b.getAttribute('data-ctl') || '?') + '@' + Math.round(b.getBoundingClientRect().x * 10) / 10); window.__marks = () => ({ moved: Array.from(document.querySelectorAll('.toolbar .fm-glide-moved')).map(b => b.getAttribute('data-ev')), inFade: document.querySelectorAll('.toolbar .fm-glide-in').length, ghosts: document.querySelectorAll('.fm-glide-ghost').length }); window.__watch = async (ms) => { const seen = { moved: [], inFade: 0, ghosts: 0 }; const t0 = Date.now(); while (Date.now() - t0 < ms) { const m = window.__marks(); for (const k of m.moved) if (!seen.moved.includes(k)) seen.moved.push(k); seen.inFade = Math.max(seen.inFade, m.inFade); seen.ghosts = Math.max(seen.ghosts, m.ghosts); await new Promise(r => setTimeout(r, 25)); } return seen; }; return true", "expect": true, "name": "the row and mark probes"},
-
-  {"js": "return typeof feature_Glide !== 'undefined' && feature_Glide.MS >= 200 && feature_Glide.MS <= 250 && feature_Glide.EASE === 'ease-out'", "expect": true, "name": "the node is composed, quiet and ease-out (/taste 5)"},
-
-  {"note": "down two levels to the invite level, which is where the ask was filed from"},
-  {"tap": "[ev=tool_account]"},
-  {"wait_for": "[ev=tool_invite]"},
-  {"tap": "[ev=tool_invite]"},
-  {"wait_for": "[ev=invite_qr]"},
-  {"js": "return window.__row().slice(0, 2).join(' ').replace(/@[0-9.]+/g, '')", "expect": "tools_home tool_invite", "name": "the invite level: ‹ then the plus", "readout": "glide-invite-level"},
-
-  {"note": "UP a level, ‹ from the invite level to 👤's: the plus moves, ‹ does not, the two sub-tools leave as ghosts, 👤 arrives"},
-  {"js": "const p = () => { const e = document.querySelector('.toolbar [data-ev=\"tool_invite\"]'); return e ? Math.round(e.getBoundingClientRect().x * 10) / 10 : null; }; window.__from = p(); const w = window.__watch(600); feature_Loop.send({type: 'click', ev: 'tools_home'}); window.__seen = await w; window.__to = p(); return { from: window.__from, to: window.__to, seen: window.__seen }", "name": "‹ from the invite level: where the plus went and what the glide left behind", "readout": "glide-up-to-account"},
-  {"js": "return window.__to !== null && window.__to !== window.__from", "expect": true, "name": "the plus ends somewhere new — the level really changed"},
-  {"js": "return window.__seen.moved.includes('tool_invite')", "expect": true, "name": "the plus was glided: fm-glide-moved is on it"},
-  {"js": "return window.__seen.ghosts > 0", "expect": true, "name": "the sub-tools that left had ghosts fading where they stood"},
-  {"js": "return window.__seen.inFade > 0", "expect": true, "name": "the buttons that arrived faded in"},
-  {"js": "await new Promise(r => setTimeout(r, 500)); return window.__marks().ghosts", "expect": 0, "name": "every ghost is taken away when it has finished"},
-  {"js": "return Array.from(document.querySelectorAll('.toolbar .tool-button')).map(b => b.style.transform || '-').join(' ')", "expect": "- - -", "name": "nothing is left transformed once the glide has settled"},
-
-  {"note": "the final row is the row a plain paint would have drawn: the same climb again with the glide's duration set to nothing"},
-  {"js": "window.__glided = window.__row().join(' '); feature_Glide.MS = 0; feature_Loop.send({type: 'click', ev: 'tool_invite'}); await new Promise(r => setTimeout(r, 900)); feature_Loop.send({type: 'click', ev: 'tools_home'}); await new Promise(r => setTimeout(r, 900)); window.__plain = window.__row().join(' '); feature_Glide.MS = 220; return { glided: window.__glided, plain: window.__plain }", "name": "the same row, glided and plain"},
-  {"js": "return window.__glided === window.__plain", "expect": true, "name": "the glide changes the frames in between, never where the row ends up", "readout": "glide-plain-equal"},
-
-  {"note": "UP again, 👤's level to the toolbar: 👤's own button travels from second place to its launcher place"},
-  {"js": "const p = () => { const e = document.querySelector('.toolbar [data-ev=\"tool_account\"]'); return e ? Math.round(e.getBoundingClientRect().x * 10) / 10 : null; }; window.__from = p(); const w = window.__watch(600); feature_Loop.send({type: 'click', ev: 'tools_home'}); window.__seen = await w; return { from: window.__from, to: p(), seen: window.__seen }", "name": "‹ to the toolbar: 👤's button", "readout": "glide-up-to-toolbar"},
-  {"js": "return window.__seen.moved.includes('tool_account')", "expect": true, "name": "👤's button was glided to its launcher place"},
-  {"js": "return window.__seen.inFade > 0 && window.__seen.ghosts > 0", "expect": true, "name": "the other launcher tools faded in; ‹ faded out where it stood"},
-  {"js": "return JSON.parse(feature_Loop.state).open_tool", "expect": "", "name": "and the level is the launcher"},
-
-  {"note": "DOWN a level gets the same courtesy — up and down are one event to this node, a change of open_tool"},
-  {"js": "const p = () => { const e = document.querySelector('.toolbar [data-ev=\"tool_account\"]'); return e ? Math.round(e.getBoundingClientRect().x * 10) / 10 : null; }; window.__from = p(); const w = window.__watch(600); feature_Loop.send({type: 'click', ev: 'tool_account'}); window.__seen = await w; return { from: window.__from, to: p(), seen: window.__seen }", "name": "the toolbar down to 👤", "readout": "glide-down-to-account"},
-  {"js": "return window.__seen.moved.includes('tool_account')", "expect": true, "name": "going down a level glides too"},
-
-  {"note": "/steady's rule is kept: a paint that does not change the level moves nothing at all"},
-  {"js": "const before = window.__row().join(' '); const w = window.__watch(500); feature_Loop.send({type: 'ping', data: {}}); const seen = await w; return { before: before, after: window.__row().join(' '), seen: seen }", "name": "a state change with the level unchanged"},
-  {"js": "feature_Loop.send({type: 'ping', data: {}}); await new Promise(r => setTimeout(r, 400)); const w = window.__watch(500); feature_Loop.send({type: 'ping', data: {}}); const seen = await w; return seen.moved.length === 0 && seen.ghosts === 0", "expect": true, "name": "a same-level paint glides nothing and ghosts nothing (/steady, #p2a)"},
-  {"js": "return Array.from(document.querySelectorAll('.toolbar .tool-button')).every(b => !b.style.transform)", "expect": true, "name": "and no button carries a transform"},
-
-  {"note": "undo's arrival and departure are the membership courtesy, not the glide: they happen on a paint that does not change the level"},
-  {"js": "feature_Loop.send({type: 'click', ev: 'tools_home'}); await new Promise(r => setTimeout(r, 900)); feature_Loop.send({type: 'click', ev: 'tool_taps'}); await new Promise(r => setTimeout(r, 900)); return !document.querySelector('.toolbar [data-ev=\"ctx_undo\"]')", "expect": true, "name": "taps open, nothing done: no undo yet"},
-  {"tap": "[ev=tap]"},
-  {"js": "const w = window.__watch(500); const seen = await w; return { undo: !!document.querySelector('.toolbar [data-ev=\"ctx_undo\"]'), level: JSON.parse(feature_Loop.state).open_tool, seen: seen }", "name": "undo after a tap", "readout": "glide-undo-arrived"},
-  {"js": "return !!document.querySelector('.toolbar [data-ev=\"ctx_undo\"]')", "expect": true, "name": "undo is in the row"},
-  {"js": "const w = window.__watch(600); feature_Loop.send({type: 'click', ev: 'ctx_undo'}); const seen = await w; return { gone: !document.querySelector('.toolbar [data-ev=\"ctx_undo\"]'), ghosts: seen.ghosts, moved: seen.moved }", "name": "undo pressed: it leaves, and it leaves as a ghost", "readout": "glide-undo-left"},
-  {"js": "feature_Loop.send({type: 'ping', data: {}}); await new Promise(r => setTimeout(r, 400)); const w = window.__watch(600); feature_Loop.send({type: 'click', ev: 'tap'}); const seen = await w; return seen.moved.length === 0 && seen.inFade > 0", "expect": true, "name": "undo arrives with a fade and moves none of its neighbours — the level did not change (/steady's rule; the neighbours' reflow is named as a limit in glide.md)"},
-  {"js": "let n = 0; while (document.querySelector('.toolbar [data-ev=\"ctx_undo\"]') && n < 8) { feature_Loop.send({type: 'click', ev: 'ctx_undo'}); n++; await new Promise(r => setTimeout(r, 800)); } return n > 0", "expect": true, "name": "the taps are put back for the next run"},
-
-  {"note": "a second climb while the first is still travelling: no ghost pile-up, and the row lands where it should"},
-  {"js": "feature_Loop.send({type: 'click', ev: 'tools_home'}); await new Promise(r => setTimeout(r, 900)); feature_Loop.send({type: 'click', ev: 'tool_account'}); await new Promise(r => setTimeout(r, 90)); const mid = window.__marks().ghosts; feature_Loop.send({type: 'click', ev: 'tool_invite'}); await new Promise(r => setTimeout(r, 1400)); return { mid_ghosts: mid, settled_ghosts: window.__marks().ghosts, row: window.__row().join(' '), level: JSON.parse(feature_Loop.state).open_tool }", "name": "two climbs 90 ms apart", "readout": "glide-double-climb"},
-  {"js": "return window.__marks().ghosts === 0 && JSON.parse(feature_Loop.state).open_tool === 'invite'", "expect": true, "name": "no ghost survives the second climb, and the second level is the one you are on"},
-
-  {"note": "a ghost cannot take a finger: no data-ev, pointer-events none, and the point it covers answers as the row beneath it"},
-  {"js": "feature_Loop.send({type: 'click', ev: 'tools_home'}); await new Promise(r => setTimeout(r, 60)); const g = document.querySelector('.fm-glide-ghost'); if (!g) return 'no ghost'; const r = g.getBoundingClientRect(); const at = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return { hasEv: g.hasAttribute('data-ev') || g.hasAttribute('data-ctl'), pointerEvents: getComputedStyle(g).pointerEvents, hitsGhost: at === g }", "name": "the ghost's inertness", "readout": "glide-ghost-inert"},
-  {"js": "await new Promise(r => setTimeout(r, 400)); return true", "expect": true, "name": "let it finish"},
-
-  {"note": "prefers-reduced-motion: the simulator cannot set the media query, so the predicate this node reads is stubbed instead — the same branch the phone would take"},
-  {"js": "const real = feature_Glide.reduced; feature_Glide.reduced = () => true; feature_Loop.send({type: 'click', ev: 'tool_account'}); await new Promise(r => setTimeout(r, 120)); const mid = { moved: document.querySelectorAll('.fm-glide-moved').length, inFade: document.querySelectorAll('.fm-glide-in').length, ghosts: document.querySelectorAll('.fm-glide-ghost').length, transforms: Array.from(document.querySelectorAll('.toolbar .tool-button')).map(b => b.style.transform || '-').join(' ') }; await new Promise(r => setTimeout(r, 600)); feature_Glide.reduced = real; return mid", "name": "a climb with reduced motion asked for", "readout": "glide-reduced"},
-  {"js": "const real = feature_Glide.reduced; feature_Glide.reduced = () => true; feature_Loop.send({type: 'click', ev: 'tools_home'}); await new Promise(r => setTimeout(r, 120)); const ok = document.querySelectorAll('.fm-glide-moved, .fm-glide-in, .fm-glide-ghost').length === 0 && Array.from(document.querySelectorAll('.toolbar .tool-button')).every(b => !b.style.transform); await new Promise(r => setTimeout(r, 600)); feature_Glide.reduced = real; return ok", "expect": true, "name": "reduced motion: no transform, no fade, no ghost"},
-
-  {"home": true}
+  {
+    "note": "going up a level, the toolbar's buttons slide smoothly to where they now belong (asks#1788371214988). The simulator has no frame sampler, so this file asserts the end state and the marks a glide leaves behind; the per-frame rectangles are in the headless rig (scratchpad/glide-rig, evidence/*.json)"
+  },
+  {
+    "home": true
+  },
+  {
+    "js": "window.__row = () => Array.from(document.querySelectorAll('.toolbar .tool-button')).map(b => (b.getAttribute('data-ev') || b.getAttribute('data-ctl') || '?') + '@' + Math.round(b.getBoundingClientRect().x * 10) / 10); window.__marks = () => ({ moved: Array.from(document.querySelectorAll('.toolbar .fm-glide-moved')).map(b => b.getAttribute('data-ev')), inFade: document.querySelectorAll('.toolbar .fm-glide-in').length, ghosts: document.querySelectorAll('.fm-glide-ghost').length }); window.__watch = async (ms) => { const seen = { moved: [], inFade: 0, ghosts: 0 }; const t0 = Date.now(); while (Date.now() - t0 < ms) { const m = window.__marks(); for (const k of m.moved) if (!seen.moved.includes(k)) seen.moved.push(k); seen.inFade = Math.max(seen.inFade, m.inFade); seen.ghosts = Math.max(seen.ghosts, m.ghosts); await new Promise(r => setTimeout(r, 25)); } return seen; }; return true",
+    "expect": true,
+    "name": "the row and mark probes"
+  },
+  {
+    "js": "return typeof feature_Glide !== 'undefined' && feature_Glide.MS >= 200 && feature_Glide.MS <= 250 && feature_Glide.EASE === 'ease-out'",
+    "expect": true,
+    "name": "the node is composed, quiet and ease-out (/taste 5)"
+  },
+  {
+    "note": "down two levels to the invite level, which is where the ask was filed from"
+  },
+  {
+    "tap": "[ev=tool_account]"
+  },
+  {
+    "wait_for": "[ev=tool_invite]"
+  },
+  {
+    "tap": "[ev=tool_invite]"
+  },
+  {
+    "wait_for": "[ev=invite_qr]"
+  },
+  {
+    "js": "return window.__row().slice(0, 2).join(' ').replace(/@[0-9.]+/g, '')",
+    "expect": "tools_home tool_invite",
+    "name": "the invite level: ‹ then the plus",
+    "readout": "glide-invite-level"
+  },
+  {
+    "note": "UP a level, ‹ from the invite level to 👤's: the plus moves, ‹ does not, the two sub-tools leave as ghosts, 👤 arrives"
+  },
+  {
+    "js": "const p = () => { const e = document.querySelector('.toolbar [data-ev=\"tool_invite\"]'); return e ? Math.round(e.getBoundingClientRect().x * 10) / 10 : null; }; window.__from = p(); const w = window.__watch(600); feature_Loop.send({type: 'click', ev: 'tools_home'}); window.__seen = await w; window.__to = p(); return { from: window.__from, to: window.__to, seen: window.__seen }",
+    "name": "‹ from the invite level: where the plus went and what the glide left behind",
+    "readout": "glide-up-to-account"
+  },
+  {
+    "js": "return window.__to !== null && window.__to !== window.__from",
+    "expect": true,
+    "name": "the plus ends somewhere new — the level really changed"
+  },
+  {
+    "js": "return window.__seen.moved.includes('tool_invite')",
+    "expect": true,
+    "name": "the plus was glided: fm-glide-moved is on it"
+  },
+  {
+    "js": "return window.__seen.ghosts > 0",
+    "expect": true,
+    "name": "the sub-tools that left had ghosts fading where they stood"
+  },
+  {
+    "js": "return window.__seen.inFade > 0",
+    "expect": true,
+    "name": "the buttons that arrived faded in"
+  },
+  {
+    "js": "await new Promise(r => setTimeout(r, 500)); return window.__marks().ghosts",
+    "expect": 0,
+    "name": "every ghost is taken away when it has finished"
+  },
+  {
+    "js": "return Array.from(document.querySelectorAll('.toolbar .tool-button')).map(b => b.style.transform || '-').join(' ')",
+    "expect": "- - -",
+    "name": "nothing is left transformed once the glide has settled"
+  },
+  {
+    "note": "the final row is the row a plain paint would have drawn: the same climb again with the glide's duration set to nothing"
+  },
+  {
+    "js": "window.__glided = window.__row().join(' '); feature_Glide.MS = 0; feature_Loop.send({type: 'click', ev: 'tool_invite'}); await new Promise(r => setTimeout(r, 900)); feature_Loop.send({type: 'click', ev: 'tools_home'}); await new Promise(r => setTimeout(r, 900)); window.__plain = window.__row().join(' '); feature_Glide.MS = 220; return { glided: window.__glided, plain: window.__plain }",
+    "name": "the same row, glided and plain"
+  },
+  {
+    "js": "return window.__glided === window.__plain",
+    "expect": true,
+    "name": "the glide changes the frames in between, never where the row ends up",
+    "readout": "glide-plain-equal"
+  },
+  {
+    "note": "UP again, 👤's level to the toolbar: 👤's own button travels from second place to its launcher place"
+  },
+  {
+    "js": "const p = () => { const e = document.querySelector('.toolbar [data-ev=\"tool_account\"]'); return e ? Math.round(e.getBoundingClientRect().x * 10) / 10 : null; }; window.__from = p(); const w = window.__watch(600); feature_Loop.send({type: 'click', ev: 'tools_home'}); window.__seen = await w; return { from: window.__from, to: p(), seen: window.__seen }",
+    "name": "‹ to the toolbar: 👤's button",
+    "readout": "glide-up-to-toolbar"
+  },
+  {
+    "js": "return window.__seen.moved.includes('tool_account')",
+    "expect": true,
+    "name": "👤's button was glided to its launcher place"
+  },
+  {
+    "js": "return window.__seen.inFade > 0 && window.__seen.ghosts > 0",
+    "expect": true,
+    "name": "the other launcher tools faded in; ‹ faded out where it stood"
+  },
+  {
+    "js": "return JSON.parse(feature_Loop.state).open_tool",
+    "expect": "",
+    "name": "and the level is the launcher"
+  },
+  {
+    "note": "DOWN a level gets the same courtesy — up and down are one event to this node, a change of open_tool"
+  },
+  {
+    "js": "const p = () => { const e = document.querySelector('.toolbar [data-ev=\"tool_account\"]'); return e ? Math.round(e.getBoundingClientRect().x * 10) / 10 : null; }; window.__from = p(); const w = window.__watch(600); feature_Loop.send({type: 'click', ev: 'tool_account'}); window.__seen = await w; return { from: window.__from, to: p(), seen: window.__seen }",
+    "name": "the toolbar down to 👤",
+    "readout": "glide-down-to-account"
+  },
+  {
+    "js": "return window.__seen.moved.includes('tool_account')",
+    "expect": true,
+    "name": "going down a level glides too"
+  },
+  {
+    "note": "/steady's rule is kept: a paint that does not change the level moves nothing at all"
+  },
+  {
+    "js": "const before = window.__row().join(' '); const w = window.__watch(500); feature_Loop.send({type: 'ping', data: {}}); const seen = await w; return { before: before, after: window.__row().join(' '), seen: seen }",
+    "name": "a state change with the level unchanged"
+  },
+  {
+    "js": "feature_Loop.send({type: 'ping', data: {}}); await new Promise(r => setTimeout(r, 400)); const w = window.__watch(500); feature_Loop.send({type: 'ping', data: {}}); const seen = await w; return seen.moved.length === 0 && seen.ghosts === 0",
+    "expect": true,
+    "name": "a same-level paint glides nothing and ghosts nothing (/steady, #p2a)"
+  },
+  {
+    "js": "return Array.from(document.querySelectorAll('.toolbar .tool-button')).every(b => !b.style.transform)",
+    "expect": true,
+    "name": "and no button carries a transform"
+  },
+  {
+    "note": "undo's arrival and departure are the membership courtesy, not the glide: they happen on a paint that does not change the level"
+  },
+  {
+    "js": "feature_Loop.send({type: 'click', ev: 'tools_home'}); await new Promise(r => setTimeout(r, 900)); feature_Loop.send({type: 'click', ev: 'tool_taps'}); await new Promise(r => setTimeout(r, 900)); return !document.querySelector('.toolbar [data-ev=\"ctx_undo\"]')",
+    "expect": true,
+    "name": "taps open, nothing done: no undo yet"
+  },
+  {
+    "tap": "[ev=tap]"
+  },
+  {
+    "js": "const w = window.__watch(500); const seen = await w; return { undo: !!document.querySelector('.toolbar [data-ev=\"ctx_undo\"]'), level: JSON.parse(feature_Loop.state).open_tool, seen: seen }",
+    "name": "undo after a tap",
+    "readout": "glide-undo-arrived"
+  },
+  {
+    "js": "return !!document.querySelector('.toolbar [data-ev=\"ctx_undo\"]')",
+    "expect": true,
+    "name": "undo is in the row"
+  },
+  {
+    "js": "const w = window.__watch(600); feature_Loop.send({type: 'click', ev: 'ctx_undo'}); const seen = await w; return { gone: !document.querySelector('.toolbar [data-ev=\"ctx_undo\"]'), ghosts: seen.ghosts, moved: seen.moved }",
+    "name": "undo pressed: it leaves, and it leaves as a ghost",
+    "readout": "glide-undo-left"
+  },
+  {
+    "js": "feature_Loop.send({type: 'ping', data: {}}); await new Promise(r => setTimeout(r, 400)); const w = window.__watch(600); feature_Loop.send({type: 'click', ev: 'tap'}); const seen = await w; return seen.moved.length === 0 && seen.inFade > 0",
+    "expect": true,
+    "name": "undo arrives with a fade and moves none of its neighbours — the level did not change (/steady's rule; the neighbours' reflow is named as a limit in glide.md)"
+  },
+  {
+    "js": "let n = 0; while (document.querySelector('.toolbar [data-ev=\"ctx_undo\"]') && n < 8) { feature_Loop.send({type: 'click', ev: 'ctx_undo'}); n++; await new Promise(r => setTimeout(r, 800)); } return n > 0",
+    "expect": true,
+    "name": "the taps are put back for the next run"
+  },
+  {
+    "note": "a second climb while the first is still travelling: no ghost pile-up, and the row lands where it should"
+  },
+  {
+    "js": "feature_Loop.send({type: 'click', ev: 'tools_home'}); await new Promise(r => setTimeout(r, 900)); feature_Loop.send({type: 'click', ev: 'tool_account'}); await new Promise(r => setTimeout(r, 90)); const mid = window.__marks().ghosts; feature_Loop.send({type: 'click', ev: 'tool_invite'}); await new Promise(r => setTimeout(r, 1400)); return { mid_ghosts: mid, settled_ghosts: window.__marks().ghosts, row: window.__row().join(' '), level: JSON.parse(feature_Loop.state).open_tool }",
+    "name": "two climbs 90 ms apart",
+    "readout": "glide-double-climb"
+  },
+  {
+    "js": "return window.__marks().ghosts === 0 && JSON.parse(feature_Loop.state).open_tool === 'invite'",
+    "expect": true,
+    "name": "no ghost survives the second climb, and the second level is the one you are on"
+  },
+  {
+    "note": "a ghost cannot take a finger: no data-ev, pointer-events none, and the point it covers answers as the row beneath it"
+  },
+  {
+    "js": "feature_Loop.send({type: 'click', ev: 'tools_home'}); await new Promise(r => setTimeout(r, 60)); const g = document.querySelector('.fm-glide-ghost'); if (!g) return 'no ghost'; const r = g.getBoundingClientRect(); const at = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return { hasEv: g.hasAttribute('data-ev') || g.hasAttribute('data-ctl'), pointerEvents: getComputedStyle(g).pointerEvents, hitsGhost: at === g }",
+    "name": "the ghost's inertness",
+    "readout": "glide-ghost-inert"
+  },
+  {
+    "js": "await new Promise(r => setTimeout(r, 400)); return true",
+    "expect": true,
+    "name": "let it finish"
+  },
+  {
+    "note": "prefers-reduced-motion: the simulator cannot set the media query, so the predicate this node reads is stubbed instead — the same branch the phone would take"
+  },
+  {
+    "js": "const real = feature_Glide.reduced; feature_Glide.reduced = () => true; feature_Loop.send({type: 'click', ev: 'tool_account'}); await new Promise(r => setTimeout(r, 120)); const mid = { moved: document.querySelectorAll('.fm-glide-moved').length, inFade: document.querySelectorAll('.fm-glide-in').length, ghosts: document.querySelectorAll('.fm-glide-ghost').length, transforms: Array.from(document.querySelectorAll('.toolbar .tool-button')).map(b => b.style.transform || '-').join(' ') }; await new Promise(r => setTimeout(r, 600)); feature_Glide.reduced = real; return mid",
+    "name": "a climb with reduced motion asked for",
+    "readout": "glide-reduced"
+  },
+  {
+    "js": "const real = feature_Glide.reduced; feature_Glide.reduced = () => true; feature_Loop.send({type: 'click', ev: 'tools_home'}); await new Promise(r => setTimeout(r, 120)); const ok = document.querySelectorAll('.fm-glide-moved, .fm-glide-in, .fm-glide-ghost').length === 0 && Array.from(document.querySelectorAll('.toolbar .tool-button')).every(b => !b.style.transform); await new Promise(r => setTimeout(r, 600)); feature_Glide.reduced = real; return ok",
+    "expect": true,
+    "name": "reduced motion: no transform, no fade, no ghost"
+  },
+  {
+    "home": true
+  }
 ]
