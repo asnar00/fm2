@@ -1,12 +1,41 @@
 # handover
-*state of play for the next session — written 2026-08-25, evening, at the
-end of the user-accounts day (transcripts/2026-08-25-accounts.md, ~80
-prompts). Discipline in `agents.md`; ops in `deploy.md`; the pipeline in
-`hybrid.md`; the ledger is `misses.md`. Read the composed skillset alongside
-this — it now carries five agent-instruction nodes: /taste, /did-you-mean,
-/attention, /glyphs, /anticipation.*
+*state of play for the next session — rewritten 2026-09-02, morning, at the
+end of a short settings session (transcripts/2026-09-02-settings.md, 6
+prompts) after Saturday's 20-ask day (transcripts/2026-09-01-saturday.md).
+Discipline in `agents.md`; ops in `deploy.md`; the pipeline in `hybrid.md`;
+the ledger is `misses.md`. Read the composed skillset alongside this — it
+carries nine agent-instruction nodes now; the newest are /retrofit and
+/confined.*
 
-## THE HEADLINE: Tara's morning — a live user, ~20 asks shipped from the phone in real time
+## TODAY (2026-09-02): build 453 is live; two changes to how we work
+
+- **Subagents run on Fable 5.1.** `CLAUDE_CODE_SUBAGENT_MODEL=fable` in
+  ash's user settings; the hybrid worker seat is the named agent
+  `.claude/agents/worker.md` (model fable, effort medium, the preamble as
+  its system prompt). Spawn with `subagent_type: "worker"`, `isolation:
+  "worktree"`. Effort has no global subagent switch — an unnamed subagent
+  inherits the session's (high). hybrid.md carries the dated note; its
+  Opus text is history. Ash restarted the session to make this live —
+  **check `worker` appears in the Agent tool's type list.**
+- **The toggle proof is implied for a confined change** (`/confined`,
+  agents.md step 4): a commit whose feature-tree footprint is one node
+  (subtree and own order.md included) plus ticks added to its parent's
+  order.md cannot alter the build without that node. `fmlink.py miso
+  --prove` says so from the working tree; deploy.sh refuses any other
+  shape that lacks a `Toggle-proof:` trailer, checking from
+  `products/miso/build/released.sha` (written when a ship lands;
+  `PROOF=skip` overrides). First real run: build 453's gate, green.
+- Saturday (build 411 → 450): 20 field asks from ash's phone — video
+  posts with poster/flip/square, project audience, safe-area floor,
+  launcher order, stale update notices dropped (#p33). Three phone-only
+  divergences that day earned the **boot self-check on the device via
+  `/diag`** its place as the top next rung: one report from the phone
+  saying which fragment versions it runs would have answered all three.
+- Seen and cleaned: a smoke-gate server (port 8169, its own scratch home)
+  was still running sixteen hours after Saturday's gate — killed by PID.
+  smoke.py's teardown can leave its server behind; worth a look.
+
+## EARLIER HEADLINE (2026-08-25/26): Tara's morning — a live user, ~20 asks shipped from the phone in real time
 
 *Updated 2026-08-26 evening.* Build 398 is live. THE SIMULATOR RIG exists
 (deploy.md, `tools/simrig.py`, `tests/sim/`): the installed app on an
