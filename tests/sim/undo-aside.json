@@ -247,7 +247,7 @@
     "tap": "[ev=tool_invite]"
   },
   {
-    "wait_for": ".invite-page"
+    "wait_for": "[ev=invite_qr]"
   },
   {
     "assert": {

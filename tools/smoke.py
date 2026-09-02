@@ -272,7 +272,7 @@ async def s_undo(pg):
     return not await pg.evaluate("document.querySelector('[data-ev=\"ctx_undo\"]').classList.contains('dim')")
 
 
-@step("the admin sees the invite plus; a tap opens the invite page")
+@step("the admin sees the invite plus; a tap puts the two ways in in the row")
 async def s_invite(pg):
     await pg.click('[data-ev="tool_account"]'); await pg.wait_for_timeout(1000)   # back to the set
     # the plus appears once users/invited has answered — on a slow network that is later
@@ -282,14 +282,18 @@ async def s_invite(pg):
     else:
         return False
     await pg.click('.toolbar [data-ev="tool_invite"]'); await pg.wait_for_timeout(1500)
-    # since /doors (2026-09-02) the page is two buttons — show QR code, invite
-    # by name — and nothing else: no list, no pencil in the row
-    doors = await pg.evaluate("document.querySelectorAll('.invite-page .door').length")
+    # since /as-sub-tools (2026-09-02) the two ways in are sub-tool buttons in
+    # the control row — a QR code and a keyboard — and the page is empty: no
+    # doors, no list, no pencil in the row
+    ways = await pg.evaluate(
+        "Array.from(document.querySelectorAll('.toolbar .tool-button')).map(b => b.getAttribute('data-ev'))")
+    doors = await pg.evaluate("document.querySelectorAll('.door').length")
     pencil = await pg.evaluate("!!document.querySelector('.toolbar [data-ctl=card_edit]')")
-    if doors != 2 or pencil:
-        print(f"      (doors: {doors}, pencil in the row: {pencil})")
+    ok = "invite_qr" in ways and "invite_name" in ways and doors == 0 and not pencil
+    if not ok:
+        print(f"      (row: {ways}, doors on the page: {doors}, pencil in the row: {pencil})")
     await go_home(pg)
-    return doors == 2 and not pencil
+    return ok
 
 
 @step("the QR sheet draws a scannable code and puts itself away")
@@ -301,8 +305,9 @@ async def s_qr(pg):
     else:
         return False
     await pg.click('.toolbar [data-ev="tool_invite"]'); await pg.wait_for_timeout(1200)
-    # /doors: the QR door asks the rank first (team preselected), then show
-    await pg.click('.invite-page .door[data-door="qr"]'); await pg.wait_for_timeout(800)
+    # /as-sub-tools: the QR sub-tool in the row asks the rank first (team
+    # preselected), then show
+    await pg.click('.toolbar [data-ev="invite_qr"]'); await pg.wait_for_timeout(800)
     if not await pg.evaluate("(() => { const s = document.getElementById('doorSheet'); return !!s && getComputedStyle(s).display !== 'none'; })()"):
         print("      (the rank sheet did not open)"); await go_home(pg); return False
     await pg.click('#doorSheet .door-go'); await pg.wait_for_timeout(2000)
@@ -311,7 +316,11 @@ async def s_qr(pg):
     # done must close the sheet WITHOUT closing the invite page under it
     await pg.click('[data-qr="done"]'); await pg.wait_for_timeout(1000)
     gone = await pg.evaluate("!document.querySelector('.qr-sheet')")
-    still = await pg.evaluate("!!document.querySelector('.invite-page')")
+    # the level is kept: the invite tool is still the open one and its two ways
+    # in are still in the row (the page itself is drawn by nothing now)
+    still = await pg.evaluate(
+        "!!document.querySelector('.toolbar [data-ev=\"invite_qr\"]')"
+        " && !!document.querySelector('.toolbar [data-ev=\"invite_name\"]')")
     if not (drawn and gone and still):
         print(f"      (drawn: {drawn}, closed: {gone}, page kept: {still})")
     await go_home(pg)

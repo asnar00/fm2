@@ -1,0 +1,6 @@
+/* the page under the row is empty. The choice is the toolbar's now, so the
+   invite page has nothing to say — and an empty `.card-page` would still draw
+   its ground (a small dark rounded box with nothing in it), which is furniture
+   for no one. Undrawn, not removed: the holder inside it still carries the
+   selected project for the sheet to read. */
+.invite-page { display: none; }

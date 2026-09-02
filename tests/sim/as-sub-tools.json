@@ -1,0 +1,37 @@
+[
+  {"note": "add-person's two ways in are sub-tool buttons in its row — QR code, by name — not buttons on a page (2026-09-02, self-check #p88)"},
+  {"home": true},
+  {"js": "window.__row = () => Array.from(document.querySelectorAll('.toolbar .tool-button')).map(b => b.getAttribute('data-ev') || b.getAttribute('data-ctl') || '?'); return true", "expect": true, "name": "the row probe"},
+  {"tap": "[ev=tool_account]"},
+  {"wait_for": "[ev=tool_invite]"},
+  {"tap": "[ev=tool_invite]"},
+  {"wait_for": "[ev=invite_qr]"},
+  {"js": "return window.__row().join(' ')", "expect": "tools_home tool_invite invite_qr invite_name", "name": "the row is ‹, the plus, QR code, by name — and nothing else", "readout": "subtools-row"},
+  {"assert": {"find": "[ev=tool_account]", "exists": false}, "name": "no 👤 beside it (/current-only)"},
+  {"assert": {"find": "[ev=ctx_undo]", "exists": false}, "name": "nothing done here, so no undo (/aside)"},
+  {"js": "return document.querySelectorAll('.door').length", "expect": 0, "name": "no buttons on the page"},
+  {"js": "const p = document.querySelector('.invite-page'); return !!p && !p.offsetParent", "expect": true, "name": "the page itself is not drawn"},
+  {"js": "const h = document.querySelector('.invite-into'); return !!h && h.hasAttribute('data-project')", "expect": true, "name": "the holder still carries the selected project"},
+  {"js": "return Array.from(document.querySelectorAll('.toolbar [data-ev=\"invite_qr\"], .toolbar [data-ev=\"invite_name\"]')).every(b => b.classList.contains('tinted') && !!b.querySelector('svg.icon-svg'))", "expect": true, "name": "both are drawn glyphs on the invite tint — never an emoji bitmap on iOS (/glyphs)"},
+
+  {"note": "the QR road, from the row"},
+  {"tap": "[ev=invite_qr]"},
+  {"wait_for": "#doorSheet"},
+  {"js": "return document.querySelector('#doorBox').getAttribute('data-face') + ' ' + document.querySelector('.door-go').textContent + ' ' + document.querySelectorAll('.door-rank option').length", "expect": "qr show 6", "name": "the QR button opens the rank sheet", "readout": "subtools-qr-sheet"},
+  {"tap": ".door-go"},
+  {"wait_for": ".qr-code"},
+  {"js": "for (let i = 0; i < 40; i++) { const e = document.querySelector('.qr-sheet .qr-code svg path'); if (e) return true; await new Promise(r => setTimeout(r, 250)); } return false", "expect": true, "name": "the code is drawn", "readout": "subtools-qr-code"},
+  {"js": "document.querySelector('[data-qr=\"done\"]').click(); await new Promise(r => setTimeout(r, 900)); return !document.querySelector('.qr-sheet') && window.__row().join(' ') === 'tools_home tool_invite invite_qr invite_name'", "expect": true, "name": "done closes the code and keeps the level"},
+
+  {"note": "the by-name road, from the row"},
+  {"tap": "[ev=invite_name]"},
+  {"wait_for": "#doorSheet"},
+  {"js": "return document.querySelector('#doorBox').getAttribute('data-face') + ' ' + document.querySelector('.door-go').textContent + ' ' + document.querySelector('.door-rank').value", "expect": "name invite team", "name": "the by-name button opens the name sheet, team preselected", "readout": "subtools-name-sheet"},
+  {"tap": ".door-cancel"},
+  {"wait": 600},
+  {"js": "return !document.querySelector('#doorSheet.show')", "expect": true, "name": "cancel folds it, nothing sent"},
+
+  {"note": "hostile: a hold reads the button, it does not fire it — /sub-tool-cards arms on pointerdown and preventDefaults the click that ends the hold; this node's listener reads that mark"},
+  {"js": "const b = document.querySelector('.toolbar [data-ev=\"invite_name\"]'); const r = b.getBoundingClientRect(); b.dispatchEvent(new PointerEvent('pointerdown', {bubbles: true, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2})); await new Promise(r2 => setTimeout(r2, 900)); b.click(); await new Promise(r2 => setTimeout(r2, 600)); const c = document.getElementById('toolCard'); return (!document.querySelector('#doorSheet.show')) && !!c && c.style.display !== 'none' && c.textContent.indexOf('by name') >= 0", "expect": true, "name": "a hold shows the button's own card and does not open the sheet", "readout": "subtools-long-press"},
+  {"home": true}
+]
