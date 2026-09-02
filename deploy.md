@@ -94,6 +94,20 @@ a server with no successor waiting — the port does go quiet then.
   enrolment outcomes — the remote eyes on installed phones)
 - The system panel on any device shows its running build and recent changes.
 
+## The toggle-proof gate (added 2026-09-02, settings #p4–#p5)
+
+Before the build, deploy.sh runs `tools/toggle_proof.py --since <last
+released sha>` (the sha is written to `products/miso/build/released.sha`
+when a ship lands; with no file it checks HEAD alone). A commit whose
+feature-tree footprint is one node (subtree and own order.md included)
+plus a tick added to its parent's order.md is *confined*: it cannot alter
+the build without that node, so the toggle proof is implied — for a new
+node, that build is the last release. Any other shape must carry a `Toggle-proof:`
+trailer in its message or nothing ships. `PROOF=skip` overrides, as
+`SMOKE=skip` does — say so in the commit. From a working tree,
+`fmlink.py miso --prove` gives the same verdict before you commit. Only
+`features/` and `products/` count; tools and documents are not a toggle.
+
 ## Speed (added 2026-08-21, hybrid #p37)
 
 - `fmlink.py --quick` builds the debug profile: ~1.2s warm, ~16s cold vs

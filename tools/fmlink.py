@@ -2102,7 +2102,16 @@ def main():
     ap.add_argument("--coverage", action="store_true",
                     help="after linking, print what each node's tickbox gates "
                          "(pair with --quick for a fast look)")
+    ap.add_argument("--prove", action="store_true",
+                    help="classify the working tree's changes: is the toggle "
+                         "proof implied by their shape? (/confined; no build)")
     args = ap.parse_args()
+
+    if args.prove:
+        # the toggle proof is implied for a change confined to one node
+        # (tools/toggle_proof.py, /confined in the skillset): say which
+        import toggle_proof
+        sys.exit(toggle_proof.main([]))
 
     if args.quick:
         global BUILD_PROFILE

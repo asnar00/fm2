@@ -35,7 +35,8 @@ aesthetic standard) lives there, not in a root doc.
   stays fully ticked (it orders the catalog); switching a feature off is a
   product-level order.md override (see products/hello_only). Transient
   dev toggle-tests may flip the shared file but must restore it in the same
-  breath.
+  breath — and most nodes no longer need one: `fmlink.py miso --prove`
+  says when the proof is implied (`/confined`, agents.md step 4).
 
 ## Verbatim libraries
 

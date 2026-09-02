@@ -31,6 +31,24 @@ fi
 HOST="$(pick_host)"
 echo "deploying to $HOST"
 
+# the toggle-proof gate (/confined, settings #p4–#p5): a commit whose tree
+# footprint is one node plus a tick in its parent's order.md has its toggle
+# proof implied — the unticked build is the last release. Any other shape
+# must carry a 'Toggle-proof:' trailer saying the untick was done. Checked
+# for every first-parent commit since the last released sha (written below
+# once the ship lands); PROOF=skip overrides for a hotfix — say so in the
+# commit.
+RELEASED="$SRC/products/miso/build/released.sha"
+if [ "${PROOF:-check}" != "skip" ]; then
+  if [ -f "$RELEASED" ]; then
+    python3 "$SRC/tools/toggle_proof.py" --since "$(cat "$RELEASED")" || {
+      echo "deploy: a commit needs its toggle proof recorded — nothing shipped" >&2; exit 1; }
+  else
+    python3 "$SRC/tools/toggle_proof.py" HEAD || {
+      echo "deploy: HEAD needs its toggle proof recorded — nothing shipped" >&2; exit 1; }
+  fi
+fi
+
 python3 "$SRC/tools/fmlink.py" miso
 
 # replay sessions are local-only test data — never ship one
@@ -320,5 +338,8 @@ for _, a in sorted(latest.items()):
         print("  %s awaiting the builder: \"%s\"%s"
               % (a["status"].upper(), a.get("text", ""), where))
 ' || true
+
+# the released sha: where the next deploy's toggle-proof gate starts from
+(cd "$SRC" && git rev-parse HEAD) > "$RELEASED"
 
 echo "deployed — https://miso.nøøb.org"

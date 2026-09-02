@@ -45,10 +45,22 @@ refactoring rule) — then extend it from the new node. If a mechanism is
 genuinely missing from the linker, say so and design it with the user rather
 than working around it.
 
-**4. Prove the toggle.** Build (`python3 tools/fmlink.py miso`), run the
-tests/flows the change touches, then untick the new node in `order.md`,
-relink, and confirm its code has left the composed output and nothing else
-broke. Re-tick. A feature that cannot be turned off is not a feature yet.
+**4. Prove the toggle — or fit the pattern that implies it.** Build
+(`python3 tools/fmlink.py miso`) and run the tests/flows the change
+touches. Then `python3 tools/fmlink.py miso --prove`: when every change
+under `features/` and `products/` lies inside one node (its descendants
+and its own `order.md` included) plus lines added to its parent's
+`order.md`, the change cannot alter the composition without that node —
+the untick could not observe it, and for a new node that composition is
+the last release, already built, gated and shipped — so the proof is
+implied; skip the untick (`/confined` in the skillset carries the
+argument, settings #p4–#p5). Any other shape — a
+parent refactored to open an extension point, two nodes in one commit, a
+sibling unticked — keeps the full proof: untick the node in `order.md`,
+relink, confirm its code has left the composed output and nothing else
+changed, re-tick, and record it as a `Toggle-proof:` trailer in the
+commit; deploy refuses a non-confined commit without one. A feature that
+cannot be turned off is not a feature yet.
 
 **4a. Look at it, and ask if it is good enough.** Proving a thing works and
 judging it good are different acts; only the first is a test. Anything with

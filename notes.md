@@ -2878,3 +2878,42 @@ Ash: from now on say **extensible function** for a joining point a feature
 leaves for others to plug into, and **function extension** for the code that
 plugs in. "Seam" is retired in conversation, briefs and new spec text; older
 documents keep their wording until rewritten anyway.
+
+## proposal: the toggle proof is implied by a confined diff (2026-09-02, agent)
+
+Ash asked whether the enable/disable check (agents.md step 4) could be
+skipped by enforcing patterns in the work. It can, exactly, for one
+pattern.
+
+The linker never reads an unticked node's files, so the composition
+without a node is a function of every file *outside* the node. If a
+commit's diff is confined to the new node's directory plus one added,
+ticked line in the parent's `order.md`, then the change cannot alter the
+composition without the node — the untick cannot observe it — and for a
+new node that composition is byte-identical to the previous commit's,
+which was built, smoke-gated and shipped (ship-as-built). Code outside
+the node, a back-reference from an older file, a build that breaks
+without the node: each needs an edit outside the node, which the pattern
+forbids. The toggle proof re-proves the last release. (Sharpened while
+building: an order.md *inside* the node's subtree leaves with the node
+and counts as inside; the argument covers a modified existing node too,
+since the change is invisible to the untick either way.)
+
+Where the pattern does not fit — a parent refactored to open an
+extension point, a refinement that touched the parent, a regroup, a
+sibling unticked — the full toggle proof stays mandatory; those are the
+commits it was written for.
+
+Enforcement, if adopted: (1) deploy.sh already computes the node dirs a
+commit touched and the specs it added — classify each commit as
+conforming or not, and refuse a release whose non-conforming commit
+carries no proof record; (2) `fmlink.py <product> --prove <node>` runs
+the same classification from the working tree so a worker knows in a
+second which kind of commit it is making; (3) agents.md step 4 becomes
+"fit the pattern, or prove the toggle". Premises to check in the gate:
+the parent commit is main's tip (stale worktree base), and the previous
+commit was released (the deploy stamp names it).
+
+Saves two links and a flow rerun per node, and retires the transient
+untick of a shared order.md (the "restore in the same breath" hazard).
+Removes nothing from the ticked-state proof.

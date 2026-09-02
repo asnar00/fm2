@@ -3,3 +3,4 @@
 - [x] anticipation
 - [x] ship-as-built
 - [x] retrofit
+- [x] confined
