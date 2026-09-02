@@ -1,0 +1,76 @@
+/* the page is two buttons: the button grammar, made big enough to be the
+   page (/taste 4 — a pill for a small interactive thing, here the only
+   things). Nothing else on the page. */
+.doors { display: flex; flex-direction: column; gap: 10px; padding-top: 4px; }
+.door {
+  padding: 13px 16px; border-radius: 999px; text-align: center;
+  background: #1a1a1d; border: 1px solid #3a3a3f;
+  color: #c9c9d2; font-size: 14px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+
+/* the sheet: the screen goes quiet and one card stays lit — /projects' add
+   sheet, in its own grammar. Furniture outside #app, hidden until asked. */
+#doorSheet {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(16, 16, 18, 0.92);
+  z-index: 60;
+  align-items: center; justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 16px) 16px
+           calc(env(safe-area-inset-bottom) + 16px);
+}
+#doorSheet.show { display: flex; }
+#doorBox {
+  width: 100%; max-width: 320px;
+  box-sizing: border-box;
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 16px 16px;
+  border-radius: 14px;
+  background: #161619; border: 1px solid #202026;
+}
+/* the qr face is the rank alone */
+#doorBox[data-face="qr"] .door-name, #doorBox[data-face="qr"] .door-phone { display: none; }
+
+/* the fields, in /invite's field grammar; the select is a field too, with a
+   drawn chevron so it reads as a dropdown and not as a box */
+.door-name, .door-phone, .door-rank {
+  padding: 8px 10px; border-radius: 8px;
+  background: #121215; border: 1px solid #202026;
+  color: #eee; font: inherit; font-size: 13px;
+  outline: none; width: 100%; box-sizing: border-box;
+}
+.door-name::placeholder, .door-phone::placeholder { color: #77777e; }
+/* the one accent, meaning what it means everywhere else: this is the thing
+   you have chosen */
+.door-name:focus, .door-phone:focus, .door-rank:focus { border-color: #9db7d8; }
+.door-rank {
+  -webkit-appearance: none; appearance: none;
+  padding-right: 30px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5' fill='none' stroke='%2377777e' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat; background-position: right 8px center; background-size: 16px;
+}
+
+/* the quiet line: where they are going, or that nowhere is selected */
+.door-line { color: #77777e; font-size: 12px; padding: 0 2px; }
+.door-say { color: #9a9aa2; font-size: 12px; line-height: 1.35; padding: 0 2px; }
+.door-say:empty { display: none; }
+
+.door-bar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 2px; }
+.door-cancel {
+  padding: 8px 16px; border-radius: 999px;
+  background: transparent; border: 1px solid #3a3a3f;
+  color: #9a9aa2; font-size: 13px; font-family: inherit;
+  cursor: pointer;
+  transition: color 0.18s ease-out, border-color 0.18s ease-out;
+}
+.door-cancel:hover { color: #c9c9d2; border-color: #4a4a50; }
+/* the one primary action, in the accent that already means chosen */
+.door-go {
+  padding: 8px 22px; border-radius: 999px;
+  background: #9db7d8; border: 1px solid #9db7d8;
+  color: #101012; font-size: 13px; font-weight: 600; font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.18s ease-out;
+}
+.door-go:hover { opacity: 0.88; }
