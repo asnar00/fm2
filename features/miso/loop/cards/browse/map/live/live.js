@@ -174,17 +174,21 @@ const feature_Live = {
 };
 
 {
-  // the four ways of leaving and the two ways of coming back. Focus is
-  // tracked by event rather than asked for, because hasFocus() answers for
-  // the window and a standalone app on a phone has only one.
-  feature_Live.focused = typeof document.hasFocus !== 'function' || document.hasFocus();
+  // the ways of leaving and coming back. Visibility is the signal that
+  // counts: an installed app on iOS never fires focus or blur and answers
+  // hasFocus() false for its whole life (the iPhone 17 Pro simulator,
+  // 2026-09-02 — the first cut asked hasFocus() at load and never published).
+  // A page starts focused; blur takes it away and focus gives it back where
+  // a browser has those (a desktop window behind another); coming back into
+  // view is a return to focus everywhere.
+  feature_Live.focused = true;
   const fm_liveIn = () => { feature_Live.focused = true; feature_Live.arrive(); };
   const fm_liveOut = () => { feature_Live.focused = false; feature_Live.leave(); };
   window.addEventListener('focus', fm_liveIn);
   window.addEventListener('blur', fm_liveOut);
   window.addEventListener('pagehide', () => feature_Live.leave());
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') feature_Live.arrive();
+    if (document.visibilityState === 'visible') fm_liveIn();
     else feature_Live.leave();
   });
 
