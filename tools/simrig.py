@@ -320,6 +320,8 @@ def relaunch():
     u = udid()
     sh(["xcrun", "simctl", "shutdown", u]); time.sleep(2)
     sh(["xcrun", "simctl", "boot", u]); sh(["xcrun", "simctl", "bootstatus", u, "-b"]); time.sleep(8)
+    # a Safari tab restored at boot answers the drive door instead of the app
+    sh(["xcrun", "simctl", "terminate", u, "com.apple.mobilesafari"])
     sh(["idb", "ui", "button", "--udid", u, "HOME"]); time.sleep(1)
     tapxy(201, 717); time.sleep(2)             # the home screen's Search pill
     text("miso"); time.sleep(2.5)
