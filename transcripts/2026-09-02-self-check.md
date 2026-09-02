@@ -2103,3 +2103,91 @@ The gate's invite steps now describe the two-door page. Deploying everything aga
 > <status>completed</status>
 > <summary>Background command "Rewrite the gate's invite steps for the two doors, commit, deploy everything, and stamp the asks" completed (exit code 0)</summary>
 > </task-notification>
+
+Build 506 is live: the gate was green across all three passes, and the five asks are stamped shipped. Closing the day's records.
+
+Everything is shipped and recorded. The tree is clean and no workers are running.
+
+**Live at build 506**
+
+- **Onboarding:** a new person's first screen is their own card, gated until a picture and a line are in, then an eight-card tour on their real screen, once, skippable from the second card.
+- **Invite page:** two buttons, a rank dropdown, no list, no pencil. Whoever comes in joins the inviter's current project at that rank, written into the owner's project the moment they have a card. Members may invite; a member cannot give a rank above their own.
+- **Toolbars:** undo appears only when there is a step and stands alone at the right edge. Inside a toolset the row shows that toolset's icon, not its parent's.
+- **Tips:** every tool's card says what it is for, and the buttons inside, grid, list and map included, have cards of their own.
+
+**The caret bug was never in the app.** The gate's own edit step put the caret mid-text once earlier passes had grown the text, because the End key does nothing in a content-editable in that Chrome. The worker typed twelve characters ten times with a repaint forced between keys and got ten clean. The handover's "known bug, fix first" is withdrawn unless your phone shows it again.
+
+**Usage, and this matters.** Fable went from 3% this morning to 39% now. Today cost about a third of the week. The estimator now projects exhaustion in twelve hours, but that assumes this afternoon's pace of three and four workers at once continues round the clock. At this intensity the week holds about two more days like today. A quieter day costs far less.
+
+**Residuals for you to rule on**, all named in the handover:
+
+- ‹ from the invite page goes to the launcher, not back to 👤.
+- Redo does not exist, since undo stopped undoing itself.
+- The taps row is too full for a visible gap before undo.
+- The rank dropdown is a real select while the project's own picker is six pills.
+- The gear glyph still reads as an asterisk.
+- Scroll position after an auto update is not kept.
+
+### p88
+*2026-09-02 17:00*
+
+> let's drop back to opus for subagents in that case - on high. We need to preserve fable usage - today's a typical day. scroll position needs to be kept. tools are arranged in a tree, effectively: users -> invite; the < button should go to the parent level no matter how "deep" we are. thinking about it, "add user" should have two sub-tool buttons for QR code and "by name" - the page with the two buttons is doing the job of the toolbar. Add a memory so that in future, interface decisions conform to the "tree of tools" format.
+
+Four things, in order: subagents to Opus on high, the memory and a standing instruction in the tree, then three briefs. Settings first so the new workers run on Opus.
+
+### p88a
+*2026-09-02 17:03*
+
+> <task-notification>
+> <task-id>aaaf3f67a039352e0</task-id>
+> <tool-use-id>toolu_0161CS9V7MRmzrsmQ7KZBu96</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/aaaf3f67a039352e0.output</output-file>
+> <status>killed</status>
+> <summary>Agent "Invite's two doors become sub-tool buttons" was stopped by Claude</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Now on current main (1f0cdae). Reading the discipline docs and the invite/tool nodes.</result>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-aaaf3f67a039352e0</worktreePath><worktreeBranch>worktree-agent-aaaf3f67a039352e0</worktreeBranch></worktree>
+> </task-notification>
+
+### p88b
+*2026-09-02 17:03*
+
+> <task-notification>
+> <task-id>a3a18cda1fa3baa7c</task-id>
+> <tool-use-id>toolu_015pM4VMPRykmmmGut8cTPaA</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/a3a18cda1fa3baa7c.output</output-file>
+> <status>killed</status>
+> <summary>Agent "Keep the page's scroll position" was stopped by Claude</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Rig2's 8172 is free now, but I'll take my own port. Exporting the transcript from the main session's log, and checking the grid's scrolling container.</result>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a3a18cda1fa3baa7c</worktreePath><worktreeBranch>worktree-agent-a3a18cda1fa3baa7c</worktreeBranch></worktree>
+> </task-notification>
+
+### p88c
+*2026-09-02 17:03*
+
+> <task-notification>
+> <task-id>a1ce5443a2d370473</task-id>
+> <tool-use-id>toolu_01KEMQerSbnuKoA7MzGwMQRX</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/a1ce5443a2d370473.output</output-file>
+> <status>killed</status>
+> <summary>Agent "‹ goes one level up the tree of tools" was stopped by Claude</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Now the skillset (needs a link to compose) and the survey of the seam.</result>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a1ce5443a2d370473</worktreePath><worktreeBranch>worktree-agent-a1ce5443a2d370473</worktreeBranch></worktree>
+> </task-notification>
+
+All three workers are confirmed on Opus 5 now, and the rule for switching a seat mid-session is written into hybrid.md so it is not learned twice.
+
+**Done:**
+
+- **Subagents on Opus at high.** The settings and the worker seat are changed for future sessions, and this session's workers are spawned with the override that takes effect at once. The first three spawns after the edit had come up on Fable; I stopped them within a minute and respawned.
+- **The tree of tools** is a memory for me and an agent instruction on the tools node, so every worker reads it in the skillset: actions are sub-tool buttons in the row, never buttons on a page; ‹ goes one level up; the row shows the current level's icon only.
+
+**Building on Opus:**
+
+- Scroll position kept through every repaint and across an update.
+- ‹ one level up, however deep.
+- The invite page's two buttons become two sub-tool buttons in its row, with the gate's steps updated to match.
+
+I'll review and ship each as it lands. Fable is at 39% for the week; the review seat is the only Fable cost from here.
