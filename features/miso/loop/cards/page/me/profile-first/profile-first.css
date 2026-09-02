@@ -1,0 +1,10 @@
+/* the one sentence: prose colour, inside the card page above the name,
+   clear of the type tag in the page's top-right corner */
+.profile-first { font-size: 15px; line-height: 1.4; color: #c9c9d2; padding: 6px 96px 6px 10px; }
+/* withheld while the gate stands: every way off the card — the tool
+   buttons, ‹, and the view picker. The row itself stays, because the save
+   tick lives in it (/editing/toolbar: nothing floats over a card), and so
+   does the lozenge — the system's, not the app's. */
+body.fm-profile-first .toolbar [data-ev^="tool_"],
+body.fm-profile-first .toolbar [data-ev="tools_home"],
+body.fm-profile-first .browse-picker { display: none; }
