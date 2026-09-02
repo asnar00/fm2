@@ -1514,3 +1514,124 @@ Deploying the pre-load now. When it lands, both halves of the offline map are li
 > there should be two invite pathways: one remote (username + phone, SMS authentication) and the other local/group (single QR code for session, each invitee types in their username and phone)
 
 Clear. Two doors, then: remote by name and number with a texted code, and local by one session code. That is what the invite tool already offers. The one thing that goes is the third route, the one-person instant code on your own card. Checking how the product switches a node off, since that is a product choice rather than a tree change.
+
+My write went through a symlink into the shared tree, which is exactly what the doctrine forbids. Restoring the shared file and reading how the product layout does its overrides properly.
+
+### p61a
+*2026-09-02 14:54*
+
+> I'd also like an onboarding workflow that a) prompts the user to fill in their profile, including a picture, immediately (and mandatorily) before they learn to use the app and b) teaches them how to use the app, using a "demo" workflow.
+
+Understood on the onboarding, both parts. Two things now: reading how the linker expects a product override to be laid out, and grounding the onboarding brief in the profile and replay nodes.
+
+### p61b
+*2026-09-02 14:55*
+
+> <task-notification>
+> <task-id>ac93830676f01c993</task-id>
+> <tool-use-id>toolu_01KeWJswM3T3YDr98ZB1FN2h</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/ac93830676f01c993.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Members may invite members" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>## Outcome
+> 
+> Shipped in the worktree as one confined node, `features/miso/users/invite/members`, commit `461f391` on `worktree-agent-ac93830676f01c993`, rebased onto main's tip (`87e0b40`) after main took two map commits mid-run. `members.rs` redefines `invite_may` as `!who.is_empty() &amp;&amp; authority_rank(who) &gt;= 1` — "on the guest list" rather than "support and above". Nothing else in the tree changed: no edit to `invite.rs`, `qr.rs`, `authority`, or any client file. The survey found no client code reading authority (grep of `users/invite/**/*.js` and `shell/tools` for `authority`: zero hits); the plus button follows the server's `may` alone, so no page fragment was needed. `fmlink --prove` and `toggle_proof.py --since main` both say implied/confined. Not deployed, as instructed.
+> 
+> One correction to the brief's map: the invite tool has not been in the toolbar since `/under-account` (asks#1787668032781) — it is the person-with-a-plus in 👤's control row. The in-hand line holds in substance (open 👤, tap the plus, tap "show a QR code"); the spec and step file say it that way.
+> 
+> ## Files
+> 
+> - `/Users/microserver/fm2/.claude/worktrees/agent-ac93830676f01c993/features/miso/users/invite/members/members.rs`
+> - `/Users/microserver/fm2/.claude/worktrees/agent-ac93830676f01c993/features/miso/users/invite/members/members.md` (cites `transcripts/2026-09-02-self-check.md#p54a`, exported from the main session's log with `--session`; the worktree has no log of its own)
+> - `/Users/microserver/fm2/.claude/worktrees/agent-ac93830676f01c993/features/miso/users/invite/order.md` (one tick)
+> - `/Users/microserver/fm2/.claude/worktrees/agent-ac93830676f01c993/tests/sim/invite-members.json` (the member's walk; ran all green through the live-rig's headless stand-in)
+> - Rig and evidence: `/private/tmp/claude-501/-Users-microserver-fm2/6004deb9-d2ef-4b9a-8b15-ef1e406b9cb8/scratchpad/members-rig/` — `start.sh` (port 8183, ended by PID, down now), `members.py`, `evidence/*.png|*.readout.json`, `server.log`
+> 
+> ## Evidence (headless rig, `_ash` admin, `_bob` member with `invited_by: phone:+15550000777`)
+> 
+> Ticked build:
+> - `GET users/invited` as bob: `{"may":true,...}`; nobody: 403.
+> - Headless as bob: 👤's control row is `[tools_home, tool_account, tool_invite, ctx_undo]`; tap → `.invite-page`; tap "show a QR code" → sheet with token `b14f9add…`, SVG drawn (`bob-account.png`, `bob-invite-page.png`, `bob-qr-sheet.png` — looked at; nothing new on screen, exactly what support sees).
+> - `GET join?t=…` 200; `qr/check` answers `{"by":"_bob"}`; `POST qr/claim {name:"carol", phone:"+15550000779"}` → ok. Guest list entry: `{name, phone, invited, invited_by:"phone:+15550000778"}` — no authority field, so member. Bob's invite list shows carol; mint again reports `uses:1`.
+> - Carol logs in (console-SMS pin): server log `exchange: seeding …0779 with 1 card(s) from _bob`; carol's headless account visit → `exchange: carol handed 1 card(s) to 1 person(s)`. `diag/context` reads: bob holds `carol.…` with `from:"carol"`; carol holds `_bob.…` with `from:"_bob"`.
+> - Take-backs: bob invites dave and uninvites him, both ok; ash invites eve, bob's uninvite → 403 "that isn't your invite".
+> - Pretend: `_zed` from bob → 400 "a name can't start with _"; from ash → 200.
+> - Instant: bob's `instant/mint` → 200 (it shares `invite_may`; the spec says so).
+> - Struck off (bob removed from `users.json` live): `qr/check` → "this invite has expired"; bob's `users/invited` → 403; a claim on his token → 403.
+> 
+> Unticked (main's tip binary kept from the baseline link, no `feature_Members` in it): bob `may:false`, mint 403, ash still `may:true`; headless bob's 👤 row has no `tool_invite`.
+> 
+> ## Open risks, by name
+> 
+> - **Depth is unbounded** (parked by the brief): carol, invited by a member, has the plus too — the tree grows without limit, and the QR's cap/gap/expiry bounds are per inviter, so N members hold N codes. Named in the spec; a `members/depth` child is the shape.
+> - **Instant name-only accounts come along with `may`** — a member can now mint accounts with no phone. This follows from the ask's mechanism, but ash did not say it in words; flag at review.
+> - **Post-rebase rig** — the two map commits main took are unrelated to invite, and the relink on the rebased base is `build OK` and confined, but the rig evidence above was gathered before the rebase. Hypothesis, not observed: behaviour is identical.
+> - **Revoking a member's invitees by support** stays unbuilt (parked, named).</result>
+> <usage><subagent_tokens>182988</subagent_tokens><tool_uses>75</tool_uses><duration_ms>896606</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-ac93830676f01c993</worktreePath><worktreeBranch>worktree-agent-ac93830676f01c993</worktreeBranch></worktree>
+> </task-notification>
+
+### p61c
+*2026-09-02 14:55*
+
+> <task-notification>
+> <task-id>b0nqmocea</task-id>
+> <tool-use-id>toolu_01XVhJXCiHrC6LdtwVMrhEY9</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/b0nqmocea.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Rebase stocked onto main, resolve the tick clash, deploy, and stamp it shipped" completed (exit code 0)</summary>
+> </task-notification>
+
+Pre-load is live at build 484 and stamped. Both halves of the offline map are out. Now the invite work: ship the members node, then prove and ship the two-doors override.
+
+Two deploys are queued in one chain: the members node first, then the two-doors override with its both-ways proof. The onboarding worker is building. I'll report when they land.
+
+### p62
+*2026-09-02 15:00*
+
+> <task-notification>
+> <task-id>b3wffzp89</task-id>
+> <tool-use-id>toolu_016zZy1uBJTDvxc4iehQ6BDu</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/b3wffzp89.output</output-file>
+> <status>failed</status>
+> <summary>Background command "Ship the members node, then prove the two-doors override both ways, commit it with the proof, and ship it" failed with exit code 1</summary>
+> </task-notification>
+
+The linker's rule reads right, so the override should have taken. Running the link in the open to see what it says about `instant`.
+
+The mirror is complete and the proof is rerunning with the output visible, followed by the deploy. One hazard to record afterwards: a product mirror of symlinks has to gain a link whenever a new sibling lands in the shared tree, or the link fails loudly. Loud is fine, but it belongs in deploy.md.
+
+### p63
+*2026-09-02 15:05*
+
+> <task-notification>
+> <task-id>bl768i0p5</task-id>
+> <tool-use-id>toolu_01DpEZtpaCjmyugJFDXgF1vZ</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bl768i0p5.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Complete the product mirror, prove the override both ways, commit with the proof, deploy, and stamp" completed (exit code 0)</summary>
+> </task-notification>
+
+Everything from this round is shipped and stamped. Summary:
+
+| Build | What |
+|---|---|
+| 482 | One marker per person on the people map, tappable |
+| 483 | A missing square draws its parent, three levels of reach |
+| 484 | The constituency stocked into the phone's cache at zooms 12 to 16 |
+| 485 | Members can invite members |
+| 486 | Two invite doors: the instant one-person code is switched off |
+
+**On the invite tool as it stands:** open your 👤 page, tap the person-with-a-plus. You get the name-and-number form for remote invites, and "show a QR code" for the room. Every member has that now. The instant code is gone from miso but stays in the tree, unticked, in case it is ever wanted.
+
+**Two things I got wrong and wrote down.** Writing a product override through a symlink edited the shared tree twice before I caught it; the fix and the check are in deploy.md and the misses ledger. And a product mirror has to gain a link whenever a new sibling lands, or the linker refuses, loudly.
+
+**Still building:** the onboarding worker, profile first then the demo tour. I'll review it when it reports.
+
+### p64
+*2026-09-02 15:21*
+
+> the tooltips on the tools need to be brought up to date - the 'users' tool still shows "account" and talks about "a user page is coming". We should do a sweep through all tool button tips and check they're current
+
+Let me find where the tool tips live and what each says today.
