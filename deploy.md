@@ -216,6 +216,8 @@ public address, forwarding the ssh agent so `git push` on the mini uses
 this Mac's GitHub key. `mini <cmd>` runs a one-off command instead.
 Detach with `C-b d`; the session, and claude in it, keep running.
 
+**Attaching without tmux's copy mode (2026-09-02):** from iTerm2 on the laptop, `ssh -t microserver@microservers-Mac-mini.local 'tmux -CC new -A -s fm2'` — tmux control mode; the session's windows become native iTerm2 tabs with native scrollback, and closing the laptop only detaches. In plain tmux the mini's `~/.tmux.conf` has `mouse on` (the wheel scrolls the pane, no mode switch; `prefix m` toggles it off for a native select). A claude started straight in an ssh shell dies with the connection — this afternoon's session was; start inside tmux.
+
 On the mini `deploy.sh` notices it *is* the mini and ships to `localhost`
 (the box can ssh itself). Toolchain there: rustup + wasm32 target, brew
 python 3.12 with playwright (`~/.local/bin/python3` points at it; brew's
