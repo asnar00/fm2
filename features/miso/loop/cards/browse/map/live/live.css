@@ -1,0 +1,15 @@
+/* a live pin is /map's pin with one difference: a ring, in the app's own
+   light grey, breathing at the pulses' pace (/taste 5). No colour — being
+   here is not a warning and not a message, it is a person. */
+.map-live .map-pin-face {
+  border-color: #c9c9d2;
+  box-shadow: 0 0 0 3px rgba(201, 201, 210, 0.35);
+  animation: map-live-breathe 1.6s ease-in-out infinite;
+}
+@keyframes map-live-breathe {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(201, 201, 210, 0.35); }
+  50%      { box-shadow: 0 0 0 5px rgba(201, 201, 210, 0.12); }
+}
+.map-live .map-pin-stem {
+  border-top-color: #c9c9d2;
+}

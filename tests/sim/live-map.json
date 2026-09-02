@@ -1,0 +1,23 @@
+[
+  {"note": "live pins on the people map (2026-09-02, asks#1788346282800): your own pin appears while the app is in front of you, and nowhere else"},
+  {"home": true},
+  {"js": "const at = {latitude: 51.2719, longitude: 0.1904, accuracy: 12}; Object.defineProperty(navigator, 'geolocation', {get: () => ({getCurrentPosition: (ok) => setTimeout(() => ok({coords: at, timestamp: Date.now()}), 30), watchPosition: () => 0, clearWatch: () => {}}), configurable: true}); return true", "expect": true, "name": "the device's position is stubbed to a fixed point"},
+  {"js": "return feature_Live.may()", "expect": true, "name": "the app is visible and focused, so this device publishes"},
+  {"js": "feature_Live.beat(); await new Promise(r => setTimeout(r, 800)); const d = await fetch('live/near', {cache: 'no-store'}).then(r => r.json()); return d.ok && d.live.length === 1 && d.live[0].me === true && !JSON.stringify(d).includes('phone')", "expect": true, "name": "the server holds this device, and hands back no key"},
+  {"tap": "[ev=tool_account]"},
+  {"wait_for": ".browse-picker"},
+  {"tap": "[ev=browse_map]"},
+  {"wait_for": "#misoMap"},
+  {"js": "for (let i = 0; i < 30; i++) { if (feature_Live.markers['_smoke'] || Object.keys(feature_Live.markers).length) break; await new Promise(r => setTimeout(r, 300)); } const k = Object.keys(feature_Live.markers)[0]; const m = k && feature_Live.markers[k]; return !!m && Math.abs(m.getLatLng().lat - 51.2719) < 1e-6 && !!document.querySelector('.map-live[data-me=\"1\"]')", "expect": true, "name": "my own live pin stands at the stubbed point on the map", "readout": "live-map"},
+  {"js": "return getComputedStyle(document.querySelector('.map-live .map-pin-face')).animationName", "expect": "map-live-breathe", "name": "the live ring breathes"},
+  {"tap": "[ev=browse_grid]"},
+  {"wait_for": ".browse-grid"},
+  {"js": "return document.querySelectorAll('.map-live').length === 0 && !feature_Live.poll && !document.body.innerText.includes('51.27')", "expect": true, "name": "grid: no live pin, no polling, no coordinate text", "readout": "live-grid"},
+  {"tap": "[ev=browse_list]"},
+  {"wait_for": ".browse-list"},
+  {"js": "return document.querySelectorAll('.map-live').length === 0 && !document.body.innerText.includes('51.27')", "expect": true, "name": "list: no live pin, no coordinate text", "readout": "live-list"},
+  {"note": "hostile: the app goes behind another app — gone at once, and no heartbeat while hidden"},
+  {"js": "Object.defineProperty(document, 'visibilityState', {get: () => 'hidden', configurable: true}); document.dispatchEvent(new Event('visibilitychange')); await new Promise(r => setTimeout(r, 800)); const d = await fetch('live/near', {cache: 'no-store'}).then(r => r.json()); return d.ok && d.live.length === 0 && !feature_Live.timer", "expect": true, "name": "hidden: the server forgets this device and the heartbeat stops"},
+  {"js": "Object.defineProperty(document, 'visibilityState', {get: () => 'visible', configurable: true}); document.dispatchEvent(new Event('visibilitychange')); await new Promise(r => setTimeout(r, 800)); const d = await fetch('live/near', {cache: 'no-store'}).then(r => r.json()); return d.ok && d.live.length === 1", "expect": true, "name": "visible again: back within a beat"},
+  {"home": true}
+]
