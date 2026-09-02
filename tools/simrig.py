@@ -167,7 +167,14 @@ def tap(sel, snap=None):
     vv = body.get("vv") or [0, 0]
     sc = body.get("screen") or [0, 0, 0, 0]
     inset = max(0, (sc[1] or 0) - (sc[3] or 0)) if sc[1] and sc[3] else 0   # the status bar above the web view
-    px, py = x + w / 2, y + h / 2 - (vv[0] or 0) + inset
+    # a target the size of the screen (the shade behind a sheet) has its
+    # centre under whatever sits on it — the panel — so the finger goes near
+    # the bottom-left corner instead, where only the target is (the
+    # credits-button review, 2026-09-02: a tap on #shade landed on the panel)
+    if w >= 0.9 * (sc[2] or w) and h >= 0.6 * (sc[3] or h):
+        px, py = x + 24, y + h - 40 - (vv[0] or 0) + inset
+    else:
+        px, py = x + w / 2, y + h / 2 - (vv[0] or 0) + inset
     print(f"      (finger at {int(px)},{int(py)}: rect {node['r']} vv {vv} inset {inset})")
     tapxy(px, py)
     return True
