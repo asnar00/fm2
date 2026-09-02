@@ -38,9 +38,12 @@ On restart the server announces the new build to push subscribers by itself
 **The basemap (2026-09-02):** Stadia Alidade Smooth, set by `MISO_TILE_URL`
 (with ash's Stadia key) and `MISO_TILE_ATTRIBUTION` in the live plist's
 environment — the key is never in the repo (the reference plist carries
-`STADIA_KEY`). Changing the ground means: the env, `rm -rf ~/.miso-context/tiles`
-after the new server is up, and a bump of `/fresh-tiles`' ground tag so no
-phone's cache answers with the old squares.
+`STADIA_KEY`). Changing the ground means: the env, then **`launchctl bootout` +
+`bootstrap` of `com.noob.miso`** (launchd reads a plist only at load, and the
+deploy's handover starts the successor from the deploy's own shell — build
+474 shipped with the old env until the job was reloaded), then
+`rm -rf ~/.miso-context/tiles`, and a bump of `/fresh-tiles`' ground tag so
+no phone's cache answers with the old squares.
 
 ## The handover (2026-08-25, accounts #p54)
 
