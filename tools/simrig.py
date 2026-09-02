@@ -330,10 +330,13 @@ def relaunch():
     hit = None
     try:
         tree = json.loads(sh(["idb", "ui", "describe-all", "--udid", u]).stdout or "[]")
+        # a tile is square (Safari's "miso" suggestion rows are wide); the
+        # Top Hit row is preferred, and there the rightmost wins over a ghost
         tiles = [e for e in tree if (e.get("AXLabel") or "").strip() == "miso"
-                 and e.get("frame", {}).get("y", 999) < 200]
-        tiles.sort(key=lambda e: e["frame"]["x"])
-        hit = tiles[-1] if tiles else None
+                 and e.get("frame", {}).get("width", 999) < 120]
+        top = sorted([e for e in tiles if e["frame"]["y"] < 200], key=lambda e: e["frame"]["x"])
+        rest = sorted([e for e in tiles if e["frame"]["y"] >= 200], key=lambda e: e["frame"]["y"])
+        hit = top[-1] if top else (rest[0] if rest else None)
     except Exception:
         hit = None
     if hit:
