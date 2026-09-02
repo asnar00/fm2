@@ -22,6 +22,8 @@ const feature_ToolWords = {
     browse_grid: { name: 'grid', intro: 'Tiles: picture and title.' },
     browse_list: { name: 'list', intro: 'One line each, with the words.' },
     browse_map: { name: 'map', intro: 'Everything with a place, on the ground. People with the app open stand where their phone is.' },
+    invite_qr: { name: 'QR code', intro: 'One code for the room: pick the rank, show it, everyone scans and types their own name and number.' },
+    invite_name: { name: 'by name', intro: 'Type a name and number and pick a rank; they get a code by text.' },
     tools_home: { name: 'back', intro: 'Back one level: to the tool you came from, or the toolbar.' },
     ctx_undo: { name: 'undo', intro: 'Take back the last thing you did here.' },
     posts_new: { name: 'new post', intro: 'Write one, take a photo, or record a video, from where you stand.' },
