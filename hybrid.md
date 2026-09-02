@@ -6,6 +6,16 @@ forensic comparison of the Aug 16 session's two halves. A living plan, freely
 editable, like sovereign.md. The evidence behind it is in notes.md ("the
 model comparison", 2026-08-21).*
 
+*2026-09-01 (ash, this session): the worker seat moved from Opus to
+**Fable 5.1 at medium effort**. The seat is now a named agent —
+`.claude/agents/worker.md` carries the model, the effort and the standing
+preamble — spawned with `subagent_type: "worker"` and `isolation:
+"worktree"`; `CLAUDE_CODE_SUBAGENT_MODEL=fable` in ash's user settings
+makes Fable the default for every other subagent too (effort has no global
+subagent switch: an unnamed subagent inherits the session's effort). The
+Fable-vs-Opus text below stays as the record of why the seats were split;
+the economics section is superseded.*
+
 ## the finding this rests on
 
 On 2026-08-16 one session ran p1–p8 on Fable 5 and p9–p43 on Opus 5, same
@@ -34,7 +44,7 @@ template below), spawns the worker. This is where ask-translation lives —
 the step that failed hardest under Opus (the non-map). The brief is small;
 writing it costs little Fable budget.
 
-**Worker (Opus subagent, worktree).** Receives the brief plus the standing
+**Worker (subagent, worktree — Fable 5.1 at medium effort since 2026-09-01; Opus before).** Receives the brief plus the standing
 preamble below, does the whole five-step loop inside an isolated worktree:
 placement, node, implementation, toggle proof, 4a evidence. Returns a diff,
 the evidence artifacts, a one-paragraph outcome, and named open risks. This
@@ -51,10 +61,11 @@ the flywheel plan already prescribes — the hybrid is the flywheel with the
 seats named.
 
 This runs inside one Claude Code session: the main session is Fable, and
-each worker is an Agent call with a model override to Opus and worktree
-isolation. Parallel asks = parallel workers; integration stays serial.
+each worker is an Agent call with `subagent_type: "worker"` (the
+definition in `.claude/agents/worker.md` sets model, effort and preamble)
+and worktree isolation. Parallel asks = parallel workers; integration stays serial.
 
-## the economics
+## the economics (superseded 2026-09-01 — both seats are Fable now)
 
 Implementation is the bulk of any ask's tokens — the file reads, builds,
 test runs, screenshots, retries. All of that burns Opus. Fable burns only
@@ -166,47 +177,12 @@ to the recorded misses repeats them. It must contain:
 - **standing law restated**: deliver the ask; doctrine compliance is
   eventual; never hand the ask back as a question.
 
-## the worker preamble (prepended to every Opus worker)
+## the worker preamble
 
-> Rig browsers run HEADLESS, always — a visible window interrupts ash's
-> other work and gets closed under you (learned live, 2026-08-23).
-> Readouts and screenshots satisfy every evidence and 4a need.
->
-> Before anything else, confirm your worktree's base is current main and
-> fast-forward if it is not — a stale base means building against an
-> expunged tree (found the hard way 2026-08-23: a worktree spawned 72
-> commits behind).
->
-> Follow agents.md steps 1–5 including 4a; the brief you carry is the
-> contract. Deliver its in-hand line. If doctrine and the ask conflict,
-> find the move that satisfies both — proxy it, cache it, vendor it,
-> refactor the parent; if that is genuinely impossible, return to triage
-> with the conflict named rather than shipping a substitute.
->
-> A claim about anything you have not observed is a hypothesis, not a
-> result — label it as one. If the evidence the brief demands needs
-> tooling you don't have, that is a blocker to report, not a step to skip
-> silently.
->
-> Before declaring a new mechanism done, state what happens when it fails,
-> fills, or re-enters — and test that case. The fallback that also fails,
-> the buffer that evicts what it exists to protect, the replay that
-> re-triggers: these are where your defects will live.
->
-> No plan survives contact with the terrain, and the brief is a plan
-> (#p5). The moment you are modifying things the brief never named, or
-> a fix needs a second fix to hold, or you are well outside the brief's
-> footprint — STOP. Do not ask permission to continue and do
-> not grind on: stopping is the correct behaviour, not a failure. File
-> a **contact report** instead of a delivery: what the plan assumed,
-> what turned out false, what the tree actually needs before this ask
-> is buildable. Your worktree may be discarded — code is cheap, the
-> corrected map is the asset you were sent for.
->
-> Report outcomes plainly: what shipped, what was proven, what remains.
-> No victory prose — calibrated claims are what make celebration safe.
-> Return: the diff, the evidence artifacts, one paragraph of outcome,
-> and open risks by name.
+The preamble is the system prompt of `.claude/agents/worker.md` — the
+worker gets it by being spawned as that agent type, nothing is prepended
+by hand. Edit it there. (Until 2026-09-01 it lived here as a blockquote
+and triage pasted it ahead of every brief.)
 
 ## the check-in (triage, while a worker runs) — 2026-08-25, accounts #p16
 
@@ -320,7 +296,7 @@ against the tree and the ask history and sorts it into one of six bins:
    colliding in integration.
 5. **Bug** — a shipped thing misbehaving. Jumps the queue: a broken
    promise to an existing user outranks a new want, and the worker's task
-   is diagnosis-first (the seat Opus demonstrably fills well).
+   is diagnosis-first (the seat Opus demonstrably filled well; Fable 5.1 holds it since 2026-09-01).
 6. **Ruling-shaped** — the ask is really a design decision, a privilege
    question, or a doctrine conflict. Never enters the pipeline; goes
    straight to the escalation ladder.
