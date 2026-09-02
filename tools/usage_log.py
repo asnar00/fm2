@@ -8,6 +8,9 @@ Three modes:
     usage_log.py --report   the session-start report (samples first, then
                             reads the log and estimates days remaining)
     usage_log.py --history  print the log's samples, newest last
+    usage_log.py --seats    tokens per session, split by model and by seat
+                            (main vs subagent), from Claude Code's own
+                            transcripts; --days N limits it (default 7)
 
 The sample comes from the same endpoint /usage in Claude Code reads, with
 the OAuth token Claude Code keeps in ~/.claude/.credentials.json. Nothing
@@ -197,6 +200,61 @@ def report():
     return "\n".join(lines)
 
 
+PROJECT = os.path.expanduser("~/.claude/projects/-Users-microserver-fm2")
+
+
+def scan_transcript(path, seat, acc):
+    """Add one transcript's assistant turns to acc[(model, seat)] =
+    [calls, output, context] where context is everything the model read
+    (fresh input + cache reads + cache writes)."""
+    first = last = None
+    with open(path) as f:
+        for line in f:
+            try:
+                d = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            m = d.get("message")
+            if d.get("type") != "assistant" or not isinstance(m, dict) or not m.get("usage"):
+                continue
+            u = m["usage"]
+            k = (m.get("model") or "?", seat)
+            a = acc.setdefault(k, [0, 0, 0])
+            a[0] += 1
+            a[1] += u.get("output_tokens", 0)
+            a[2] += (u.get("input_tokens", 0) + u.get("cache_read_input_tokens", 0)
+                     + u.get("cache_creation_input_tokens", 0))
+            ts = d.get("timestamp")
+            first = first or ts
+            last = ts
+    return first, last
+
+
+def seats(days):
+    """Per-session token totals by model and seat. Effort only moves the
+    output column; the context column is what each call re-reads, and it
+    is the bigger bill — so watch context per call, not just effort."""
+    import glob
+    cutoff = now() - dt.timedelta(days=days)
+    files = sorted(glob.glob(os.path.join(PROJECT, "*.jsonl")), key=os.path.getmtime)
+    for f in files:
+        if dt.datetime.fromtimestamp(os.path.getmtime(f), dt.timezone.utc) < cutoff:
+            continue
+        sid = os.path.basename(f)[:-6]
+        acc = {}
+        first, last = scan_transcript(f, "main", acc)
+        subs = glob.glob(os.path.join(PROJECT, sid, "subagents", "*.jsonl"))
+        for sf in subs:
+            scan_transcript(sf, "sub", acc)
+        acc = {k: v for k, v in acc.items() if v[0] and not k[0].startswith("<")}
+        if not acc or not first:
+            continue
+        print(f"{sid[:8]}  {first[:16]} → {(last or first)[:16]}  subagents: {len(subs)}")
+        print(f"   {'model':<26}{'seat':<6}{'calls':>6}{'output':>12}{'context':>16}{'ctx/call':>10}")
+        for k, v in sorted(acc.items()):
+            print(f"   {k[0]:<26}{k[1]:<6}{v[0]:>6}{v[1]:>12,}{v[2]:>16,}{v[2] // v[0]:>10,}")
+
+
 def history():
     for s in load_log():
         print(one_line(s))
@@ -206,8 +264,12 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--report", action="store_true")
     ap.add_argument("--history", action="store_true")
+    ap.add_argument("--seats", action="store_true")
+    ap.add_argument("--days", type=int, default=7)
     a = ap.parse_args()
-    if a.report:
+    if a.seats:
+        seats(a.days)
+    elif a.report:
         print(report())
     elif a.history:
         history()
