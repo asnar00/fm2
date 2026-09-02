@@ -31,7 +31,7 @@ const feature_RigPage = {
         if (!cmd) return;
         if (cmd.js) {
           let value;
-          try { value = await (new Function(cmd.js))(); } catch (e) { value = 'error: ' + e.message; }
+          try { value = await (new (Object.getPrototypeOf(async function () {}).constructor)(cmd.js))(); } catch (e) { value = 'error: ' + e.message; }
           fetch('/diag/readout', { method: 'POST', body: JSON.stringify({ t: new Date().toISOString(), url: location.pathname, js: value === undefined ? null : value, body: feature_Readout.capture(document.body) }) }).catch(() => {});
           return;
         }
