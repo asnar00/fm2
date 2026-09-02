@@ -3,3 +3,4 @@
 - [x] live
 - [x] stand-in
 - [x] stocked
+- [x] square-posts

@@ -1,0 +1,8 @@
+/* a post's pin wears its picture in a rounded square. Same 34px face, same
+   ring, same halo, same stem — only the corners differ, so the two kinds read
+   apart at a glance without spending a colour or a size on the difference
+   (/taste 3, /taste 4: the radius sits in the small-control band, not the
+   pill). A live pin never carries `data-kind`: being here is a person. */
+.map-pin[data-kind="post"] .map-pin-face {
+  border-radius: 22%;
+}
