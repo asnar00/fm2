@@ -1,0 +1,17 @@
+/* the gear: a third, quieter control on the build row — dim until open.
+   `button#engineerBtn` outranks /build-row's `#panel #buildRow button`
+   (its padding and white would otherwise squeeze the glyph out) */
+#panel button#engineerBtn { flex: 0 0 auto; width: 30px; height: 30px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 9px; border: 1px solid #333; background: #1a1a1d;
+  color: #77777e; overflow: visible; }
+#panel button#engineerBtn.on { color: #c9c9d2; }
+#panel button#engineerBtn .eng-gear { width: 16px; height: 16px; display: block; }
+#panel #engineerRow { justify-content: flex-end; }
+/* the section: plain monospace text, folded by default */
+#engineer { margin: 0 0 8px; padding: 8px 10px; font-size: 12px; line-height: 1.45;
+  font-family: ui-monospace, Menlo, monospace; color: #9a9aa2;
+  background: #121215; border: 1px solid #202026; border-radius: 9px;
+  max-height: 40dvh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  white-space: pre-wrap; word-break: break-word; }
+#engineer .eng-empty { color: #77777e; }
