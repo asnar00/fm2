@@ -82,6 +82,8 @@ is the least a person can be asked to read — which is the brief's
 
 ## hostile cases
 
+- A step reads the screen, never the state mirror: after a tool's own back the mirror can carry one stale frame (`open_tool` `''` then `account`), and the first cut believed it, marked ‹ done and skipped the three posts steps (the one-level review, 2026-09-02). Since `/one-level`, ‹ from the card reaches the people set, so a card says so and points at the person for the toolbar.
+
 - **The tour and the gate**: a gated page never starts the tour; the
   first apply after the gate lifts does, pointing at ‹ over the card the
   person has just finished.

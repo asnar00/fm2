@@ -6,23 +6,42 @@
 // passed over. Offered once per user: tour_seen travels; localStorage
 // mirrors it so a relaunch before the op ships does not offer it twice.
 const feature_Tour = {
+  // where the person is, read from the screen, never from the state mirror:
+  // the mirror can carry one stale frame after a tool's own back (a write
+  // past /payload's link — misses.md, "navigation from the wrong side"), and
+  // a step that believed it skipped the next three (one-level review,
+  // 2026-09-02). The launcher shows more than one registry tool; an open
+  // tool shows its own button and its controls; a card page is a card page.
+  launcher() {
+    return !!document.querySelector('.toolbar [data-ev="tool_posts"]')
+      && !!document.querySelector('.toolbar [data-ev="tool_projects"]');
+  },
+  open(id) {
+    return !this.launcher() && !!document.querySelector('.toolbar [data-ev="tool_' + id + '"]');
+  },
+  onCard() {
+    return !!document.querySelector('.card-page');
+  },
   steps: [
     { at: '[data-ev="tools_home"]', say: "that's your card. tap ‹ to go on",
-      skipIf: (s) => s.open_tool !== 'account', done: (s) => s.open_tool === '' },
+      skipIf: () => !feature_Tour.onCard(), done: () => !feature_Tour.onCard() },
+    // since /one-level, ‹ from the card lands on the people set, one level up
+    { at: '[data-ev="tool_account"]', say: 'everyone you hold, and you. tap the person to reach the toolbar',
+      skipIf: () => feature_Tour.launcher(), done: () => feature_Tour.launcher() },
     { at: '[data-ev="tool_posts"]', say: 'posts are what you make in the field. tap the bubble',
-      done: (s) => s.open_tool === 'posts' },
+      done: () => feature_Tour.open('posts') },
     { at: '[data-ev="tool_posts"]', say: '+ makes a post from where you stand. tap the bubble again to come back',
-      done: (s) => s.open_tool === '' },
+      done: () => feature_Tour.launcher() },
     { at: '[data-ev="tool_account"]', say: 'people: everyone whose card you hold. tap the person',
-      done: (s) => s.open_tool === 'account' },
+      done: () => feature_Tour.open('account') },
     { at: '[data-ev="browse_map"]', say: 'the map puts them where they are. tap the map',
       done: () => !!document.querySelector('.browse-view.browse-on[data-ev="browse_map"]') },
     { at: '[data-ev="tool_account"]', say: 'tap the person again to come back',
-      done: (s) => s.open_tool === '' },
+      done: () => feature_Tour.launcher() },
     { at: '[data-ev="tool_projects"]', say: 'projects: a campaign, and who is in it. tap the flag',
-      done: (s) => s.open_tool === 'projects' },
+      done: () => feature_Tour.open('projects') },
     { at: '[data-ev="tool_projects"]', say: "new makes one. tap the flag again, and it's yours",
-      done: (s) => s.open_tool === '' },
+      done: () => feature_Tour.launcher() },
   ],
   at: -1,        // -1 not started; -2 ended; else the current step
   card: null,
