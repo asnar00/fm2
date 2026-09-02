@@ -1,1 +1,2 @@
 - [x] instant
+- [x] ranked
