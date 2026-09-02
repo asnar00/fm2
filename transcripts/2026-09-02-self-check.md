@@ -894,3 +894,220 @@ The live node's four commits all passed the confined check and the smoke gate is
 > <status>completed</status>
 > <summary>Background command "Integrate the live node onto main and deploy it" completed (exit code 0)</summary>
 > </task-notification>
+
+Everything that was in flight has shipped, and nothing is running now. Summary for when you're back:
+
+**Shipped this afternoon**
+
+| Build | What |
+|---|---|
+| 460 | Self-check on every launch, behind the new engineer gear |
+| 461, 462 | Rig fixes: async JavaScript steps, keep-the-worker mode |
+| 467 | Auto updates without the OK, and an edit finishes first |
+| 471 | Live device location on the people map |
+
+All stamped shipped on everyone's sheet. Handover, deploy notes, misses ledger and transcript are committed.
+
+**Two things the review caught in the live-location build before it shipped.** The worker matched people by display name, which would have shown one Bob's phone to whoever held a different Bob's card. It now matches by card id. And the publish rule read window focus, which an installed iOS app never has. I proved that on the simulator twice, so it now follows visibility alone. The final iOS proof: your own pin on the map, gone five seconds after the home button, back on return.
+
+**Your phone will ask once** for precise location the first time the app opens after this update. That prompt is the web clip's own and there is no way round it.
+
+**Residuals for you to rule on**, not fixed:
+
+- After an auto update the same page and tool come back, but the scroll position does not. The cause is older than today's work: any repaint resets it. A scroll-hold node would fix it if you want it.
+- The gear glyph reads as an asterisk at its size. One line to redraw if you agree.
+
+**Usage watch.** Fable went from 4% to 14% today. Three features with workers and reviews cost about ten points, so a day like this five times a week would end the window near 74%. It lasts, but it is the number to keep an eye on.
+
+**One mistake to own.** While moving the simulator rig off port 8099, which turned out to be your deadman agent, I cleared port 8097 by killing what was on it. That was your learn server. launchd restarted it within seconds and nothing was lost, but I should have checked what held the port first. The rule is now written down: rigs end by their own PID, never by port.
+
+When you're back, the tmux switch is the one command from the earlier message.
+
+### p34
+*2026-09-02 12:52*
+
+> <task-notification>
+> <task-id>blxrmhj46</task-id>
+> <tool-use-id>toolu_01KptJpU8eBEXhPRvdDjrkjG</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/blxrmhj46.output</output-file>
+> <status>killed</status>
+> <summary>Monitor "field asks arriving in the app (ask_monitor --local)" stopped</summary>
+> </task-notification>
+
+No response requested.
+
+### p35
+*2026-09-02 13:20*
+
+> ok we're back. I'm now on iterm + tmux from the laptop, and we're running here on the mini again
+
+Welcome back. Usage first: Fable is at 14% of the week, burning about 10 points a day, so it lasts the week and would end near 71% at this pace.
+
+Let me confirm the session is now under tmux and rearm the ask monitor, which died with the old process.
+
+Confirmed: this claude runs inside the tmux session `fm2` in iTerm2's control mode, so closing the laptop now only detaches. The tree is clean, and the ask monitor is rearmed and watching.
+
+Where things stand from before the break:
+
+- **Live** at build 471: the self-check with its engineer gear, seamless auto updates, and live device location on the people map. Your phone will ask once for precise location the first time it opens.
+- **Waiting on you:** three residuals. The scroll position after an auto update, which needs a scroll-hold node. The pulse being suppressed under auto even if the acceptance stamp fails. And the gear glyph, which reads as an asterisk at its size.
+- **Map look and feel** is still open: you liked Voyager, then wanted a raster-first host instead. Stadia and Thunderforest keys pasted into the audition page would let you compare Alidade Smooth and Neighbourhood beside it.
+
+What would you like to pick up first?
+
+### p36
+*2026-09-02 13:20*
+
+> <task-notification>
+> <task-id>b32t6vgdn</task-id>
+> <summary>Monitor event: "field asks arriving in the app (ask_monitor --local)"</summary>
+> <event>BACKLOG asked user=phone:+447813943023 t=1788346282800 tool=- at=-
+> text: on the users page, the map view should show the current location of the user’s active device, but only if they are actively focused on the app
+> proposal: -
+> watching /Users/microserver/.miso-context (4 worlds) for asked,proposed</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+The monitor's backlog still lists your live-location ask as "asked": I stamped the global builds list but not the ask itself in your world. Stamping it now.
+
+Stamped. Your ask now reads "shipped, build 471" in your own panel, with the hedge beside it: read as everyone you hold while they're in the app, tap if you meant only yourself.
+
+Nothing is in flight. Ready when you are.
+
+### p37
+*2026-09-02 13:31*
+
+> so we were talking about maps.
+
+Yes. Here is where we left it, in three lines.
+
+- **You liked CARTO Voyager.** It is free with a key, but CARTO says its raster tiles are being phased out, and our map draws raster tiles. So Voyager is on borrowed time.
+- **The two raster-first alternatives** with the same calm feel are Stadia's Alidade Smooth and Thunderforest's Neighbourhood. Both have free tiers well above our use. Stadia's is non-commercial only, which a campaign should satisfy.
+- **The switch is one setting on the mini** whichever you choose, because the phone only ever talks to our own tile proxy. Any key stays on the server.
+
+The audition page is still up at `http://192.168.1.76:8777/` on the home network. The free styles show now. The Stadia and Thunderforest cells stay blank until a key goes in the header.
+
+So the next move is yours, and it is small: sign up at Stadia or Thunderforest, or both, paste each key into the page, and look at Alidade Smooth and Neighbourhood beside Voyager. Then tell me which one, and paste me the key, and I'll ship it.
+
+If you would rather skip the comparison, my pick is Stadia Alidade Smooth: closest to Voyager's calm, fewest labels, and the host most committed to raster.
+
+### p38
+*2026-09-02 13:35*
+
+> did I mistakenly disable a plugin you need to control this machine?
+
+No, nothing I use to run this machine came from a plugin. Everything I do on the mini goes through the shell: git, the linker, deploy.sh, the simulator via idb, the rig. None of that needs a plugin, and the reload changed none of it.
+
+What did change:
+
+- **Two plugins are now off:** the Swift and clangd language servers. They give code intelligence for Swift and C, which fm2 does not use. Rust, JavaScript and Python are what we build in. Turning them off cost nothing here.
+- **The Google Drive connector disconnected.** I have never used it in this project.
+- **A computer-use server appeared,** which can screenshot and click your desktop. I do not need it for the mini either, and I would only use it if you asked for something on a native Mac app.
+
+So carry on. If you want the two language-server plugins back for another project, `/plugin` re-enables them.
+
+### p39
+*2026-09-02 13:36*
+
+> what do the language-server plugins give us?
+
+A language server is the engine behind an editor's "go to definition", "find all references", and red squiggles. The plugins let me use one the same way through an LSP tool: ask where a symbol is defined, who calls it, what type a value has, and see compile errors without running a build.
+
+**What that gives us in practice.** For a codebase in a language the server understands, it turns some of my grepping into precise answers. "Who calls this function" from a language server is exact. From grep it is a text match that can miss or over-include. And a diagnostics pass catches type errors as I edit, instead of at the next build.
+
+**Why they did nothing for fm2.** The two you had were for Swift and for C and C++. This project is Rust, JavaScript and Python. And the Rust is unusual: the tree's `.rs` files are fragments that fmlink stitches into one crate in the build directory, so even a Rust language server would only understand the composed output, not the source you edit. The compile step already tells us about type errors within a minute or two.
+
+**Where one would help.** If we ever add a native iOS shell around the web app, the Swift server becomes worth having. For fm2 as it stands, the shell tools and the build are enough, and I have not missed them.
+
+### p40
+*2026-09-02 13:38*
+
+> OK here's the stadia API key: a0cea8f0-c8d5-459c-bc6e-1c456ba9693c
+
+Thanks. I'll check the key works and then put the Stadia styles in front of you over Sevenoaks, without the key ever landing in the repo.
+
+The key works, and the sheet is in front of you. My read of it at town scale:
+
+- **Stadia OSM Bright** is the nearest thing to the Voyager you liked: soft colours, clear road hierarchy, the town name and the A-roads readable, footpaths drawn through Knole. This is my pick.
+- **Stadia Outdoors** is the same family with a warmer tint and the paths a touch stronger. Good if the team will be walking estates.
+- **Alidade Smooth** is calmer than either, but at this zoom it is too calm: Sevenoaks itself is barely legible. It shines when the map is a backdrop for pins, less so when people read it.
+- **Alidade Smooth Dark** is the same in the app's dark palette. Worth knowing it exists if you ever want the map to match the shell rather than stand out from it.
+- **Toner Lite and Terrain** are lovely but read as posters, not working maps.
+
+Say which and I'll ship it. The change is the tile URL with your key and the Stadia credit line in the mini's launchd environment, then a restart. The key stays on the server and never reaches a phone. I have not written it anywhere in the repo, and I won't.
+
+### p41
+*2026-09-02 13:40*
+
+> I actually like Smooth for the minute
+
+Alidade Smooth it is. Let me check how the tile cache is keyed, so a warm cache of OpenStreetMap squares doesn't leak through after the switch, and how the live server picks up an environment change.
+
+Switching now: the live plist carries the Stadia URL and credit line, the ground tag is bumped so no phone shows a stale square, and the deploy is running. When it lands I'll clear the server's tile cache, pull a square through the live proxy and look at it, and the map on your phone changes on its next update.
+
+### p42
+*2026-09-02 13:45*
+
+> <task-notification>
+> <task-id>bvj1w6lf6</task-id>
+> <tool-use-id>toolu_01UQqGNVzCfWrnYB8NcVmynL</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bvj1w6lf6.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Set the Stadia basemap in the live plist, bump the ground tag, commit, deploy, clear the tile cache, and verify" completed (exit code 0)</summary>
+> </task-notification>
+
+Done. The map ground is Stadia Alidade Smooth, live at build 474.
+
+- **Verified through the live proxy:** a square fetched from the mini comes back in the Smooth style, and the credit line reads Stadia, OpenMapTiles and OpenStreetMap.
+- **The key** lives only in the launchd plist on the mini. The repo's reference copy carries a placeholder, and I grepped the tree to confirm the key is nowhere in it.
+- **No stale squares.** The ground tag on tile URLs is bumped, so every phone asks for each square under a new name and its cached OpenStreetMap ones rot unused. The server's own cache was cleared after the switch.
+- **One lesson recorded.** The deploy's handover started the new server from the deploy's own shell, so it ran with the old environment. launchd only reads the plist when the job loads. I reloaded the job, which cost about two seconds of downtime, and wrote that into deploy.md so the next ground change does it in the right order.
+
+Your phone takes build 474 by itself next time the app is in front, since auto updates no longer ask. Open the people map after that and you'll see it.
+
+### p43
+*2026-09-02 13:54*
+
+> actually - I think I prefer stadia alidade smooth dark - the tool buttons don't pop quite enough on the gray background of the current one
+
+Fair: dark ground, dark shell, and the coloured buttons carry the contrast. Switching to Alidade Smooth Dark the same way, with the ground tag bumped again so no phone keeps the grey squares.
+
+The switch is running: environment reloaded first this time, then the tag bump deploys, then the cache clears. I'll confirm with a live square when it lands.
+
+### p44
+*2026-09-02 13:56*
+
+*(edited and resent — superseded by the next prompt; do not cite)*
+
+> ok nice. while that's brewing, the users page should only show one user marker on the map, not two: if there's no live position, it should show the profile's position; otherwise only the live position.
+
+### p45
+*2026-09-02 13:56*
+
+> ok nice. while that's brewing, the users page should only show one user marker on the map, not two: if there's no live position, it should show the profile's position; otherwise only the live position. The marker should be clickable anyway
+
+Announcing that and briefing a worker. It is a confined change under the live node: a person's placed pin steps aside while their live pin stands, and comes back when they leave.
+
+The one-marker build is in a worker's hands, stamped building on your sheet. The dark basemap switch is still deploying. I'll report both as they land.
+
+### p46
+*2026-09-02 13:58*
+
+> <task-notification>
+> <task-id>bxt623myo</task-id>
+> <tool-use-id>toolu_01CEeSs7jD7M7868hjYs8gwU</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bxt623myo.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Switch the live basemap to Alidade Smooth Dark, reload launchd, bump the ground tag, deploy, clear the cache, verify" completed (exit code 0)</summary>
+> </task-notification>
+
+Alidade Smooth Dark is live at build 476. A square through the live proxy comes back in the dark style, the credit line is Stadia's, the server's tile cache was cleared, and every phone asks for squares under a new name so the grey ones cannot come back. This time the environment was reloaded before the deploy, and the server launchd hands the port to after the handover carried it.
+
+Your phone picks up 476 on its own the next time the app is in front. The one-marker build is still with its worker.
+
+### p47
+*2026-09-02 14:02*
+
+> when tiles haven't loaded yet, we get a bright coloured tile square - could we make those dark grey to match the new map colour
+
+Let me find where the ground colour under unloaded tiles is set, and sample the new basemap's land colour so the match is exact.

@@ -1,0 +1,5 @@
+/* the ground under the squares follows the basemap. Alidade Smooth Dark's
+   land is #333333 (sampled from a live square, 2026-09-02); a square that
+   has not arrived yet reads as more of the same map, not a bright hole.
+   Composed after /light-basemap's own rule, so it wins. */
+#misoMap { background: #333333; }
