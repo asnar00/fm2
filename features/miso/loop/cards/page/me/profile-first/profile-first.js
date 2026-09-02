@@ -19,7 +19,10 @@ const feature_ProfileFirst = {
   ownId() {
     try {
       const list = JSON.parse(String(JSON.parse(feature_Loop.state || '{}').cards || '[]'));
-      for (const c of list) if (c && c.type === 'profile') return c.id || '';
+      // the own card is the profile card with no `from` on it — a copy /exchange
+      // handed over carries the sender's name there (the toolbar review, 2026-09-02:
+      // a member holding copies was sent to a copy and left on the grid)
+      for (const c of list) if (c && c.type === 'profile' && !c.from) return c.id || '';
     } catch (e) {}
     return '';
   },

@@ -97,6 +97,8 @@ do the rest.
 
 ## hostile cases
 
+- A member who already holds other people's cards (every invited person: the inviter's copy arrives at the join): the page half takes the own card as the profile card with no `from`, never the first profile card — the first cut took the first, sent the person to a copy, and left them gated on the grid (found by the toolbar review, 2026-09-02).
+
 - **The join never comes** (offline, server restarting): `_joined` stays
   unset, no gate; `/patient` makes no card either; the next launch that
   joins asks. The failure direction is "no gate", never "locked out".
