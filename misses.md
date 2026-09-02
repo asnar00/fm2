@@ -402,3 +402,49 @@ a mirror is materialised first (real directories of symlinks), and
 re-mirrored when a sibling lands in the shared tree. deploy.md carries the
 shape.
 
+## the toolbar withheld (2026-09-02) — a brief's word that no longer meant one thing
+
+**The ask:** the profile gate: "nothing else opens until the picture and the
+line are in" — the brief said "the toolbar withheld".
+
+**The estimate:** hide the row.
+
+**The actual:** `/editing/toolbar` had moved save into the row (the tick), so
+withholding the row would have withheld the way to finish. The gate withholds
+every way *off* the card instead — tool buttons, ‹, the picker — and keeps
+the row for the tick.
+
+**The lesson:** a brief names surfaces by what they are today; "the toolbar"
+is three nodes' worth of controls now. Say which control, not which strip.
+
+## navigation from the wrong side (2026-09-02) — a bridged var written past its link
+
+**The ask:** the profile gate bringing a fresh person to their own card.
+
+**The estimate:** set `open_tool` from the Rust side and let the page follow.
+
+**The actual:** `open_tool` is bridged and `/payload` republishes it at its own,
+older, link — a write made from a newer node painted one stale frame (a blank
+screen in the rig) and a republish from there read to `/one-way` as a page
+write. The gate now drops the navigation taps it refuses *before* the chain,
+and the page half brings the person to the card with the two events a finger
+would send (`/restore`'s idiom).
+
+**The lesson:** a node newer than `/payload` moves the page with events, never
+by writing a bridged key; the frame you paint is the frame a turn produced.
+
+## the first profile card (2026-09-02) — "me" read from a list a copy can head
+
+**The ask:** the profile gate's own-card lookup on the page half.
+
+**The estimate:** the first profile card in the bridged list is mine.
+
+**The actual:** an invited member's list can start with the inviter's copy —
+the gate sent them to a copy and left them on the grid with the sentence and
+no way off. The server half already skipped copies (`/exchange`'s
+`card_of_type`); the page half did not.
+
+**The lesson:** "my card" is the profile card with no `from`, on both halves,
+always — and a gate is tested with a member who holds copies, not only an
+admin whose list is their own.
+
