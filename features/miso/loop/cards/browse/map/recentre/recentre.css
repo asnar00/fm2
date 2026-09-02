@@ -1,0 +1,5 @@
+/* the crosshair is drawn in currentColor, so one rule makes it black on the
+   tint — /tinted says the same thing for undo's arrow, but this node does not
+   depend on /undo being there to say it. Untinted (/ember off) the button
+   keeps the row's white on grey. */
+.tool-button.recentre-ctrl.tinted { color: #000; }
