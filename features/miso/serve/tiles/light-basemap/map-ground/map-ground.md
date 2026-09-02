@@ -1,4 +1,4 @@
-# ground
+# map-ground
 *the colour under a square that has not loaded yet follows the basemap*
 
 > (transcripts/2026-09-02-self-check.md#p47)
@@ -23,4 +23,4 @@ While the map is still fetching a square, the gap is the same dark grey as the m
 
 ## code description
 
-`ground.css` — one rule on `#misoMap`, composed after `/light-basemap`'s.
+`map-ground.css` — one rule on `#misoMap`, composed after `/light-basemap`'s.

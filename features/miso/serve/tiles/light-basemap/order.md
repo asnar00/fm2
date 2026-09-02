@@ -1,2 +1,2 @@
 - [x] fresh-tiles
-- [x] ground
+- [x] map-ground

@@ -369,3 +369,18 @@ and the LaunchAgents plists), and a rig is ended by the PID its starter
 wrote down — the live worker's `start.sh` had the pattern already. Never
 kill by port number: the number is not ours, only the process is.
 
+## the second `ground` (2026-09-02) — a name taken without looking
+
+**The ask:** the square still loading should be dark grey like the new map.
+
+**The estimate:** a one-rule child node, `light-basemap/ground`; `fmlink
+--prove` said confined.
+
+**The actual:** the deploy's link refused it — `ground` already names
+`loop/cards/look/layout/ground`, and node names are tree-global (fm.md). The
+prove step checks confinement, not names; the gate caught it, nothing
+shipped.
+
+**The lesson:** before a node is made, `find features -type d -name <name>`
+— a name is global, and the prove step will not say so. Renamed `map-ground`.
+
