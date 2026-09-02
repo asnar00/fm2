@@ -44,8 +44,29 @@ carries nine agent-instruction nodes now; the newest are /retrofit and
   `/map-ground` #333333). The simulator rig proved every one of these on
   iOS (deploy.md carries the rig's lessons: Spotlight's ghost tile, the
   restored Safari tab, the WebClips folder, the location prompt).
-- **In flight:** onboarding — profile first (picture and a line, mandatory)
-  then a demo tour; announced, a worker on it.
+- **Evening (builds 487–489):** `long-press/tool-words` (each tool's card
+  says what it is for, in a line; twenty-three buttons and the grid/list/map
+  picker have cards).
+- **On main, waiting for a green gate:** onboarding (`me/profile-first`: the
+  own card gated until a picture and a line are in — the page half now takes
+  the card with no `from`, a copy-holding member was being stranded;
+  `long-press/tour`: an eight-card scripted tour, once per user, skippable
+  from card two), `undo/aside` (undo only when there is a step, alone at the
+  far right; undo-of-undo retired, redo parked), `ember/current-only` (a
+  nested tool's row shows its own icon, not its parent's), the invite page
+  (`invite-tool/doors`: two buttons, a rank dropdown, no list, no pencil;
+  `qr/ranked`: the code carries a rank and a project; `projects/invited-into`:
+  the newcomer becomes a role link on the owner's original at their first
+  card, written by the server through the op door, capped at the inviter's
+  rank). All proven on the iPhone simulator. **The gate is red on the known
+  caret race** (`/keep`: typing torn by a repaint under the throttled pass —
+  `'here to help smoke sm smokeoke'`); a worker is on the fix; ship the lot
+  when it lands. `tools/smoke.py` passes the profile gate at boot now.
+- **Residuals from today's reviews, for ash:** ‹ from the invite page goes to
+  the launcher, not 👤 (a one-level ‹ would be a `/back` child); redo does
+  not exist since undo stopped undoing itself; taps' row is too full for a
+  visible gap before undo; the rank dropdown is a real `<select>` while
+  `/audience`'s picker is six pills — two pickers, one word.
 - **Residuals ash has not ruled on:** (a) the page's scroll resets on any
   repaint (pre-existing, `loop.js paint` via innerHTML), so "same scroll"
   after an update is not delivered — a `/keep`-shaped scroll hold under
