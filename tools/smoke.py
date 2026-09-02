@@ -282,9 +282,14 @@ async def s_invite(pg):
     else:
         return False
     await pg.click('.toolbar [data-ev="tool_invite"]'); await pg.wait_for_timeout(1500)
-    ok = await pg.evaluate("!!document.querySelector('.invite-page .invite-new')")
+    # since /doors (2026-09-02) the page is two buttons — show QR code, invite
+    # by name — and nothing else: no list, no pencil in the row
+    doors = await pg.evaluate("document.querySelectorAll('.invite-page .door').length")
+    pencil = await pg.evaluate("!!document.querySelector('.toolbar [data-ctl=card_edit]')")
+    if doors != 2 or pencil:
+        print(f"      (doors: {doors}, pencil in the row: {pencil})")
     await go_home(pg)
-    return ok
+    return doors == 2 and not pencil
 
 
 @step("the QR sheet draws a scannable code and puts itself away")
@@ -296,7 +301,11 @@ async def s_qr(pg):
     else:
         return False
     await pg.click('.toolbar [data-ev="tool_invite"]'); await pg.wait_for_timeout(1200)
-    await pg.click('[data-qr="open"]'); await pg.wait_for_timeout(2000)
+    # /doors: the QR door asks the rank first (team preselected), then show
+    await pg.click('.invite-page .door[data-door="qr"]'); await pg.wait_for_timeout(800)
+    if not await pg.evaluate("(() => { const s = document.getElementById('doorSheet'); return !!s && getComputedStyle(s).display !== 'none'; })()"):
+        print("      (the rank sheet did not open)"); await go_home(pg); return False
+    await pg.click('#doorSheet .door-go'); await pg.wait_for_timeout(2000)
     drawn = await pg.evaluate(
         "!!document.querySelector('.qr-sheet .qr-code svg path')")
     # done must close the sheet WITHOUT closing the invite page under it
