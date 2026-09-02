@@ -45,6 +45,18 @@ deploy's handover starts the successor from the deploy's own shell — build
 `rm -rf ~/.miso-context/tiles`, and a bump of `/fresh-tiles`' ground tag so
 no phone's cache answers with the old squares.
 
+**Product overrides (2026-09-02):** `products/miso/miso/<path>` is a
+symlink into `features/miso/<path>` until a product needs its own
+`order.md` there; then that path is *materialised* — real directories of
+symlinks to each sibling, one real `order.md` — the shape
+`products/miso/miso/loop/tap/counter` set and `users/invite/qr` follows
+(`instant` unticked for miso). Two hazards: writing to
+`products/miso/miso/<path>/order.md` while it is still a symlink edits
+the shared tree (it happened twice on 2026-09-02 — check `test -L`
+first); and a new sibling landing in the shared tree under a materialised
+directory needs its symlink added, or the link fails with "includes 'X'
+but the folder does not exist" — loud, and the deploy refuses.
+
 ## The handover (2026-08-25, accounts #p54)
 
 A release no longer leaves port 8095 unheld. `features/miso/serve/reuseport`

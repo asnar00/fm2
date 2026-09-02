@@ -32,6 +32,20 @@ carries nine agent-instruction nodes now; the newest are /retrofit and
   fires a stray blur at launch — two cuts that read focus never published.
   Final iOS proof: own pin drawn on the people map; entry gone 5 s after
   the home button; back 14 s after return.
+- **Later still (builds 482–486):** `map/live/one-pin` (one marker per
+  person; a real tap on a live pin now opens the card — the fix is in
+  `/live`, the open sent after the tap has landed), `map/stand-in` (a
+  missing square draws its parent, reach 3, seamless on WebKit),
+  `map/stocked` (the constituency at zooms 12–16 stocked into the cache,
+  1,210 squares on the simulator, behind the gear), `users/invite/members`
+  (members invite members), and the miso product's override unticking
+  `qr/instant` — ash's ruling: two invite doors, remote and the session
+  QR. The basemap is Stadia Alidade Smooth Dark (`/fresh-tiles` g=3,
+  `/map-ground` #333333). The simulator rig proved every one of these on
+  iOS (deploy.md carries the rig's lessons: Spotlight's ghost tile, the
+  restored Safari tab, the WebClips folder, the location prompt).
+- **In flight:** onboarding — profile first (picture and a line, mandatory)
+  then a demo tour; announced, a worker on it.
 - **Residuals ash has not ruled on:** (a) the page's scroll resets on any
   repaint (pre-existing, `loop.js paint` via innerHTML), so "same scroll"
   after an update is not delivered — a `/keep`-shaped scroll hold under

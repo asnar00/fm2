@@ -384,3 +384,21 @@ shipped.
 **The lesson:** before a node is made, `find features -type d -name <name>`
 — a name is global, and the prove step will not say so. Renamed `map-ground`.
 
+## the override written through a symlink (2026-09-02)
+
+**The ask:** switch the one-person instant invite code off for miso, a
+product decision — selection lives in products.
+
+**The estimate:** write `products/miso/miso/users/invite/qr/order.md`.
+
+**The actual:** `products/miso/miso/users` was a symlink; the write landed
+in `features/miso/users/invite/qr/order.md`, the shared tree — twice, the
+second time after the stash that held the materialised mirror failed to
+re-apply over the restored symlink. Caught by `git status` both times;
+nothing shipped wrong.
+
+**The lesson:** a product path is checked with `test -L` before any write;
+a mirror is materialised first (real directories of symlinks), and
+re-mirrored when a sibling lands in the shared tree. deploy.md carries the
+shape.
+
