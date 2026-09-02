@@ -22,7 +22,7 @@ const feature_ToolWords = {
     browse_grid: { name: 'grid', intro: 'Tiles: picture and title.' },
     browse_list: { name: 'list', intro: 'One line each, with the words.' },
     browse_map: { name: 'map', intro: 'Everything with a place, on the ground. People with the app open stand where their phone is.' },
-    tools_home: { name: 'back', intro: 'Back to the toolbar.' },
+    tools_home: { name: 'back', intro: 'Back one level: to the tool you came from, or the toolbar.' },
     ctx_undo: { name: 'undo', intro: 'Take back the last thing you did here.' },
     posts_new: { name: 'new post', intro: 'Write one, take a photo, or record a video, from where you stand.' },
     posts_delete: { name: 'delete', intro: 'Remove this post. Undo brings it back.' },
