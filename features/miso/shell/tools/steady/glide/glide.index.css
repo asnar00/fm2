@@ -1,0 +1,13 @@
+/* a departing button's ghost: it stands where the button stood — the toolbar
+   is fixed, so the recorded viewport rectangle is the place — and it is inert.
+   z-index 4 is /reorder's layer, the one a tool button is lifted to: above the
+   map (1), below the panel's shade (10). Two classes, not one, because
+   `.tool-button.ctrl` rules from other nodes are two-class rules too and a
+   one-class rule loses to them; `position` is set inline by `leave()` for the
+   same reason, where a tie on specificity would be settled by sheet order. */
+.tool-button.fm-glide-ghost {
+  position: fixed;
+  z-index: 4;
+  pointer-events: none;
+  margin: 0;
+}
