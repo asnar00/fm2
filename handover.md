@@ -7,7 +7,37 @@ the ledger is `misses.md`. Read the composed skillset alongside this — it
 carries nine agent-instruction nodes now; the newest are /retrofit and
 /confined.*
 
-## TODAY (2026-09-02): build 453 is live; two changes to how we work
+## TODAY, LATER (2026-09-02, afternoon): build 462 is live; the simulator rig runs on the mini
+
+- **Shipped:** build 460 `/diag/self-check` + `/engineer` (the gear on the
+  nøøb sheet; engineer-level UI lives only there — `engineer.agent.md` is
+  in the skillset); 461 the rig's `js` may await (`/rig`); 462
+  `/rig/keep-worker` (`MISO_RIG_KEEP=1` keeps the service worker so the
+  cache path is testable on the simulator). All three confined, gate green.
+- **The simulator rig works on the mini** (deploy.md, rig section, has
+  the recipe): idb prebuilt under `~/.local`, miso web clip on the iPhone
+  17 Pro sim `A07B8196…`, rig server from the self-check worker's
+  worktree build on 8099, `_ash` seeded. `tests/sim/self-check.json` is
+  all green on iOS, hostile cases included. In keep mode the self-check
+  hashed 225 fragments from the cache and named the four a relink changed
+  after the manifest — a rig's `hashes.json` is written by deploy.sh, not
+  fmlink, so a relinked rig shows stale-manifest mismatches (expected).
+- **In flight (workers, worktrees):** (1) live device location on the
+  people map, ephemeral, focus-bounded (ash's field ask, announced);
+  (2) `auto` updates without the OK, never while recording or editing
+  (`consent-once/by-policy`, `seamless/while-editing`; announced). Review
+  and ship each as it lands; stamp `shipped`.
+- **Usage watch** (`tools/usage_log.py`, CLAUDE.md): Fable 4% of the week
+  at 10:21 UTC, lasts the week. `--seats` splits burn by model and seat.
+- Map look and feel: ash likes CARTO Voyager; CARTO raster needs a free
+  key and is being phased out; Stadia Alidade Smooth / Thunderforest
+  Neighbourhood are the raster-first alternatives; audition page at
+  `scratchpad/tile-audition/index.html` (served on the mini :8777).
+  Self-rendered vectors: ideas.md, when CARTO forces it.
+- Ask monitor: `python3 tools/ask_monitor.py --local` as a Monitor,
+  rearmed this session — rearm every session.
+
+## EARLIER TODAY (2026-09-02, morning): build 453 is live; two changes to how we work
 
 - **Subagents run on Fable 5.1.** `CLAUDE_CODE_SUBAGENT_MODEL=fable` in
   ash's user settings; the hybrid worker seat is the named agent
