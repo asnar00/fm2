@@ -16,6 +16,12 @@ plain words in the first message of every session — days remaining, or
 "lasts the week" — before anything else. Hourly samples come from the
 launchd job `com.noob.usagelog`; the log is `~/.claude/usage-log.jsonl`.
 
+**Field asks get instant feedback (ash, 2026-09-02):** the ask monitor
+runs piped through `tools/ask_ack.py`, which stamps every new ask `building`
+in the asker's world the moment it is seen — before triage. Rearm it as
+`python3 tools/ask_monitor.py --local | python3 -u tools/ask_ack.py`. Triage
+still stamps `shipped` (with the build) or a did-you-mean question.
+
 **Building and shipping: see `deploy.md`** — build/run commands, what
 deploy.sh does, the mini, tunnel, state locations, and how to check on the
 live system.
