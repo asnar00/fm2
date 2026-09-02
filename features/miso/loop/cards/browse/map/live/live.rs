@@ -126,6 +126,20 @@ impl feature_Live {
     // a copy the caller holds. Read outside any turn, /exchange's way, so the
     // read is of the live world and nothing is frozen or written.
 
+    // a person's own profile card id, read from their world the way
+    // live_near reads the caller's — outside any turn, nothing written. Empty
+    // when they have no card yet, and then no holder can match them.
+    fn live_profile_id_of(key: String) -> String {
+        let cards: serde_json::Value = serde_json::from_str(&exchange_cards_of(key))
+            .unwrap_or(serde_json::json!([]));
+        for c in cards.as_array().unwrap_or(&Vec::new()) {
+            if c["type"].as_str().unwrap_or("") == "profile" && c["from"].is_null() {
+                return c["id"].as_str().unwrap_or("").to_string();
+            }
+        }
+        String::new()
+    }
+
     fn live_near(me: String) -> String {
         let live = live_read();
         let held: serde_json::Value = serde_json::from_str(&exchange_cards_of(me.clone()))
@@ -135,6 +149,11 @@ impl feature_Live {
         for (key, at) in live.as_object().map(|m| m.iter().collect::<Vec<_>>()).unwrap_or_default() {
             let mine = key == &me;
             let name = exchange_name_of(key.clone());
+            // the match is by the card's id, never the name: a copy keeps the
+            // owner's id (/exchange: "the id is the owner's already"), so the
+            // live person's own profile card names exactly the copy a holder
+            // has — two people called Bob stay two people
+            let own_id = if mine { String::new() } else { live_profile_id_of(key.clone()) };
             let mut card = serde_json::Value::Null;
             for c in held.as_array().unwrap_or(&empty) {
                 if c["type"].as_str().unwrap_or("") != "profile" {
@@ -145,7 +164,8 @@ impl feature_Live {
                     card = c.clone();
                     break;
                 }
-                if !mine && !own && c["from"].as_str().unwrap_or("") == name && !name.is_empty() {
+                if !mine && !own && !own_id.is_empty()
+                    && c["id"].as_str().unwrap_or("") == own_id {
                     card = c.clone();
                     break;
                 }

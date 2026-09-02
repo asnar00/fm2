@@ -33,8 +33,9 @@ you hold, while they are in the app, tap if you meant only yourself.
 profile cards you hold: your own and the copies `/exchange` handed you. The
 server answers `GET live/near` with the live positions of exactly those
 people — anyone whose profile copy is in your world, matched by the copy's
-`from` name (the only thing the two sides share, `/people`'s own choice) —
-plus your own. Nothing new decides who is visible to whom; if you cannot see
+**id**, which `/exchange` keeps as the owner's own card id (review,
+2026-09-02: a match by `from` name would have shown one Bob's phone to the
+holder of another Bob's card) — plus your own. Nothing new decides who is visible to whom; if you cannot see
 somebody's card, you cannot see their pin, and a later visibility cue (a
 project) joins here by handing cards, as it does today.
 
@@ -89,6 +90,10 @@ the app: a second clause in `may()`, its own node. Tapping a live pin to
 message: the marker's click seam, its own node.
 
 ## hostile cases
+
+- Two people with the same display name, one card held: the holder sees the
+  pin of the one whose card they hold and never the other — the match is by
+  card id, and a person with no profile card yet matches nobody's copy.
 
 - **Permission refused, or no geolocation** (a desktop, a rig with none):
   nothing is published, nothing is said. The person is on nobody's map and
