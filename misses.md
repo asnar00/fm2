@@ -469,3 +469,20 @@ a longer text), suspect the step's own assumptions about position before
 the app; and a rig that types sets the caret it means, by a range, not by a
 key whose effect it never checked.
 
+## the regroup that moved addresses (2026-09-02)
+
+**The ask:** `map` reached seven children; regroup two under `squares`.
+
+**The estimate:** a regroup rewires nothing (the chronology rule); the
+before/after link proves it.
+
+**The actual:** the script order and the fragment set were identical, but
+the composed server source was not — `/enabled`'s per-node flags are keyed
+by node *path*, so the two nodes' flags moved and the parent gained one.
+Harmless today (flags default on, ticks stored not enforced), and a
+different claim from the one first written into the commit.
+
+**The lesson:** a regroup is proven on three things — script order,
+fragment set, and the server source *with the path-keyed enablement vars
+understood* — and the commit says exactly what differed.
+
