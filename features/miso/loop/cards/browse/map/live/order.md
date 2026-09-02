@@ -1,1 +1,2 @@
 - [x] one-pin
+- [x] every-second
