@@ -324,8 +324,23 @@ def relaunch():
     sh(["xcrun", "simctl", "terminate", u, "com.apple.mobilesafari"])
     sh(["idb", "ui", "button", "--udid", u, "HOME"]); time.sleep(1)
     tapxy(201, 717); time.sleep(2)             # the home screen's Search pill
-    text("miso"); time.sleep(2.5)
-    tapxy(63, 149); time.sleep(10)             # Spotlight's top hit
+    text("miso"); time.sleep(3)
+    # Spotlight's Top Hit row, by label: a ghost tile or another app can sit
+    # first, so the miso clip is the rightmost tile labelled "miso" there
+    hit = None
+    try:
+        tree = json.loads(sh(["idb", "ui", "describe-all", "--udid", u]).stdout or "[]")
+        tiles = [e for e in tree if (e.get("AXLabel") or "").strip() == "miso"
+                 and e.get("frame", {}).get("y", 999) < 200]
+        tiles.sort(key=lambda e: e["frame"]["x"])
+        hit = tiles[-1] if tiles else None
+    except Exception:
+        hit = None
+    if hit:
+        f = hit["frame"]; tapxy(int(f["x"] + f["width"] / 2), int(f["y"] + f["height"] / 2))
+    else:
+        tapxy(63, 149)
+    time.sleep(10)
     return readout().get("url")
 
 
