@@ -1,0 +1,2 @@
+- [x] stand-in
+- [x] stocked

@@ -1,7 +1,6 @@
 - [x] boundaries
 - [x] quiet-credits
 - [x] live
-- [x] stand-in
-- [x] stocked
 - [x] square-posts
+- [x] squares
 - [x] recentre
