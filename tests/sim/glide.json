@@ -70,8 +70,8 @@
     "name": "every ghost is taken away when it has finished"
   },
   {
-    "js": "return Array.from(document.querySelectorAll('.toolbar .tool-button')).map(b => b.style.transform || '-').join(' ')",
-    "expect": "- - -",
+    "js": "return Array.from(document.querySelectorAll('.toolbar .tool-button')).every(b => !b.style.transform)",
+    "expect": true,
     "name": "nothing is left transformed once the glide has settled"
   },
   {
