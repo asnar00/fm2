@@ -1,0 +1,15 @@
+[
+  {"note": "a missing map square stands in with the one above it (2026-09-02, self-check #p49): squares above zoom 13 are made to fail in the page; the map still draws, from zoom 13, up to three levels up"},
+  {"home": true},
+  {"tap": "[ev=tool_account]"},
+  {"wait_for": ".browse-picker"},
+  {"tap": "[ev=browse_map]"},
+  {"wait_for": "#misoMap"},
+  {"js": "return typeof feature_StandIn !== 'undefined' && feature_Map.layer instanceof feature_StandIn.Layer && feature_Map.layer instanceof L.TileLayer", "expect": true, "name": "the map's tile layer is the stand-in layer, and still a Leaflet tile layer"},
+  {"js": "const l = feature_Map.layer; l.__url = l.getTileUrl; l.getTileUrl = function (c) { const z = c.standIn ? c.z : this._getZoomForUrl(); if (z > 13) return 'tiles/99/0/0.png'; return l.__url.call(this, c); }; window.__si = { settle: async () => { for (let i = 0; i < 40; i++) { const ts = Object.values(l._tiles); if (!l._loading && ts.length && ts.every(t => t.el.complete)) break; await new Promise(r => setTimeout(r, 250)); } await new Promise(r => setTimeout(r, 600)); const z = feature_Map.map.getZoom(); return Object.values(l._tiles).filter(t => t.coords.z === z).map(t => ({ src: t.el._standIn.img.getAttribute('src'), up: t.el._standIn.up, loaded: t.el.classList.contains('leaflet-tile-loaded'), nw: t.el._standIn.img.naturalWidth })); } }; return true", "expect": true, "name": "every square above zoom 13 now fails in the page (the proxy is not touched)"},
+  {"js": "feature_Map.map.setView([51.5224, -0.1538], 15, {animate: false}); const ts = await window.__si.settle(); return ts.length > 0 && ts.every(t => t.loaded && t.nw > 0 && t.up === 2 && /tiles\\/13\\//.test(t.src) && /g=/.test(t.src))", "expect": true, "name": "zoom 15: every square is drawn from zoom 13, two levels up, under the ground tag", "readout": "stand-in-z15"},
+  {"js": "feature_Map.map.setView([51.5224, -0.1538], 16, {animate: false}); const ts = await window.__si.settle(); return ts.length > 0 && ts.every(t => t.loaded && t.nw > 0 && t.up === 3 && /tiles\\/13\\//.test(t.src))", "expect": true, "name": "zoom 16: still drawn, three levels up — the reach", "readout": "stand-in-z16"},
+  {"js": "feature_Map.map.setView([51.5224, -0.1538], 17, {animate: false}); const ts = await window.__si.settle(); return ts.length > 0 && ts.every(t => !t.loaded && t.nw === 0 && t.up === 3)", "expect": true, "name": "zoom 17: four levels up is beyond the reach — the ground shows, nothing throws", "readout": "stand-in-z17-hole"},
+  {"js": "const l = feature_Map.layer; l.getTileUrl = l.__url; feature_StandIn.count = 0; feature_Map.map.setView([51.5224, -0.1538], 14, {animate: false}); l.redraw(); const ts = await window.__si.settle(); return ts.length > 0 && ts.every(t => t.loaded && t.up === 0 && /tiles\\/14\\//.test(t.src)) && feature_StandIn.count === 0", "expect": true, "name": "every zoom served again: tiles as today, no stand-in asked for", "readout": "stand-in-served"},
+  {"home": true}
+]

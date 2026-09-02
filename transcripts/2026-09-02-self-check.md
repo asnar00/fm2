@@ -1111,3 +1111,74 @@ Your phone picks up 476 on its own the next time the app is in front. The one-ma
 > when tiles haven't loaded yet, we get a bright coloured tile square - could we make those dark grey to match the new map colour
 
 Let me find where the ground colour under unloaded tiles is set, and sample the new basemap's land colour so the match is exact.
+
+### p47a
+*2026-09-02 14:03*
+
+> <task-notification>
+> <task-id>b9onoynt4</task-id>
+> <tool-use-id>toolu_01KYtjY9uzrNrHsMVMKQ9iVm</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/b9onoynt4.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy the ground node and verify the fragment is served" completed (exit code 0)</summary>
+> </task-notification>
+
+### p47b
+*2026-09-02 14:04*
+
+> a note about caching: if we lose connection to the server while wandering about, does the app use locally cached tiles? Is there some way of pre-loading tiles to the local cache so in case of loss of signal, we still get at least a low-res version?
+
+### p47c
+*2026-09-02 14:04*
+
+> <task-notification>
+> <task-id>bwrrvx3mv</task-id>
+> <tool-use-id>toolu_01JSLXspdHYUyVehSNtSEVda</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bwrrvx3mv.output</output-file>
+> <status>failed</status>
+> <summary>Background command "Rename the node to map-ground, record the lesson, commit, and redeploy" failed with exit code 1</summary>
+> </task-notification>
+
+Yes, partly, and there is a good way to do the rest.
+
+**What happens today.** The service worker fetches everything network-first and keeps a copy of every successful fetch. Map squares go through our own server, so they count. Any square you have looked at while online is shown again offline. A square you have never looked at comes back empty and you see the dark ground. There is no low-res stand-in.
+
+**Two things would make that solid, and both are small:**
+
+- **Fall back to the parent square.** When a square is missing, draw the one above it scaled up, and the one above that if needed. Leaflet does not do this on its own, but it is about thirty lines or a vendored plugin. With that, a phone that has ever seen the district zoomed out shows a blurry but real map everywhere in it, at any zoom.
+- **Pre-load an area at low zoom.** Fetch the squares for a bounding box into the same cache the worker uses. For the Sevenoaks district at zooms 12 to 15 that is roughly a thousand squares, about 12 MB in the dark style, and the town centre at 16 and 17 adds a few MB more. That fits an installed app's storage comfortably. The natural trigger is quiet: when you are on the map with a connection, keep the current project's ward area. The ward boundaries already exist as a node, so the area is known.
+
+**Two honest limits.** iOS can evict the app's cache under storage pressure, so a pre-load is a strong hint, not a guarantee. And a pre-load on mobile data costs the same megabytes, so it should prefer wifi or a deliberate tap.
+
+The self-check is already earning its keep, by the way. A browser tab on build 474 reported one stale fragment this afternoon, the tile-tag script, which is exactly the mixed-cache case it was built to catch.
+
+I'd do the fallback first, then the pre-load. Say so and I'll brief a worker for both, or one at a time.
+
+### p48
+*2026-09-02 14:08*
+
+> <task-notification>
+> <task-id>bxzu9a1rj</task-id>
+> <tool-use-id>toolu_019sRYS2LZemmTaujjnyh156</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bxzu9a1rj.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Run the explicit toggle proof for map-ground, amend the commit with the proof trailer, and redeploy" completed (exit code 0)</summary>
+> </task-notification>
+
+The loading squares are dark grey now, live at build 479. The gate was green, and the served rule reads `#333333` under the map. Your phone takes it on its own.
+
+Still in flight: the one-marker build. Waiting on your word for the offline map work, fallback first, then pre-load.
+
+### p49
+*2026-09-02 14:10*
+
+> ok do the fallback first, then the pre-load
+
+Announcing both and briefing the fallback first. Checking the two node names are free before anything is made, since that bit me an hour ago.
+
+Both are in build, in their own worktrees, each a single new node under the map:
+
+- **Stand-in:** a missing square draws the one above it, scaled, up to a reach the worker will state. Fallback ships first, as you said. It has to carry the ground tag on every stand-in too, or it would recreate the mixed-cache bug.
+- **Stocked:** while you are on the map with a connection, the current project's area is fetched at zooms 12 to 15 into the worker's cache, once per ground generation, capped, quiet. What is stocked shows only behind the engineer gear.
+
+The one-marker build is still running as well. I'll review and ship each as it lands, fallback before pre-load.
