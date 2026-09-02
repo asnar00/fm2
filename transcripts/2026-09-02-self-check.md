@@ -1672,3 +1672,144 @@ Understood: each tool's tip says what it is for, in a line, and the detail moves
 > <status>completed</status>
 > <summary>Background command "Create the tool-words node with the swept tips, prove it confined, commit, and deploy" completed (exit code 0)</summary>
 > </task-notification>
+
+Deploying the concise version. The lines, for your eye:
+
+**Tools**
+
+- **people** (👤): Your page, and everyone you hold.
+- **invite:** Bring someone in.
+- **posts:** What people have seen and said, newest first.
+- **projects:** What you are trying to get done, together.
+- **reports:** Questions asked of the whole picture, and their answers.
+- **taps:** A shared counter, the simplest proof two phones agree.
+- **dictate:** Say it; it becomes a post.
+
+**Buttons inside them**, now with cards of their own, including the picker:
+
+- **grid:** Tiles: picture and title. **list:** One line each, with the words. **map:** Everything with a place, on the ground. People with the app open stand where their phone is.
+- **new post:** Write one, take a photo, or record a video, from where you stand. **photo**, **record**, **stop**, **flip**, **delete**, **promote** each get a line.
+- **undo:** Take back the last thing you did here. **back:** Back to the toolbar.
+- **taps:** reset, −1, ×2, square. **projects:** select, open, delete.
+
+The grid, list and map buttons had no card at all before; a long press on them now reads without switching the view. Change any line by naming the button and the sentence.
+
+### p67
+*2026-09-02 15:31*
+
+> <task-notification>
+> <task-id>bfkqis7n2</task-id>
+> <tool-use-id>toolu_01ND3HkBFyaX6cgS35Pbz2VA</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bfkqis7n2.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Cite the right anchor, commit the concise words, and deploy" completed (exit code 0)</summary>
+> </task-notification>
+
+The concise words are live at build 489 and stamped. Every tool and twenty-three buttons carry their lines, and the picker has cards for the first time.
+
+Still building: the onboarding worker, profile first then the demo tour. Nothing else is open on my side.
+
+### p68
+*2026-09-02 15:32*
+
+> for the invite workflow, couple of things: by default, the person should be invited to the current active project (i.e. sevenoaks) - so the new person needs to automatically be added. Also, when inviting by name/phone, we should also be able to assign a role from a dropdown. The page should show two buttons: "show QR code" and "invite by name"; the former should let you choose the role (same for all invitees) and then display the QR code; the latter should pop up a single "name/phone/role" chooser and an invite/cancel buton.
+
+Noted. Before briefing, I need the project vocabulary: what a "part" in a project is called and what roles exist today, so the dropdown offers real ones.
+
+The invite work is with a worker, stamped building. Two things I settled in the brief that you may want to know:
+
+- **"Role" is read as the project rank,** the fixed six: admin, candidate, team, volunteer, supporter, public. A dropdown wants a fixed list, and the rank is what decides who sees what. The free role word, like "canvasser", defaults to the rank's word and stays editable on the project as today.
+- **Only a project's owner can write its people.** For you inviting into sevenoaks that is no problem. For a member inviting into a project they do not own, the worker has to pick between the owner's phone adding the person on its next paint, or the sheet saying plainly that only the owner can add people. It will report which.
+
+Two workers are now building: onboarding, and this. I'll review each as it lands.
+
+### p69
+*2026-09-02 15:33*
+
+> also, we can lose the "joined" list on the invite page
+
+Passed to the worker: the page is the two buttons and nothing else, the invited list goes. The count under the QR code stays on the code's own sheet.
+
+### p70
+*2026-09-02 15:34*
+
+> in the "add person" toolset, don't show "edit" since edit has no meaning during add-person.
+
+Passed on as well: no pencil in the control row while the invite page is open, and it must stay on card pages. The worker will say if hiding it needs a seam the toolbar node does not have.
+
+### p71
+*2026-09-02 15:35*
+
+> on all toolbars, the "undo" button should only be visible when there's something to undo; when it is visible, it should always appear as far to the right as possible, rather than grouped with the others.
+
+Undo is with a third worker, stamped building: gone when there is nothing to undo, alone at the far right when there is, and clear of any hold-and-drag ordering a person has made. Three builds are running now: onboarding, the invite page, and undo. I'll review and ship each as it reports.
+
+### p72
+*2026-09-02 15:36*
+
+> when the add users tool is active, we should only see the "add users" button on the left, and not also its parent ("users") i.e. we should only show the icon for current toolset we're in, not the parent chain.
+
+Given to the toolbar worker as a second node beside undo, since it is the same control row: inside a toolset the row shows that toolset's icon alone, with ‹ and the icon itself as the ways back. It is stamped building.
+
+Three builds running: onboarding, the invite page, and the toolbar pair.
+
+### p73
+*2026-09-02 15:37*
+
+> <task-notification>
+> <task-id>a45d78ffa9e428976</task-id>
+> <tool-use-id>toolu_01K3VqCXgM9FqfKaa7vLHDJ8</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/a45d78ffa9e428976.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Onboarding: profile first, then a demo tour" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Both nodes are built, proven, rebased onto current main (cb8d88f), classified confined, and re-proven on the rebased build. Nothing deployed; the rig server is ended by PID.
+> 
+> ## The diff
+> 
+> Branch `worktree-agent-a45d78ffa9e428976`, two commits on top of main, 11 files, +730, no edits outside the two nodes and their parents' `order.md`:
+> 
+> - `827b92c` — **`loop/cards/page/me/profile-first`** (`.md .rs .js .css`) + tick in `features/miso/loop/cards/page/me/order.md`
+> - `0291da5` — **`shell/tools/long-press/tour`** (`.md .vars .rs .js .css`) + tick in `features/miso/shell/tools/long-press/order.md`
+> 
+> `tools/toggle_proof.py --since main`: both *implied — confined*. Anchor: `transcripts/2026-09-02-self-check.md#p61a` (the worktree's exporter had no session log of its own; I exported with `--session` pointing at the main session's jsonl, then took main's regenerated copy at rebase — it holds the same anchor).
+> 
+> ## Placement, and the two survey calls
+> 
+> - **Gate under `me`**, not `enrol`: enrol's code is the login page; the gate needs the joined world and the card page, which exist only on the app's first paint. The predicate seam is `profile_first_missing(card)` (a "number too" clause extends it).
+> - **Tour under `long-press`**: it is that node's tool card driven as a sequence; `shell` and `shell/tools` are both at cap. Scripted tour, not replay: `/replay` seeds a keyframe and dispatches recorded events on a timer — it cannot wait for the user's own tap. `tour_seen` is a user-scoped var (`/policy`'s idiom) written by a `TourSeen` event; `feature_Tour.start()` is the door for "show me again" (parked, named in the spec).
+> 
+> ## Evidence
+> 
+> Rig dir: `/private/tmp/claude-501/-Users-microserver-fm2/6004deb9-d2ef-4b9a-8b15-ef1e406b9cb8/scratchpad/onboard-rig/` — `start.sh` (port 8191, own home/ctx, PID-ended), `gate.py` (26 checks), `tour.py` (25 checks), `mkpng.py` (the rig's PNG), screenshots and readouts under `evidence/` (`carol-gate.png`, `carol-typing.png`, `carol-ungated.png`, `carol-tour-0/1/2.png`, `bob-tour-1…7.png`, `bob-tour-end.png`, `carol-second-page.png`, `*.readout.json`, console logs). Headless Chrome, 390×844, every tap a real pointer click at the element's rect, the picture through the real chooser and `/frame`'s keep.
+> 
+> Proven: `_carol` lands on her card, sentence first, name present, no tool buttons / no ‹ / no picker, the tick alone in the row; a real click where the buttons were, a real click on the ground, and a `tools_home` by hand all leave the screen unchanged; picture in → still gated; line typed, tick tapped → sentence gone, buttons appear, card locked with the line kept; relaunch does not gate; the world holds both. `_bob` with both: never gated (his relaunch reopens 👤 — that is `/restore`, checked as such). Tour: first card over her card pointing at ‹, no skip; real tap → step one over the launcher pointing at the posts bubble, skip present; real tap on the bubble advances; skip ends it; the var reads true; relaunch offers nothing; a **second browser context with fresh storage** for carol sees no tour and no gate (the var travelled). `_bob` walks all seven steps with real taps to the tour's own end. Engineer gear present and folded throughout. No page errors (rig-only 404s on `/version`, `/hashes.json`; a 403 on `/reports/may` for members — pre-existing).
+> 
+> ## Outcome
+> 
+> The literal ask is delivered as two confined nodes: a first login now lands on the person's own card with one sentence and no way off it until a picture and a line are in, and a seven-card tour then walks them through posts, people and their map, and projects on their own screen, once per user. Two things the brief assumed turned out false and are written into the specs: (1) "the toolbar withheld" cannot mean the whole row, because `/editing/toolbar` moved save into it — so the gate withholds every way *off* the card (tool buttons, ‹, picker) and keeps the row for the tick; (2) forcing navigation from the Rust side is the wrong tool for a node newer than `/payload` — writing the bridged `open_tool` paints one stale frame (the blank screen the rig showed) and republishing the key reads to `/one-way` as a page write — so the gate drops navigation taps *before* the chain and the page half reaches the card with the two events a finger would send (`/restore`'s idiom). Both are candidates for misses.md.
+> 
+> ## Open risks, by name
+> 
+> - **Offline first launch is ungated by design** — the gate asks only a `_joined` world; a device that never joins shows the app as today. Chosen failure direction; hypothesis that this is the right call for ash.
+> - **Absent-target skipping is untested** — the tour passing over a step whose tool is unticked is code-read only (no unticked-tool build was run); labelled hypothesis.
+> - **Own card = first profile card** — same reading `/people` uses; if `/exchange` ever puts a foreign profile card first, both nodes misidentify "me" together.
+> - **The lozenge stays reachable while gated** (updates/logout) — by design; the spec parks hiding it as ash's ruling. Undo in the row can take the picture back; harmless.
+> - **`/one-way`'s complaint** would fire if a future node republishes bridged keys the way my first cut did — worth a line in the ledger.
+> - **Rig noise**: the tour's pointer had to be re-placed after the toolbar's slide (`animationend`), a timing the iPhone may differ on; not run on the simulator (main session's), so the phone's behaviour is a hypothesis.</result>
+> <usage><subagent_tokens>348569</subagent_tokens><tool_uses>149</tool_uses><duration_ms>2525412</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a45d78ffa9e428976</worktreePath><worktreeBranch>worktree-agent-a45d78ffa9e428976</worktreeBranch></worktree>
+> </task-notification>
+
+The onboarding build has landed with strong evidence: 51 checks in two runners, real pointer taps throughout. Two survey calls in it I want to see myself before the simulator: the gate lives under your card node rather than the login page, and the tour is scripted over the long-press card rather than a replay. Reading the code.
+
+### p73a
+*2026-09-02 15:38*
+
+> <task-notification>
+> <task-id>b05is0gel</task-id>
+> <tool-use-id>toolu_012Risj9fcCt66GQucNpdkUp</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/b05is0gel.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Merge the onboarding branch into the simulator rig and relink" completed (exit code 0)</summary>
+> </task-notification>

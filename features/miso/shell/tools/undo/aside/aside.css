@@ -1,0 +1,9 @@
+/* alone at the far right: an automatic left margin, and none on the right.
+   /ember centres the control group by giving the LAST control an automatic
+   right margin, and undo is the last control in every row (/glyphs); the
+   selector is stated twice so it beats that rule at equal specificity
+   whichever order the sheets compose in. The free space now splits between
+   the tool button's right and undo's left: the other controls sit in the
+   middle of the space between them, undo against the edge. */
+.toolbar .tool-button.ctrl[data-ev="ctx_undo"],
+.toolbar .tool-button.ctrl[data-ev="ctx_undo"]:last-child { margin-left: auto; margin-right: 0; }

@@ -1,0 +1,388 @@
+[
+  {
+    "note": "undo shows only when there is something to undo, and stands alone at the far right (2026-09-02, self-check #p71)"
+  },
+  {
+    "home": true
+  },
+  {
+    "js": "window.__undoGeom = () => { const u = document.querySelector('.toolbar [data-ev=\"ctx_undo\"]'); if (!u) return {undo: false}; const r = u.getBoundingClientRect(); const row = document.querySelector('.toolbar').getBoundingClientRect(); const others = Array.from(document.querySelectorAll('.toolbar .tool-button')).filter(b => b !== u).map(b => b.getBoundingClientRect()).sort((a, b) => a.left - b.left); const rightmost = others.every(o => o.right <= r.left + 0.5); const atEdge = Math.abs(r.right - row.right) < 1; const gap = Math.round(r.left - Math.max(...others.map(o => o.right))); let grouped = 1e9; for (let i = 1; i < others.length; i++) grouped = Math.min(grouped, others[i].left - others[i - 1].right); grouped = Math.round(grouped); return {undo: true, rightmost, atEdge, gap, grouped, apart: rightmost && atEdge && gap > grouped, right: Math.round(r.right), rowRight: Math.round(row.right)}; }; return true",
+    "expect": true,
+    "name": "the row geometry probe: undo rightmost, against the row's edge, its gap wider than the grouped gap"
+  },
+  {
+    "assert": {
+      "find": "[ev=ctx_undo]",
+      "exists": false
+    },
+    "name": "launcher: no undo",
+    "readout": "aside-launcher"
+  },
+  {
+    "tap": "[ev=tool_taps]"
+  },
+  {
+    "wait_for": "[ev=tap]"
+  },
+  {
+    "assert": {
+      "find": "[ev=ctx_undo]",
+      "exists": false
+    },
+    "name": "taps open, nothing done: no undo",
+    "readout": "aside-taps-idle"
+  },
+  {
+    "js": "window.__count = document.querySelector('.tap').textContent; return true",
+    "expect": true,
+    "name": "the count before the tap is noted"
+  },
+  {
+    "tap": "[ev=tap]"
+  },
+  {
+    "wait": 700
+  },
+  {
+    "js": "return document.querySelector('.tap').textContent !== window.__count",
+    "expect": true,
+    "name": "the tap changed the count"
+  },
+  {
+    "js": "const g = window.__undoGeom(); return g.undo && g.rightmost && g.atEdge",
+    "expect": true,
+    "name": "one tap: undo is present, rightmost, against the row's edge (taps fills a 390px row — ‹ and six 50px chips want 386px of 296 — so there is no free space for a wider gap; the posts and card rows prove the gap)",
+    "readout": "aside-taps-undo"
+  },
+  {
+    "js": "return window.__undoGeom()",
+    "name": "geometry, for the record"
+  },
+  {
+    "tap": "[ev=ctx_undo]"
+  },
+  {
+    "wait": 700
+  },
+  {
+    "js": "return document.querySelector('.tap').textContent === window.__count",
+    "expect": true,
+    "name": "undo put the count back"
+  },
+  {
+    "assert": {
+      "find": "[ev=ctx_undo]",
+      "exists": false
+    },
+    "name": "after the undo: nothing left, the button is gone",
+    "readout": "aside-taps-after-undo"
+  },
+  {
+    "note": "two taps: two steps; the first undo leaves one, the second leaves none"
+  },
+  {
+    "tap": "[ev=tap]"
+  },
+  {
+    "wait": 700
+  },
+  {
+    "tap": "[ev=tap]"
+  },
+  {
+    "wait": 700
+  },
+  {
+    "tap": "[ev=ctx_undo]"
+  },
+  {
+    "wait": 700
+  },
+  {
+    "assert": {
+      "find": "[ev=ctx_undo]"
+    },
+    "name": "two taps, one undo: a step remains, the button stays"
+  },
+  {
+    "tap": "[ev=ctx_undo]"
+  },
+  {
+    "wait": 700
+  },
+  {
+    "assert": {
+      "find": "[ev=ctx_undo]",
+      "exists": false
+    },
+    "name": "second undo: gone again"
+  },
+  {
+    "js": "return document.querySelector('.tap').textContent === window.__count",
+    "expect": true,
+    "name": "and the count is back where it started"
+  },
+  {
+    "note": "hostile: a stale press when there is nothing to undo — nothing happens, nothing appears"
+  },
+  {
+    "js": "feature_Loop.send({type: 'click', ev: 'ctx_undo'}); await new Promise(r => setTimeout(r, 700)); return !document.querySelector('.toolbar [data-ev=\"ctx_undo\"]') && document.querySelector('.tap').textContent === window.__count",
+    "expect": true,
+    "name": "a stale undo press on an empty stack changes nothing and draws nothing"
+  },
+  {
+    "note": "posts: a written post brings undo at the far right; a delete keeps it; undoing everything takes it away"
+  },
+  {
+    "home": true
+  },
+  {
+    "wait_for": "[ev=tool_posts]"
+  },
+  {
+    "tap": "[ev=tool_posts]"
+  },
+  {
+    "wait_for": "[ev=posts_new]"
+  },
+  {
+    "assert": {
+      "find": "[ev=ctx_undo]",
+      "exists": false
+    },
+    "name": "posts open, nothing done: no undo",
+    "readout": "aside-posts-idle"
+  },
+  {
+    "tap": "[ev=posts_new]"
+  },
+  {
+    "wait_for": ".card-page .card-text"
+  },
+  {
+    "text": "words from the rig"
+  },
+  {
+    "wait": 900
+  },
+  {
+    "js": "if (document.activeElement) document.activeElement.blur(); return 1"
+  },
+  {
+    "wait": 900
+  },
+  {
+    "js": "return window.__undoGeom()",
+    "name": "geometry after writing"
+  },
+  {
+    "js": "return window.__undoGeom().apart",
+    "expect": true,
+    "name": "a post written: undo is present, rightmost and apart",
+    "readout": "aside-post-written"
+  },
+  {
+    "tap": "[ev=posts_delete]"
+  },
+  {
+    "wait": 600
+  },
+  {
+    "js": "return document.querySelector('.toolbar [data-ev=\"posts_delete\"]').textContent.trim()",
+    "expect": "sure?",
+    "name": "the bin asks first"
+  },
+  {
+    "tap": "[ev=posts_delete]"
+  },
+  {
+    "wait": 900
+  },
+  {
+    "js": "return window.__undoGeom().apart",
+    "expect": true,
+    "name": "after the delete: undo is still there, still apart",
+    "readout": "aside-post-deleted"
+  },
+  {
+    "js": "let n = 0; while (document.querySelector('.toolbar [data-ev=\"ctx_undo\"]') && n < 8) { feature_Loop.send({type: 'click', ev: 'ctx_undo'}); n++; await new Promise(r => setTimeout(r, 800)); } window.__presses = n; return !document.querySelector('.toolbar [data-ev=\"ctx_undo\"]')",
+    "expect": true,
+    "name": "undo pressed until it is gone: it goes"
+  },
+  {
+    "js": "return window.__presses",
+    "name": "two presses: the delete, then the words",
+    "readout": "aside-posts-undone",
+    "expect": 2
+  },
+  {
+    "note": "people: the invite page and a card page follow the same rule. A fresh world's first screen filled its profile under 👤 (/profile-first) — real edits, so 👤 rightly has steps; the stack lives in the page's memory, and a relaunch starts it empty"
+  },
+  {
+    "relaunch": true
+  },
+  {
+    "js": "window.__undoGeom = () => { const u = document.querySelector('.toolbar [data-ev=\"ctx_undo\"]'); if (!u) return {undo: false}; const r = u.getBoundingClientRect(); const row = document.querySelector('.toolbar').getBoundingClientRect(); const others = Array.from(document.querySelectorAll('.toolbar .tool-button')).filter(b => b !== u).map(b => b.getBoundingClientRect()).sort((a, b) => a.left - b.left); const rightmost = others.every(o => o.right <= r.left + 0.5); const atEdge = Math.abs(r.right - row.right) < 1; const gap = Math.round(r.left - Math.max(...others.map(o => o.right))); let grouped = 1e9; for (let i = 1; i < others.length; i++) grouped = Math.min(grouped, others[i].left - others[i - 1].right); grouped = Math.round(grouped); return {undo: true, rightmost, atEdge, gap, grouped, apart: rightmost && atEdge && gap > grouped, right: Math.round(r.right), rowRight: Math.round(row.right)}; }; return true",
+    "expect": true,
+    "name": "the geometry probe again: a relaunch is a new document"
+  },
+  {
+    "home": true
+  },
+  {
+    "tap": "[ev=tool_account]"
+  },
+  {
+    "wait_for": "[ev=tool_invite]"
+  },
+  {
+    "assert": {
+      "find": "[ev=ctx_undo]",
+      "exists": false
+    },
+    "name": "people open, nothing done: no undo",
+    "readout": "aside-people-idle"
+  },
+  {
+    "tap": "[ev=tool_invite]"
+  },
+  {
+    "wait_for": ".invite-page"
+  },
+  {
+    "assert": {
+      "find": "[ev=ctx_undo]",
+      "exists": false
+    },
+    "name": "the invite page, nothing done: no undo",
+    "readout": "aside-invite-idle"
+  },
+  {
+    "home": true
+  },
+  {
+    "tap": "[ev=tool_account]"
+  },
+  {
+    "wait_for": ".browse-tap"
+  },
+  {
+    "tap": ".browse-tap"
+  },
+  {
+    "wait_for": ".card-page"
+  },
+  {
+    "assert": {
+      "find": "[ev=ctx_undo]",
+      "exists": false
+    },
+    "name": "a card page, nothing done: no undo",
+    "readout": "aside-card-idle"
+  },
+  {
+    "tap": "[ctl=card_edit]"
+  },
+  {
+    "wait": 900
+  },
+  {
+    "assert": {
+      "find": "[ev=ctx_undo]",
+      "exists": false
+    },
+    "name": "the pencil unlocked the card: still nothing to undo"
+  },
+  {
+    "js": "const t = document.querySelector('.card-page [contenteditable=\"true\"], .card-page .card-text'); if (!t) return 'no editable'; t.focus(); return true",
+    "expect": true,
+    "name": "the card has an editable field"
+  },
+  {
+    "text": "x"
+  },
+  {
+    "wait": 900
+  },
+  {
+    "js": "if (document.activeElement) document.activeElement.blur(); return 1"
+  },
+  {
+    "wait": 900
+  },
+  {
+    "js": "return window.__undoGeom()",
+    "name": "geometry on the card page"
+  },
+  {
+    "js": "return window.__undoGeom().apart",
+    "expect": true,
+    "name": "a card edited: undo present, rightmost, apart",
+    "readout": "aside-card-edited"
+  },
+  {
+    "tap": "[ev=ctx_undo]"
+  },
+  {
+    "wait": 900
+  },
+  {
+    "assert": {
+      "find": "[ev=ctx_undo]",
+      "exists": false
+    },
+    "name": "the card edit undone: gone",
+    "readout": "aside-card-undone"
+  },
+  {
+    "note": "a person who has arranged the row: undo is still last and apart"
+  },
+  {
+    "home": true
+  },
+  {
+    "js": "feature_Loop.send({type: 'ToolOrder', data: {order: ['taps', 'account', 'posts']}}); await new Promise(r => setTimeout(r, 900)); const ids = Array.from(document.querySelectorAll('.toolbar [data-ev^=\"tool_\"]')).map(b => b.getAttribute('data-ev')); return ids.slice(0, 3).join(',')",
+    "expect": "tool_taps,tool_account,tool_posts",
+    "name": "the row is reordered by hand: taps first",
+    "readout": "aside-reordered-launcher"
+  },
+  {
+    "tap": "[ev=tool_taps]"
+  },
+  {
+    "wait_for": "[ev=tap]"
+  },
+  {
+    "tap": "[ev=tap]"
+  },
+  {
+    "wait": 700
+  },
+  {
+    "js": "const g = window.__undoGeom(); return g.undo && g.rightmost && g.atEdge",
+    "expect": true,
+    "name": "in the reordered row: undo still rightmost, against the edge (the full taps row again)",
+    "readout": "aside-reordered-taps-undo"
+  },
+  {
+    "tap": "[ev=ctx_undo]"
+  },
+  {
+    "wait": 700
+  },
+  {
+    "assert": {
+      "find": "[ev=ctx_undo]",
+      "exists": false
+    },
+    "name": "and gone after the undo"
+  },
+  {
+    "js": "feature_Loop.send({type: 'ToolOrder', data: {order: ['posts', 'account', 'taps']}}); await new Promise(r => setTimeout(r, 600)); return true",
+    "expect": true,
+    "name": "the order is put back for the next run"
+  },
+  {
+    "home": true
+  }
+]
