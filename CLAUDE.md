@@ -9,6 +9,13 @@ live there, not here. `fm.md` is the user-authored doctrine — never edit it.
 tooling state, and the named next rungs. It is rewritten at each session
 end; trust it over older prose in notes.md when they disagree.
 
+**Usage watch (ash, 2026-09-02):** a SessionStart hook runs
+`tools/usage_log.py --report` (the Fable weekly percentage, its burn rate,
+and whether the budget lasts to the reset). Relay its estimate to ash in
+plain words in the first message of every session — days remaining, or
+"lasts the week" — before anything else. Hourly samples come from the
+launchd job `com.noob.usagelog`; the log is `~/.claude/usage-log.jsonl`.
+
 **Building and shipping: see `deploy.md`** — build/run commands, what
 deploy.sh does, the mini, tunnel, state locations, and how to check on the
 live system.

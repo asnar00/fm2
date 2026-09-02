@@ -31,6 +31,12 @@ carries nine agent-instruction nodes now; the newest are /retrofit and
   divergences that day earned the **boot self-check on the device via
   `/diag`** its place as the top next rung: one report from the phone
   saying which fragment versions it runs would have answered all three.
+- **Usage watch.** `tools/usage_log.py` samples the plan-usage endpoint
+  (the weekly limit scoped to Fable is the number ash asked for); launchd
+  `com.noob.usagelog` samples hourly into `~/.claude/usage-log.jsonl`; a
+  SessionStart hook in `.claude/settings.json` prints `--report`. Open every
+  session by telling ash the estimate in plain words (CLAUDE.md). First
+  reading, 2026-09-02 09:54 UTC: Fable 3% of the week, lasts the week.
 - Seen and cleaned: a smoke-gate server (port 8169, its own scratch home)
   was still running sixteen hours after Saturday's gate — killed by PID.
   smoke.py's teardown can leave its server behind; worth a look.

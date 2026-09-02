@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Hourly sampler for Claude Code's plan usage (tools/usage_log.py): appends
+  one line to ~/.claude/usage-log.jsonl so the session-start report can
+  estimate the Fable burn rate from a real time series. Reference copy; the
+  live one is ~/Library/LaunchAgents/com.noob.usagelog.plist on the mini:
+
+    cp tools/com.noob.usagelog.plist ~/Library/LaunchAgents/
+    launchctl bootout gui/$(id -u)/com.noob.usagelog 2>/dev/null;
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.noob.usagelog.plist
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.noob.usagelog</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/python3</string>
+        <string>/Users/microserver/fm2/tools/usage_log.py</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/microserver/fm2</string>
+    <key>StartInterval</key>
+    <integer>3600</integer>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/usagelog.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/usagelog.log</string>
+</dict>
+</plist>
