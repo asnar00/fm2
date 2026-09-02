@@ -1,4 +1,4 @@
-# transcript: the device self-check
+# transcript: self-check
 *session `6004deb9-d2ef-4b9a-8b15-ef1e406b9cb8`, exported by tools/export_transcript.py — do not edit; anchors `#pN` are stable*
 
 ### p1
@@ -637,3 +637,260 @@ cd ~/fm2 && claude --resume
 ```
 
 Then closing the laptop only detaches the screen. I'll resume the workers from their transcripts at the start of that session.
+
+### p27
+*2026-09-02 11:14*
+
+> my issue with tmux is that the scrolling behaviour is janky - you have to switch modes, and even then there's a weird cursor that scrolls through, and it generally doesn't feel as nice as the straight terminal. Is tmux open source? Maybe we could build it and mod it to behave sensibly
+
+Yes, tmux is open source, ISC licence, plain C on GitHub. But you would be forking it to fix something that is a settings problem, and there is a nicer route that gives you native scrolling with no modes at all.
+
+**Why it feels janky.** tmux draws into the terminal's alternate screen, so your terminal's own scrollback is empty and the wheel does nothing. Copy mode is tmux's substitute, and the cursor you see is copy mode's. Two lines in `~/.tmux.conf` on the mini remove most of that:
+
+```
+set -g mouse on
+set -g history-limit 50000
+```
+
+With mouse on, the wheel enters and leaves scrollback by itself. Scroll up, you are looking back. Scroll to the bottom, you are live again. No key to press. The cursor still exists but you stop noticing it.
+
+**The route I'd actually take: iTerm2's tmux integration.** iTerm2 speaks tmux's control mode, so tmux runs on the mini but draws nothing itself. Each tmux window becomes a native iTerm2 tab with native scrollback, native selection, native everything. Closing the laptop detaches, reopening reattaches, and the session never noticed. From the laptop:
+
+```
+ssh -t microserver@microservers-Mac-mini.local 'tmux -CC new -A -s fm2'
+```
+
+That is the whole setup. iTerm2 is free if you are not on it already.
+
+**If you want to go further later,** Zellij is the modern alternative with friendlier defaults, and abduco is a bare detach tool with no multiplexing at all. Neither beats the iTerm2 route for the feel you are describing.
+
+I'll put the mouse lines into the mini's tmux config now so plain tmux behaves if you use it, and note the iTerm2 command in deploy.md.
+
+Done. One thing I found: the mini's tmux config already had a mouse toggle on `prefix m`, with mouse off as the default. I flipped the default to on and kept the toggle, so a native drag-select is one keypress away if you ever want it. The iTerm2 command is in deploy.md, and the config takes effect at the next tmux start.
+
+Nothing else is waiting on you. Both workers are still building.
+
+### p28
+*2026-09-02 11:16*
+
+> ok cool, I just have to step out for a bit - when I get back we'll switch over to tmux and get it working nicely.
+
+Sounds good. While you're out I'll keep going: review and ship each worker's build as it lands, stamp them shipped, and keep the handover current so nothing is lost if the connection drops before we move to tmux.
+
+When you're back, the switch is one command from iTerm2 on the laptop:
+
+```
+ssh -t microserver@microservers-Mac-mini.local 'tmux -CC new -A -s fm2'
+```
+
+Then `cd ~/fm2 && claude --resume` inside it, and I'll pick up from the transcript, workers included.
+
+### p29
+*2026-09-02 11:19*
+
+> <task-notification>
+> <task-id>a0bcb16e711b19078</task-id>
+> <tool-use-id>toolu_019fPGLA2LkF3j95EZUzcadb</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/a0bcb16e711b19078.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build live device location on the people map" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Everything is in hand; nothing further to request. Final report.
+> 
+> ## Delivered
+> 
+> **Commit** `e363db7` on branch `worktree-agent-a0bcb16e711b19078` (rebased onto current main `2f6acfb`), one new node plus a tick and a step file:
+> 
+> - `/Users/microserver/fm2/.claude/worktrees/agent-a0bcb16e711b19078/features/miso/loop/cards/browse/map/live/live.md` — spec, cites `asks#1788346282800`; `## user` says in one sentence when you are visible and to whom.
+> - `.../map/live/live.rs` — three routes outermost on the chain, cookie-gated the `/exchange` way: `POST live/here`, `POST live/gone`, `GET live/near`; audience = the profile copies in the requester's own world (`exchange_cards_of`, matched by `from` name) plus self.
+> - `.../map/live/live.lib.rs` — the in-memory store (`OnceLock&lt;Mutex&lt;HashMap&gt;&gt;`; verbatim lib because the accessor's return type carries a comma the chain parser can't read).
+> - `.../map/live/live.js` — `feature_Live.may()` is the one publish predicate (visible + focused); 10 s heartbeat, `sendBeacon` gone on hidden/blur/pagehide; `feature_Map.sync` wrapped at load; 5 s poll while the map is up; markers moved, not remade.
+> - `.../map/live/live.css` — the light-grey breathing ring (1.6 s), no new colour.
+> - `.../map/order.md` — `- [x] live`; `tests/sim/live-map.json` — the rig step file.
+> 
+> ## Evidence (all at `/private/tmp/claude-501/-Users-microserver-fm2/6004deb9-d2ef-4b9a-8b15-ef1e406b9cb8/scratchpad/live-rig/`)
+> 
+> - **Two-instance proof** (`live.py`, port 8181): 21/21 mechanism checks pass — bob's face-pin on ash's map at the stubbed point, ash's own pin, ring animation present, exactly two live pins; bob hidden → gone from ash's map in ~3 s and from the server; no heartbeat in 12 s while hidden; visible again → back in ~3 s; a move slides the same marker; pagehide beacon drops the entry. Screenshots/readouts: `evidence/ash-map-live.png`, `ash-map-bob-gone.png`, `ash-grid.*`, `ash-list.*`.
+> - **Carol** (holds neither card): `GET live/near` → 200 `{"ok":true,"live":[]}` while both are live. No cookie → 403. Out-of-range position → 400. Bob's answer carries no phone/key.
+> - **Privacy grep**: `grep -rlE` for the stubbed coordinates and `"lat"/"lon"` over `ctx/` (op logs, broadcast.json), `home/`, `server.log` → no hits. Server prints nothing on `live/`.
+> - **Expiry with no gone**: entry present at t+50 s, gone at t+62 s.
+> - **Grid/list**: no `.map-live`, no coordinate text, no poll running (step file green via headless runner: `live-map: all green`).
+> - **Toggle**: `fmlink --prove` and `toggle_proof.py --since main` both "implied — confined". Unticked build: 0 `feature_Live` in server/client, boots, map mounts with 15 tiles, `live/near` → 404 (`evidence/unticked-map.png`).
+> - **Smoke gate** `smoke.py --port 8182`: three passes green. Rig and gate servers are down (both ports free).
+> 
+> ## Outcome
+> 
+> The literal ask ships: on 👤's map, a face-pin per person you hold who has the app in front of them now, and yourself; gone within a minute of leaving. Location never touches the op log, a var, a world or a file. Nothing outside the node changed. The one "failure" in the runner is a pre-existing `403 /reports/may` for a member cookie — `/reports`' own gate, unrelated.
+> 
+> ## Open risks, named
+> 
+> - **Focus semantics on iOS are a hypothesis**: `blur`/`focus` tracking is untested on a real phone (rig browsers are headless Chrome). In Safari-not-standalone, tapping the URL bar fires `blur` → pin drops until focus returns; in the installed app this should not occur.
+> - **Own pin before the first card**: a person with no profile card yet gets a pin with their name's initial and empty `id` (tap does nothing) — deliberate, noted in the spec.
+> - **Same-name guests collapse** onto one face (`/people`'s existing limit).
+> - **Rig-data lesson** (not the node): `invited_by` must be `phone:+digits` — `/harden`'s `token_phone` keeps the plus; a keyless shape sends exchange's cards to a phantom world. Worth a line in misses.md if the main session agrees.
+> - Write tool put a NUL byte into `live.js` on first write (git saw it as binary); fixed and amended before the final runs — a tooling quirk to watch.</result>
+> <usage><subagent_tokens>207587</subagent_tokens><tool_uses>86</tool_uses><duration_ms>1228153</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a0bcb16e711b19078</worktreePath><worktreeBranch>worktree-agent-a0bcb16e711b19078</worktreeBranch></worktree>
+> </task-notification>
+
+The live-location build has landed with its evidence. This one is privacy-sensitive, so I'm reading the code myself before shipping.
+
+### p29a
+*2026-09-02 11:20*
+
+> <task-notification>
+> <task-id>b02hxlggf</task-id>
+> <tool-use-id>toolu_01K1QMxzYRskRP9fTLnDLcjQ</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/b02hxlggf.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Merge the live node into the rig worktree and relink for a simulator check" completed (exit code 0)</summary>
+> </task-notification>
+
+### p29b
+*2026-09-02 11:21*
+
+> <task-notification>
+> <task-id>btox95hsb</task-id>
+> <tool-use-id>toolu_01Lf8H6J2kTXjwpyWdMTq5zG</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/btox95hsb.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Relink the live worktree with the id-match fix and rerun the two-instance proof" completed (exit code 0)</summary>
+> </task-notification>
+
+Two snags: something else grabbed port 8099 while the rig was down, and the proof runner expects its server already up. Identifying the squatter and the runner's setup.
+
+Two checks are running in the background: the live-location proof with my id-match fix, and the simulator on its new port testing the focus predicate on real iOS. I'll ship the live node once both read right.
+
+### p30
+*2026-09-02 11:23*
+
+> <task-notification>
+> <task-id>b05yodard</task-id>
+> <tool-use-id>toolu_01QXuPKiaACYFne8WPbFLrMC</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/b05yodard.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Start the live rig server and rerun the two-instance proof with the id-match fix" completed (exit code 0)</summary>
+> </task-notification>
+
+### p30a
+*2026-09-02 11:24*
+
+> <task-notification>
+> <task-id>bgsk40op8</task-id>
+> <tool-use-id>toolu_01CDAwxuJX1d9cMK7TPSsYvv</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/bgsk40op8.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Move the simulator rig to port 8097, reinstall the web clip, log in, and test the live predicate on iOS" completed (exit code 0)</summary>
+> </task-notification>
+
+The chain finished on its own. Learn is back under launchd, and 8098 is free on every list. Redoing the simulator rig there, with no port-clearing step this time, and writing the lesson down.
+
+The fix is committed and the chain is running: relink the live rig, rerun the proof, relink the simulator rig with the fix merged. When it lands I'll restart the simulator rig by its PID, confirm the phone publishes and shows its own pin, then ship.
+
+### p31
+*2026-09-02 11:30*
+
+> <task-notification>
+> <task-id>b1frpr1mu</task-id>
+> <tool-use-id>toolu_01FwZNuS3HNJyU8Kj1Z4jqrG</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/b1frpr1mu.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Fix the focus predicate, commit, rerun the two-instance proof, and relink the simulator rig with the fix" completed (exit code 0)</summary>
+> </task-notification>
+
+### p31a
+*2026-09-02 11:30*
+
+> <task-notification>
+> <task-id>a3c6f43bc8a1042bb</task-id>
+> <tool-use-id>toolu_0135MB35DARhqA3Tz1XUxEKj</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/a3c6f43bc8a1042bb.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Make auto updates seamless and unasked" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Both commits are confined on main's tip; the rig is torn down (PID 83401, port 8172 free). Report follows.
+> 
+> ## Outcome
+> 
+> Two confined commits on `worktree-agent-a3c6f43bc8a1042bb`, rebased onto main's tip (`2f6acfb`), each classified "implied" by `tools/toggle_proof.py --since main` and `fmlink --prove`:
+> 
+> - `14a719a` — `features/miso/shell/update/policy/review/consent-once/by-policy/` (`by-policy.md`, `by-policy.index.js`) + `consent-once/order.md` (new, one tick) + the regenerated `transcripts/2026-09-02-self-check.md` (the anchor is `#p24`; the export had to be pointed at the main session's log with `--session`, since the worktree has none).
+> - `e7eff4f` — `features/miso/shell/update/policy/review/seamless/while-editing/` (`while-editing.md`, `while-editing.index.js`) + `seamless/order.md` (new, one tick).
+> 
+> No file inside consent-once, seamless, auto, review, upgrade, delta, patch or push was edited. Under `auto` (and the empty string a new user carries — confirmed: `policy.vars` declares `""`, `feature_Policy.current()` falls back to `localStorage.misoPolicy || 'auto'`, and the rig's fresh user read `''` and updated), the instance sends `AcceptUpdate` itself the moment `/watch` knows a newer build; `/review`'s watch, `/seamless`, `/delta`, `/patch` and sync-to-other-devices run untouched. Under `fixes`, `feature_Policy.consentNeeded()` decides (verdict cached per build+policy so a pending review does not re-fetch changes.json on every state change); under `consent`, nothing is stamped. `while-editing` extends `feature_Seamless.busy()` (capture, replace, elders first) with `/editing`'s open flag for the page on screen or a focused `contenteditable[data-block]` (`/manual`'s own test), and nudges the retry from a wrap of `feature_Editing.lock` for the one save that changes no state. Not deployed; not stamped shipped.
+> 
+> ## Evidence (headless Chrome, rig on 8172, worktree build, SW and caches intact)
+> 
+> Script and artifacts: `/private/tmp/claude-501/-Users-microserver-fm2/6004deb9-d2ef-4b9a-8b15-ef1e406b9cb8/scratchpad/rig2/` — `updates.py` (scenarios A–H), `untick.py` + `cycle.sh`, `evidence/{A-before,A-after,B-editing,B-after,D-asking}.{png,readout.json}`, `results.json`, `console.log`. 34/35 green:
+> 
+> - **A, policy `''`, on a post's page, scrolled:** version/changes.json/hashes.json bumped as deploy does, index.html changed so the delta holds code; `feature_Watch.check()` → reload **0.10s** later, booted and settled at 3.05s; `update_accepted` = 501 stamped by the instance; same post, same tool open after; **0 frames** with the pulsing handle (10ms sampling; the MutationObserver saw the class once inside the task before `quiet()` removed it — no frame can paint that), 0 frames with an update button.
+> - **B, editing with typed text:** busy → no reload for 4s, acceptance stamped and parked (`deferred` = 502), no pulse/button; the tick → reload **0.23s** later; the typed text survived; page not left in edit mode.
+> - **C, dictating** (stub: `feature_Dictate.active = true` with `feature_Dictate.watch` stood down — the state-follow otherwise resets the flag on the next apply, which is what broke my first stub): no reload 3s, parked; stop + one state change → reload 0.07s.
+> - **D, `consent`:** pulses, nothing stamped, no reload; panel shows the awaiting section and its button; the button still applies (0.08s).
+> - **E, `fixes`:** a pending `feature` entry → asks (pulse, nothing stamped); a gap of fixes only → applies by itself, stamped 506.
+> - **F:** a synthetic `{fm:'attention', body:'updated to build 507 — …'}` service-worker message alone brought the update in 0.15s.
+> - **G, launch of a stale instance under auto:** on the new build 0.64s after navigation, stamped, no pulse left (the decline in `feature_Update.launch` hands to `/watch`, whose wrap stamps).
+> - **Untick proofs (beyond the implied one):** `/by-policy` out → auto pulses and waits for the OK, `accepted` stays `''` (the `/consent-once` world); `/while-editing` out → the reload lands mid-edit 0.11s after the check. Both builds booted with no page errors; order.md files restored and relinked.
+> 
+> **Push notice:** owned by `comms/push` — `push.rs` `notify_if_updated()`: `"updated to build {version}{ — &lt;newest changes.json subject&gt;}"`. News, not a request; nothing to fix. `/attention`'s `attention.sw.js` rings only when no window is visible; a visible window gets `{fm:'attention'}` instead, which `/attention` turns into the parchment flash and which by-policy now also treats as a reason to check.
+> 
+> ## Open risks and findings, by name
+> 
+> 1. **Same scroll is not delivered — pre-existing, outside the footprint.** `.card-page` scrolls as an element and every state change repaints via `innerHTML` (`loop.js` `paint`), so the scroll resets to 0 on *any* repaint — I proved this with a no-op event, no update involved (`scrollprobe.py`: set 400 → 0 after `seamless_resume`, new element). The in-hand line's "same scroll" needs a page-level scroll hold (a `/keep`-shaped node under `loop/cards/page`, stashing across the seamless reload too); I stopped there rather than build a third node.
+> 2. **Panel open at arrival (H):** the awaiting section's button is visible for ~40ms before the reload (live-panel refreshes before my wrap stamps). Observed, not fixed.
+> 3. **Foreground push under auto:** `/attention` still flashes the lozenge parchment for the sub-second before the reload; after it the flash is gone. Cosmetic; noted in the spec.
+> 4. **Pulse suppressed under auto even if the stamp fails** (e.g. no loop instance): `quiet()` under `auto` is unconditional so no frame paints it. The panel's update button and awaiting section remain as the road out; the pulse was the only road once before (#p95). Named in the spec's reasoning; worth a glance at review.
+> 5. **Two retries can race** (pre-existing in `/seamless` + `/review`: on the idle state change both the seamless wrap and `review.watch` call `apply`); `applying` guards the ritual, the delta/patch fetches may double. Not observed in any run.
+> 6. `fixes` rewrites history in the rig (E's second bump relabels 505 as a fix) — a rig convenience, not a real path.</result>
+> <usage><subagent_tokens>201683</subagent_tokens><tool_uses>90</tool_uses><duration_ms>1267947</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a3c6f43bc8a1042bb</worktreePath><worktreeBranch>worktree-agent-a3c6f43bc8a1042bb</worktreeBranch></worktree>
+> </task-notification>
+
+Checking what the simulator is actually showing, since the page reports itself hidden.
+
+The simulator's Spotlight opened Apple Maps instead of the miso clip, which is why the page went quiet. Dismissing that and launching miso by its label this time.
+
+### p31b
+*2026-09-02 11:37*
+
+> <task-notification>
+> <task-id>bkezuck4x</task-id>
+> <tool-use-id>toolu_01Bx873Gvyrr9crKuxFYt8ZQ</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/bkezuck4x.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Commit the docs, integrate the update-policy commits onto main, and deploy them" completed (exit code 0)</summary>
+> </task-notification>
+
+The visibility-only fix is committed and re-proving in the background. Once the simulator rig relinks I'll verify the phone publishes and draws its own pin, then ship the live node.
+
+### p32
+*2026-09-02 11:39*
+
+> <task-notification>
+> <task-id>beqawc60m</task-id>
+> <tool-use-id>toolu_01GGVw78fNuBCb8p2SJ8FHAK</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/beqawc60m.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Make the live predicate visibility-only, commit, re-prove headless, and relink the simulator rig" completed (exit code 0)</summary>
+> </task-notification>
+
+Checking what the simulator is actually showing, since the page is not posting readouts.
+
+The stale 8099 clip is still on disk in the simulator's WebClips folder even though it no longer lists, and Spotlight keeps launching it. Removing that folder and rebooting the simulator.
+
+The top-hit row now has a ghost "Untitled" tile first and the real miso clip second, and my label tap was hitting the ghost. Tapping the second tile.
+
+The JavaScript door was being answered by the Safari tab left on the install page, not by the app. Closing Safari and testing the app alone.
+
+The live node's four commits all passed the confined check and the smoke gate is running now. When it lands I'll stamp the ask shipped and commit the handover.
+
+### p33
+*2026-09-02 11:53*
+
+> <task-notification>
+> <task-id>b8vv1jqcr</task-id>
+> <tool-use-id>toolu_01Ry1cih3W4PRSSbKeRjN7T9</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/b8vv1jqcr.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Integrate the live node onto main and deploy it" completed (exit code 0)</summary>
+> </task-notification>
