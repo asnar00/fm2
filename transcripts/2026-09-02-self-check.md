@@ -1,4 +1,4 @@
-# transcript: self-check session
+# transcript: self-check
 *session `6004deb9-d2ef-4b9a-8b15-ef1e406b9cb8`, exported by tools/export_transcript.py — do not edit; anchors `#pN` are stable*
 
 ### p1
@@ -1182,3 +1182,335 @@ Both are in build, in their own worktrees, each a single new node under the map:
 - **Stocked:** while you are on the map with a connection, the current project's area is fetched at zooms 12 to 15 into the worker's cache, once per ground generation, capped, quiet. What is stocked shows only behind the engineer gear.
 
 The one-marker build is still running as well. I'll review and ship each as it lands, fallback before pre-load.
+
+### p50
+*2026-09-02 14:24*
+
+> <task-notification>
+> <task-id>a54edbf4931dfeb8f</task-id>
+> <tool-use-id>toolu_016q6nMnmDUounBSHL2n8QiL</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/a54edbf4931dfeb8f.output</output-file>
+> <status>completed</status>
+> <summary>Agent "One marker per person on the people map" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Nothing more to request — the work is committed, the rig is down, and the evidence is on disk. Here is the report.
+> 
+> ## Outcome
+> 
+> Built, proven and committed as `756d1c7` on `worktree-agent-a54edbf4931dfeb8f` (base fast-forwarded to main `7163d71` first — the worktree was 68 commits behind). One new node, `features/miso/loop/cards/browse/map/live/one-pin/` (`one-pin.md`, `one-pin.js`), the tick in `live/order.md`, and a step file `tests/sim/one-pin.json`. `fmlink --prove`: confined, proof implied; I ran the untick anyway because the brief asked for it. Not deployed. The announce stamp is triage's.
+> 
+> **What the node does.** `/map`'s markers carry no card id, so `one-pin.js` wraps `feature_Map.draw` and, after each draw, tags each marker with the id of the `#mapData` row at its index (the array and the rows with a numeric position align one for one; if the counts ever disagree it tags nothing — the failure is today's two pins, never a wrongly hidden person). It wraps `feature_Live.draw`/`clear` to take the set of live card ids and settle: a tagged placed marker whose person is live is `remove()`d, and `addTo()`'d back when the id leaves the set. `remove()/addTo()` rather than opacity, because the marker keeps its place in `/map`'s array and its click handler, and an invisible pin cannot catch a tap. `map.js` and `live.js` are untouched.
+> 
+> **Proven** (headless Chrome, three contexts, own rig on 8183, `scratchpad/one-pin-rig/onepin.py`; evidence under `/private/tmp/claude-501/-Users-microserver-fm2/6004deb9-d2ef-4b9a-8b15-ef1e406b9cb8/scratchpad/one-pin-rig/evidence/`):
+> - bob placed at A, live at B → ash's map: one bob marker, at B, ring breathing; his placed marker tagged with his id and off the map; 0 placed + 1 live for his id. Frame: `ash-map-bob-live-fitted.png` (West Heath empty, live pin north).
+> - bob hidden → placed pin back at A within 2.0 s, no ring (`ash-map-bob-gone.png`); visible again → aside again within 2.0–2.5 s.
+> - carol (place, never live): one pin, untouched. ash (live, no place): one pin. Both unchanged.
+> - `/map`'s own redraw mid-live (a `CardPlace` repaint): fresh markers re-tagged and settled in the same draw, still 3 DOM pins.
+> - Real pointer click on the returned placed pin opens bob's card and it stays open.
+> - Leaving the map view puts every placed pin back (`/live`'s clear).
+> - Unticked build (`two-ash-map.png`): 4 DOM pins, bob twice — today's behaviour.
+> - `tests/sim/one-pin.json` all green under a controlling service worker (single-device case: own card at A, live at B).
+> 
+> ## Tripwire — a false assumption in the brief, not fixed here
+> 
+> "The live pin already opens the card" is false under a real tap, in build 471 and after my change alike. A pointer click on a live pin sends `browse_open:&lt;id&gt;` and the card opens — then the same click sends `tool_account` and closes it. Mechanism, observed: the card page repaints synchronously inside `/live`'s click handler; the card page has no `#mapData`, so `feature_Live.sync` → `clear()` removes the marker under the finger; when the native click bubbles to `/backdrop`'s document listener (`features/miso/loop/cards/browse/backdrop/backdrop.js`) the target is `isConnected=false`, outside every owned selector, a card page is showing, so it sends `tool_&lt;open&gt;`. Placed pins survive because `/map` only hides its host. Reproduced with the node unticked. The fix is outside my footprint — `/backdrop` (a detached target was somebody's: `if (!e.target.isConnected) return;` — but `backdrop.js` has no seam to wrap, so that is an edit to its file, non-confined) or a `/live` subfeature that sends the open after the click has bubbled (`setTimeout` 0 around `feature_Live.tap`). I did not do either; the spec's hostile cases carry the diagnosis. Triage should place it.
+> 
+> ## Open risks, by name
+> 
+> - **Index alignment** between `feature_Map.markers` and `#mapData` rows is an inference from `map.js`'s draw loop, guarded by a count check; a future sibling that adds markers to `/map`'s array would silently turn the guard on (two pins again, never a wrong hide).
+> - **The first fit** still includes the hidden place — `/map` fits before I hide; left alone, said in the spec.
+> - **Same-name rig users** are not exercised; matching is by id, and the mechanism reads no names.
+> - **Rig hygiene:** `start.sh`'s half-second wait lost bob's and carol's logins once (hypothesis: a start race); `relogin.sh` recovers. The `reports/may` 403s for member users are pre-existing and excluded from the error filter.
+> - The transcript was regenerated from the main session log and is in the commit (46 prompts; the anchor is `#p45`).</result>
+> <usage><subagent_tokens>194411</subagent_tokens><tool_uses>89</tool_uses><duration_ms>1612783</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a54edbf4931dfeb8f</worktreePath><worktreeBranch>worktree-agent-a54edbf4931dfeb8f</worktreeBranch></worktree>
+> </task-notification>
+
+The one-marker build is done and proven, and the worker caught a real bug on the way: a real tap on a live pin opens the card and then closes it again, because the map's backdrop listener sees the tap land on a marker that the page has already removed. Since you asked for the marker to be tappable, that gets fixed before this ships. Reading the backdrop to place the fix.
+
+The tap fix is committed alongside the one-marker node, and the simulator rig is relinking with both. Next I'll put a real finger on the live pin on the simulator and confirm the card stays open, then ship.
+
+### p51
+*2026-09-02 14:25*
+
+> <task-notification>
+> <task-id>b6wqzc2lv</task-id>
+> <tool-use-id>toolu_012AgDfKkDnPnvoJgnamE6Ea</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/b6wqzc2lv.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Fix the live pin's tap, commit, integrate one-pin onto main, and relink the simulator rig with both" completed (exit code 0)</summary>
+> </task-notification>
+
+The chain's working directory was wrong, so the integration steps ran against the wrong tree. Redoing them with absolute paths.
+
+One-marker and the tap fix are on main, both confined. The simulator is relinking with them; then a real finger on the live pin decides whether this ships. Two other workers, stand-in and stocked, are still building.
+
+### p52
+*2026-09-02 14:27*
+
+> <task-notification>
+> <task-id>bket0g6dn</task-id>
+> <tool-use-id>toolu_012s7cwWUqVrsXtpm7EQFJ4w</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bket0g6dn.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Relink the simulator rig with one-pin and the tap fix, then put a real finger on the live pin and check the card stays open" completed (exit code 0)</summary>
+> </task-notification>
+
+The app is up on the new build, but my navigation hit the account tool while it was already open and toggled it closed, so the map never showed. Redoing just the map part from home.
+
+The page is running the old live.js: the relink landed after it loaded, and the cache now holds the new one. A relaunch picks it up. Then the same tap test.
+
+The precise-location prompt came back after the reboot and is blocking the page. Allowing it and repeating the test.
+
+A clean rig build is going now. Nothing else is waiting on me until it reports; the stand-in and stocked workers are still building.
+
+### p53
+*2026-09-02 14:35*
+
+> <task-notification>
+> <task-id>bunpm42id</task-id>
+> <tool-use-id>toolu_01R5rnTx8kVUbLNPmBEDYDdA</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bunpm42id.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Reset the rig worktree to main, relink, relaunch the app, and test the live pin tap with a real finger" completed (exit code 0)</summary>
+> </task-notification>
+
+The iOS proof is in: one pin, a real finger on it opens the card, and it stays open. Shipping.
+
+### p53a
+*2026-09-02 14:35*
+
+> <task-notification>
+> <task-id>aedc989f6ed12cd27</task-id>
+> <tool-use-id>toolu_018rnh2YsYuc9vEbunuWA9gu</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/aedc989f6ed12cd27.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Pre-load the project's map area into the cache" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Committed as `e3aa998` on `worktree-agent-aedc989f6ed12cd27` (base fast-forwarded to main `89e69d6` first — the worktree had spawned 20 commits behind). The rig is ended by PID; nothing of mine is listening.
+> 
+> ## What shipped
+> 
+> One node, confined: `features/miso/loop/cards/browse/map/stocked/` (`stocked.md`, `stocked.js`, `stocked.index.js`), a tick in `map/order.md`, the step file `tests/sim/stocked.json`, and the regenerated transcript carrying the anchors (`#p47b` the caching question, `#p49` "ok do the fallback first, then the pre-load"). No change to map.js, sw.js, fresh, fresh-tiles, boundaries, engineer or live. `fmlink --prove`: implied — every tree change lies in the node plus additions to its parent's order.md.
+> 
+> **The mechanism.** On every `/map` sync with `#mapData` present, visible and online, the node takes the constituency's bounding box from `feature_Boundaries.data` (fallbacks: padded pins box, then a district box), plans zooms 12–15 over it plus 16 over a 3×3 km box at the centre, caps at 1,500, and fetches `tiles/z/x/y.png?g=N` (the tag read from `feature_FreshTiles.TAG`) four at a time with 300 ms between batches. The service worker's network-first policy stores each ok answer; on a page the worker does not control, the node `cache.put`s into `miso` itself. Progress lives in `localStorage` `miso.stocked` as `{key: "g=3|patch:E14001465", done, total, missed, full, at}` — no coordinates. Hidden/offline/leaving the map aborts the batch in flight and keeps its place. The engineer line: `stocked: 1210 of 1210 squares, zooms 12–16, ground g=3, last full at &lt;time&gt;`.
+> 
+> ## Evidence (all observed, headless Chrome with the worker and Cache API intact)
+> 
+> Rig: `/private/tmp/claude-501/-Users-microserver-fm2/6004deb9-d2ef-4b9a-8b15-ef1e406b9cb8/scratchpad/stocked-rig/` — `start.sh` (server on 8185, `/tiles` proxying a local PNG stub on 8186 so no run touched Stadia or OSM), `stocked.py` (the walk), `probe_nosw.py`, `evidence/` (screenshots + readouts), `stub-requests.log`, `server.log`.
+> 
+> `stocked.py`: 31 checks, all green. Named ones from the brief:
+> - plan = 1,210 squares: 20/63/221/825 at 12–15, 81 at 16; the stub served every one of them exactly once (plus 24 the map's own view asked for); the proxy fetched each once and served the rest from disk.
+> - `caches.match` finds a sampled square at each of zooms 12–16; cache `miso` holds 1,234 tile entries.
+> - engineer section shows the line (`evidence/engineer.png`); `localStorage` record names `g=3`; nothing with "stocked" on the app surface.
+> - offline (`context.set_offline`): zoom 13 over the area — 8 loaded, 0 errored, 0 pending; zoom 15 at the centre — 15/0/0 (`offline-z13.png`, `offline-z15.png`).
+> - hidden mid-run: fetched 12 → 12 → 12, run not running, stub sees nothing; visible: resumes. Leave for grid: 44 → 44, stopped; back: resumes.
+> - second open: fetched 0, record full, not running; tag bumped to `g=4` → fresh run under `g=4|patch:…` with `?g=4` urls.
+> - grid and list: no requests, no record, no text.
+> - `probe_nosw.py`: with `sw.js` blocked (uncontrolled page), 80 fetched → 80 entries put by the page; sampled square is `image/png`.
+> 
+> Two rig-driver defects were found and fixed along the way, neither in the node: a second page did not reach the map view because the device remembers `view=map` (clicks differ); my first hypothesis (a background page reporting `hidden`) was tested and refuted before the fix.
+> 
+> ## Open risks, by name
+> 
+> - **Not run on the phone.** All evidence is headless Chrome. iOS Safari specifics untested: the Cache API quota for ~15 MB of squares in an installed app, and whether `caches.open` is reachable from the page in the same way — both are hypotheses. `tests/sim/stocked.json` is written for the simulator (`MISO_RIG_KEEP=1` needed).
+> - **Eviction is invisible.** If the platform evicts the cache, the record still says full; only a new ground tag restocks. "Clear it" behind the gear is parked and named in the spec.
+> - **A 404 from the proxy counts as done** (`missed` in the record and on the line), not retried in that run; a fully-down proxy would record a "full" run of misses.
+> - **The area is the constituency, not the current project's.** No project carries a boundary; the spec names `area()` as where one lands. The district box (last resort) is 1,851 squares and stops at the cap with zoom 15 partial.
+> - **Live data volume.** 1,210 × ~12 KB ≈ 15 MB per phone from the mini, one Stadia fetch per square for all phones; the "cellular keeps 15/16 for wifi" rule only fires where `navigator.connection` exists — never on iOS, where the cap is the protection. Stated in the spec.
+> - **The main session's `/stand-in` worker** was not touched; the two nodes are independent siblings under `map/`.
+> 
+> Not deployed, per the brief. The announce text for the stamp: "the map keeps the project's area in the phone's cache at low zoom, so it still draws with no signal".</result>
+> <usage><subagent_tokens>201445</subagent_tokens><tool_uses>73</tool_uses><duration_ms>1434251</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-aedc989f6ed12cd27</worktreePath><worktreeBranch>worktree-agent-aedc989f6ed12cd27</worktreeBranch></worktree>
+> </task-notification>
+
+The pre-load build has landed too. Per your order it ships after the fallback, which is still building, but I'll review it now while the one-marker deploy runs.
+
+### p53b
+*2026-09-02 14:36*
+
+> OK cool. While that's cooking, let's talk user onboarding. Could you walk through (concisely) the current workflow, from the pov of the person inviting and the invitee?
+
+Let me read the invite and login nodes' own user paragraphs, so the walkthrough matches what is actually built.
+
+Here is the onboarding as built today, both sides. There are three ways in, and they share one back half.
+
+**Inviter's side**
+
+- **Who can invite:** support and admin. An ordinary member cannot.
+- **Route 1, name and number.** Tap the person-with-a-plus tool, type their name and phone, tap invite. They are on the guest list. Nothing is texted yet. The row under shows "invited" until they log in, then "joined". A ✕ takes back an unused invite.
+- **Route 2, the doorstep QR.** On the invite tool, "show a QR code". One code for the whole session. The person at the door scans it and types their own name and number. The count under the code says how many have joined on it.
+- **Route 3, the instant QR.** On your 👤 card, "add someone now", type their name, hold up the code. It is for that one person and dies on use or after five minutes. No number, no text.
+
+**Invitee's side**
+
+1. **Land.** Scanning a code, or visiting miso.nøøb.org, on a phone browser shows the logo and three steps: add to home screen, open it, and miso begins. Nothing else until the app is installed.
+2. **Log in.** Route 3 skips this: the scan logs them in as themselves. Routes 1 and 2: type the phone number, get a four-digit code by text, type it. Logged in for a year on that device.
+3. **Permissions.** First login asks the two sheets, location and notifications, once.
+4. **Cards.** The inviter's profile card appears in their cards, and their card appears in the inviter's. That is the whole trust ring: nobody sees anyone they did not invite or accept an invitation from.
+5. **Later, optional.** Face ID login from the nøøb sheet. And a route 3 person who wants a second device adds their number on their own card, gets the text, and can then log in anywhere.
+
+**Two things worth knowing**
+
+- A route 3 person is numberless until they add one, so they cannot log in on another device and cannot be texted.
+- Authority is per guest-list entry: member by default, support to invite others and act on shared state, admin for everything. Today that is set on the mini, not in the app.
+
+The one-marker deploy is running in the background; I'll report it when it lands.
+
+### p54
+*2026-09-02 14:39*
+
+> <task-notification>
+> <task-id>bu0o3d3py</task-id>
+> <tool-use-id>toolu_01Lunukv6F4ERb4KjKR47q6n</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bu0o3d3py.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Commit the simrig tweak, deploy one-pin with the tap fix, and stamp the ask shipped" completed (exit code 0)</summary>
+> </task-notification>
+
+### p54a
+*2026-09-02 14:39*
+
+> OK just to be clear - we're not going to be inviting people at the doorstep. The workflow we want is to get a bunch of canvassers onto the app quickly at the start of the canvassing. So I like the idea of a single QR code that lasts for the session, everyone enters their own name and number (since they know both). That's a quick mechanism - we should just provide that. Also, we should allow ordinary members to invite other ordinary members.
+
+### p54b
+*2026-09-02 14:39*
+
+> <task-notification>
+> <task-id>a54549211b9bf9f19</task-id>
+> <tool-use-id>toolu_01TXZKXErhxBineNA3dqNmPL</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/a54549211b9bf9f19.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Map squares fall back to the parent square" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Committed `abbe555` on `worktree-agent-a54549211b9bf9f19` (base fast-forwarded to main `89e69d6` first — the worktree was 71 commits behind). Rig torn down by PID; ports 8191/8192 clear. Not deployed.
+> 
+> ## The diff
+> 
+> - `features/miso/loop/cards/browse/map/stand-in/stand-in.md` — spec, citing `#p49` (the ask) and `#p47b` (the caching question); transcript regenerated to carry them.
+> - `features/miso/loop/cards/browse/map/stand-in/stand-in.js` — `feature_StandIn`: an `L.TileLayer` subclass swapped in by wrapping `feature_Map.mount` (the `L.tileLayer` factory is replaced for that one call and restored in a `finally`). `map.js` untouched; `keepBuffer`/`updateWhenIdle` pass through; `/fresh-tiles`' `instanceof` walk still finds it.
+> - `features/miso/loop/cards/browse/map/order.md` — one tick.
+> - `tests/sim/stand-in.json` — the tree's step file; it fails every url above z13 inside the page, so it runs against any server (simulator included).
+> - `fmlink --prove`: implied (confined). Build OK, 231 fragments.
+> 
+> ## Outcome
+> 
+> Written, not vendored (reasons in the spec). Reach is **3**: a phone that has seen z13 draws 14, 15, 16; 17 is the hole — the brief's "z17 drawn, z18 hole" numbering is off by one against its own "proxy serves ≤13"; I chose the reach, as it asked. One design change forced by 4a: my first cut clipped a scaled `img` with `clip-path`, and the screenshot showed a line along every tile boundary. Isolated it in a plain page (`seam.py`): any clip on a transformed `img` (clip-path, legacy `clip`, background-image) draws coarse and discontinuous at boundaries on Chrome at DPR 2 and 3; a transformed *frame* with the scaled `img` inside is seamless. So `createTile` now returns a frame `div` with `src`/`complete` accessors forwarding to the `img`, plus a `_removeTile` override, so Leaflet's abort and prune paths keep behaving. Boundary difference went from 7.0 to 0.3 (the background level).
+> 
+> ## Evidence (`/private/tmp/claude-501/-Users-microserver-fm2/6004deb9-d2ef-4b9a-8b15-ef1e406b9cb8/scratchpad/standin-rig/evidence/`)
+> 
+> Rig `rig.py` all green (headless Chrome, service worker intact, tile stub `stub.py` serving the mini's live cache up to `./maxz`):
+> - **z14/15/16 with proxy ≤13**: every tile loaded, src `tiles/13/…?g=3`, up 1/2/3, img 512/1024/2048px in a 256px frame, zero `tileerror`. Shots `A-z14/15/16.png`.
+> - **z17**: all holes, `tileerror` fired per tile, ground `rgb(51,51,51)`, no page error; pin tap opens the card. `A-z17-hole.png`.
+> - **All zooms served**: z14 tiles native, unscaled; stand-in count delta 0; no z13 upstream request. `B-z14-all-served.png`.
+> - **Offline** (nothing served, fresh SW; and `set_offline`): holes after climbing, nothing throws, pin opens card. `C-*.png`, `C2-*.png`.
+> - **Re-entry**: setView→setZoom→panBy 30 ms apart mid-load: every current tile drawn, DOM tile count == layer's tile map (no orphans). `D-reentry.png`.
+> - **Pixel reconstruction** (`verify.py`): expected picture rebuilt from the source PNGs vs screenshot, per tile: mean diff 0.12 (z14, neighbours from three different parents) and 0.19 (z16) out of 255.
+> - Step file via `headless.py`: 6/6 pass.
+> 
+> ## Hypotheses and open risks, by name
+> 
+> 1. **Safari untested.** The seam finding is Chrome's; no WebKit engine is installed here and the simulator is the main session's. The frame design has no reason to be worse on WebKit, but "seamless on the phone" is a hypothesis until `tests/sim/stand-in.json` runs on the simulator.
+> 2. **The rig ran over central London, not Sevenoaks.** The mini's live tile cache has no z13 for Sevenoaks (x 4091–4094 only), and the stub serves only the cache. The mechanism is location-blind; the step file uses the same centre so it runs in both places.
+> 3. **What ash's phone actually has cached decides everything.** Evidence in `B`: the live cache holds 12% of z16 there — a phone that has only ever looked at street zoom has no z13 to stand in from. That is `/stocked`'s job (parked, running in parallel).
+> 4. **Two wasted requests per pruned tile at most**: a frame's `img` whose error lands after removal is handed back untouched (guarded on `parentNode` and the blanked src); observed no orphans, but not a request count on that path specifically.
+> 5. `L.Util.emptyImageUrl` and `_tileOnError/_removeTile/_abortLoading` are Leaflet 1.9.4 internals, read from the vendored file; a Leaflet upgrade must re-read them.</result>
+> <usage><subagent_tokens>238299</subagent_tokens><tool_uses>108</tool_uses><duration_ms>1697084</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a54549211b9bf9f19</worktreePath><worktreeBranch>worktree-agent-a54549211b9bf9f19</worktreeBranch></worktree>
+> </task-notification>
+
+Reviewed the pre-load code: sound, and honest about iOS never reporting whether it is on mobile data, so the cap is the guard there. Waiting on the fallback's simulator run; the members-invite worker is building; your answer on QR-only is still open.
+
+### p55
+*2026-09-02 14:42*
+
+> <task-notification>
+> <task-id>bv7vuryuy</task-id>
+> <tool-use-id>toolu_01YAqNRJxg7TA5VeHWFg85Py</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bv7vuryuy.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Merge stand-in into the simulator rig, relink, relaunch, and run its step file on iOS" completed (exit code 0)</summary>
+> </task-notification>
+
+The rig is up and relaunched; the step file path was the only miss, since it lives in the worker's branch, not main. Running it from the rig worktree.
+
+The stand-ins on WebKit are seamless: no boundary lines, just the zoom-13 squares stretched four times. The fallback deploy is running; the pre-load's simulator run follows it, then its ship.
+
+### p56
+*2026-09-02 14:46*
+
+> <task-notification>
+> <task-id>b16hdnpbj</task-id>
+> <tool-use-id>toolu_01LfgkNHc8CDUD68SvDHSQAC</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/b16hdnpbj.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Integrate stand-in onto main, deploy, and stamp it shipped" completed (exit code 0)</summary>
+> </task-notification>
+
+Fallback is live at build 483 and stamped. Now the pre-load's turn on the simulator.
+
+The pre-load's simulator run is going. Nothing else is waiting on me.
+
+### p57
+*2026-09-02 14:46*
+
+> <task-notification>
+> <task-id>b4wltk7nw</task-id>
+> <tool-use-id>toolu_01XYeZxxoDG3wSBszU1eHtYT</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/b4wltk7nw.output</output-file>
+> <status>failed</status>
+> <summary>Background command "Merge stocked into the simulator rig, relink, relaunch, and run its step file on iOS" failed with exit code 1</summary>
+> </task-notification>
+
+A merge clash on the map's child list, both nodes adding their tick. Resolved with both, and the run is going again.
+
+### p58
+*2026-09-02 14:47*
+
+> <task-notification>
+> <task-id>bu3kv8h6t</task-id>
+> <tool-use-id>toolu_011eimHjR5WQULoj98VwJdQa</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bu3kv8h6t.output</output-file>
+> <status>failed</status>
+> <summary>Background command "Resolve the order.md conflict in the rig worktree, relink, relaunch, and run the stocked step file on iOS" failed with exit code 1</summary>
+> </task-notification>
+
+My earlier merge had been aborted, so the folder was missing. The merge is redone properly this time and the run is going.
+
+### p59
+*2026-09-02 14:47*
+
+> <task-notification>
+> <task-id>baal5rs04</task-id>
+> <tool-use-id>toolu_01NN2BpLF3kFMQ75jtb9oLVe</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/baal5rs04.output</output-file>
+> <status>failed</status>
+> <summary>Background command "Merge stocked into the rig worktree properly, relink, relaunch, and run its step file on iOS" failed with exit code 1</summary>
+> </task-notification>
+
+The staged file blocked the merge, and my commit captured only the tick. Resetting the rig worktree to main and merging cleanly.
+
+Clean merge this time, with a check that the folder exists before linking. Run in progress.
+
+### p60
+*2026-09-02 14:49*
+
+> <task-notification>
+> <task-id>bj4n4x3oq</task-id>
+> <tool-use-id>toolu_01CzSw8sMUeA8pDAFHLkQSUQ</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bj4n4x3oq.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Reset the rig worktree, merge stocked cleanly, relink, relaunch, and run its step file on iOS" completed (exit code 0)</summary>
+> </task-notification>
+
+The pre-load is proven on iOS: all 1,210 squares stocked, a square found in the cache at every zoom from 12 to 16, and the line behind the gear reads right. Shipping it.
+
+Deploying the pre-load now. When it lands, both halves of the offline map are live: stand-ins already at 483, and the stocked squares next. The members-invite worker is still building, and I'm still waiting on your call about the invite tool being QR only.
+
+### p61
+*2026-09-02 14:53*
+
+> there should be two invite pathways: one remote (username + phone, SMS authentication) and the other local/group (single QR code for session, each invitee types in their username and phone)
+
+Clear. Two doors, then: remote by name and number with a texted code, and local by one session code. That is what the invite tool already offers. The one thing that goes is the third route, the one-person instant code on your own card. Checking how the product switches a node off, since that is a product choice rather than a tree change.

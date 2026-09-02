@@ -1,0 +1,19 @@
+[
+  {"note": "ordinary members can invite other members (2026-09-02, self-check #p54a): run logged in as a MEMBER — the invite sub-tool sits in 👤's control row, its page opens, and the session QR mints a code"},
+  {"home": true},
+  {"js": "const r = await fetch('users/invited', {cache: 'no-store'}); const d = await r.json(); return d.ok && d.may === true", "expect": true, "name": "the server says a member may invite"},
+  {"tap": "[ev=tool_account]"},
+  {"wait_for": "[ev=tool_invite]", "readout": "members-account"},
+  {"assert": {"find": "[ev=tool_invite]"}, "name": "the person-with-a-plus is in the account control row"},
+  {"tap": "[ev=tool_invite]"},
+  {"wait_for": ".invite-page"},
+  {"assert": {"find": ".qr-open"}, "name": "the invite page offers 'show a QR code'", "readout": "members-invite-page"},
+  {"tap": ".qr-open"},
+  {"wait_for": ".qr-code"},
+  {"js": "for (let i = 0; i < 40; i++) { const e = document.querySelector('.qr-code'); if (e && e.getAttribute('data-qr-token') && e.querySelector('svg')) return true; await new Promise(r => setTimeout(r, 250)); } return false", "expect": true, "name": "the sheet holds a minted session code, drawn", "readout": "members-qr-sheet"},
+  {"js": "const t = document.querySelector('.qr-code').getAttribute('data-qr-token'); const r = await fetch('users/invite/qr/check?t=' + t, {cache: 'no-store'}); const d = await r.json(); return d.ok === true && typeof d.by === 'string' && d.by.length > 0", "expect": true, "name": "a stranger scanning it is told who is asking them in"},
+  {"tap": "[data-qr=done]"},
+  {"note": "hostile: a member may not mint a pretend (_) user — that stays admin's"},
+  {"js": "const r = await fetch('users/invite', {method: 'POST', cache: 'no-store', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name: '_zed', phone: '+15550009999'})}); return r.status", "expect": 400, "name": "a _ name from a member is refused"},
+  {"home": true}
+]
