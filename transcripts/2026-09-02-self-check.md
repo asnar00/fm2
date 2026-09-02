@@ -1,4 +1,4 @@
-# transcript: self-check
+# transcript: the device self-check
 *session `6004deb9-d2ef-4b9a-8b15-ef1e406b9cb8`, exported by tools/export_transcript.py — do not edit; anchors `#pN` are stable*
 
 ### p1
@@ -539,3 +539,101 @@ So: no phone for now. I'll note the keep-the-worker rig mode as the next rig run
 > ok, do the keep-the-worker rig mode now
 
 On it. Reading the rig node first to place the change, and holding the commit until the running deploy finishes.
+
+The keep-worker node is written: server switch, the seam in the rig page, spec, and deploy notes. I'm holding the commit and the proof until the rig-fix deploy finishes, because both use the same build directory.
+
+### p21
+*2026-09-02 11:03*
+
+> <task-notification>
+> <task-id>bh61l5wjj</task-id>
+> <tool-use-id>toolu_01362EVdnNtCp8nxzsMyjqgx</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/bh61l5wjj.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy the rig async fix" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 461 is live. Now the keep-worker proof: checking the trailer the deploy expects for a two-node commit, and checking those two live server processes.
+
+Proof and commit are running in the background. Once it lands I'll rebuild the rig from it, start it in keep mode, and read the self-check from the simulator as the evidence.
+
+### p22
+*2026-09-02 11:04*
+
+> <task-notification>
+> <task-id>bw03fyz32</task-id>
+> <tool-use-id>toolu_01R8L4WavQFeqC9QZDfXBmTP</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/bw03fyz32.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Run the explicit toggle proof both ways, then commit keep-worker" completed (exit code 0)</summary>
+> </task-notification>
+
+Committed as ab47c3e. The simulator evidence run is going: rebuild the rig with the switch, start it in keep mode, and read the self-check across two launches, the second with the worker in control. Deploy follows once that reads right.
+
+### p23
+*2026-09-02 11:07*
+
+> <task-notification>
+> <task-id>bim3rko4y</task-id>
+> <tool-use-id>toolu_017HNVTmAstMV4w6vhBnZZAj</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/bim3rko4y.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Rebuild the rig with keep-worker, start it in keep mode, and read the simulator's self-check across two launches" completed (exit code 0)</summary>
+> </task-notification>
+
+### p23a
+*2026-09-02 11:07*
+
+> another thing: I want to make the update policy work better. Under "auto", I shouldn't be asked to OK updates, they should just happen (I should still be notified when the app isn't in focus). Otherwise, the app should just be up to date at all times without any action from me. The only exception should be that we shouldn't update while the user is recording or editing.
+
+### p24
+*2026-09-02 11:07*
+
+> another thing: I want to make the update policy work better. Under "auto", I shouldn't be asked to OK updates, they should just happen (I should still be notified when the app isn't in focus). Otherwise, the app should just be up to date at all times without any action from me. The only exception should be that we shouldn't update while the user is recording or editing. As long as update doesn't switch the UI state, it should be completely seamless.
+
+Two workers are now in flight and one deploy is running. Where things stand:
+
+**Update policy ask: in build.** The cause is a node from late August that made every apply wait for the one OK, for every policy, so "auto" stopped meaning auto. The brief keeps that single gate but has the phone stamp its own acceptance when the policy is auto. A second small node adds "editing" to the things an update waits for, beside recording, which already exists. Coming back to the same page after an update is already built and the worker has to prove it still holds. The out-of-focus notice already exists through push, so the worker checks its wording rather than building anything.
+
+**Keep-the-worker rig mode: built, proven, shipping now.** On the simulator with the switch on, the second launch runs under the service worker and the self-check hashes all 225 fragments from the cache. It flagged four mismatches, and they were real: the four files my relink changed after the rig's manifest was written. That is the check catching a stale manifest, which is what it is for.
+
+**Live location: still in build.**
+
+**One rule I followed and want you to know about.** For the update-policy brief I told the worker not to edit any of the existing update nodes, only add two children. If it finds it has to, it stops and reports rather than digging into the foundations.
+
+### p25
+*2026-09-02 11:11*
+
+> <task-notification>
+> <task-id>ba07qk17q</task-id>
+> <tool-use-id>toolu_01XTtNiyjHEWJk78KzPs8AXC</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/2340bf32-8919-4028-8eca-172531a7f14c/tasks/ba07qk17q.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy keep-worker" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 462 is live with the keep-worker switch. I'll record today's state in the handover now, in case of another cut, while the two workers run.
+
+Handover recorded. Both workers are still building; I'll review and ship each as its report lands.
+
+### p26
+*2026-09-02 11:12*
+
+> if I shut my laptop down, does it kill this session because I'm in SSH from the laptop?
+
+Yes, it would. This session is running straight under the SSH connection from your laptop, not inside tmux. I checked the process chain: sshd, then your login shell, then claude. Shutting the laptop drops the SSH link and that kills claude, and with it the two workers, which run inside this process.
+
+What survives: the rig server, the audition page server, the hourly usage sampler, and the live app. The workers' worktrees also survive, with whatever they have committed so far. Their transcripts are saved, so after a restart I can resume each worker where it stopped, the way I did this morning after the earlier cut.
+
+What I'd suggest:
+
+- **If you can wait,** give the two workers time to report. I'll ship both, then you can close the laptop with nothing in flight.
+- **If you need to go now,** close it. Next time, start the session inside tmux on the mini, which is what the handover assumed but this session did not do:
+
+```
+ssh microserver@microservers-Mac-mini.local
+tmux new -s fm2
+cd ~/fm2 && claude --resume
+```
+
+Then closing the laptop only detaches the screen. I'll resume the workers from their transcripts at the start of that session.
