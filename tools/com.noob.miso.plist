@@ -42,6 +42,12 @@
     <dict>
         <key>MISO_HANDOVER</key>
         <string>1</string>
+        <!-- the basemap (2026-09-02, ash: Stadia Alidade Smooth). The key is
+             ash's Stadia API key — it lives in the live plist only, never here -->
+        <key>MISO_TILE_URL</key>
+        <string>https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png?api_key=STADIA_KEY</string>
+        <key>MISO_TILE_ATTRIBUTION</key>
+        <string>© Stadia Maps © OpenMapTiles © OpenStreetMap contributors</string>
     </dict>
 
     <key>RunAtLoad</key>

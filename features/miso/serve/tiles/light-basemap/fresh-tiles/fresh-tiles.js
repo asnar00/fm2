@@ -1,7 +1,7 @@
 const feature_FreshTiles = {
   // the ground tag: a new basemap generation gets a new value, so no cache —
   // service worker or browser — can answer with squares of the old ground.
-  TAG: 'g=1',
+  TAG: 'g=2', // 2: Stadia Alidade Smooth (2026-09-02, self-check #p36),
   done: false,
 
   stamp() {
