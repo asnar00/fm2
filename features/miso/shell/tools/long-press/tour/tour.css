@@ -1,0 +1,27 @@
+/* the tour card: /long-press's #toolCard family — dark, 1px border, 10px
+   radius, 13px — with a pointer. Quick fade, no motion (taste 5). */
+#tourCard {
+  position: fixed; z-index: 30; max-width: min(78vw, 20rem);
+  background: #17171a; border: 1px solid #3a3a3f; border-radius: 10px;
+  padding: 9px 12px; font-size: 13px; color: #c9c9d2; line-height: 1.4;
+  opacity: 0; pointer-events: none; transition: opacity 0.18s ease-out;
+  user-select: none; -webkit-user-select: none;
+}
+#tourCard.show { opacity: 1; pointer-events: auto; }
+#tourCard .tour-say { color: #eee; }
+#tourCard .tour-skip { margin-top: 6px; text-align: right; color: #77777e; font-size: 12px; cursor: pointer; }
+/* the pointer: a rotated square wearing the card's own border, at the
+   target's centre — below the card, or above it when the card sits below */
+#tourCard::after {
+  content: ''; position: absolute; width: 10px; height: 10px;
+  left: calc(var(--tour-px, 50%) - 5px); bottom: -6px;
+  background: #17171a; border-right: 1px solid #3a3a3f; border-bottom: 1px solid #3a3a3f;
+  transform: rotate(45deg);
+}
+#tourCard.below::after {
+  bottom: auto; top: -6px;
+  border-right: none; border-bottom: none;
+  border-left: 1px solid #3a3a3f; border-top: 1px solid #3a3a3f;
+}
+/* the target: a thin grey ring, no colour — nothing here means "chosen" */
+.tour-here { outline: 1px solid #9a9aa2; outline-offset: 3px; border-radius: 12px; }
