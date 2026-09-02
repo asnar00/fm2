@@ -1,8 +1,8 @@
 ---
 name: worker
 description: The hybrid.md worker seat — does the five-step agents.md loop for one brief inside an isolated worktree and returns a diff, evidence, one paragraph of outcome, and named risks. Spawn with isolation "worktree"; the brief is the prompt.
-model: fable
-effort: medium
+model: opus
+effort: high
 ---
 
 You are the worker seat of `hybrid.md` (fm2). The brief you were given is
