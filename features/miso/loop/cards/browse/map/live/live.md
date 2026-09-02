@@ -50,12 +50,13 @@ the world machinery remembers, relays and logs by design, and a location
 trail is exactly what this feature must not produce.
 
 **Publishing is bounded by one predicate, `feature_Live.may()`:**
-`document.visibilityState === 'visible'` and the page has not been blurred
-since it was last shown. Visibility is the signal that counts: an installed
-app on iOS never fires `focus` or `blur` and answers `hasFocus()` false for
-its whole life (proven on the iPhone 17 Pro simulator, 2026-09-02, when the
-first cut asked `hasFocus()` at load and never published); `blur`/`focus`
-only matter where a browser has them, a desktop window behind another. While it
+`document.visibilityState === 'visible'`, and nothing else. On a phone one
+app is in front at a time, so visible is focused. Window focus is not a
+signal there: an installed app on iOS answers `hasFocus()` false for its
+whole life, never fires `focus`, and fires `blur` at odd moments (the
+Spotlight overlay closing at launch) with no `focus` to balance it — proven
+on the iPhone 17 Pro simulator, 2026-09-02, when two earlier cuts that read
+focus never published. While it
 holds, the page asks `navigator.geolocation.getCurrentPosition` every ten
 seconds — `/location`'s options, high accuracy off, the same permission the
 phone already granted for posts, so nobody is asked twice — and `POST`s the
@@ -96,9 +97,11 @@ message: the marker's click seam, its own node.
 
 ## hostile cases
 
-- An installed app on iOS: no `focus` or `blur` ever, `hasFocus()` false —
-  the page publishes from load, stops on `visibilitychange` hidden, resumes
-  on visible (the simulator, 2026-09-02).
+- An installed app on iOS: `hasFocus()` false, no `focus`, a stray `blur` —
+  none of it matters; the page publishes while visible, stops on
+  `visibilitychange` hidden, resumes on visible (the simulator, 2026-09-02).
+- A desktop window behind another window is still visible, and publishes;
+  the phone is the device this is for.
 
 - Two people with the same display name, one card held: the holder sees the
   pin of the one whose card they hold and never the other — the match is by
