@@ -365,3 +365,5 @@ waiting (notes.md, "the builder is a feature-modular skillset", fm-spec-2
 - Scale: what the one-line reason on a triaged-out ask may say (tone is
   user-facing product surface, not engineering); and whether queue rank
   beyond bug > duplicate-count > age needs any policy at all yet.
+
+**2026-09-02, evening (ash):** workers are back on **Opus at effort high** (`CLAUDE_CODE_SUBAGENT_MODEL=opus`, `.claude/agents/worker.md` model opus). One day of Fable 5.1 workers at medium — a typical day, ash said — cost a third of the week's Fable budget (3% → 39%). Fable stays the triage and review seat.

@@ -89,7 +89,7 @@ carries nine agent-instruction nodes now; the newest are /retrofit and
 
 ## EARLIER TODAY (2026-09-02, morning): build 453 is live; two changes to how we work
 
-- **Subagents run on Fable 5.1.** `CLAUDE_CODE_SUBAGENT_MODEL=fable` in
+- **Subagents run on Opus at high again (evening ruling, usage: Fable 3% → 39% in one typical day; hybrid.md). Earlier today:** Subagents ran on Fable 5.1. `CLAUDE_CODE_SUBAGENT_MODEL=fable` in
   ash's user settings; the hybrid worker seat is the named agent
   `.claude/agents/worker.md` (model fable, effort medium, the preamble as
   its system prompt). Spawn with `subagent_type: "worker"`, `isolation:
