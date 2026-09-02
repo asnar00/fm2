@@ -337,3 +337,35 @@ hazard, unlabelled.
 (the port, here) unless an env var overrides it — and a gate failure that
 changes shape between retries is a shared-resource smell, distinct from the
 load smell (same step, slower).
+
+## the keyless inviter (2026-09-02) — a rig user shaped by guess
+
+**The ask:** the live-location worker seeding three rig users, one invited
+by another, so `/exchange` would hand a card copy across.
+
+**The estimate:** `invited_by` is a phone number.
+
+**The actual:** it is a world key — `phone:+digits`, the plus kept, as
+`/harden`'s `token_phone` keeps it. A keyless value sent exchange's copies to
+a phantom world; the proof read an empty map until the shape was found.
+
+**The lesson:** a rig user is shaped from `users.json`'s live examples or the
+reader that consumes the field, never from the field's name; and a two-user
+rig proves the seed first (curl the card list) before proving the feature.
+
+## the port cleared by hand (2026-09-02) — a kill aimed at a number
+
+**The ask:** move the simulator rig off 8099 (taken, it turned out, by ash's
+`com.user.deadman`, which had been failing to bind while rigs held it).
+
+**The estimate:** 8097 is free; clear whatever is on it and start the rig.
+
+**The actual:** 8097 is `com.noob.learn`. The clearing step killed it; launchd
+brought it back, and the rig never bound. Nothing was lost, and it could have
+been.
+
+**The lesson:** a port is chosen from a survey (`lsof -nP -iTCP -sTCP:LISTEN`
+and the LaunchAgents plists), and a rig is ended by the PID its starter
+wrote down — the live worker's `start.sh` had the pattern already. Never
+kill by port number: the number is not ours, only the process is.
+

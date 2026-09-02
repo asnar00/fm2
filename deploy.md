@@ -166,6 +166,14 @@ Bring-up, once per device:
    the main checkout's build dir. `fmlink --quick` rebuilds the binary; the
    port lives in the environment, not the source. One rig at a time: readout
    and drive share `/tmp/miso-readout.json` and `/tmp/miso-drive.json`.
+   **On the mini port 8099 belongs to `com.user.deadman`** (a launchd
+   agent of ash's that bound it the moment a rig let go, 2026-09-02): the
+   simulator rig there runs on `MISO_PORT=8098` (8097 is `com.noob.learn`,
+   8096 `com.noob.rsc`, 8090 muon; survey `lsof -nP -iTCP -sTCP:LISTEN` and
+   the LaunchAgents plists before choosing), and the web clip's URL carries
+   the port — re-add the clip if the port changes. **A rig is ended by its
+   PID, never by clearing its port**: `lsof -ti :PORT | xargs kill` killed
+   ash's learn server on 2026-09-02 when a rig had moved.
    Add `MISO_RIG_KEEP=1` (`/diag/rig/keep-worker`, 2026-09-02) and the rig
    keeps the page's service worker and caches, so the cache path — a mixed
    cache after rapid updates, the self-check's hashing — is under test;
