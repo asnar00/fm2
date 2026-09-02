@@ -1,0 +1,12 @@
+/* the fold's button: the sheet's quietest control. /build-row's geometry to
+   the pixel (sized to its word, not stretched like #panel button's flex:1) —
+   the same size as `features`, because /taste 2 makes a thing matter less by
+   dimming it, never by shrinking it — and /engineer's gear colour, dim folded
+   and lit open, so the button says whether it is open without a caret. */
+#credits #creditsRow { display: flex; margin: 0; }
+#panel #credits button#creditsBtn { flex: 0 0 auto; font: inherit;
+  font-size: 13px; padding: 5px 14px; border-radius: 9px;
+  border: 1px solid #2e2e33; background: #1a1a1d; color: #77777e; }
+#panel #credits button#creditsBtn.on { color: #c9c9d2; }
+/* the top margin the head used to give the first line */
+#credits #creditLines { margin-top: 6px; }
