@@ -228,7 +228,15 @@ async def s_edit(pg):
         await pg.dispatch_event('#cardEdit', 'pointerdown'); await pg.wait_for_timeout(600)
     if not await pg.evaluate("!!document.querySelector('.card-page .card-text[contenteditable=true]')"):
         print("      (no editable card text after the pencil)"); await dump(pg, "edit-open"); return False
-    await pg.click(".card-text"); await pg.keyboard.press("End"); await pg.keyboard.type(" smoke"); await pg.click(".card-title"); await pg.wait_for_timeout(1500)
+    # the caret goes to the END OF THE TEXT by a collapsed range, not the End
+    # key: on this Mac's Chrome End does not move the caret in a contenteditable,
+    # so the caret stayed where the click landed — past the end of a short text
+    # (cold, warm), inside a longer one (throttled: 'here to help smoke sm|oke',
+    # 2026-09-02). It never was a repaint: the caret rig showed no paint between
+    # the keys and the caret at 21/24 before the first one.
+    await pg.click(".card-text")
+    await pg.evaluate("(() => { const el = document.querySelector('.card-text'); const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); const s = getSelection(); s.removeAllRanges(); s.addRange(r); })()")
+    await pg.keyboard.type(" smoke"); await pg.click(".card-title"); await pg.wait_for_timeout(1500)
     txt = await pg.evaluate("(document.querySelector('.card-text')||{}).innerText || ''")
     if not txt.endswith("smoke"):
         print(f"      (card text after the edit: {txt[-60:]!r})"); await dump(pg, "edit-save")

@@ -1,0 +1,23 @@
+[
+  {"note": "the caret race (handover, next work 1): type on the sim keyboard straight after the pencil, while the open's echoes are still landing, and every character lands at the end in order"},
+  {"home": true},
+  {"wait_for": "[ev=tool_account]"},
+  {"tap": "[ev=tool_account]"},
+  {"wait_for": ".card-tile"},
+  {"tap": ".card-tile"},
+  {"wait_for": "[ctl=card_edit]"},
+  {"js": "const el = document.querySelector('.card-page .card-text'); window.__caretBefore = el ? el.innerText : null; return window.__caretBefore"},
+  {"tap": "[ctl=card_edit]"},
+  {"wait": 200},
+  {"assert": {"find": ".card-page .card-text", "ce": true}, "name": "after the pencil the words are editable"},
+  {"js": "const el = document.querySelector('.card-page .card-text'); const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return 1"},
+  {"text": "abcdefghijkl"},
+  {"wait": 800},
+  {"js": "return document.querySelector('.card-page .card-text').innerText === window.__caretBefore + 'abcdefghijkl'", "expect": true, "name": "twelve characters typed straight after the pencil landed at the end, in order"},
+  {"js": "if (document.activeElement) document.activeElement.blur(); return 1"},
+  {"wait": 1500},
+  {"js": "return document.querySelector('.card-page .card-text').innerText === window.__caretBefore + 'abcdefghijkl'", "expect": true, "name": "the saved block holds exactly the old text with the word appended"},
+  {"js": "const b = document.querySelector('.toolbar [data-ctl=card_edit]'); if (b && b.getAttribute('data-face') === 'save' && typeof feature_Editing !== 'undefined') feature_Editing.lock(); return 1"},
+  {"wait": 400},
+  {"home": true}
+]
