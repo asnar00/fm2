@@ -97,6 +97,12 @@ message: the marker's click seam, its own node.
 
 ## hostile cases
 
+- A real tap on a live pin (found by the one-pin review, 2026-09-02): the
+  open is sent a beat after the click, not inside it. Sent inside, the page
+  repainted under the finger, `clear()` removed the marker, and `/backdrop`'s
+  document listener saw a card page and a tap on nothing it owned — the bare
+  ground — and closed the card at once.
+
 - An installed app on iOS: `hasFocus()` false, no `focus`, a stray `blur` —
   none of it matters; the page publishes while visible, stops on
   `visibilitychange` hidden, resumes on visible (the simulator, 2026-09-02).

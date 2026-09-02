@@ -149,7 +149,13 @@ const feature_Live = {
   // no card yet (yourself, before the first) opens nothing
   tap(p) {
     if (!p.id || typeof feature_Loop === 'undefined') return;
-    feature_Loop.send({ type: 'click', ev: 'browse_open:' + p.id });
+    // after the click has finished bubbling, not during it: the open
+    // repaints the page synchronously, the map view goes and clear() takes
+    // this marker with it, and /backdrop's document listener then sees a
+    // card page open and a tap whose target is no longer on the page —
+    // "the bare ground" — and closes what was just opened (one-pin review,
+    // 2026-09-02). A beat later the tap has landed and the page may change.
+    setTimeout(() => feature_Loop.send({ type: 'click', ev: 'browse_open:' + p.id }), 0);
   },
 
   clear() {
