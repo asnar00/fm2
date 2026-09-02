@@ -33,3 +33,10 @@
   deploy keeps release; skip deploy's feature re-export when no .md
   changed. The zero-build path for tunable asks needs no work — it's
   rung 6 of the ladder itself.
+
+## 2026-09-02
+
+- render map vectors ourselves (self-hosted vector tiles for Kent on the
+  mini, the open-source Voyager style, offline included) — a future
+  feature, to be done when CARTO forces it by retiring raster tiles. For
+  now: CARTO Voyager raster via a free API key through /tiles.
