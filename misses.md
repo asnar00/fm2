@@ -448,3 +448,24 @@ no way off. The server half already skipped copies (`/exchange`'s
 always — and a gate is tested with a member who holds copies, not only an
 admin whose list is their own.
 
+## the gate's own caret (2026-09-02) — a rig step that blamed the app
+
+**The ask:** the deploy gate's throttled pass failed on the card-edit step
+with `'here to help smoke sm smokeoke'`; the handover had a "known caret
+race" in `/keep`, so the failure was read as that bug and a worker was
+briefed to fix the app.
+
+**The estimate:** a repaint mid-typing restores a stale caret.
+
+**The actual:** no repaint between the keys. `keyboard.press("End")` does
+not move a contenteditable caret in this Chrome, and `pg.click(".card-text")`
+lands the caret at the click point — past the end of a short text (cold,
+warm) and inside a text that two passes had grown (throttled). The caret rig
+(scratchpad/caret-rig) typed twelve characters ten times with a repaint
+forced between keys: ten clean.
+
+**The lesson:** when a gate step fails only as the world grows (a later pass,
+a longer text), suspect the step's own assumptions about position before
+the app; and a rig that types sets the caret it means, by a range, not by a
+key whose effect it never checked.
+

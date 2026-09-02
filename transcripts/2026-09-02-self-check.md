@@ -1813,3 +1813,293 @@ The onboarding build has landed with strong evidence: 51 checks in two runners, 
 > <status>completed</status>
 > <summary>Background command "Merge the onboarding branch into the simulator rig and relink" completed (exit code 0)</summary>
 > </task-notification>
+
+Spotlight's fixed tap landed on Apple Reminders this time; the tile order shifts. Making the rig's relaunch pick the miso tile by its label instead of a coordinate, then rerunning the gate check.
+
+The typed line landed in the wrong block: the placeholder is not a text node, so my selector missed. Reading the card page's readout to address the text block properly.
+
+The tour on the real simulator reads exactly as intended: the card sits over the toolbar with its pointer on the ringed bubble, skip in the corner. The whole flow ran with real fingers: gate, picture, typed line, tick, tour step by step, skip, and the once-only mark travelling.
+
+The onboarding deploy is running. Two things you should know before it lands:
+
+- **The gate applies to anyone whose card lacks a picture or a line,** not only new people. If your own card has both, you will not see it. Anyone else on the guest list with a bare card meets it once.
+- **Everyone gets the tour once,** you included, since nobody has seen it yet. It is skippable from its second card.
+
+Still building: the invite page and the toolbar pair.
+
+### p74
+*2026-09-02 15:46*
+
+> <task-notification>
+> <task-id>b25o0ciiq</task-id>
+> <tool-use-id>toolu_01PvQ4jhWuMdUbkwqfZNwiXT</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/b25o0ciiq.output</output-file>
+> <status>failed</status>
+> <summary>Background command "Integrate the onboarding nodes onto main, deploy, and stamp" failed with exit code 1</summary>
+> </task-notification>
+
+The smoke gate now does what a new person does: fills the card first, ends the tour, then the ten things. Redeploying onboarding with that. The invite page and the toolbar pair are still building.
+
+### p75
+*2026-09-02 15:49*
+
+> <task-notification>
+> <task-id>brbojae3i</task-id>
+> <tool-use-id>toolu_019VfLPtXbX8RMyr5vorNNsj</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/brbojae3i.output</output-file>
+> <status>failed</status>
+> <summary>Background command "Teach the smoke gate to pass the profile gate first, commit, and redeploy onboarding" failed with exit code 1</summary>
+> </task-notification>
+
+Redeploying with the gate handled at boot. The two remaining workers are still building.
+
+### p76
+*2026-09-02 15:53*
+
+> <task-notification>
+> <task-id>bso1deks0</task-id>
+> <tool-use-id>toolu_014BG3v7pXzQzEfVKk78eQCz</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bso1deks0.output</output-file>
+> <status>failed</status>
+> <summary>Background command "Pass the profile gate at boot in the smoke gate, commit, and redeploy onboarding" failed with exit code 1</summary>
+> </task-notification>
+
+One failure, only in the throttled pass, on the card-edit step. Cold and warm were green, so it may be timing under the throttle or a real interaction with the new gate. A standalone rerun of the gate is going to tell which.
+
+### p77
+*2026-09-02 15:55*
+
+> <task-notification>
+> <task-id>b78vonuf7</task-id>
+> <tool-use-id>toolu_01VrrwPJsC77mgP8YPqcPnyC</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/b78vonuf7.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Rerun the smoke gate standalone to see whether the throttled failure repeats" completed (exit code 0)</summary>
+> </task-notification>
+
+The failure repeats in the throttled pass alone, twice, so it is not noise. I'm adding a dump to that step so the next run shows the screen and the DOM at the failure, and rerunning the gate.
+
+The instrumented run is going; it will say whether the pencil failed to open the card or the save failed to hold under the throttle. The invite page and toolbar workers are still building.
+
+### p78
+*2026-09-02 15:58*
+
+> <task-notification>
+> <task-id>bxi3nni9d</task-id>
+> <tool-use-id>toolu_01Qyf4stXYZNwEcA3EAHPNhh</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bxi3nni9d.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Add a failure dump to the edit step and rerun the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+The caret fix is with a worker, stamped building, and the gate's diagnostic is committed. Onboarding is integrated on main and waits only for a green gate; it ships the moment the caret fix lands and proves out.
+
+Three builds running: the invite page, the toolbar pair, and the caret race.
+
+### p79
+*2026-09-02 16:17*
+
+> <task-notification>
+> <task-id>ad4b16069055d4ad7</task-id>
+> <tool-use-id>toolu_01A1bShazb1BDvHeVyNBG1Sx</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/ad4b16069055d4ad7.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Undo only when there is something, far right" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Both commits are in place on top of current main (`afc6bce`), the tree is clean, both classified confined, and the rig is ended by PID. Nothing deployed.
+> 
+> ## The diff
+> 
+> Branch `worktree-agent-ad4b16069055d4ad7`, two commits, 11 files, +805, nothing edited outside the two nodes and their parents' `order.md` (plus the regenerated transcript carrying the anchors):
+> 
+> - `9d14cb2` — **`shell/tools/undo/aside`** (`aside.md .rs .lib.rs .css`), tick in `features/miso/shell/tools/undo/order.md`, `tests/sim/undo-aside.json`, `transcripts/2026-09-02-self-check.md` (regenerated from the main session's jsonl; `#p71`, `#p72`).
+> - `cf5d890` — **`shell/tools/ember/current-only`** (`current-only.md .rs`), tick in `features/miso/shell/tools/ember/order.md`, `tests/sim/current-only.json`.
+> 
+> `tools/toggle_proof.py --since main`: both *implied — confined*. Worktree was 81 commits behind at start; fast-forwarded, and rebased again onto `afc6bce` after `profile-first`/`tour` landed mid-run — both proofs re-run on the rebased build.
+> 
+> ## What was proven (headless Chrome, 390×844, `scratchpad/undo-rig/`, 29 readout+screenshot pairs in `evidence/`)
+> 
+> **undo/aside** (`tests/sim/undo-aside.json`, all green as `_ash`): launcher no undo; taps idle none → one tap: present, rightmost, at the row's edge → undo puts the count back and the button goes; two taps → two presses; stale press on an empty stack does nothing; posts: `+` alone brings no undo (the known `/kinds/new`-after-`/late` residual in the handover, not mine), typing brings it apart (gap 65px vs the 8px grouped gap), confirmed delete keeps it, exactly two presses clear it; 👤, invite page and a card page idle: none; card edited: apart; undone: gone; a hand-reordered row: undo still last. Fresh user's first 👤 open (`opsprobe.py account _carol`, pre-rebase build): profile written, no undo.
+> 
+> **ember/current-only** (`tests/sim/current-only.json`, all green as `_bob`, a member): 👤's page ‹ 👤* plus as today; invite page ‹ plus* with no `tool_account`, nothing left of the plus but ‹, no undo; card page and posts untouched.
+> 
+> ## Outcome
+> 
+> Undo is gone from every row until the open tool has a step and then sits alone at the right edge — one auto-margin rule against `/ember`'s centring, one strip in the newest `tool_controls` link. Delivering "gone when nothing is left" required retiring `/undo`'s undo-of-undo (the stack never emptied under the button), so an undo press now files no step; redo is parked as the brief named. Testing the failure cases found a second silent step: `/me`'s `CardEnsure` on a first 👤 open showed undo the moment the tool opened, nothing done (lit before this node, unnoticed) — both now sit behind one seam, `undo_quiet(event)`, in the node. The second node drops a registry tool's `tool_&lt;id&gt;` control from a nested tool's row, generic for any future sub-tool.
+> 
+> ## Open risks, by name
+> 
+> 1. **‹ does not go back to 👤** (both briefs assumed it). Observed: from the invite page ‹ and the plus both land on the launcher (`open_tool` = `""`). The card is now two taps away; a one-level ‹ would be a `/back` child, not built.
+> 2. **Taps has no visible gap on a 390px phone**: ‹ + six 50px chips want 386px of 296, so undo is last and at the edge with the same 8px gap — the squeeze `/undo`'s own spec computed; posts/card rows show the gap.
+> 3. **`CardEnsure` named inside undo/aside** — a coupling in the direction undo → me; the cleaner home is a `/me` child extending `undo_quiet`. One line to move if triage prefers.
+> 4. **Profile gate for a member holding copies** (`/profile-first`, the onboarding worker's node, not touched): `_bob` boots onto the people grid with "add a picture and a line about you to start" and tools withheld, no card open — screenshot `evidence/gate-stuck.png`. A tile tap reaches the card; whether a real member finds that is the onboarding node's question. Hypothesis, reported not fixed.
+> 5. **Redo is gone** until built: one press too many has no road back (was: press again).
+> 6. The transcript in my first commit is a regeneration with 73 prompts against main's file — same anchors; take main's copy at merge if it has moved.</result>
+> <usage><subagent_tokens>257244</subagent_tokens><tool_uses>112</tool_uses><duration_ms>2534103</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-ad4b16069055d4ad7</worktreePath><worktreeBranch>worktree-agent-ad4b16069055d4ad7</worktreeBranch></worktree>
+> </task-notification>
+
+The toolbar pair is done and proven, and its testing found something important in the onboarding gate: a member who already holds other people's cards lands on the people grid with the sentence and no card open, because the gate takes the first profile card in the list as "me", and for an invited person that is a copy. Every canvasser is such a member, so this is fixed before onboarding ships. Reading the helper the gate uses.
+
+The server side already skips copies; only the page half's pick was wrong. Fixing that one line in the gate, and integrating the toolbar pair onto main.
+
+The toolbar pair is integrated and the simulator is checking it. Three things the toolbar worker found that you should rule on when you have a moment:
+
+- **‹ from the invite page goes to the launcher,** not back to 👤, and always did. With 👤 gone from that row your card is now two taps away. A one-level ‹ is a small node if you want it.
+- **Redo is gone.** Undo used to undo itself, which kept the stack from ever emptying; delivering "gone when nothing is left" retired that. One press too many has no way back until redo exists.
+- **On the taps tool the row is too full for a visible gap:** undo is last and at the edge, but only the usual spacing separates it. Posts and card rows show the gap.
+
+Waiting on the caret fix to reopen the gate, and on the invite page.
+
+### p80
+*2026-09-02 16:20*
+
+> <task-notification>
+> <task-id>af4e4c86dd32ae20c</task-id>
+> <tool-use-id>toolu_011RHcBtjZEU4mtjm1VXofFE</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/af4e4c86dd32ae20c.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Invite page: two buttons, a rank, the current project" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Waiting on the pre-rebase evidence run to finish before relinking on the rebased tree (the rig serves from the build dir, so a relink mid-run would corrupt the evidence).</result>
+> <usage><subagent_tokens>324062</subagent_tokens><tool_uses>119</tool_uses><duration_ms>2835922</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-af4e4c86dd32ae20c</worktreePath><worktreeBranch>worktree-agent-af4e4c86dd32ae20c</worktreeBranch></worktree>
+> </task-notification>
+
+The invite worker paused mid-evidence, waiting on its own background run, and will report when it finishes. Nothing for me to do on it yet; the simulator check and the caret fix are still running.
+
+### p81
+*2026-09-02 16:21*
+
+> <task-notification>
+> <task-id>bfiy2mphj</task-id>
+> <tool-use-id>toolu_01578A79UpDsbJxobo9Lcvyv</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bfiy2mphj.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Relink the simulator rig to main and check undo-aside and current-only on iOS" completed (exit code 0)</summary>
+> </task-notification>
+
+Both toolbar rules are proven on the real simulator: undo is absent on the launcher and inside taps until a real press on the counter, then it stands last at the right edge, and goes again on undo. Inside the invite page the row is ‹ and the plus with no 👤.
+
+Everything now waits on two workers: the caret fix, which reopens the gate for onboarding and the toolbar pair, and the invite page's final report. The tree is clean and ready to ship the moment the gate is green.
+
+### p82
+*2026-09-02 16:30*
+
+> <task-notification>
+> <task-id>af4e4c86dd32ae20c</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/af4e4c86dd32ae20c.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Invite page: two buttons, a rank, the current project" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Delivered. Three commits on branch `worktree-agent-af4e4c86dd32ae20c`, rebased onto main's current tip (`5b3e5f2`), tree clean, not deployed.
+> 
+> ## The diff (`git diff --stat main..HEAD`: 15 files, +1116/−6)
+> 
+> - `3c599cd` **users/invite/invite-tool/doors** — `/Users/microserver/fm2/.claude/worktrees/agent-af4e4c86dd32ae20c/features/miso/users/invite/invite-tool/doors/{doors.md,doors.rs,doors.js,doors.css}` + tick. Cites #p68 (ask), #p69 (no list), #p70 (no pencil). Redefines `invite_rows_html` to two buttons carrying the selected project as data attributes; one furniture sheet outside `#app` in two faces (name/phone/rank/invite/cancel; rank/show); wraps `invite_add` with `invite_into_ok` (holds the project, stands in it, no rank above your own) and `invite_into_stamp` (`project`, `rank` beside `authority`, skipping entries that have joined); wraps `feature_Editing.page` at load so the toolbar withholds its pencil on `.invite-page`. Classifier: **confined**.
+> - `4d213fc` **users/invite/qr/ranked** — `.../features/miso/users/invite/qr/ranked/{ranked.md,ranked.rs,ranked.css}`, tick in shared `qr/order.md`, and the product mirror (`products/miso/miso/users/invite/qr/order.md` tick + `ranked` symlink; checked `test -L` first). Wraps `qr_mint` (check, stamp the token row, carry fields forward on "new code", answer gains `rank`/`project`), `qr_claim` (row's fields onto the entry via `invite_into_stamp`), `render` (quiet "into sevenoaks as supporter" under *join miso*). **Not confined** (product override) — full untick proof done and recorded as a `Toggle-proof:` trailer; `toggle_proof.py` accepts it.
+> - `c4e6658` **loop/cards/kinds/projects/invited-into** — `.../features/miso/loop/cards/kinds/projects/invited-into/{invited-into.md,invited-into.rs}` + tick. Outermost `route` watch on the invitee's cards writes: once their own profile card exists, the entry's `project`/`rank` become a role link (`projects_role_link`, so `/audience`'s grade lands) on the **owner's original**, written into the owner's world through the op door (`handle_msg` as the owner; `/guard` merges, `/converge` repaints, `/remember` logs), the changed project handed to every member via `exchange_copy`/`exchange_give`, the newcomer's `current` set if empty, entry stamped `added`. Classifier: **confined**.
+> 
+> ## Evidence (`/private/tmp/claude-501/-Users-microserver-fm2/6004deb9-d2ef-4b9a-8b15-ef1e406b9cb8/scratchpad/doors-rig/`)
+> - `doors.py` (headless, port 8187, 40 checks) — `evidence/run.log`: **0 failures on the rebased build** (with main's new profile gate passed per user); `evidence/run-prerebase.log`: 0 failures before the rebase. Readouts + screenshots `evidence/{C-invite-page,C-name-sheet,C-qr-rank-sheet,C-qr-sheet,C-qr-count,C-no-project-sheet,D-carol-account,D-carol-post,E-ash-project,G-bob-refused,H-ash-project}.{png,readout.json}`.
+> - Unticked build: `evidence/unticked-invite-page.{png,readout.json}` — today's page (QR pill, send row, "invite someone", pencil), readout `{doors:0, qrPill:1, sendRow:1, someone:1}`.
+> - Toggle proof: `scratchpad/f-ticked.txt` vs `f-off-ranked.txt` (differs only by `ranked.css`) vs `f-reticked.txt` (identical); `feature_Ranked`/`qr-rank` grep 0 in main.rs, lib.rs, site/.
+> 
+> Proven by readout: two buttons, no list, no pencil on the invite page (pencil still on card pages); the name sheet (six ranks, team preselected, "into sevenoaks"); cancel sends nothing; carol invited as volunteer → after login her card says "volunteer for sevenoaks", ash's project page has her row with grade volunteer, ash holds her card, she holds ash's, the chip says she is in sevenoaks, her post is filed `in` sevenoaks with floor volunteer; QR: rank first, code, "into sevenoaks as supporter", two claims → both supporter, count "2 signed up", new code keeps the rank; bob (team, member) invites fay → the server writes ash's world and ash's next paint shows fay's row; bob asking admin is refused with "you're team there — you can't invite someone in above that"; no project selected → "no project selected", gil comes in as before.
+> 
+> ## Decisions to know about
+> - **Case (b), member inviting into a project they do not own: allowed, no refusal.** The server writes the owner's world at join; the owner's open page repaints via `/converge`. The rank is capped at the inviter's own rank in that project.
+> - **"Dropdown" is a real `&lt;select&gt;`** (six ranks, field grammar, drawn chevron). The brief's claim of a `/policy` select was wrong — there is no `&lt;select&gt;` anywhere in the tree; the app's other rank picker (`/audience`, project add sheet) is six pills. Ash said dropdown twice, so a dropdown; the two pickers now differ — a taste call for ash.
+> - Every **show** asks the rank afresh (team preselected); re-showing an existing code restamps its rank — the sheet says what it gives.
+> - **No retrofit**: existing guest-list entries carry no `project`; recorded in `doors.md`.
+> 
+> ## Open risks, named
+> 1. **Join needs a profile card.** The link is written on the invitee's first cards write that carries their own profile; a person who never gets one is never added. Main's `/profile-first` (landed during this build) makes the profile the first screen, which closes it in practice — proven on the rebased build, but the dependency is real.
+> 2. **Owner editing the project at the same instant** as the server write: their device's next write of that card (read before the link landed) wins by `edited` and drops the row. One-paint window; the owner can re-add from the project page.
+> 3. **`ranked` calls two functions of `doors`** (`invite_into_ok`, `invite_into_stamp`), same anchor, path tie-break puts doors first. Unticking `doors` alone is a link error; untick the pair.
+> 4. **A member's invitee's profile card does not reach the owner** (exchange follows invite links); the owner's row draws from the link's name. The project-membership visibility rung (#p71 "later") is still parked.
+> 5. The canvasser's own rank dropping after minting is not re-checked at claim (a day's window, their own code).
+> 6. Hypothesis, not observed: `invited_into_select` sets a var through `handle_msg` the same way `exchange_give` sets cards; the chip proved the value lands, but I did not check `/undo`'s view of a server-written `current`.
+> 
+> Rig ended by PID (24383 → 31967 series; last `kill $(cat server.pid)`). The announce line for the stamp: "invite: two buttons — show QR code, invite by name — each with a rank to give; whoever comes in joins your current project".</result>
+> <usage><subagent_tokens>319663</subagent_tokens><tool_uses>124</tool_uses><duration_ms>3399039</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-af4e4c86dd32ae20c</worktreePath><worktreeBranch>worktree-agent-af4e4c86dd32ae20c</worktreeBranch></worktree>
+> </task-notification>
+
+The invite page has landed, with a server-side write into the project owner's world when an invitee joins. That is the part I want to read myself: who may cause it and what it can write.
+
+The lessons are in the ledger. The simulator is relinking to main to photograph the new invite page, and the caret fix is still building; when it lands, everything on main ships through the gate in one go.
+
+### p83
+*2026-09-02 16:33*
+
+> <task-notification>
+> <task-id>b9fiwrmtv</task-id>
+> <tool-use-id>toolu_01Tsagt9QosDKWHNNfetHEqZ</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/b9fiwrmtv.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Relink the simulator rig to main and photograph the new invite page, its name sheet, and the QR rank picker" completed (exit code 0)</summary>
+> </task-notification>
+
+The page on iOS is exactly the ask: two buttons, no list, and the row is ‹ and the plus with no pencil. The buttons are plain divs, so I'll press them by their rectangles.
+
+Handover is current. Everything on main is proven and waits on one thing: the caret fix, which turns the gate green. Nothing else is open on my side.
+
+### p84
+*2026-09-02 16:36*
+
+> <task-notification>
+> <task-id>ae23e09e5e9726514</task-id>
+> <tool-use-id>toolu_01KVy12NxY18UewjmCBJC3b4</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/ae23e09e5e9726514.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Fix the caret race in card editing" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Waiting on the smoke chain; nothing else is independent of it right now.</result>
+> <usage><subagent_tokens>168186</subagent_tokens><tool_uses>75</tool_uses><duration_ms>2194494</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-ae23e09e5e9726514</worktreePath><worktreeBranch>worktree-agent-ae23e09e5e9726514</worktreeBranch></worktree>
+> </task-notification>
+
+The caret worker has its fix in and is waiting on its own two smoke runs. It reports when they finish.
+
+### p85
+*2026-09-02 16:37*
+
+> <task-notification>
+> <task-id>ae23e09e5e9726514</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/ae23e09e5e9726514.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Fix the caret race in card editing" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Only the smoke results remain, and they depend on the background run. Waiting for it.</result>
+> <usage><subagent_tokens>161179</subagent_tokens><tool_uses>77</tool_uses><duration_ms>2256324</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-ae23e09e5e9726514</worktreePath><worktreeBranch>worktree-agent-ae23e09e5e9726514</worktreeBranch></worktree>
+> </task-notification>
+
+The worker keeps stopping while its smoke run continues outside the harness's view, so it may not wake on its own. Checking its worktree and the run directly.
+
+The stopped worker's rig is down. The deploy of everything on main is running with the corrected gate step; I'll report the build and stamp the asks when it lands.
+
+### p86
+*2026-09-02 16:42*
+
+> <task-notification>
+> <task-id>bade0bas4</task-id>
+> <tool-use-id>toolu_01WyHfnGJUKiHX8aiDR276rQ</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bade0bas4.output</output-file>
+> <status>failed</status>
+> <summary>Background command "Adopt the gate's caret fix, commit, deploy everything on main, and stamp the four asks shipped" failed with exit code 1</summary>
+> </task-notification>
+
+The gate's invite steps now describe the two-door page. Deploying everything again; the four asks and the caret note get stamped on success.
+
+### p87
+*2026-09-02 16:47*
+
+> <task-notification>
+> <task-id>bor6hcujl</task-id>
+> <tool-use-id>toolu_01K8B1n4wwe1adaPe7kxa821</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b98647de-9597-4ca4-87a5-19b2960ef64d/tasks/bor6hcujl.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Rewrite the gate's invite steps for the two doors, commit, deploy everything, and stamp the asks" completed (exit code 0)</summary>
+> </task-notification>

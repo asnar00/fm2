@@ -7,7 +7,7 @@ the ledger is `misses.md`. Read the composed skillset alongside this — it
 carries nine agent-instruction nodes now; the newest are /retrofit and
 /confined.*
 
-## TODAY, LATER (2026-09-02, afternoon): build 471 is live; the simulator rig runs on the mini
+## TODAY, LATER (2026-09-02, afternoon and evening): build 506 is live; the simulator rig runs on the mini
 
 - **Shipped:** build 460 `/diag/self-check` + `/engineer` (the gear on the
   nøøb sheet; engineer-level UI lives only there — `engineer.agent.md` is
@@ -47,7 +47,7 @@ carries nine agent-instruction nodes now; the newest are /retrofit and
 - **Evening (builds 487–489):** `long-press/tool-words` (each tool's card
   says what it is for, in a line; twenty-three buttons and the grid/list/map
   picker have cards).
-- **On main, waiting for a green gate:** onboarding (`me/profile-first`: the
+- **Build 506 (evening, all of the below shipped together once the gate was green):** onboarding (`me/profile-first`: the
   own card gated until a picture and a line are in — the page half now takes
   the card with no `from`, a copy-holding member was being stranded;
   `long-press/tour`: an eight-card scripted tour, once per user, skippable
@@ -58,10 +58,14 @@ carries nine agent-instruction nodes now; the newest are /retrofit and
   `qr/ranked`: the code carries a rank and a project; `projects/invited-into`:
   the newcomer becomes a role link on the owner's original at their first
   card, written by the server through the op door, capped at the inviter's
-  rank). All proven on the iPhone simulator. **The gate is red on the known
-  caret race** (`/keep`: typing torn by a repaint under the throttled pass —
-  `'here to help smoke sm smokeoke'`); a worker is on the fix; ship the lot
-  when it lands. `tools/smoke.py` passes the profile gate at boot now.
+  rank). All proven on the iPhone simulator. **The "known caret race" was the
+  gate's own step**: `End` does not move a contenteditable caret in this
+  Chrome, and the click on `.card-text` landed mid-text once earlier
+  passes had grown it — the caret rig saw no repaint between keys and ten
+  of ten clean with a repaint forced (scratchpad/caret-rig). The step now
+  puts the caret at the end itself. Handover item 1 ("known bug, fix
+  first") is withdrawn unless the phone shows it afresh. `tools/smoke.py`
+  passes the profile gate at boot and reads the two-door invite page.
 - **Residuals from today's reviews, for ash:** ‹ from the invite page goes to
   the launcher, not 👤 (a one-level ‹ would be a `/back` child); redo does
   not exist since undo stopped undoing itself; taps' row is too full for a
