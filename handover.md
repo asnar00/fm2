@@ -66,6 +66,23 @@ carries nine agent-instruction nodes now; the newest are /retrofit and
   puts the caret at the end itself. Handover item 1 ("known bug, fix
   first") is withdrawn unless the phone shows it afresh. `tools/smoke.py`
   passes the profile gate at boot and reads the two-door invite page.
+- **Night (builds 513–520, ash away, autonomy granted):** `back/one-level`
+  (‹ one level up; the tour re-cut to read the screen, not the mirror),
+  `live/every-second`, `doors/as-sub-tools` (QR code and by-name as
+  sub-tool buttons; the page under them empty), `keep/scroll` (scroll kept
+  through repaints and across an update; per-card memory in-session),
+  `quiet-credits/credits-button`, tool-words for the row's new buttons,
+  and `tools/ask_ack.py` (a field ask is stamped building on arrival —
+  ash's ruling; rearm as `ask_monitor --local | ask_ack.py`). Workers are
+  **Opus at high** since the evening; the seat change is live within a
+  session only through the Agent call's `model` (hybrid.md).
+- **An intermittent the gate showed twice and I could not reproduce:** the
+  page closed mid-pass (warm once, throttled once) at the invite step with
+  every-second + as-sub-tools on main; a two-pass replay with listeners was
+  clean, and the next two deploys were green. smoke.py now prints crash vs
+  close by name; if it recurs, that line is the first clue.
+- **Still building (Opus):** the map centre button, square post pins, the
+  toolbar glide on a level change — three of ash's evening field asks.
 - **Residuals from today's reviews, for ash:** ‹ from the invite page goes to
   the launcher, not 👤 (a one-level ‹ would be a `/back` child); redo does
   not exist since undo stopped undoing itself; taps' row is too full for a
