@@ -1,3 +1,4 @@
 - [x] name-first
 - [x] delete-project
 - [x] current-project
+- [x] invited-into
