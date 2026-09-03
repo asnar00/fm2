@@ -1204,3 +1204,109 @@ Tara is in again, and this time the seed ran at the scan: 16 of your cards went 
 > couple of notes for the install page: 1) make the logo half its current size. 2) below the logo, add a line "welcome to miso"; then below that a small paragraph explaining that miso needs to be installed on your phone screen, and this is how you do it:
 
 Two refinements to the install page. Let me look at how it's composed.
+
+### p74a
+*2026-09-03 18:09*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458940985 {"t":"2026-09-03T18:09:00.967Z","launch":true,"running":"first-run","server":"578","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}
+> exchange: Tara handed 1 card(s) to 1 person(s)
+> exchange: seeding …9587 with 16 card(s) from asnaroo</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74b
+*2026-09-03 18:09*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>invited-into: Tara joined asnaroo.1787704828987 as candidate</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74c
+*2026-09-03 18:09*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>exchange: Tara handed 1 card(s) to 2 person(s)</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74d
+*2026-09-03 18:09*
+
+> above the photo crop UI, add a line explaining that you can pinch-zoom / drag to crop the picture
+
+### p74e
+*2026-09-03 18:09*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>exchange: Tara handed 1 card(s) to 2 person(s)</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74f
+*2026-09-03 18:09*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>exchange: Tara handed 1 card(s) to 2 person(s)</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74g
+*2026-09-03 18:09*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>exchange: Tara handed 1 card(s) to 2 person(s)</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+The rig answered "not found" for that path. Checking the page's real address, and in parallel locating the photo crop surface for your next ask.
+
+The install page reads right. Committing both nodes and launching the deploy, and reading the frame crop code for the pinch hint at the same time.
+
+### p74h
+*2026-09-03 18:12*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459122045 {"t":"2026-09-03T18:12:02.041Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74i
+*2026-09-03 18:12*
+
+> once you're signed in for the first time, we should see a welcome page: "welcome to the <project> project on miso!" - explain that we're first going to set up your profile and we need a picture and mission statement; then after profile page is done, another welcome page letting the user know that they can hold down any button for 2 sec to learn what it does.
+
+### p74j
+*2026-09-03 18:12*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459145193 {"t":"2026-09-03T18:12:25.191Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74k
+*2026-09-03 18:12*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459146338 {"t":"2026-09-03T18:12:26.336Z","launch":true,"running":"first-run","server":"578","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
