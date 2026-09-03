@@ -1,1 +1,2 @@
 - [x] floating
+- [x] current
