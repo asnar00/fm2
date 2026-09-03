@@ -1,0 +1,7 @@
+/* the two controls at the two ends while the gate stands (#p117). /ember
+   centres the control group by giving the last control an automatic right
+   margin, at a specificity these selectors have to beat. */
+body.fm-profile-first .toolbar .tool-button.ctrl[data-ev="ctx_undo"],
+body.fm-profile-first .toolbar .tool-button.ctrl[data-ev="ctx_undo"]:last-child { order: -1; margin-left: 0; margin-right: auto; }
+body.fm-profile-first .toolbar .tool-button.ctrl[data-ctl="card_edit"],
+body.fm-profile-first .toolbar .tool-button.ctrl[data-ctl="card_edit"]:last-child { order: 99; margin-left: auto; margin-right: 0; }
