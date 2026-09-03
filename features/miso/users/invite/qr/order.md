@@ -1,2 +1,3 @@
 - [x] instant
 - [x] ranked
+- [x] scan-is-proof

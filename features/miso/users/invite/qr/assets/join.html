@@ -76,6 +76,16 @@
     const c = await post("/users/invite/qr/claim",
                          { t: token, name: $("name").value, phone });
     if (!c.ok) { busy = false; $("err").textContent = c.error || "that didn't work"; return; }
+    if (c.in) {
+      // the claim itself logged this device in (a later node's answer; the
+      // base never says `in`): confirm the cookie stuck and open the app
+      const who = await fetch("/auth/whoami", { cache: "no-store" })
+        .then((x) => x.json()).catch(() => null);
+      if (who && who.authed) { location.replace("/?in=" + Date.now()); return; }
+      busy = false;
+      $("err").textContent = "you're in, but this browser did not keep the cookie";
+      return;
+    }
     const s = await post("/auth/request", { phone });
     busy = false;
     if (!s.ok) { $("err").textContent = s.error || "couldn't send the code"; return; }
