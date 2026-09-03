@@ -134,3 +134,14 @@ Ready for the invite workflow.
 > great. one note: the video post should have a square media, rather than the portrait clip. All visual media should be cropped to a central square, not just stills.
 
 Placing it in the tree first: the stills' square crop is `capture/square-crop`, so this reads as its refinement for video. Reading that node.
+
+The posts tool opened in map view, so no tiles were on screen. Switching to the grid and opening the test clip.
+
+The player is a square above the words. The frame is black until it plays, so I'll play it to see the crop.
+
+The crop is right: the square shows the clip's middle, with the top and bottom bands just visible at the edges. Shipping it.
+
+### p5a
+*2026-09-03 11:09*
+
+> the frame shouldn't be black until it plays - it should show the poster frame

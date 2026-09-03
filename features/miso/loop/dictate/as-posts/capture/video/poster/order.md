@@ -1,1 +1,2 @@
 - [x] player-in-place
+- [x] face-first
