@@ -1,1 +1,2 @@
 - [x] keep-worker
+- [x] plain-cookie
