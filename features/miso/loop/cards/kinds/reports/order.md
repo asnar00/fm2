@@ -1,1 +1,2 @@
 - [x] own-notes
+- [x] viewer

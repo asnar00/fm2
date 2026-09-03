@@ -1,0 +1,30 @@
+/* the report over the app: the page's own ground, a bar the toolbar's
+   height with ‹ on the left and share on the right, the report beneath */
+#repView {
+  display: none;
+  position: fixed; inset: 0;
+  background: #101012;
+  z-index: 60;
+  flex-direction: column;
+}
+#repView.show { display: flex; }
+.repview-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: calc(env(safe-area-inset-top) + 8px) 12px 8px;
+  border-bottom: 1px solid #202026;
+  color: #e6e6ea; font-size: 15px;
+}
+.repview-back {
+  width: 40px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; line-height: 1; cursor: pointer;
+  background: #1a1a1d; border: 1px solid #202026;
+  user-select: none; -webkit-user-select: none;
+}
+.repview-title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 600; }
+.repview-share {
+  padding: 8px 14px; border-radius: 999px; cursor: pointer;
+  background: #1a1a1d; border: 1px solid #202026; font-size: 14px;
+  user-select: none; -webkit-user-select: none;
+}
+.repview-frame { flex: 1; width: 100%; border: 0; background: #fff; }
