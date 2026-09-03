@@ -107,6 +107,14 @@ a server with no successor waiting — the port does go quiet then.
   `invite-qr.json` (`/qr`'s live canvassing codes — one row per inviter,
   expiring; deleting the file revokes every code and costs nothing else).
 - `~/.agent-config.json`: Vonage credentials (shared with ftr).
+- **Wifi watchdog** (2026-09-03, housekeeping #p4): the mini is on wifi
+  (`en1`; the ethernet port is empty), and its link dropped four times on
+  the evening of 2026-09-02, once for 67 minutes. `tools/wifi_watchdog.sh`
+  runs every 30 s from launchd `com.noob.wifiwatchdog` (reference plist in
+  tools/): ping the gateway, then 1.1.1.1; after two misses cycle the radio
+  once, five-minute cooldown. Transitions (DOWN, CYCLE, UP) and an hourly
+  OK line go to `~/wifi-watchdog.log`. A cable into `en0` is still the
+  better answer for a field day.
 
 ## Checking on it
 

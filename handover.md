@@ -44,6 +44,11 @@ carries nine agent-instruction nodes now; the newest are /retrofit and
   pass printed `!! the page closed` after its last step, all steps green —
   the intermittent from last night, still unexplained; (c) `undo-aside.json`
   showed 12 failures on the first run before a reload — not re-run.
+- **Wifi watchdog installed** (housekeeping #p4): `tools/wifi_watchdog.sh`
+  via launchd `com.noob.wifiwatchdog`, log `~/wifi-watchdog.log` (deploy.md,
+  "State on the mini"). The cycle itself is dry-tested only — a live cycle
+  would have cut the session; the first real DOWN/CYCLE/UP in the log is the
+  proof. A Monitor tails the log in-session; rearm it each session.
 - Build numbers: the misses commit landed mid-deploy, so the released sha
   is the docs commit and the live build reads 533.
 

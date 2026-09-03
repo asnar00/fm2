@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  The mini's wifi watchdog (tools/wifi_watchdog.sh): every 30 s, ping the
+  gateway; after a minute of silence cycle the radio once (five-minute
+  cooldown). Transitions go to ~/wifi-watchdog.log. Reference copy; the live
+  one is ~/Library/LaunchAgents/com.noob.wifiwatchdog.plist on the mini:
+
+    cp tools/com.noob.wifiwatchdog.plist ~/Library/LaunchAgents/
+    launchctl bootout gui/$(id -u)/com.noob.wifiwatchdog 2>/dev/null;
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.noob.wifiwatchdog.plist
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.noob.wifiwatchdog</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/microserver/fm2/tools/wifi_watchdog.sh</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>30</integer>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/wifiwatchdog.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/wifiwatchdog.log</string>
+</dict>
+</plist>
