@@ -53,9 +53,10 @@ Fable 42% → 49% for the whole day on Opus workers — the switch worked.*
   the mark goes on the map pin; "doorstep content" was a misapprehension —
   posts are team members' own notes.
 - **Residuals, not yet ruled on:** (a) `tests/sim/one-level.json` fails
-  three "‹ from a card page" steps on main — posts/projects read the stale
-  state mirror, but the 👤 case lost its ‹, so ‹ from a person's card may
-  really go to the launcher (one tap on the phone answers it);
+  three "‹ from a card page" steps on main because its `__open()` probe
+  reads `feature_Loop.state`, the mirror that goes stale after a ‹ tap
+  (the reel and the tour were moved off it, 2519421 / 9a16f8f); the app
+  is right on the phone (ash, 2026-09-03) — the test should read the row;
   (b) `undo-aside.json` showed 12 failures once, unrepeated; (c) the
   gate's throttled pass prints `!! the page closed` after its last step
   every time now (Playwright `Route.continue_` on a closed page — looks
