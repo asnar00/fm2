@@ -1,0 +1,12 @@
+/* the close: a 30px ring on the card's ground, ink ✕, on the title's
+   centreline (37px) at the media's right edge (17px), as /centred set the tag */
+.card-close {
+  position: absolute; top: 22px; right: 17px;
+  width: 30px; height: 30px; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid #3a3a3f; color: #c9c9d2; background: #161619;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+.card-close .icon-svg { width: 18px; height: 18px; display: block; }
+/* the tag steps left of the ring, a gap between */
+.card-tag { right: 55px; }

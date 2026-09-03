@@ -1,1 +1,2 @@
 - [x] aligned
+- [x] with-close
