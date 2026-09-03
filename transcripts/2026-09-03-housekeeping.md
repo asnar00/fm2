@@ -286,3 +286,17 @@ Plus the misplaced Brixton clip moved by hand, and the wifi watchdog running qui
 *2026-09-03 12:17*
 
 > on general cards, let's move the "profile"/"post" lozenge indicator down a bit (so its centerline matches the centerline of the title) and left a bit (so its right edge matches the right edge of the media area below it)
+
+Tag is on the title's centreline within a pixel and its right edge on the media's. Looking once, then shipping.
+
+### p14a
+*2026-09-03 12:21*
+
+> somewhere in your memory there is a misapprehension that we're going to be capturing "doorstep content" - this isn't true, and in fact will get us in trouble, because recording the public is (currently) considered a no-no. So the intent of the app is just to let team members post anything they want (usually notes or impressions after the fact). I figured this out because the report makes mention of "doorstep content". Please find and expunge any such indications from memory. Thanks!
+
+### p14b
+*2026-09-03 12:23*
+
+> also, when viewing the report, there's no way to get back to the app.
+
+Build 541 is live. Now the two new items: expunging the "doorstep" idea, and a way back from the report.

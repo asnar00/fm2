@@ -22,7 +22,7 @@ The make-a-post surface grew a control at a time. `/plus-at-home` put the
 plus on the posts toolbar; `/as-posts` put the recording dot beside it, each
 inserting itself in front of `/undo` as it arrived, so the row's order was
 the order the features shipped in. Ash asked for that cleaned up and widened
-to every way a canvasser captures a doorstep (`#p2`).
+to every way a team member captures a note (`#p2`).
 
 This node is the row. It takes the two controls that are already there out of
 wherever they landed and re-lays the set in one deliberate order — the

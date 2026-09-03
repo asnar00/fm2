@@ -6,7 +6,7 @@
 
 ## user
 
-Two posts from the same doorstep, or a person and their post, no longer sit on top of each other on the map. The pins turn about the place they mark and spread around it in a circle — two face each other across the point, three make a Y, more make a ring — every stem still pointing at the spot, every face upright, every one tappable. Zoom in and they come apart on their own; zoom out and they gather into the fan again.
+Two posts made from the same spot, or a person and their post, no longer sit on top of each other on the map. The pins turn about the place they mark and spread around it in a circle — two face each other across the point, three make a Y, more make a ring — every stem still pointing at the spot, every face upright, every one tappable. Zoom in and they come apart on their own; zoom out and they gather into the fan again.
 
 ## spec
 

@@ -491,6 +491,13 @@ impl feature_Reports {
     // This is the seam a narrower report joins at — one ward, one project, one
     // week are all this function returning less, and nothing else changing.
 
+    // the heading over the posts in the corpus the writer reads. A seam: a
+    // node that describes the data differently redefines this and nothing
+    // else (the writer's own instructions are `reports_system`, the other).
+    fn reports_corpus_heading() -> String {
+        String::from("DOORSTEP POSTS, NEWEST FIRST\n\n")
+    }
+
     fn reports_post_cap() -> usize {
         300
     }
@@ -527,7 +534,7 @@ impl feature_Reports {
             }
             text.push('\n');
         }
-        text.push_str("DOORSTEP POSTS, NEWEST FIRST\n\n");
+        text.push_str(&reports_corpus_heading());
         let mut n = 0usize;
         let mut through = 0u64;
         let mut points: Vec<serde_json::Value> = Vec::new();
