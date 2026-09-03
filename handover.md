@@ -111,6 +111,16 @@ for the join page) before it shipped, and then again by Tara's phone.*
   server by a fallback pgrep — misses.md "the rig that killed the server";
   the rule is now in the worker seat and deploy.md.
 
+- **Builds 610–614, from ash's phone late evening:** `browse/flick/on-touch`
+  (613 — iOS cancels pointer events on a scroll; the flick reads
+  touchstart/touchend through `arm/release/go` seams opened in `/flick`,
+  `go` dedupes the two roads at 400 ms), `capture/one-add/video-only`
+  (614 — the add records; no kind chooser; audio/photo/write posts are not
+  made any more, existing ones keep their kind; the smoke gate's post step
+  mints through `/new`'s event under this rule). Field-ask flow ruled: a
+  non-admin ask is stamped `proposed` (tools/ask_ack.py); ash accepts by
+  word; batch-built; everyone gets it (notes.md "feature flow").
+
 ## FOR SATURDAY
 
 Reset any test rows (`tools/reset_user.py --list`). Show one code from 👤
