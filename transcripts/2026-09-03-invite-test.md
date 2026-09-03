@@ -441,3 +441,194 @@ Your iPhone has picked up 572 and rejoined. Watching for the scan.
 > it's still asking for a phone number - a phone number shouldn't be mandatory for QR code invitees. It should be optional to fill in in the profile page
 
 A number should be optional at the scan, then. The pieces for that mostly exist: the unticked instant node minted accounts with a placeholder number, and the add-number node lets a person add a real one from their profile. Let me check what those need.
+
+### p30a
+*2026-09-03 17:19*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>qr: phone:+447813943023 minted code 8859a6…</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+The name-only scan landed in the app on the simulator. Now checking the "add your number" row on that user's 👤 card with a headless browser, then the toggle proof and deploy.
+
+### p30b
+*2026-09-03 17:19*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788455984858 {"t":"2026-09-03T17:19:44.855Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+The new user's landing card shows the "add your number" row beneath the profile. Now the toggle proof, commit, and deploy.
+
+Built, proven and committed. The deploy is in the gate now, about five minutes.
+
+**What it does.** The join page's number field now reads "number (optional)". Type just your name, tap join, and you're in. The account gets a placeholder number that can never be a real phone, so everything keyed by number keeps working. On the new person's own 👤 card the row "add your number" is already there, and adding one texts a code and makes that number a way to log in on a second device.
+
+**Proven on the rig** by curl, by a finger on the simulator's join page with only a name typed, and by a headless browser landing on the new user's profile card with the add-your-number row showing. Toggle proof recorded.
+
+**For your test.** The code you just minted is on build 572, which still wants a number. Wait for my note that the next build is live, then show a new code and scan with only a name.
+
+### p31
+*2026-09-03 17:23*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788456177105 {"t":"2026-09-03T17:22:57.103Z","launch":true,"running":"first-run","server":"572","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Gate pass one. Waiting.
+
+### p32
+*2026-09-03 17:23*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788456218915 {"t":"2026-09-03T17:23:38.914Z","launch":true,"running":"572","server":"572","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Pass two. Waiting.
+
+### p33
+*2026-09-03 17:24*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788456258940 {"t":"2026-09-03T17:24:18.680Z","launch":true,"running":"572","server":"572","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Pass three. Handover next.
+
+### p34
+*2026-09-03 17:25*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 50072 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Handover under way.
+
+### p35
+*2026-09-03 17:25*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 52458 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p36
+*2026-09-03 17:25*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 52458 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p37
+*2026-09-03 17:25*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 52509 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Build 573 is live and stamped. Show a new code from 👤 on your phone, scan it on the second iPhone, type a name only, and tap join. It should open the app straight away. I'm watching the log for the join.
+
+### p38
+*2026-09-03 17:25*
+
+> <task-notification>
+> <task-id>byewilkv1</task-id>
+> <tool-use-id>toolu_01Hs9murEYpW98ML2tnhipy6</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/byewilkv1.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy the name-only build through the smoke gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Deploy confirmed complete, exit 0.
+
+### p39
+*2026-09-03 17:35*
+
+*(edited and resent — superseded by the next prompt; do not cite)*
+
+> the taps button came back
+
+### p40
+*2026-09-03 17:35*
+
+> the taps button came back
+
+Let me reproduce it on the rig rather than theorise: switch the taps tool off for the test user, load the app headless, restart the server, load again.
+
+### p40a
+*2026-09-03 17:38*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788457110995 {"t":"2026-09-03T17:38:30.992Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p40b
+*2026-09-03 17:38*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788457120145 {"t":"2026-09-03T17:38:40.143Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Here is where I got to. Ash's invite test can go on meanwhile.
+
+**What the server holds.** Your taps switch is off in your world, set once long ago and never changed since. Every server-side view agrees: the switch is present and resolves to off.
+
+**What the phone shows.** The black box has your finger on a taps button at 18:35, and since each restart today the server has logged a tap count arriving from your phone stamped with a fresh epoch. So the phone is drawing the toolbar from a copy of the world that has the switch on or missing.
+
+**What I could reproduce.** On the rig, with the switch set off for a test user, a cold load hides taps, and it stays hidden after a server restart. So it is not the switch, the restart, or today's builds on a fresh load. It is the installed phone's cached world, which the app now shows before the join completes.
+
+Two quick things from you would pin it down:
+
+1. Force-quit the app and reopen it. Does the taps button go away? If yes, it was the cached copy shown before the join, and I'll fix the hydrate order.
+2. Open the nøøb sheet's feature chooser. Is taps still unticked there?
+
+I'll build the fix once I know which. Your name-only scan test on 573 is unaffected by this.
+
+### p41
+*2026-09-03 17:39*
+
+> force-quit and reopen makes it go away
+
+That settles it: the join fixes it, so the bad copy came from an in-place update. The diag log has no launch line for 573 on your phone, which means the update was applied without a reload. Reading how that path starts the new code.
+
+### p41a
+*2026-09-03 17:39*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788457177876 {"t":"2026-09-03T17:39:37.828Z","launch":true,"running":"573","server":"573","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
