@@ -24,6 +24,13 @@ Miso's one crossing point. Client-side: features *send* by appending type-tagged
 
 `messaging.js`: `feature_Messaging` wraps `feature_Loop.apply` (lazily — comms linearises before loop, so the wrap installs by a short poll once `feature_Loop` exists): after every turn, `drain()` moves `_send` into the outbox and flushes; `flush()` posts FIFO, injecting non-empty replies via `feature_Loop.send`; `wait()` is the perpetual long-poll injecting broadcasts; both stand down while `/replay` is active.
 
+`messaging.js`, `refused(status, msg)` /extension/: what a refused POST means for the message at the head — the base answers false, keep it and wait, which is the break this loop always did. `/past-a-refusal` is the first to answer otherwise.
+
 *(Refactored 2026-08-25, accounts #p21, behaviour unchanged: the 16KB body
 limit in `msg_endpoint` moved into `msg_body_cap()` so a later feature can
 widen it — `/roomier` is the first.)*
+
+*(Refactored 2026-09-03, invite-test #p159, behaviour unchanged: `flush()`'s
+bare `if (!r.ok) break;` asks `refused(status, msg)` first, and the base
+answers false, so the loop still breaks on every refusal —
+`/past-a-refusal` is what makes it answer otherwise.)*

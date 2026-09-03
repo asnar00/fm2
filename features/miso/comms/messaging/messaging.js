@@ -25,6 +25,14 @@ const feature_Messaging = {
       }
     } catch (e) {}
   },
+  // the seam for what a refused POST means for the message at the head of the
+  // queue. The base answers false — keep it and wait, because the server may
+  // be up or the cookie may be back next time, and order is the outbox's whole
+  // promise. A later node may answer true for an answer that cannot succeed on
+  // a retry, so the queue behind it is not held hostage.
+  refused(status, msg) {
+    return false;
+  },
   // deliver FIFO; replies with a type become events. offline = stop and wait.
   async flush() {
     if (this.flushing || this.replaying()) return;
@@ -33,7 +41,12 @@ const feature_Messaging = {
       try {
         const r = await fetch('/msg', { method: 'POST',
           body: JSON.stringify(this.queue[0]) });
-        if (!r.ok) break;
+        if (!r.ok) {
+          if (!this.refused(r.status, this.queue[0])) break;
+          this.queue.shift();
+          this.save();
+          continue;
+        }
         const reply = await r.json();
         this.queue.shift();
         this.save();

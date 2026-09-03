@@ -1,2 +1,3 @@
 - [x] roomier
 - [x] own-slot
+- [x] past-a-refusal
