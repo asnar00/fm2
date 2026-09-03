@@ -116,6 +116,12 @@ const feature_Reel = {
     if (!el) return;
     const lat = parseFloat(el.getAttribute('data-lat')), lon = parseFloat(el.getAttribute('data-lon'));
     if (!isFinite(lat) || !isFinite(lon)) return;
+    this.pan(lat, lon);
+  },
+
+  // where the map goes for a place: the seam a node that aims differently
+  // redefines, leaving follow (and what wraps it) alone
+  pan(lat, lon) {
     if (typeof feature_Map === 'undefined' || !feature_Map.map) return;
     try { feature_Map.map.panTo([lat, lon], { animate: true, duration: 0.45 }); } catch (e) { /* mid-mount */ }
   },

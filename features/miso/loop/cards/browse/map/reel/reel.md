@@ -26,6 +26,6 @@ On the posts map, a band along the bottom holds the posts, newest first: each on
 
 ## code description
 
-`reel.js` — `feature_Reel`: `host` made at load outside `#app`; `posts()` (the world's posts, newest first, joined to `#mapData`'s places); `render()` by signature; `current()` and `follow()` (the lozenge at the left edge, the pan); `sync()` wrapped around `feature_Map.sync` so it runs after every paint that could show or hide the map.
+`reel.js` — `feature_Reel`: `host` made at load outside `#app`; `posts()` (the world's posts, newest first, joined to `#mapData`'s places); `render()` by signature; `current()` and `follow()` (the lozenge at the left edge), `pan(lat, lon)` (where the map goes — the seam `/floating` redefines); `sync()` wrapped around `feature_Map.sync` so it runs after every paint that could show or hide the map.
 
 `reel.css` — the band, the lozenges, the inset on `#misoMap` while `body.fm-reel` is set.

@@ -20,4 +20,4 @@ The band along the bottom has no ground of its own: the lozenges float over the 
 
 `floating.css` — the band's ground and border off, the map's inset off.
 
-`floating.js` — redefines `feature_Reel.follow` to aim the pan a half-band higher.
+`floating.js` — redefines `feature_Reel.pan` (the seam `/reel` opened for it, so `/current`'s wrap of `follow` survives whatever order the two load in — the first cut replaced `follow` and lost the mark, #p21) to aim a half-band higher.

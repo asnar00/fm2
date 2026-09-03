@@ -383,3 +383,30 @@ The map now owns the ground beside the card, so the backdrop tap no longer close
 *2026-09-03 13:14*
 
 > the "fan" display should include post and displayed user - right now the user (me) is overlapping the posts I made here.
+
+The live pin now fans with the posts at the same spot. Committing that and deploying the whole batch.
+
+Build 552 is live. One last check on the current-post mark, which is hard to see at screenshot scale.
+
+The outline and arrow are rendered, light grey at the lozenge's top edge. They read faintly at screenshot scale but are there on the device.
+
+Build 552 is live with all of it:
+
+- **Floating reel.** No dark band. The lozenges float over the map, and the map glides so the post's place lands in the clear above them.
+- **Current post marked.** The lozenge the map moved to has a light grey outline and a small arrow up to the map.
+- **Post opens over the map.** From the map view a post grows into place, the map stays behind it instead of the dot grid, and the reel tucks away while the post is up. A plain tap on the map beside the post puts it away.
+- **Swipe to dismiss.** Flick the post left or right and it slides off, returning you to the map and the reel.
+- **Reel stays.** The vanishing after a background tap was the reel reading the state mirror a frame late. It reads the toolbar now.
+- **Live pin in the fan.** Your own pin fans out with the posts made where you stand. Checked at Brixton on the simulator with the live pin and two posts at 120 degrees.
+
+Each was driven with real touches on the simulator before shipping. Today's builds run 531 to 552.
+
+### p20
+*2026-09-03 13:42*
+
+> a misunderstanding: I wanted the current post marked on the map, not the reel lozenge - and we don't need the arrow on the lozenge. I guess we can still highlight the lozenge with an outline to show the connection; but the focused post pin on the map should get the light grey outline.
+
+### p21
+*2026-09-03 13:43*
+
+> also, the highlighted lozenge in the reel should always be the leftmost fully displayed one

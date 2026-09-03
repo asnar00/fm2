@@ -1,0 +1,4 @@
+/* the mark is the pin's: a light ring in place of the dark halo; the lozenge
+   keeps its outline and loses the arrow */
+.reel-post.reel-current::before { display: none; }
+.map-pin.reel-focus .map-pin-face { outline: 2px solid #c9c9d2; }
