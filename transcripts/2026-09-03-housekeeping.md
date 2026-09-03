@@ -265,3 +265,24 @@ Your phone should pick it up on its next exchange with the server. If the map st
 *2026-09-03 12:12*
 
 > they look great. nice one! one small tweak - can the "arrow" part of the marker be black, the same as the outline of the post? That would make it stand out better against the dark grey map.
+
+Build 540 is live. The stem is now the same near-black as the ring around the face, and the grey shadow under it is gone since it no longer needs one. On the simulator's light test map the stems merge into the faces' outline, which is what you asked for; against the dark ground on the phone they should read cleanly.
+
+Today so far, all shipped and stamped:
+
+| build | what |
+|---|---|
+| 531 | video post's clip plays above the words |
+| 532 | a firm press presses the first time |
+| 536 | video posts play as a central square |
+| 537 | a video post keeps its face until it plays |
+| 538 | pins at one place fan out around it |
+| 539 | a recording's post is placed where it was recorded |
+| 540 | map pins' stems are black |
+
+Plus the misplaced Brixton clip moved by hand, and the wifi watchdog running quietly.
+
+### p14
+*2026-09-03 12:17*
+
+> on general cards, let's move the "profile"/"post" lozenge indicator down a bit (so its centerline matches the centerline of the title) and left a bit (so its right edge matches the right edge of the media area below it)
