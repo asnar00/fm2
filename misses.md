@@ -515,3 +515,21 @@ by outcome and exposed the threshold in minutes. A week of reasoning about
 DOM races had never asked the phone what it saw. deploy.md says this
 already ("a real phone bug is diagnosed from /touches first"); it was not
 done until today.
+
+## siblings at one anchor (2026-09-03) — two nodes fighting over one function
+
+**The ask:** four refinements of the reel in one message (#p19): floating,
+current, opens-over-map, swipe-away — four nodes, one anchor.
+
+**The estimate:** each wraps or replaces what it needs on `feature_Reel`;
+provenance order settles who is outermost.
+
+**The actual:** same-anchor siblings load in name order, and `floating`
+REPLACED `follow` after `current` had wrapped it — the mark was lost on
+the phone and the failure looked like a stale mirror. A seam fixed it:
+`/reel` gained `pan(lat, lon)` and `/floating` redefines only that.
+
+**The lesson:** a node never replaces a parent's method wholesale when a
+sibling might wrap it; it redefines the narrowest seam, and the parent
+opens one if none exists (agents.md step 3). And when several nodes share
+an anchor, assume nothing about their order.

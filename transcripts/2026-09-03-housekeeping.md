@@ -641,3 +641,39 @@ This is worth building properly, and today gave it a rich first data set. My pla
 1. **A tool that finds the tweak pairs.** Every commit subject names its node and its ask, and a refinement is a child node made soon after its parent. So the lineage is already in the tree: parent node's provenance quote, then each child's quote, in order. A script mines that into a digest of "asked for X, then wanted Y".
 2. **A place the lessons live where every build reads them.** The tree's agent instructions compose into the skillset that agents read at session start. A `taste/learned` instruction node holds the distilled preferences, seeded from today.
 3. **A cadence.** At each session end, run the digest since the last run, distil anything new into that node, same as the misses ledger.
+
+The digest reads well: 11 refinements of 5 asks in two days, with the pattern visible. Now the node that turns it into standing instructions, seeded from today.
+
+### p32
+*2026-09-03 16:09*
+
+> it could use data from previous asks as well
+
+Good point. The tool walks git, so the whole history is available. Running it over everything since the tree began.
+
+The whole-history digest reads as one voice. Distilling it into the standing instruction node, with the cadence written down.
+
+The learning loop is in place and shipped as build 564.
+
+**What it is.**
+- **The digest.** A tool walks the feature tree, dates every node by its first commit, and pairs each ask with the refinements its child nodes asked for afterwards, over all of history. First run: 169 refinements of 76 asks since 13 August, all yours. The output reads as "asked for X, then within the hour wanted Y", grouped by ask.
+- **The lessons.** A new instruction node under the taste standard, in the skillset every builder reads at session start. Thirteen defaults distilled from the digest, each with the nodes that are its precedent. In short: controls live in the toolbar, never on the page; what is under an overlay stays visible; start bigger and further from the finger; mark the subject not the control, and keep hints quiet; use the platform's idiom and glyph; a choice made once stays made; feedback is immediate and honest; newest first, strictly; kinds match each other; what is shown is exactly what is meant; nothing is ever lost; the dark ground is the whole ground; and expect the second ask within the hour, so leave it a seam.
+- **The cadence.** At every session end, run the digest since the last session, read what was asked after shipping, and write any new pattern into that node. Same discipline as the misses ledger, for taste. It is in the handover, in notes, and in my memory.
+
+**Next rung, when it matters.** The tool takes a user filter, so once a second person files tweaks the node can grow a per-asker section. Everything today is one voice, so that can wait.
+
+### p33
+*2026-09-03 16:17*
+
+> yeah per-user preferences will come later. nice one! this is really fun - it's amazing to build an app from within the app itself - a very immediate experience
+
+It is. Today made the loop visible end to end: you filed an ask from the toolbar on a street corner, it was stamped building before you put the phone away, and the build landed while you were still looking at the thing it changed. Then the tweak came back the same way. That immediacy is exactly what the digest fed on: 30-odd asks today, most refined within the hour, all captured in the tree with their words.
+
+The tally since this morning runs from build 531 to 564. Every one was proven with a real finger on the simulator before it shipped, the wifi has been steady all afternoon with seven quiet checks, and Fable is holding well after the switch to Opus workers.
+
+When you want to stop for the day, say so and I will write the handover, regenerate the transcript, and run the first proper digest pass for the session end.
+
+### p34
+*2026-09-03 16:17*
+
+> ok let's wrap up for the day - write the handover

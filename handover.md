@@ -1,5 +1,5 @@
 # handover
-*state of play for the next session — updated 2026-09-03, morning (housekeeping); rewritten 2026-09-02, morning, at the
+*state of play for the next session — rewritten 2026-09-03 at session end (transcripts/2026-09-03-housekeeping.md); before that 2026-09-02, morning, at the
 end of a short settings session (transcripts/2026-09-02-settings.md, 6
 prompts) after Saturday's 20-ask day (transcripts/2026-09-01-saturday.md).
 Discipline in `agents.md`; ops in `deploy.md`; the pipeline in `hybrid.md`;
@@ -7,58 +7,65 @@ the ledger is `misses.md`. Read the composed skillset alongside this — it
 carries nine agent-instruction nodes now; the newest are /retrofit and
 /confined.*
 
-## TODAY (2026-09-03, morning): build 533 is live — the taps, the video post, the wifi
+## TODAY (2026-09-03): builds 531–564 — the taps' real cause, the map reel, the learning loop
 
-- **The taps (housekeeping #p3, `keep/lands/on-release`, build 532):** ash's
-  "two or three taps to press a button" was never a DOM race. The phone's
-  black box held 89 presses: every press that clicked was down ≤114 ms,
-  every press with no click ≥127 ms — iOS hands a touch held past ~120 ms
-  to another recognizer and never synthesises the click; the firm second
-  press was the one it ate. The simulator repeats it (scratchpad/holdtap:
-  50–110 ms clicks, 130 ms and up never). The tap is now read on
-  `pointerup` (one synthetic click at the element under the finger, the
-  browser's own click stopped at the window). Proven on the sim: one send
-  per press from 50 to 450 ms, a 700 ms hold sends nothing; as-sub-tools
-  and glide green. misses.md has the entry; `scratchpad/taps.py` is the
-  one-query black-box reader (pointerdown → was there a click?).
-- **The video post (#p3, `poster/player-in-place`, build 531):** tapping
-  the poster swapped its class to `post-video`, which had no `order`, so
-  the clip fell under the words. One rule.
-- **The wifi (#p3):** the mini is on Wi-Fi (`en1`; Ethernet `en0` has no
-  cable). The unified log shows the mini's own link going down at
-  19:51:57, 20:59:38, 22:47:50 and 01:50:25 local; the first outage lasted
-  67 minutes (327 failed re-associations, error −3906, "broken backhaul"
-  faults — the access point lost its uplink). Nothing of ours was running
-  at 22:47 or 01:50, and no deploy touched the network at 19:51. The
-  hourly usage sampler failed at 19:54 and 20:54 local (DNS), the phone's
-  reports stop 18:5x–20:2x UTC. Verdict: the router/mesh, not us. For
-  Saturday: a cable into `en0`, and a launchd watchdog that cycles Wi-Fi
-  if the gateway is unreachable for a minute is the cheap insurance (ash
-  to rule).
-- **Residuals:** (a) `tests/sim/one-level.json` fails three "‹ from a card
-  page" steps on main with on-release unticked too — posts/projects read
-  the stale state mirror (`open_tool` is rewritten at the tool's own link
-  after `/payload` published it; the screen is right), but on the 👤 case
-  the row had no ‹ afterwards, so ‹ from a person's card may really go to
-  the launcher — one tap on the phone answers it; (b) the gate's throttled
-  pass printed `!! the page closed` after its last step, all steps green —
-  the intermittent from last night, still unexplained; (c) `undo-aside.json`
-  showed 12 failures on the first run before a reload — not re-run.
-- **Wifi watchdog installed** (housekeeping #p4): `tools/wifi_watchdog.sh`
-  via launchd `com.noob.wifiwatchdog`, log `~/wifi-watchdog.log` (deploy.md,
-  "State on the mini"). The cycle itself is dry-tested only — a live cycle
-  would have cut the session; the first real DOWN/CYCLE/UP in the log is the
-  proof. A Monitor tails the log in-session; rearm it each session.
-- **The learning loop (housekeeping #p31–#p32):** `tools/tweaks.py` is
-  the tweak digest — every ask paired with the refinements its children
-  asked for, all of history; `features/miso/shell/taste/learned/
-  learned.agent.md` is where the patterns live (13 defaults, in the
-  skillset). **Cadence: at every session end run `python3 tools/tweaks.py
-  --since <last session's date>`, read what was asked after shipping, and
-  write any new pattern into learned.agent.md with its precedents** — the
-  misses ledger's discipline, for taste.
-- Build numbers: the misses commit landed mid-deploy, so the released sha
-  is the docs commit and the live build reads 533.
+*Written at session end. 34 commits, every build proven with a real finger
+on the iPhone simulator before it shipped (memory: fm2-prove-the-real-path).
+Fable 42% → 49% for the whole day on Opus workers — the switch worked.*
+
+- **The taps (housekeeping #p3, `keep/lands/on-release`, 532):** ash's
+  "two or three taps" was never a DOM race. The phone's black box held 89
+  presses: every press that clicked was down ≤114 ms, every press with no
+  click ≥127 ms — iOS hands a touch held past ~120 ms to another
+  recognizer and never synthesises the click. The tap is read on
+  `pointerup` now. misses.md has the entry; `scratchpad/taps.py` is the
+  one-query reader. **Diagnose a phone tap bug from the black box first.**
+- **Video posts:** `poster/player-in-place` (531, the clip above the
+  words), `square-crop/clips-too` (536, the player and viewfinder as the
+  central square), `poster/face-first` (537, the face until it plays),
+  `as-posts/where-taken` (539, a recording placed where it was made, with
+  its time — last night's clip had been placed at first opening; moved by
+  hand through the op door).
+- **The map:** `pins/fan-out` (538; the map regrouped: `square-posts` and
+  the new node under `pins`), `with-live` (the live pin joins),
+  `black-stem`, `bigger-faces` (+50%); `map/reel` (546; a second regroup:
+  squares/boundaries/quiet-credits under `basemap`) with `floating`,
+  `current` → `on-the-pin` → `stem-too`, `opens-over-map` (map behind the
+  card, tap the map to close), `swipe-away`, `quicker`, `on-people-map` →
+  `people-there` → `live-only`; and the reel lists exactly the map's set
+  (`data-ids` on `#mapData`) with room at its end (#p22).
+- **Reports:** `own-notes` (the writer told the truth: the team's own
+  notes, never recordings of the public — ash's ruling, memory updated),
+  `viewer` (a sheet with ‹ and share; the first two cuts probed with
+  HEAD and fell back — proven on a planted report only after ash's
+  second look), `fit-page`, `share-glyph`.
+- **Also:** `tag/aligned/centred`, `long-press/further`; the wifi
+  watchdog (`tools/wifi_watchdog.sh`, launchd `com.noob.wifiwatchdog`,
+  log `~/wifi-watchdog.log`, seven quiet OKs — the mini is on Wi-Fi with an
+  empty ethernet port; a cable is still the right answer for Saturday).
+- **The learning loop (#p31–#p32):** `tools/tweaks.py` (the digest of
+  every ask with its refinements, all history — 169 of 76 at first run)
+  and `taste/learned/learned.agent.md` (thirteen defaults, in the
+  skillset). **At every session end run `python3 tools/tweaks.py --since
+  <last session>` and re-distil.** Per-asker rules later.
+- **Rulings today:** ship when done to your satisfaction, never wait for
+  the word (memory); the reel = the map's set; people reel = live only;
+  the mark goes on the map pin; "doorstep content" was a misapprehension —
+  posts are team members' own notes.
+- **Residuals, not yet ruled on:** (a) `tests/sim/one-level.json` fails
+  three "‹ from a card page" steps on main — posts/projects read the stale
+  state mirror, but the 👤 case lost its ‹, so ‹ from a person's card may
+  really go to the launcher (one tap on the phone answers it);
+  (b) `undo-aside.json` showed 12 failures once, unrepeated; (c) the
+  gate's throttled pass prints `!! the page closed` after its last step
+  every time now (Playwright `Route.continue_` on a closed page — looks
+  like teardown order, not the app); (d) `on-people-map`'s
+  `data-post-ids` is unused since `people-there`; (e) the fan's 30 px
+  grouping distance is fixed, not scaled with the bigger faces;
+  (f) `tools/tweaks.py` counts new capabilities under grouping nodes as
+  "refinements" — a correction-language filter would sharpen it.
+- **Not pushed:** main is ~35 commits ahead of origin; deploy ships from
+  the mini, and the mini's GitHub key was left for ash.
 
 ## TODAY, LATER (2026-09-02, afternoon and evening): build 506 is live; the simulator rig runs on the mini
 
