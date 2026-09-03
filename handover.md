@@ -121,6 +121,18 @@ for the join page) before it shipped, and then again by Tara's phone.*
   non-admin ask is stamped `proposed` (tools/ask_ack.py); ash accepts by
   word; batch-built; everyone gets it (notes.md "feature flow").
 
+## TOMORROW (2026-09-04): a field walk — posts and transcription
+
+Ash walks around making many video posts and transcribing on the phone and
+the server. Watch: `/dictate` (the phone's whisper-tiny and the server road),
+`/as-posts`, `/poster` now landing again under the new caps, `/pic-beside`
+for the first real pictures beside cards from a phone, the outbox under
+many writes (`misoDropped` in the engineer sheet if anything is refused),
+and the broadcast slot's cost with bigger lists. Field asks from ash build
+at once; anyone else's stamp `proposed` and wait for his word. Re-run
+`python3 tools/tweaks.py --since 2026-09-03` at the next session end — the
+late evening's eight asks are not distilled yet.
+
 ## FOR SATURDAY
 
 Reset any test rows (`tools/reset_user.py --list`). Show one code from 👤
