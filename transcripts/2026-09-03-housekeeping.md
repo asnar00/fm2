@@ -349,3 +349,37 @@ Kill the app, reopen it on 545, and tap open on your report.
 > it works nicely now, thanks. In map view, I'd like one change: in the bottom area of the map, I'd like a zone that shows posts as a most-recent first scrolling horizontal list; each post should appear as a short-form lozenge showing the image thumbnail and part of the text, with date/time and author. the zone should show about 1.5 posts horizontally, so you can see when there's more than one;  scrolling the list horizontally should smoothly move the map to the current post's location. New posts should appear at the head of the list (leftmost).
 
 A bigger one. The map is at its six-child cap again, so this needs a regroup first, then the new node. Reading the map's host layout and what the pins carry.
+
+### p18a
+*2026-09-03 12:58*
+
+> <task-notification>
+> <task-id>bi2lfmc4s</task-id>
+> <summary>Monitor event: "the mini's wifi watchdog log (DOWN / CYCLE / UP, hourly OK)"</summary>
+> <event>2026-09-03 13:58:43 OK gw=192.168.1.254 Wi-Fi Power (en1): On</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Build 546 is live with the reel.
+
+**What you get on the posts map:** a band along the bottom, between the map and the toolbar, holding every post newest first. Each lozenge shows the post's picture (the poster for a clip, an initial if it has neither), up to two lines of its words, and the author and time in plain words. About one and a half lozenges show at once, so the next one always peeks in. Flick the band and, once it settles, the map glides to wherever the post you landed on was made. A post with no place leaves the map where it is. Tap a lozenge and the post opens. A new post arrives at the left end.
+
+**Under the hood:** the map was at its six-child limit, so its ground nodes (tiles, ward lines, the credit) were regrouped under one parent first. The chains before and after differ in zero lines, and the reel's own untick proof is recorded in the commit. Proven on the simulator with eight posts: the band showed, and scrolling to the third post panned the map to its coordinates.
+
+The wifi watchdog has now logged three quiet hourly OKs.
+
+### p19
+*2026-09-03 13:09*
+
+> looks great. couple of tweaks: 1) the reel should float over the map but not have a dark background (you should be able to see the map between the post previews); 2) highlight the post we moved the map to (a light-grey outline/arrow); 3) animate the post opening up to full view, and keep the map in the background rather than the dot-grid; 4) when a post is opened, we should be able to dismiss it by swiping left or right, which should return us to the reel+map (currently the reel disappears when we tap the background to dismiss the post)
+
+Four refinements of the reel, each its own node under it. Writing them now.
+
+The picker marks the selected view with a different class than I assumed. Fixing that and re-running the open, swipe and backdrop proof.
+
+The map now owns the ground beside the card, so the backdrop tap no longer closes it. I'll let a plain tap on the map close the post too, then ship.
+
+### p19a
+*2026-09-03 13:14*
+
+> the "fan" display should include post and displayed user - right now the user (me) is overlapping the posts I made here.
