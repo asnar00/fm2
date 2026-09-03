@@ -91,10 +91,12 @@ under both: any road that reaches an event with an inline `data:image/…` in it
 — one written after this node, say — has it converted there instead.
 
 **Offline is the local copy, not a fetch.** Every picture this device makes is
-kept in its own IndexedDB store (`miso-pics`), and a `MutationObserver` swaps
-`src="pic/<id>"` for an object URL wherever the bytes are held here. So the
-picture is on screen in the same frame it was taken, before any upload, with
-no network at all — and it stays there offline, forever, whatever the server
+kept in its own IndexedDB store (`miso-pics`), and the loop's html is dressed
+on its way to the DOM: `src="pic/<id>"` becomes the object URL wherever the
+bytes are held here. So the picture is on screen in the same frame it was
+taken, before any upload, with no network request made at all — dressing the
+string rather than the element is what makes that "no request" rather than
+"a request, cancelled" — and it stays there offline, forever, whatever the server
 knows. The upload rides **its own queue, not `/messaging`'s outbox**: the
 outbox carries JSON ops through `POST /msg` and bytes do not fit that road.
 The queue drains at load, straight after a capture, and on `online`, and a
@@ -275,12 +277,17 @@ called from three redefinitions — `feature_Cards.shrink` and
 `feature_Poster.draw`, the two roads a picture is made on, and
 `feature_Loop.send` as the net beneath them.
 
-`resolve(root)` swaps the reference for a local object URL on every
-`img[src^="pic/"]` it finds, and `watch()` runs it from a `MutationObserver`
-so it covers the loop's repaints, `/map`'s own DOM writes and any surface
-written later. `swap` is where one element is decided: the local copy if there
-is one, the reference left alone if the picture has never been missed, and
-`hold` otherwise.
+`dress(html)` is the first of two resolvers and the one that matters: it takes
+the loop's html while it is still a string — `feature_Loop.paint` is wrapped —
+and rewrites every `src="pic/<id>"` to the device's own object URL, or to
+`data-pic` with no `src` for a picture on the clock. An observer cannot do
+this: by the time one runs the browser has begun loading the src it parsed.
+
+`resolve(root)` and `watch()` are the second resolver, the net under DOM that
+does not come through `paint` — `/map`'s pins, `/reel`'s row, any surface
+written later. A `MutationObserver` runs `resolve` over every added subtree
+and `swap` decides one element: the local copy if there is one, the reference
+left alone if the picture has never been missed, and `hold` otherwise.
 
 `hold`, `missed`, `arm` and `again` are the missing picture's clock. `missed`
 runs from the capture-phase `error` listener and doubles that id's wait;
