@@ -486,3 +486,32 @@ different claim from the one first written into the commit.
 fragment set, and the server source *with the path-keyed enablement vars
 understood* — and the commit says exactly what differed.
 
+
+## the tap that iOS kept (2026-09-03) — a week of "two or three taps"
+
+**The ask:** "screen taps still don't reliably press buttons, often
+requiring 2 or 3 taps" (housekeeping #p3) — a bug ash had reported before
+(#p150, `/lands`) and had been living with since.
+
+**The estimate:** a DOM race — a repaint between pointerdown and click
+detaches the button, the click lands on nothing. `/lands` was built on that
+reading and rescued one case (the save-on-blur repaint); the rest were
+assumed to be more of the same, waiting for the next rig to catch one.
+
+**The actual:** the phone's own black box (`/touches`, 2026-09-02 to 09-03)
+had the answer in one query: 89 presses on toolbar buttons, 65 clicked, 11
+rescued by `/lands`, 13 with no click at all — and every one of the thirteen
+was held 127 ms or longer, every press that clicked 114 ms or shorter. Not
+a race: iOS hands a touch held past ~120 ms to a different recognizer, and
+that one never synthesises the click. The simulator reproduced it in ten
+taps (scratchpad/holdtap: 50–110 ms clicks, 130 ms and up never). The
+firm, deliberate second press was exactly the press it ate. `/on-release`
+reads the tap on pointerup instead.
+
+**The lesson:** a phone-only tap bug is diagnosed from the black box
+*first* — the record is already on the mini, and one script over it
+(`scratchpad/taps.py`: pointerdown → was there a click?) sorted the presses
+by outcome and exposed the threshold in minutes. A week of reasoning about
+DOM races had never asked the phone what it saw. deploy.md says this
+already ("a real phone bug is diagnosed from /touches first"); it was not
+done until today.
