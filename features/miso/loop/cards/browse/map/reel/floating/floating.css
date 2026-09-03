@@ -1,0 +1,4 @@
+/* the band floats: no ground, no border, the map to the toolbar */
+#mapReel { background: transparent; border-top: 0; }
+body.fm-reel #misoMap { bottom: 0; }
+body.fm-reel .leaflet-bottom { bottom: calc(env(safe-area-inset-bottom, 0px) + 56px + 108px); }
