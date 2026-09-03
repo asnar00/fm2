@@ -1,1 +1,3 @@
 - [x] steps
+- [x] smaller-logo
+- [x] welcome

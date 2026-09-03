@@ -1062,3 +1062,145 @@ Noted. First the deploy needs to finish, then I'll look at how the current proje
 > <status>completed</status>
 > <summary>Background command "Deploy the co-members build through the smoke gate" completed (exit code 0)</summary>
 > </task-notification>
+
+### p63f
+*2026-09-03 18:02*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458556920 {"t":"2026-09-03T18:02:36.916Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+The title reads well: level with the picker and the lozenge, centred, in the chosen accent, and the picker's chip is gone. Committing and deploying.
+
+The title build is committed, proven confined, and in the gate. I'll stamp it shipped when it lands. Nothing else is pending on my side, so the second-iPhone scan on 577 can go ahead whenever you like.
+
+### p64
+*2026-09-03 18:04*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458665750 {"t":"2026-09-03T18:04:25.744Z","launch":true,"running":"first-run","server":"577","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Gate pass one.
+
+### p65
+*2026-09-03 18:05*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458707523 {"t":"2026-09-03T18:05:07.522Z","launch":true,"running":"577","server":"577","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Pass two.
+
+### p66
+*2026-09-03 18:05*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458747450 {"t":"2026-09-03T18:05:47.191Z","launch":true,"running":"577","server":"577","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Pass three.
+
+### p67
+*2026-09-03 18:06*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 59895 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Handover under way.
+
+### p68
+*2026-09-03 18:06*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 61714 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p69
+*2026-09-03 18:06*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 61714 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p70
+*2026-09-03 18:06*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 61763 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Build 578 is live and stamped. The project name now sits at the top of every screen and the picker's chip is gone. Your phone will pick it up as a reload, since the page changed.
+
+Nothing is pending on my side. The scan on the second iPhone will land on 578 with the project visibility from 577.
+
+### p71
+*2026-09-03 18:06*
+
+> <task-notification>
+> <task-id>bikg7q82u</task-id>
+> <tool-use-id>toolu_017E8xXr6qrC5bD2kzXQfbzc</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/bikg7q82u.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy the title build through the smoke gate" completed (exit code 0)</summary>
+> </task-notification>
+
+### p72
+*2026-09-03 18:06*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458796489 {"t":"2026-09-03T18:06:36.441Z","launch":true,"running":"578","server":"578","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Deploy confirmed complete, and your phone is on 578.
+
+### p73
+*2026-09-03 18:07*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>qr: a name-only claim — placeholder number minted
+> qr: Tara joined on phone:+447813943023's code 8859a6… (…9587)
+> doors: …9587 is invited into asnaroo.1787704828987 as candidate
+> qr: …9587 is in on the scan — cookie issued
+> exchange: seeding …9587 with 16 card(s) from asnaroo</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Tara is in again, and this time the seed ran at the scan: 16 of your cards went to her world at once. The project join and the members' cards follow on her first launch.
+
+### p74
+*2026-09-03 18:08*
+
+> couple of notes for the install page: 1) make the logo half its current size. 2) below the logo, add a line "welcome to miso"; then below that a small paragraph explaining that miso needs to be installed on your phone screen, and this is how you do it:
+
+Two refinements to the install page. Let me look at how it's composed.
