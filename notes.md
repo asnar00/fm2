@@ -2932,3 +2932,22 @@ extracted, each with its precedent nodes. A rule lives while its precedent
 holds; an ask that contradicts it amends it. Per-asker rules are the next
 rung once a second asker files tweaks (`--user`).
 
+
+## feature flow (ruled 2026-09-03, invite-test #p157)
+
+Two users asked for features on the same evening (ash as admin, ash as
+Tara), which raised how features flow from one person to another. The
+discussion (invite-test #p157–#p157): the project ladder — admin → candidate
+→ team → volunteer → supporter — is already a following graph, and a
+feature could ship to its asker and flow down the ladder, with adoption
+above; but the build spend is the reason everyone cannot build whatever
+they want — anyone may ask, and the person paying for tokens decides what
+gets built.
+
+**The ruling, for now:** an ask from anyone who is not admin or support is
+stamped `proposed` (tools/ask_ack.py reads the asker's authority from the
+guest list); ash accepts and prioritises proposals by hand, they are built
+in a batch, and everyone gets them. A person can switch a feature off in
+the chooser. Later, chosen but not built: the proposal queue with seconds
+("wanting is cheap"), the payer's sheet with the budget beside it, and the
+flow down the ladder with the asker's rank as the feature's floor.

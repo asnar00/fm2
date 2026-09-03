@@ -2892,3 +2892,105 @@ Both remaining asks are clear enough to build now: a vertical flick between card
 The deploy fell over in its features export, a directory that would not delete mid-clean, which looks like a transient race. Rerunning it, and fixing my rig probe in parallel.
 
 Flick up went to the next post twice, flick down came back, and the audio-only post's pin carries the speaker. Checking the pin's look and the deploy, and reading the people reel for the newest ask.
+
+All six field asks from Tara's phone are built and proven on the rig. Five are in the gate now, and the sixth is chained to deploy the moment they land. I'll confirm the builds as they ship.
+
+- **Close button at top right** on every card, sending what ‹ sends; the type tag steps left.
+- **Author and date under a post's title**, "asnaroo · 3 sep"; the *from* line retires on posts.
+- **Post page stripped** of the clip length, the owner note, and the map location pill. Profiles keep the pill, where it sets your location.
+- **Flick up or down on a card** to reach the next or previous one in the list, only at the end the page is already scrolled to, so a long card still scrolls.
+- **Sound glyph on the pin** of an audio-only post instead of the initial.
+- **People reel lists everyone the map shows**, live or placed by their card.
+
+One thing to know for the flick: the list it walks is the surface's own, so in the posts tool with a project current it walks that project's posts in the order shown.
+
+### p152
+*2026-09-03 19:46*
+
+> <task-notification>
+> <task-id>bdhdl7kti</task-id>
+> <tool-use-id>toolu_01XtGwUQWPBFP6gT6dFuG8YW</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/bdhdl7kti.output</output-file>
+> <status>completed</status>
+> <summary>Background command "After the five-ask deploy lands, commit and deploy the reel node and stamp it" completed (exit code 0)</summary>
+> </task-notification>
+
+Everything is shipped and stamped on Tara's sheet:
+
+- **Build 595:** the close on every card, author and date under a post's title, the plainer post page, the flick between cards, and the sound glyph on audio-only pins.
+- **Build 596:** the people reel showing everyone on the map.
+
+The handover records the six builds and one warning for whoever builds next: two nodes are at the six-child cap, so the next child under posts or the card page forces a regroup. The rig is stopped, the tree is clean, and the ask watch stays armed for anything else from the phones.
+
+### p153
+*2026-09-03 19:51*
+
+> ok right so this raises an interesting question doesn't it - now we have two users making feature requests, how do we control the flow of features from one user to another?
+
+Good question, and today the answer is "we don't": every ask becomes a node, every node ships to everyone, and the only thing that is per-person is the stamp on the asker's sheet.
+
+The tree already has the pieces for something better, so this is a policy choice more than a build:
+
+- **Asker-first.** Every node has a per-person `enabled` switch, and the chooser on the nøøb sheet can flip one for you or for everyone. A field ask could ship switched off by default, switched on in the asker's world at the moment it's stamped shipped. The asker sees their feature at once; nobody else notices. When you like it, one tap in the chooser makes it true for everyone. That's the flow control you're asking about, and it's a small change: a node born from an ask carries a "trial" mark, and the stamp turns it on for the asker.
+
+- **Who may spend a build.** Right now anyone on the guest list who taps the miso button gets a node built, which costs Fable and ships to the campaign. The ask lifecycle already has a "proposed" state. Members' asks could land there and wait for your tap before they're built; yours and support's go straight to building. Tara asking for six things in ten minutes tonight was you, but on Saturday it could be a canvasser.
+
+- **Rank-gated features.** Like posts, a feature could carry a floor by project grade. I'd hold this back: it makes the app differ per person in ways that are hard to talk about at a door.
+
+My recommendation is the first two together: members' asks wait for your approval, and approved features ship to the asker first with a one-tap promotion to everyone. Say the word and I'll build both, or tell me a different line.
+
+### p154
+*2026-09-03 19:54*
+
+> there's a bug with a video clip recorded this afternoon in soho - thumbnail isn't showing up either in map or in grid/list/post view. can you delegate that and then we can continue discussing feature flow?
+
+Delegating the thumbnail bug to a worker on Opus in its own worktree now.
+
+A worker is on the thumbnail bug in its own worktree, told to diagnose from the live card's blocks and the day's logs before building, and to report rather than write to the live server. I'll relay its report when it lands.
+
+Back to feature flow. The two moves I put forward again, so you can rule on them separately:
+
+1. **Members' asks wait for your tap.** An ask from anyone who isn't admin or support lands as "proposed" on your sheet. You tap to approve, and only then does it get built. Yours and support's build straight away, as now.
+2. **Approved features ship to the asker first.** The new node is off for everyone and on in the asker's world at the moment it's stamped shipped. A tap in the chooser promotes it to everyone.
+
+Either alone is useful. The first controls spend, the second controls spread. Which do you want, and is the approver just you, or support too?
+
+### p155
+*2026-09-03 20:02*
+
+> I like the idea of "user A follows user B" - a "social network" of sorts. In our team we already have that structure; admin -> candidate -> team -> volunteer -> supporter. The goal is for tara and her team to build the features they need, and admin's job is to make sure everything works.
+
+That fits the tree better than approval gates. The ladder is already a following graph: every rank follows the ranks above it in the project, and admin follows everyone.
+
+So the rule I'd build:
+
+- **A feature ships to its asker, then flows down the ladder.** When a node is stamped shipped, it carries the asker's rank in the project as its floor, the way a post does. It is on for the asker, for everyone at their rank or below in that project, and for admin, always. People above the asker don't get it unless they adopt it.
+- **Adoption is one tap.** The chooser on the nøøb sheet lists features that reached you from below as "from Tara", with a switch. A candidate can take up what her team built; a team member can take up what a volunteer asked for.
+- **Admin's job stays what you said.** You get everything the moment it ships, the gate and the rigs prove it works, and the engineer sheet shows what's on for whom. No approval step on ideas.
+
+Two things this changes from today. First, an ask builds straight away whoever makes it, which means build spend follows the team, not you. I'd keep an eye on that through the usage watch rather than a gate. Second, a feature that touches everyone by nature, like the close button tonight, still ships to everyone, since the asker's rank was admin.
+
+The pieces already exist: the grade on role links, the per-person switch on every node, the global layer, the chooser, and the stamp. The new node is the floor on a shipped feature and its resolution by rank. One question before I write it up: should a feature reach the ranks below automatically, or should they too adopt it with a tap? I'd say automatically, since a canvasser at a door won't go looking in a chooser.
+
+### p156
+*2026-09-03 20:04*
+
+> The build spend is the reason why we can't just have everyone building whatever they want - unless they're paying for tokens, of course. Anyone can ask for any feature, but ultimately the person spending the money decides what it gets spent on. That's an interesting wrinkle.
+
+Yes, that's the wrinkle: the ladder says where a feature flows, but the wallet says whether it gets built at all. So the two mechanisms sit at different points:
+
+- **Asking is free and open.** Anyone taps the miso button and says what they want. It lands on the sheet as a proposal, not a build.
+- **Wanting is cheap.** People who follow the asker, or anyone in the project, can second a proposal with a tap. A proposal carries a count and the names.
+- **Building is a purchase.** The person paying for tokens sees the proposals ranked by who asked and how many want it, next to today's budget from the usage watch, and taps build. That tap is the spend decision. Your own asks skip the queue because you are the payer.
+- **Shipping flows down the ladder** from the asker, as we said, with adoption above.
+
+Two consequences worth naming. Tonight's monitor stamps every ask "building" the moment it sees it, which on Saturday would promise a canvasser something the wallet hasn't agreed to. Before Saturday I'd change that one line so a non-admin ask is stamped "proposed" and yours "building". And "paying for tokens" could later be literal: a project with its own budget builds its own features, and then the payer is whoever holds that budget, not you.
+
+I'd record this as the ruling in notes.md and build the proposal queue after Saturday, with only the stamp change before. Shall I do those two?
+
+### p157
+*2026-09-03 20:06*
+
+> I think this is something we build later, not now. For the moment, let's just make it so that all non-admin requests get "proposed", I manually accept them and prioritise them, they get built in a batch, and everyone gets them. People can always disable features, but they (for the moment) can't just build whatever they want.
+
+Agreed. That's a one-line change in the ask acknowledger plus a ruling in the notes. Doing both now.
