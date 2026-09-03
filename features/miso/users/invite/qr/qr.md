@@ -6,6 +6,12 @@
 
 ## user
 
+*Context, corrected 2026-09-03 (transcripts/2026-09-03-invite-test.md#p15):
+the code is shown to the canvassing team at the start of a session so they
+all sign themselves up from one picture — never to a member of the public at
+a door. The paragraphs below were written with the doorstep in mind; read
+"the person at the door" as "a canvasser", and see `/scan-is-proof`.*
+
 On the invite tool there is a row that says **show a QR code**. Tap it and the
 screen fills with a code. The person at the door points their camera at it,
 lands on a page that says who invited them, types their **own** name and number,

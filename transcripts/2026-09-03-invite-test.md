@@ -118,3 +118,141 @@ Seen in the logs just now: a scan of your live invite code came from your own nu
 > OK. The QR code shouldn't require an SMS challenge - having the QR code within the time limit is "proof" that you're authorised.
 
 Understood: the code itself is the proof, so a scan should land you logged in with no PIN. Reading the current QR path to see where the challenge sits.
+
+Node written. Now building in the triage worktree and proving the claim road on the rig.
+
+The product tree needs a link to the new node's folder. Adding it the way the others are linked, then rebuilding and re-proving.
+
+Body is bytes. Fixing that one line, rebuilding, and re-running the claim proof in one go.
+
+Curl proof passes both ways. Now the real path on the simulator: Safari on the join page, name and number typed, expecting the app to open.
+
+The keyboard shifted the fields under my second tap. Reloading the page and redoing it with keyboard-aware positions.
+
+Both fields filled. Tapping join, then a screenshot of where it lands.
+
+The scan landed in the app as "tara sim", on the add-to-home-screen page a browser tab gets. That is the real path. Now the toggle proof for the join-page seam, then commit and deploy.
+
+Toggle proof holds: unticked, the node's code leaves the server and the join page is byte-identical. Committing the two nodes and deploying.
+
+Deploy is running through the smoke gate in the background. I'll report when it lands and the build number is stamped.
+
+### p7
+*2026-09-03 17:02*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788454933850 {"t":"2026-09-03T17:02:13.848Z","launch":true,"running":"first-run","server":"564","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+That's the smoke gate's headless browser launching against the build under test, part of the deploy. Nothing to act on. Still waiting for the deploy to finish.
+
+### p8
+*2026-09-03 17:02*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788454975599 {"t":"2026-09-03T17:02:55.598Z","launch":true,"running":"564","server":"564","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Still the gate's headless passes. Waiting on the deploy.
+
+### p9
+*2026-09-03 17:03*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788455015706 {"t":"2026-09-03T17:03:35.449Z","launch":true,"running":"564","server":"564","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Third gate pass. Waiting for the deploy's own completion.
+
+### p10
+*2026-09-03 17:04*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 42610 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+The gate passed and the new server is taking over from the old one. Waiting for the deploy to report.
+
+### p11
+*2026-09-03 17:04*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 47289 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p12
+*2026-09-03 17:04*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 47289 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p13
+*2026-09-03 17:04*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 47330 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p13a
+*2026-09-03 17:04*
+
+> <task-notification>
+> <task-id>bn686vc9z</task-id>
+> <tool-use-id>toolu_014Ged6UGTdhTFTnCKccCsjj</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/bn686vc9z.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy the release through the smoke gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 570 is live with the scan-is-proof login. The gate was green on all three passes and the ask is stamped shipped.
+
+**What changed for the doorstep code.** Scan, type your name and number, tap join, and the app opens as you. No text, no PIN. The canvasser's invite list shows you as joined straight away.
+
+**One deliberate exception.** If the number typed is already in the campaign, the page still asks for the texted code. The QR proves the canvasser let you in. It does not prove you own a number somebody else already joined on, so without that step anyone holding a live code could become any existing member. The cost is that a code-holder can now tell whether a number is already in, by which step follows. If you want the other trade, say so and I'll relax it.
+
+**How it was proven.** Curl on the rig for both roads, then the real path on the simulator: the join page in Safari, name and number typed with a finger, join tapped, the app opened logged in as "tara sim". That last step needed a small rig fix, since the rig only stripped the Secure cookie flag from routes older than itself. Both nodes are committed with their toggle proof.
+
+**For your test on the second iPhone.** Your earlier code expired around 17:49 UTC, so show a new one from 👤. Scan it on the second iPhone with a number that is not on the list. When you're done, on the mini:
+
+```
+python3 tools/reset_user.py --list
+python3 tools/reset_user.py <name>
+```
+
+I'm still watching the logs for the join.
+
+### p14
+*2026-09-03 17:05*
+
+> why are you calling it the "doorstep code"?
+
+I picked it up from the QR node's own spec, which describes the code as something a canvasser shows at a door for the person there to scan. That's the spec's framing, not yours. Since the code is really for getting team members in, I'll drop the phrase and say "the invite code" or "the QR code".
+
+### p15
+*2026-09-03 17:06*
+
+> just to be clear - we won't be inviting members of the public. The correct context (and please update the node with this) is at the start of a canvassing session, where we want to get all canvassers signed up and in with the fastest possible workflow. This way they all just take pictures of the same QR code and set themselves up.
+
+Noted. Updating the node with that ruling, and the parent QR spec's framing too since it's what misled me.
