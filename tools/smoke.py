@@ -149,7 +149,9 @@ async def pass_gate(pg):
         for _ in range(3):
             if not await pg.evaluate("!!document.querySelector('#greetSheet .greet-row:not(.settled) .greet-do')"): break
             await pg.click("#greetSheet .greet-row:not(.settled) .greet-do"); await pg.wait_for_timeout(1500)
-        if await pg.evaluate("!!document.querySelector('#greetSheet .greet-go')"):
+        # then every remaining page (/last-word adds a third)
+        for _ in range(3):
+            if not await pg.evaluate("!!document.querySelector('#greetSheet .greet-go')"): break
             await pg.click("#greetSheet .greet-go"); await pg.wait_for_timeout(600)
     if await pg.evaluate("typeof feature_Tour !== 'undefined' && feature_Tour.at >= 0"):
         await pg.evaluate("feature_Tour.end()"); await pg.wait_for_timeout(600)
