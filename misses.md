@@ -533,3 +533,28 @@ the phone and the failure looked like a stale mirror. A seam fixed it:
 sibling might wrap it; it redefines the narrowest seam, and the parent
 opens one if none exists (agents.md step 3). And when several nodes share
 an anchor, assume nothing about their order.
+
+## the world that stayed behind (2026-09-03) — a spec's promise outlived its premise
+
+**The ask:** "the taps button came back" (invite-test #p39) — a tool ash had
+switched off reappeared on the phone; a force-quit put it right (#p41).
+
+**The estimate:** the per-user switch, a restart, or the day's builds. The
+server's world said off; a cold load on the rig hid it before and after a
+restart; nothing reproduced.
+
+**The actual:** `/patch` hot-swaps `client.wasm` and its spec promised the
+state was "simply never lost" — true of the Elm state string in JS when it
+was written, and untrue from the day `/context` moved the world into the
+wasm module's memory. Every in-place update since then started a fresh
+world: switches at their defaults, the current project gone, the global
+layer at epoch 0 (the server had been logging "add of 1 minted under epoch
+0 … dropped" after every restart for days). The diag log's launch lines told
+it: one for 572, none for 573 — the update landed without a reload.
+
+**The lesson:** a node's promise is made against the tree as it was; a later
+node that moves where something lives owes the older promises a re-read.
+"State lives in JS" was load-bearing for `/patch`, and `/context` never
+looked. When a bug will not reproduce cold, ask what the device kept from
+before — and read the launch lines first: an update with no launch is a
+different code path.
