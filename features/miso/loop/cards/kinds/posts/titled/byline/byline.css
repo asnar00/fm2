@@ -1,0 +1,8 @@
+/* the caption under a post's title: the from line's own place and colour
+   (/taste 2), with the date beside the name. The post page is a flex
+   column ordered by rule (/above puts the title at -2, /picture-first the
+   picture at -1); the byline shares the title's order and follows it. */
+.post-byline { margin: -2px 0 2px; font-size: 12px; color: #77777e; }
+.card-page.post .post-byline { order: -2; }
+/* the from line said the same name */
+.card-page.post .card-from { display: none; }
