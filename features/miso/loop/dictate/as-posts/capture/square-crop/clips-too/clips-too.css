@@ -1,0 +1,18 @@
+/* the clip through a square: the middle of a portrait, the middle of a
+   landscape, nothing stretched — the same square /square-crop keeps of a
+   still. The bytes are untouched; the frame is the crop. */
+.card-page.post .post-video video {
+  aspect-ratio: 1 / 1;
+  height: auto;
+  max-height: none;
+  object-fit: cover;
+  object-position: center;
+}
+/* and the viewfinder shows the square you will get */
+#vidView {
+  aspect-ratio: 1 / 1;
+  height: auto;
+  max-height: none;
+  object-fit: cover;
+  object-position: center;
+}

@@ -94,3 +94,43 @@ Release build finished; the smoke gate is running now. While it runs I'm checkin
 > </task-notification>
 
 Build 533 is live and both announcements are stamped shipped. Writing the handover entry, then reporting.
+
+Done. Build 533 is live, both fixes shipped through the gate, and the wifi question has an answer.
+
+**Wifi: not us.** The mini is on wifi, with its ethernet port empty. The mini's own log shows its link dropping four times: 19:51 (down 67 minutes), 20:59, 22:47 and 01:50. During the long outage it tried to re-associate 327 times and macOS logged "broken backhaul" faults, which means the access point itself had lost its uplink. Nothing of ours was running at 22:47 or 01:50, and the 19:51 drop came two minutes after a deploy finished, with the mini idle. For Saturday I would plug a cable into the mini's ethernet port. If you want belt and braces too, say the word and I will add a small watchdog that cycles wifi when the gateway is unreachable for a minute.
+
+**Taps: the real cause, fixed (build 532).** I read your phone's black box rather than guessing. Of 89 real presses on toolbar buttons, 13 produced no click at all, and the cutoff was crisp: every press that worked was held 114 ms or less, every press that failed 127 ms or more. iOS hands a touch held past about 120 ms to a different recognizer and never fires the click. A firm, deliberate press is exactly the one it eats, which is why the second and third tries felt worse. The simulator reproduced it in ten taps. The tap is now sent when the finger lifts, whatever the press length. Proven on the simulator: one send per press from 50 ms to 450 ms, a long hold still shows the tool card and sends nothing, and the invite-doors and glide tests stay green.
+
+**Video post: fixed (build 531).** Tapping the poster swapped its class to the player's, and only the poster had the rule placing it above the words. One rule added, checked on the simulator's stylesheet. Your post from last night will sit right once the phone updates.
+
+**Things to check on the phone when you update:**
+- Open a person's card under 👤, press ‹. A simulator test says it may go to the launcher instead of the people list. That failure is on main with my change unticked too, so it is older. One tap tells me whether it is real.
+- The gate's throttled pass printed "the page closed" after its last step again. All steps passed, so it shipped, but that intermittent is still unexplained.
+
+The ask monitor is rearmed with instant "building" stamps, and the handover and misses ledger carry today's findings. Ready for the invite workflow whenever you are.
+
+### p4
+*2026-09-03 10:56*
+
+> great stuff. let's add the wifi watchdog and monitor the situatio
+
+Adding it now. First a look at the existing launchd job as a template, and whether this user may cycle wifi without sudo.
+
+The watchdog is installed and running, and I'm watching its log.
+
+**What it does.** Every 30 seconds a launchd job pings the router, then 1.1.1.1 as a fallback. After two misses in a row, about a minute, it switches the wifi radio off and on once. It will not cycle again within five minutes, so a router that is genuinely down gets one nudge every five minutes rather than a thrash. Every change of state is a line in the log at `~/wifi-watchdog.log`, plus one OK line an hour so we can see the watchdog itself is alive.
+
+**What was tested.** The detection path was exercised with unreachable addresses in dry mode: the log shows DOWN, then CYCLE after the second miss, then UP and OK once the real gateway was back. The radio cycle itself was not run for real, because it would have cut this session. The first genuine DOWN, CYCLE, UP in the log is the proof, and I will report it the moment it lands.
+
+**Monitoring.** A watch on the log is armed for this session. I will hear about every DOWN, CYCLE, UP and hourly OK and will tell you if the wifi wobbles while you are out.
+
+The cable into the mini's ethernet port is still the better answer for Saturday. The watchdog covers the case where the mini's own association goes stale, which is what last night's 67 minutes looked like. It cannot fix a router that has lost its uplink.
+
+Ready for the invite workflow.
+
+### p5
+*2026-09-03 11:04*
+
+> great. one note: the video post should have a square media, rather than the portrait clip. All visual media should be cropped to a central square, not just stills.
+
+Placing it in the tree first: the stills' square crop is `capture/square-crop`, so this reads as its refinement for video. Reading that node.
