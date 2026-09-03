@@ -1,0 +1,4 @@
+/* the player keeps the poster's place. /poster's tap swaps the holder's class
+   from post-poster to post-video, and only the first was ordered ahead of the
+   words — so the clip dropped under them the moment it played. */
+.card-page.post .post-video { order: -1; }
