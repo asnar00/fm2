@@ -423,3 +423,55 @@ One thing I found while proving it: two of this morning's reel nodes were fighti
 *2026-09-03 13:55*
 
 > the map-focus function seems to work only on image/video posts and not on audio-only posts
+
+### p22a
+*2026-09-03 13:59*
+
+> <task-notification>
+> <task-id>bi2lfmc4s</task-id>
+> <summary>Monitor event: "the mini's wifi watchdog log (DOWN / CYCLE / UP, hourly OK)"</summary>
+> <event>2026-09-03 14:58:59 OK gw=192.168.1.254 Wi-Fi Power (en1): On</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Still on this. Checking whether the audio posts' place blocks pass the map's own test.
+
+### p23
+*2026-09-03 14:01*
+
+> yeah the reel should only show posts that are visible in the map - good catch
+
+Build 554 is live.
+
+**What was wrong.** It was not about audio at all. Your two audio notes are the oldest posts, so they sit at the end of the reel, and the last lozenges could never reach the left edge to become current. The band now has room at its end, so the last post can be focused like any other.
+
+**And the catch you confirmed.** The reel was listing every post in the world while the map only draws the tool's set, filtered by the current project. The map now passes the set's ids to the reel alongside the pins, so the band shows exactly what the map shows. Proven on the simulator by planting your posts beside the rig's own: the band dropped to the set, every lozenge had a place, and the last one became current with its pin ringed.
+
+The rig world is restored to its own posts. Wifi watchdog: four quiet hourly OKs.
+
+### p24
+*2026-09-03 14:59*
+
+> <task-notification>
+> <task-id>bi2lfmc4s</task-id>
+> <summary>Monitor event: "the mini's wifi watchdog log (DOWN / CYCLE / UP, hourly OK)"</summary>
+> <event>2026-09-03 15:59:13 OK gw=192.168.1.254 Wi-Fi Power (en1): On</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Just the watchdog's hourly OK at 15:59. The mini's wifi has been steady all afternoon: five quiet checks in a row, no drops, no cycles. Nothing to act on. Ready for whatever is next.
+
+### p25
+*2026-09-03 15:10*
+
+> <task-notification>
+> <task-id>bsa3dosk1</task-id>
+> <summary>Monitor event: "field asks arriving (stamped building on sight)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788448235046 tool=- at=-
+> text: PDF report display should zoom out enough to show margins properly
+> ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+A field ask from your phone just landed and was stamped building: the report display should zoom out to show the margins. Looking at the report page's width.
