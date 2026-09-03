@@ -154,3 +154,75 @@ The crop is right: the square shows the clip's middle, with the top and bottom b
 The player now carries the face. Looking at the paused frame to confirm it isn't black.
 
 Not black any more. Shipping face-first, then on to the map markers.
+
+Toggle proof done (unticked, only the two fan-out files leave the build). Checking the screen once more, then shipping.
+
+### p6
+*2026-09-03 11:20*
+
+> we should make the "proximity threshold" for the fan layout relate to their proximity on screen, rather than a fixed GPS offset or exact location match
+
+It already works that way. The grouping is done on screen positions, not coordinates: after every draw and every zoom, each pin is projected to pixels at the current zoom, and a pin joins a group when it is within 30 px of the group's first pin (a face is 34 px wide). Zoom in and pins a metre apart come out of the fan on their own; zoom out and they gather again. The simulator run just now showed exactly that, six posts at one spot staying fanned from zoom 16 through 18 and back.
+
+One thing worth naming: the 30 px is a fixed screen distance. If you would rather it scale with the face size or be a little more generous so near-touching pins also fan, that is one number in the node.
+
+The commit and deploy were stopped when you interrupted. Nothing has shipped for the fan yet. The tree has the regroup and the fan-out node written and proven, with the toggle proof recorded. Say the word and I ship it as is, or tell me the threshold you want first.
+
+### p7
+*2026-09-03 11:49*
+
+> how's our fable usage doing
+
+Fable is at 46% of the week, up from 42% at the start of this session about two hours ago. So this morning's work cost roughly 4 points, which is a much gentler slope than yesterday's.
+
+The estimate still says it runs out Friday evening, but that number is dragged by the last three days' average, which includes yesterday's heavy Fable-only day. At today's pace, about 2 points an hour of active work, the remaining 54 points cover more than 25 working hours, which comfortably reaches Saturday and the Tuesday reset.
+
+All-models is at 25%, no concern. The 5-hour session window is at 10%.
+
+Your effort setting just went to medium, which will trim it further. The fan-out commit is still waiting on your word.
+
+### p8
+*2026-09-03 11:50*
+
+> ok ship the fan-out
+
+### p8a
+*2026-09-03 11:51*
+
+> I think in general when something's done to your satisfaction just ship it, we can always mod it later if necessary
+
+Shipped. Build 538 is live with the fan-out, the gate green, and the toggle proof recorded in the commit. The announcement on everyone's sheet is stamped shipped.
+
+Noted on shipping: when a change is done to my satisfaction, I ship it and tell you, rather than holding it for your word. I have saved that as a standing rule.
+
+Today's builds so far, all on your phone once it updates:
+
+| build | what |
+|---|---|
+| 531 | video post's clip plays above the words |
+| 532 | a firm press presses the first time |
+| 536 | video posts play as a central square, viewfinder shows the square |
+| 537 | a video post keeps its face until it plays |
+| 538 | pins at one place fan out around it |
+
+The wifi watchdog is running and quiet so far. Ready for the invite workflow, or whatever you hit while walking.
+
+### p9
+*2026-09-03 11:55*
+
+> the fanout doesn't seem to be working correctly - there are two posts from last night that were both taken from the same location (brixton), one video and one photo - they're still showing overlapped
+
+### p9a
+*2026-09-03 11:58*
+
+> <task-notification>
+> <task-id>bi2lfmc4s</task-id>
+> <summary>Monitor event: "the mini's wifi watchdog log (DOWN / CYCLE / UP, hourly OK)"</summary>
+> <event>2026-09-03 12:58:27 OK gw=192.168.1.254 Wi-Fi Power (en1): On</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p10
+*2026-09-03 12:00*
+
+> yeah correct, all posts should carry the location at which the media was taken, in preference to the time/place the post was made or opened.
