@@ -1,4 +1,6 @@
 /* a picture whose bytes have not arrived: gone, not broken. The container
    keeps its own ground — a tile's dimmed face, a pin's circle — which reads as
-   "no picture yet", the truth, where a broken-image icon reads as a fault. */
-img.pic-away { display: none; }
+   "no picture yet", the truth, where a broken-image icon reads as a fault.
+   The mark is an attribute rather than a class because it is written into the
+   html string before the DOM sees it, where an img may already have a class. */
+img[data-away] { display: none; }

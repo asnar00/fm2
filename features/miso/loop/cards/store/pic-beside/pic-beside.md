@@ -119,15 +119,21 @@ and is rebuilt from disk at every load, so it survives the app being closed.
 The one new failure this shape can produce is a reference whose bytes have not
 arrived: a recipient looking at a copy during the seconds between the owner's
 op landing and the owner's upload finishing. The image's `error` fires, the
-element is hidden (a broken-image icon is worse than an absence), and one
-retry is scheduled four seconds later — one, not a loop, because a picture
-that is genuinely gone must stop asking. What a genuinely-gone picture does
-keep costing is one request each time the surface it is on is repainted, since
-each repaint is a new element with a fresh `src`: measured at three requests
-over eleven seconds on the rig, against a timer loop's dozens. That is the
-price of the other half of the behaviour, which is worth more — a picture that
-turns up late appears by itself, with no reload, the moment a repaint asks for
-it again.
+element is hidden (a broken-image icon is worse than an absence), and it is
+asked for again in four seconds.
+
+**The re-ask is on a clock, not on the paint, and this was found by measuring
+rather than by reasoning.** The first cut retried once and then let repaints
+do the rest — which read as self-healing and measured as *six requests in
+eleven seconds* on the rig, because a repaint is a new element with a fresh
+`src` and the app repaints on every keystroke. So a picture that has just been
+missed is *held*: the element keeps the id in `data-pic`, loses its `src`, and
+makes no request at all, however many times the surface is redrawn. One timer
+per id puts the reference back — after four seconds, then eight, then sixteen,
+to a ceiling of a minute — and `online` resets the ladder and asks at once.
+A picture that turns up late still appears by itself, within a minute at
+worst; a picture that is gone for good costs one request a minute instead of
+one per keystroke.
 
 **Retrofit, both ways, through the op door** (`/retrofit` is doctrine).
 `POST pic/retrofit` walks every world, or one named world: `out` moves each
@@ -272,8 +278,16 @@ called from three redefinitions — `feature_Cards.shrink` and
 `resolve(root)` swaps the reference for a local object URL on every
 `img[src^="pic/"]` it finds, and `watch()` runs it from a `MutationObserver`
 so it covers the loop's repaints, `/map`'s own DOM writes and any surface
-written later. The capture-phase `error` listener is the other half: an image
-that could not be fetched is hidden and retried once.
+written later. `swap` is where one element is decided: the local copy if there
+is one, the reference left alone if the picture has never been missed, and
+`hold` otherwise.
+
+`hold`, `missed`, `arm` and `again` are the missing picture's clock. `missed`
+runs from the capture-phase `error` listener and doubles that id's wait;
+`hold` takes the `src` off the element and puts the id in `data-pic` so no
+repaint can ask again; `arm` keeps one timer per id that puts the reference
+back on every element waiting for it; `again` resets every ladder when the
+network returns.
 
 `open`, `put`, `all` and `drain` are the local store and the queue: IndexedDB
 `miso-pics`, every record read into memory at boot so `resolve` can answer

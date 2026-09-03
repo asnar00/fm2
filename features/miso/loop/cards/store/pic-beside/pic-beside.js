@@ -6,14 +6,17 @@ const feature_PicBeside = {
   PREFIX: 'pic/',
   DB: 'miso-pics',
   STORE: 'pics',
-  RETRY: 4000,
+  RETRY: 4000,      // how long after a picture is missed before asking again
+  CEILING: 60000,   // and the longest that wait is ever allowed to grow
 
   db: null,
   blobs: {},        // id -> Blob, every picture this device holds
   urls: {},         // id -> object URL, made on first need
   queue: [],        // ids waiting to go up
   sending: false,
-  tried: {},        // ids the error handler has already given a second chance
+  wait: {},         // id -> the moment we will ask the server again
+  step: {},         // id -> how long that wait currently is
+  timer: {},        // id -> the pending re-ask
 
   // ---- the one conversion --------------------------------------------------
   // synchronous on purpose: shrink's callers measure what comes back against
@@ -176,9 +179,67 @@ const feature_PicBeside = {
     if (root.matches && root.matches(sel)) this.swap(root);
   },
 
+  // the device's own copy first where there is one; otherwise the reference is
+  // left for the browser to fetch — UNLESS this id was asked for recently and
+  // was not there. A repaint is a new element with a fresh src, so without
+  // that test a picture that is genuinely missing would ask again on every
+  // keystroke. Blanked, it asks on the schedule below instead.
   swap(img) {
-    const url = this.urlFor(this.idOf(img.getAttribute('src') || ''));
-    if (url) img.setAttribute('src', url);
+    const id = this.idOf(img.getAttribute('src') || '');
+    if (!id) return;
+    const url = this.urlFor(id);
+    if (url) { img.setAttribute('src', url); return; }
+    if (this.wait[id] && Date.now() < this.wait[id]) this.hold(img, id);
+  },
+
+  // stop asking for this one, remembering on the element which picture it is
+  // so the re-ask can find it again after any number of repaints
+  hold(img, id) {
+    img.setAttribute('data-pic', id);
+    img.setAttribute('data-away', '1');
+    img.removeAttribute('src');
+    this.arm(id);
+  },
+
+  // ---- before the DOM, not after -------------------------------------------
+  // An observer cannot stop a request: by the time it runs the browser has
+  // already started loading the src it just parsed. Measured — a missing
+  // picture cost 25 requests in ten seconds of typing with the observer alone,
+  // because every repaint is a fresh element. So the loop's html is dressed
+  // while it is still a string: a picture this device holds goes in as its own
+  // object URL, and one that is being waited for goes in with no src at all.
+  // Nothing the loop draws ever asks the network twice.
+  dress(html) {
+    if (typeof html !== 'string' || html.indexOf('src="' + this.PREFIX) < 0) {
+      return html;
+    }
+    const self = this;
+    return html.replace(/src="pic\/([0-9a-f]{24})"/g, function (whole, id) {
+      const url = self.urlFor(id);
+      if (url) return 'src="' + url + '"';
+      if (self.wait[id] && Date.now() < self.wait[id]) {
+        self.arm(id);
+        return 'data-pic="' + id + '" data-away="1"';
+      }
+      return whole;
+    });
+  },
+
+  // one pending re-ask per id, whatever is on screen: when it fires, every
+  // element waiting on that picture gets its reference back and the browser
+  // tries once. A success draws it; a failure lands in missed() and the wait
+  // doubles, to a minute.
+  arm(id) {
+    if (this.timer[id]) return;
+    this.timer[id] = setTimeout(() => {
+      this.timer[id] = null;
+      delete this.wait[id];
+      for (const el of document.querySelectorAll('img[data-pic="' + id + '"]')) {
+        el.removeAttribute('data-away');
+        el.removeAttribute('data-pic');
+        el.setAttribute('src', this.PREFIX + id);
+      }
+    }, Math.max(50, this.wait[id] - Date.now()));
   },
 
   // a reference whose bytes have not arrived — a recipient looking at a copy
@@ -186,23 +247,30 @@ const feature_PicBeside = {
   // finishing. Hidden rather than left as a broken icon, and given ONE more
   // chance: a picture that is genuinely gone must stop asking.
   missed(img) {
-    const ref = img.getAttribute('src') || '';
-    const id = this.idOf(ref);
+    const id = this.idOf(img.getAttribute('src') || '');
     if (!id) return;
-    img.classList.add('pic-away');
-    // the bytes may have arrived on this device since the fetch failed
+    // the bytes may have arrived on this device since the fetch was started
     if (this.urlFor(id)) {
-      img.classList.remove('pic-away');
+      img.removeAttribute('data-away');
       img.setAttribute('src', this.urls[id]);
       return;
     }
-    if (this.tried[id]) return;
-    this.tried[id] = true;
-    setTimeout(() => {
-      if (!img.isConnected) return;
-      img.classList.remove('pic-away');
-      img.setAttribute('src', this.PREFIX + id + '?again=1');
-    }, this.RETRY);
+    const next = Math.min(this.step[id] ? this.step[id] * 2 : this.RETRY,
+                          this.CEILING);
+    this.step[id] = next;
+    this.wait[id] = Date.now() + next;
+    this.hold(img, id);
+  },
+
+  // the network changed: everything that was waiting is worth one more ask
+  // straight away, and the backoff starts over.
+  again() {
+    this.step = {};
+    for (const id of Object.keys(this.wait)) {
+      this.wait[id] = Date.now();
+      if (this.timer[id]) { clearTimeout(this.timer[id]); this.timer[id] = null; }
+      this.arm(id);
+    }
   },
 
   watch() {
@@ -230,7 +298,7 @@ const feature_PicBeside = {
     await this.load();
     this.resolve(document);        // whatever was painted while we were reading
     this.drain();
-    window.addEventListener('online', () => this.drain());
+    window.addEventListener('online', () => { this.drain(); this.again(); });
   },
 };
 
@@ -262,6 +330,14 @@ const feature_PicBeside = {
   // carrying inline bytes has them converted here instead. /post-time and
   // /from-picture wrap send too and read only `type` and `data.id`, so the
   // rewrite is invisible to them whichever order the wraps end up in.
+  // the loop's own paint, dressed before it reaches the DOM
+  if (typeof feature_Loop !== 'undefined' && feature_Loop.paint) {
+    const fm_pbPaint = feature_Loop.paint;
+    feature_Loop.paint = function (html) {
+      return fm_pbPaint.call(this, feature_PicBeside.dress(html));
+    };
+  }
+
   if (typeof feature_Loop !== 'undefined') {
     const fm_pbSend = feature_Loop.send;
     feature_Loop.send = function (event) {
