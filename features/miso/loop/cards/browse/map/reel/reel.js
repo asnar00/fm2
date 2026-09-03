@@ -16,13 +16,14 @@ const feature_Reel = {
     }, { passive: true });
   },
 
-  // the posts tool's map view, and nothing else
+  // the posts tool's map view, and nothing else — read from the screen, not
+  // the state mirror: `open_tool` is rewritten at the tool's own link after
+  // the mirror was published, so the frame after a way-back tap says "" while
+  // the row already shows posts selected (the band vanished on that frame,
+  // #p19; the tour learned the same, one-level review)
   showing() {
     if (!document.getElementById('mapData')) return false;
-    try {
-      const s = JSON.parse(feature_Loop.state || '{}');
-      return s.open_tool === 'posts';
-    } catch (e) { return false; }
+    return !!document.querySelector('.toolbar .tool-button.sel[data-ev="tool_posts"]');
   },
 
   // the world's posts, newest first, with the place /map gave each pin
