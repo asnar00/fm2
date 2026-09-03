@@ -284,3 +284,160 @@ The code itself does carry a token. What you saw on the address bar was the land
 *2026-09-03 17:10*
 
 > one hour
+
+One hour it is. This is a one-function node under the QR tool. Building, proving on the rig, then deploying.
+
+The commit landed in the rig worktree by mistake. Making it on main, then deploying.
+
+The one-hour build is committed and proven on the rig, where a fresh code came back with 59.9 minutes of life. The deploy is running through the gate now. When it lands I'll stamp the ask shipped and confirm the build number.
+
+One thing to expect on Saturday, parked in the node's spec rather than built: the QR tool keeps a two-second floor between claims on one code, sized for doorsteps. A team all scanning at once may see "one moment, try that again" and tap join twice. Say the word if you want that floor dropped.
+
+### p18
+*2026-09-03 17:13*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788455633928 {"t":"2026-09-03T17:13:53.923Z","launch":true,"running":"first-run","server":"570","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+The smoke gate's first pass. Waiting for the deploy to finish.
+
+### p19
+*2026-09-03 17:14*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788455675710 {"t":"2026-09-03T17:14:35.705Z","launch":true,"running":"570","server":"570","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Second gate pass. Still waiting.
+
+### p20
+*2026-09-03 17:14*
+
+> let's remove the last user I added ("tara") using the reset script
+
+There is no "tara" to remove. The guest list holds only you, alice and bob, and neither the server log nor your cards mention the name.
+
+**What happened on the second iPhone.** The scan reached the join page, and the number typed there was your own, +44…3023. The claim saw it was already on the list and wrote nothing, so the name typed alongside it was never kept. The page then went to the texted code, the verify succeeded, and that phone is now logged in as you, asnaroo. That is the "already on the list" line I flagged earlier.
+
+**To run the test as a new person:**
+
+1. Log out on the second iPhone, or just use a fresh browser tab for the scan.
+2. Wait for build 571, which is in the gate now. Then show a new code from 👤 on your main phone.
+3. Scan it and type a number that is not on the list. The second iPhone's own number will do if it differs from +44…3023.
+
+With 571 that scan lands straight in the app with no text. Afterwards the reset command removes whatever name you typed.
+
+### p21
+*2026-09-03 17:15*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788455715905 {"t":"2026-09-03T17:15:15.646Z","launch":true,"running":"570","server":"570","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Third gate pass done. The handover to the new build should follow in a moment.
+
+### p22
+*2026-09-03 17:15*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>invited-into:  no longer holds asnaroo.1787704828987 — asnaroo joins nothing</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+That line is the project-join follow-up from your own scan: the code's row has since expired, so the join step found nothing to do. Benign. Still waiting on the deploy's handover.
+
+### p23
+*2026-09-03 17:15*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 47330 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Handover starting. Checking the result in a moment.
+
+### p24
+*2026-09-03 17:16*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 50028 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p25
+*2026-09-03 17:16*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 50028 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p26
+*2026-09-03 17:16*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 50072 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Build 572 is live and the ask is stamped shipped. Codes minted from now on last one hour. The one you show for the second-iPhone test will be the first on the new life.
+
+### p27
+*2026-09-03 17:16*
+
+> <task-notification>
+> <task-id>bki5fjon3</task-id>
+> <tool-use-id>toolu_011qtFmby3CDJEWq4Y3H1XEk</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/bki5fjon3.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy the one-hour build through the smoke gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Deploy confirmed complete, exit 0. Nothing further pending. Ready for your scan on the second iPhone.
+
+### p28
+*2026-09-03 17:16*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788455774368 {"t":"2026-09-03T17:16:14.306Z","launch":true,"running":"572","server":"572","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}
+> exchange: asnaroo handed 1 card(s) to 2 person(s)</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Your iPhone has picked up 572 and rejoined. Watching for the scan.
+
+### p29
+*2026-09-03 17:16*
+
+*(edited and resent — superseded by the next prompt; do not cite)*
+
+> it's still asking for a phone number - a phone number shouldn't be mandatory for QR code invitees.
+
+### p30
+*2026-09-03 17:17*
+
+> it's still asking for a phone number - a phone number shouldn't be mandatory for QR code invitees. It should be optional to fill in in the profile page
+
+A number should be optional at the scan, then. The pieces for that mostly exist: the unticked instant node minted accounts with a placeholder number, and the add-number node lets a person add a real one from their profile. Let me check what those need.
