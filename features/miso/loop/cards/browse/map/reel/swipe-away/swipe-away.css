@@ -1,0 +1,4 @@
+.card-page.fm-swipe-left { animation: fm-swipe-left 0.18s ease-out forwards; }
+.card-page.fm-swipe-right { animation: fm-swipe-right 0.18s ease-out forwards; }
+@keyframes fm-swipe-left { to { transform: translateX(-110%); opacity: 0; } }
+@keyframes fm-swipe-right { to { transform: translateX(110%); opacity: 0; } }
