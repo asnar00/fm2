@@ -1,0 +1,5 @@
+/* the post page without the clip's length, the owner note, and the map pill;
+   `.post` is the page's own class (/picture-first, /above scope by it) */
+.card-page.post .post-dur,
+.card-page.post .post-play-note,
+.card-page.post .card-place { display: none; }
