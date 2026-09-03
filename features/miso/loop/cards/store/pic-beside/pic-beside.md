@@ -100,6 +100,21 @@ outbox carries JSON ops through `POST /msg` and bytes do not fit that road.
 The queue drains at load, straight after a capture, and on `online`, and a
 picture leaves it only when the server has answered `ok`.
 
+**Local-first here is not a cache preference, and does not contradict
+`/fresh`.** The learned default is *the network is tried before the cache*
+(`/learned` 7), and it is right wherever the cached thing can be stale. The
+bytes at an id can never be stale: the id names those bytes and the store
+refuses to rewrite them. What the device holds is also, for a picture it has
+just taken, the only copy that exists — so asking the network first would be
+asking for a worse answer, later, or none at all.
+
+**Nothing is ever lost** (`/learned` 11) has one honest window here: a picture
+that has been taken and not yet uploaded lives only on the device. That window
+is the outbox's own, for the same reason and no longer, and it is shorter than
+what it replaces — today a poster over the list budget was refused outright and
+never existed anywhere. The queue is written to disk before the event is sent
+and is rebuilt from disk at every load, so it survives the app being closed.
+
 **A picture the device does not hold and cannot fetch is hidden, not broken.**
 The one new failure this shape can produce is a reference whose bytes have not
 arrived: a recipient looking at a copy during the seconds between the owner's
