@@ -1600,3 +1600,228 @@ Second iPhone is on 583 too.
 > the post-profile-filling in welcome page should also ask for "enable faceID login" and "enable notifications" before allowing continue
 
 Noted: the second welcome page gets two asks, Face ID and notifications, and **got it** waits on them. Reading how the app enrols those today.
+
+### p87a
+*2026-09-03 18:27*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788460037407 {"t":"2026-09-03T18:27:17.405Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p87b
+*2026-09-03 18:27*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788460049432 {"t":"2026-09-03T18:27:29.430Z","error":"set-up passkey: The relying party ID is not a registrable domain suffix of, nor equal to the current domain. Subsequently, an attempt to fetch the .well-known/webauthn resource of the claimed RP ID failed."}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p87c
+*2026-09-03 18:27*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788460053947 {"t":"2026-09-03T18:27:33.945Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Committed. Deploying now, with the stamp only on success.
+
+The set-up build is in the gate. What it does on the phone:
+
+- **Face ID login** row with **enable**: the phone's own Face ID prompt, the same enrolment the texted login does. Refuse it and the row says "not now"; the nøøb sheet keeps the retry.
+- **notifications** row with **enable**: the phone's notification prompt. In a browser tab, where notifications can't work, the row says "home-screen app only" and settles.
+- **got it** appears only when both rows are settled: enabled, declined after a real try, or not possible on the device.
+
+On the rig the Face ID try was refused, as it always is off the real domain, so the "not now" road and the gating were what got proven. The real prompts will be your test on the second iPhone once the build lands.
+
+### p88
+*2026-09-03 18:30*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788460200200 {"t":"2026-09-03T18:30:00.195Z","launch":true,"running":"first-run","server":"583","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Gate pass one.
+
+### p89
+*2026-09-03 18:30*
+
+> ok let's reset tara and we'll run the invite workflow again
+
+The set-up deploy is mid-gate, and the reset restarts the live server, so I'll run the reset the moment the deploy lands rather than in the middle of it. A couple of minutes.
+
+Queued: the moment the deploy reports, Tara is reset and I'll tell you it's done. Then a fresh code with sevenoaks current, and a name-only scan on the second iPhone.
+
+### p90
+*2026-09-03 18:30*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788460204612 {"t":"2026-09-03T18:30:04.609Z","error":"set-up passkey: The relying party ID is not a registrable domain suffix of, nor equal to the current domain. Subsequently, an attempt to fetch the .well-known/webauthn resource of the claimed RP ID failed."}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+That's the gate's headless browser refusing the passkey off the real domain, as expected; it settles the row as "not now" and moves on.
+
+### p91
+*2026-09-03 18:30*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788460245327 {"t":"2026-09-03T18:30:45.326Z","launch":true,"running":"583","server":"583","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Gate pass two.
+
+### p92
+*2026-09-03 18:31*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788460285327 {"t":"2026-09-03T18:31:25.071Z","launch":true,"running":"583","server":"583","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Pass three. Handover and then the reset follow.
+
+### p93
+*2026-09-03 18:32*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 67032 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Handover under way.
+
+### p94
+*2026-09-03 18:32*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 69462 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p95
+*2026-09-03 18:32*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 69462 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p96
+*2026-09-03 18:32*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 69510 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Deploy handed over. The reset should be running now; I'll confirm as soon as its output arrives.
+
+### p97
+*2026-09-03 18:32*
+
+> <task-notification>
+> <task-id>bv2g9228n</task-id>
+> <tool-use-id>toolu_016VJMpqswFj7FW3w7WXdEjx</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/bv2g9228n.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy the set-up build; stamp shipped only on success" completed (exit code 0)</summary>
+> </task-notification>
+
+### p97a
+*2026-09-03 18:32*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 69671 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p97b
+*2026-09-03 18:32*
+
+> <task-notification>
+> <task-id>b5tgvonve</task-id>
+> <tool-use-id>toolu_01DAGtDr54cTygvJoKNTo8B4</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/b5tgvonve.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Wait for the deploy to land, then reset Tara" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 584 is live with the set-up rows, and Tara is reset. The guest list is back to you, alice and bob.
+
+Go ahead: new code from 👤 with sevenoaks current, then a name-only scan on the second iPhone. You should see, in order: the welcome page naming the project, your card to fill, the "that's you" page with the Face ID and notifications rows, then the tour. I'm watching the logs.
+
+### p98
+*2026-09-03 18:34*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788460454859 {"t":"2026-09-03T18:34:14.832Z","launch":true,"running":"584","server":"584","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Your phone is on 584.
+
+### p99
+*2026-09-03 18:34*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>qr: phone:+447813943023 minted code 77d496…
+> qr: a name-only claim — placeholder number minted
+> qr: Tara joined on phone:+447813943023's code 77d496… (…3643)
+> doors: …3643 is invited into asnaroo.1787704828987 as candidate
+> qr: …3643 is in on the scan — cookie issued
+> exchange: seeding …3643 with 16 card(s) from asnaroo</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+New code minted, Tara scanned in name-only, seeded with your cards. The welcome page should be up on the second iPhone now.
+
+### p100
+*2026-09-03 18:37*
+
+> on the install page: it's confusing because it says "tap [share]" but depending on your browser settings, you don't necesarily see [share]. On my test browser I see the URL at the bottom and "..." in the right hand corner - I have to press "..." before I see [share]. Then on the other iphone, "more" is actually "..." as well.
+
+The steps assume the share button is visible, and on iOS's compact tab bar it sits behind the "⋯" at the bottom right, and "view more" is itself a "⋯" on some phones. Writing a refinement of the steps that says both.
+
+### p101
+*2026-09-03 18:38*
+
+*(edited and resent — superseded by the next prompt; do not cite)*
+
+> probably a good idea to say something "tap [share] in the menu below" - and remove the icon for "more", so it works either way.
+
+### p102
+*2026-09-03 18:38*
+
+> probably a good idea to say something "tap [share] in the browser menu below" - and remove the icon for "more", so it works either way.
