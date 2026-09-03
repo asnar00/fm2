@@ -3,3 +3,4 @@
 - [x] opens-over-map
 - [x] swipe-away
 - [x] on-people-map
+- [x] quicker
