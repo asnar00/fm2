@@ -2,3 +2,4 @@
 - [x] current
 - [x] opens-over-map
 - [x] swipe-away
+- [x] on-people-map
