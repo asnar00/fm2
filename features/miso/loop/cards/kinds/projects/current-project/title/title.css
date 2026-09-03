@@ -1,0 +1,14 @@
+/* the project you are in, named at the top centre: level with the picker
+   and the build lozenge, never reaching either, in the one accent that
+   means chosen (/taste 3) */
+.proj-title {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 8px);
+  left: 50%; transform: translateX(-50%);
+  max-width: 44vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: #9db7d8; font-size: 13px; font-weight: 600; line-height: 20px;
+  z-index: 6; cursor: pointer;
+  user-select: none; -webkit-user-select: none;
+}
+/* the chip was the sign on the picker; the title is its successor */
+.proj-chip { display: none; }

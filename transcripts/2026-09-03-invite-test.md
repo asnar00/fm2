@@ -871,3 +871,194 @@ Same again, routine.
 *2026-09-03 17:50*
 
 > OK, I signed up as Tara - but I should see the other users in the sevenoaks project, I just see Tara.
+
+### p58
+*2026-09-03 17:53*
+
+*(edited and resent — superseded by the next prompt; do not cite)*
+
+> because the invitation was made with sevenoaks active, tara should immediately see all users of sevenoaks project on her users page - it shouldn't wait for anyone else to do anything
+
+### p59
+*2026-09-03 17:53*
+
+> because the invitation was made with sevenoaks active, tara should immediately see all users of sevenoaks project on her users page - it shouldn't wait for anyone else to do anything (that should be true of all new users, not just tara)
+
+Understood: at the moment of joining, the newcomer gets every member's card, nothing waits on anyone else. That is how I'm building it. Writing both nodes now.
+
+Built. Now the proof: two newcomers join a project on the rig through the app's own first launch, and each world is read back.
+
+### p59a
+*2026-09-03 17:55*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458122394 {"t":"2026-09-03T17:55:22.392Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p59b
+*2026-09-03 17:55*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458134094 {"t":"2026-09-03T17:55:34.092Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p59c
+*2026-09-03 17:56*
+
+> let's run reset to get rid of tara and then try again once youre done
+
+### p59d
+*2026-09-03 17:56*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458170304 {"t":"2026-09-03T17:56:10.302Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p59e
+*2026-09-03 17:56*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458182004 {"t":"2026-09-03T17:56:22.002Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Running the live reset for Tara now, then finishing the project proof.
+
+### p59f
+*2026-09-03 17:56*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 58282 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Tara is out of the live server: her card in your world is tombstoned, her role in the project removed, her row and world set aside. Back to the project proof on the rig.
+
+### p59g
+*2026-09-03 17:56*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458209321 {"t":"2026-09-03T17:56:49.319Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p59h
+*2026-09-03 17:57*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458221082 {"t":"2026-09-03T17:57:01.080Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Deploy running, about five minutes. When I say it's live: open 👤 with the sevenoaks project current, tap **new code**, and scan it on the second iPhone with a name only. On landing the people page should already show you and bob, the project's other members. alice is in your other project, so she stays out of sight unless she joins this one.
+
+### p60
+*2026-09-03 17:58*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458330819 {"t":"2026-09-03T17:58:50.815Z","launch":true,"running":"first-run","server":"574","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Gate pass one.
+
+### p61
+*2026-09-03 17:59*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458372657 {"t":"2026-09-03T17:59:32.656Z","launch":true,"running":"574","server":"574","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Pass two.
+
+### p62
+*2026-09-03 18:00*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788458412626 {"t":"2026-09-03T18:00:12.370Z","launch":true,"running":"574","server":"574","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Pass three, handover next.
+
+### p63
+*2026-09-03 18:00*
+
+> one change: let's show the active project name as a title between the grid/list/map selector and the noob button, at all times - not just when we're in a tool-tab that supports the selector. i.e. detach active project from the selector and make it visible at all times.
+
+Noted. First the deploy needs to finish, then I'll look at how the current project is shown today and where the selector and the nøøb button sit.
+
+### p63a
+*2026-09-03 18:00*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 58282 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p63b
+*2026-09-03 18:00*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 59852 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p63c
+*2026-09-03 18:00*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 59852 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p63d
+*2026-09-03 18:00*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 59895 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p63e
+*2026-09-03 18:01*
+
+> <task-notification>
+> <task-id>bvanxwwul</task-id>
+> <tool-use-id>toolu_01HF4NjtL1yqFQG2bSFW2mEj</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/bvanxwwul.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy the co-members build through the smoke gate" completed (exit code 0)</summary>
+> </task-notification>
