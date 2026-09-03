@@ -1,0 +1,17 @@
+/* two rows in the list grammar (/taste 6): the thing, then what to do */
+.greet-rows { display: flex; flex-direction: column; gap: 10px; width: min(20rem, 100%); }
+.greet-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 14px; border-radius: 12px;
+  background: #121215; border: 1px solid #202026;
+}
+.greet-what { color: #eee; font-size: 15px; }
+.greet-do {
+  padding: 6px 14px; border-radius: 999px; font-size: 13px;
+  background: #9db7d8; color: #101012; font-weight: 600; cursor: pointer;
+  white-space: nowrap; max-width: 55%; overflow: hidden; text-overflow: ellipsis;
+}
+.greet-row.settled .greet-do { background: transparent; color: #9a9aa2; border: 1px solid #2c2c33; cursor: default; }
+.greet-row.on .greet-do { color: #9db7d8; border-color: #9db7d8; }
+/* got it waits for both rows to settle */
+.greet.setup-wait .greet-go { display: none; }

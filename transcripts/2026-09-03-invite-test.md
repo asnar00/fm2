@@ -1310,3 +1310,293 @@ The install page reads right. Committing both nodes and launching the deploy, an
 > <event>1788459146338 {"t":"2026-09-03T18:12:26.336Z","launch":true,"running":"first-run","server":"578","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
 > If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
 > </task-notification>
+
+### p74l
+*2026-09-03 18:13*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459187801 {"t":"2026-09-03T18:13:07.799Z","launch":true,"running":"578","server":"578","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74m
+*2026-09-03 18:13*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459227787 {"t":"2026-09-03T18:13:47.531Z","launch":true,"running":"578","server":"578","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74n
+*2026-09-03 18:14*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 61763 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74o
+*2026-09-03 18:14*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 64168 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74p
+*2026-09-03 18:14*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 64168 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74q
+*2026-09-03 18:14*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 64215 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74r
+*2026-09-03 18:14*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459276524 {"t":"2026-09-03T18:14:36.474Z","launch":true,"running":"580","server":"580","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Build 580 shipped the install page. Stamping that, committing the crop hint and deploying it, and proving the welcome pages on the rig meanwhile.
+
+### p74s
+*2026-09-03 18:15*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459301195 {"t":"2026-09-03T18:15:01.175Z","launch":true,"running":"580","server":"580","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74t
+*2026-09-03 18:15*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459327278 {"t":"2026-09-03T18:15:27.275Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p74u
+*2026-09-03 18:15*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459341241 {"t":"2026-09-03T18:15:41.239Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Both pages render as asked. Committing the greetings node now, and chaining: when the hint deploy lands it gets stamped, then the greetings deploy runs and is stamped.
+
+Everything from your last four asks is built and proven. Two deploys remain in the pipe, one after the other, about ten minutes in all:
+
+- **Live now, build 580:** the install page with the half-size logo, "welcome to miso", and the line saying why it needs installing.
+- **In the gate:** the framing sheet's hint, "pinch to zoom, drag to move", above the crop window.
+- **Queued behind it:** the two welcome pages. The first, over the empty card: "welcome to the sevenoaks project on miso! first, your profile: a picture, and a line about what you're here to do", with **let's go**. The second, once the card is filled: "that's you. hold any button for two seconds and it tells you what it does", with **got it**. Then the tour runs as before. Each page shows once per person, on any device, and nobody who joined before this build sees them.
+
+Proven on the rig through a name-only scan with the project on the code: the project name appeared on the first page, the card followed the tap, the second page came when the profile was filled and held the tour back until **got it**, and a reload showed neither again.
+
+To see them yourself: reset Tara, wait for my note that the greetings build is live, then scan a fresh code with a name only.
+
+### p75
+*2026-09-03 18:16*
+
+> <task-notification>
+> <task-id>bewmcgkmk</task-id>
+> <tool-use-id>toolu_01Vq8t94YiqBPWeZ54ZmTz1X</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/bewmcgkmk.output</output-file>
+> <status>failed</status>
+> <summary>Background command "Run the deploy chain: stamp the hint when live, then deploy and stamp greetings" failed with exit code 1</summary>
+> </task-notification>
+
+The hint deploy refused a dirty tree, since the greetings files were still untracked at that moment. Both are committed now, so one deploy ships both.
+
+Deploy running now with both the hint and the welcome pages. I'll report the build number when it lands, then Tara can be reset and the scan tried.
+
+### p76
+*2026-09-03 18:18*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459513594 {"t":"2026-09-03T18:18:33.591Z","launch":true,"running":"first-run","server":"580","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Gate pass one.
+
+### p77
+*2026-09-03 18:19*
+
+> <task-notification>
+> <task-id>bh98o60oh</task-id>
+> <tool-use-id>toolu_01MTExF7chxAPa7SsPzt21vY</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/bh98o60oh.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy the hint and greetings builds and stamp both asks shipped" completed (exit code 0)</summary>
+> </task-notification>
+
+The gate failed and nothing shipped, but my script went on and stamped both asks shipped at 580, which is wrong. Putting those stamps back to building and reading the gate's log.
+
+The gate walks the fresh user's card by hand, so it must tap through the two welcome pages the way a finger now would. Adding that, then redeploying.
+
+The first attempt failed the gate: the gate walks a fresh user's card by hand, and the new welcome page stood in front of its tap. That is the gate doing its job. I taught it to tap through both pages, and the redeploy is running. The two asks are back to "building" on your sheet until it lands, since my script had stamped them shipped too early.
+
+### p78
+*2026-09-03 18:21*
+
+> there used to be two posts in brixton that were part of sevenoaks, added last night, but they're not showing up on tara's map posts page
+
+### p78a
+*2026-09-03 18:21*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459685908 {"t":"2026-09-03T18:21:25.903Z","launch":true,"running":"first-run","server":"580","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p79
+*2026-09-03 18:22*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459729749 {"t":"2026-09-03T18:22:09.747Z","launch":true,"running":"580","server":"580","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p80
+*2026-09-03 18:22*
+
+> oh ok, that's working properly then.
+
+Yes. Those three posts were written while you were the project's admin, so they carry the admin floor and Tara, as candidate, is below it. The up-arrow under each post widens it to candidate and down, or you can raise Tara to admin in the project. The older posts are at "team" and she holds them already.
+
+The redeploy is still in the gate. I'll report when it lands.
+
+### p81
+*2026-09-03 18:22*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459769751 {"t":"2026-09-03T18:22:49.493Z","launch":true,"running":"580","server":"580","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Gate pass three. Handover next.
+
+### p82
+*2026-09-03 18:23*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 64215 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Handover starting.
+
+### p83
+*2026-09-03 18:23*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 66984 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p84
+*2026-09-03 18:23*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 66984 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p85
+*2026-09-03 18:23*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 67032 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p85a
+*2026-09-03 18:23*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459816984 {"t":"2026-09-03T18:23:36.938Z","launch":true,"running":"583","server":"583","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p85b
+*2026-09-03 18:23*
+
+> <task-notification>
+> <task-id>bbe8xojde</task-id>
+> <tool-use-id>toolu_01P5nf3dZ4sHNsEyBNc46ZvW</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/bbe8xojde.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Redeploy through the gate; stamp the two asks only on success" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 583 is live, gate green, both asks stamped shipped, and your phone has it. That carries the framing hint and the two welcome pages.
+
+To see the welcome pages: reset Tara, show a fresh code with sevenoaks current, scan with a name only.
+
+### p86
+*2026-09-03 18:24*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788459841791 {"t":"2026-09-03T18:24:01.774Z","launch":true,"running":"583","server":"583","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Second iPhone is on 583 too.
+
+### p87
+*2026-09-03 18:25*
+
+> the post-profile-filling in welcome page should also ask for "enable faceID login" and "enable notifications" before allowing continue
+
+Noted: the second welcome page gets two asks, Face ID and notifications, and **got it** waits on them. Reading how the app enrols those today.

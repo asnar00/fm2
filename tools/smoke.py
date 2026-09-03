@@ -142,8 +142,13 @@ async def pass_gate(pg):
         print(f"      (profile gate lifted in {took} ms)" if took >= 0 else "      (profile gate never lifted)")
         if took < 0:
             await dump(pg, "profile-first"); return False
-        # /greetings: the second page, once the gate is down; got it
+        # /greetings: the second page, once the gate is down. /set-up's rows
+        # must settle first: each pending row is tried (a headless Chrome
+        # refuses the passkey and that counts as settled); then got it
         await pg.wait_for_timeout(600)
+        for _ in range(3):
+            if not await pg.evaluate("!!document.querySelector('#greetSheet .greet-row:not(.settled) .greet-do')"): break
+            await pg.click("#greetSheet .greet-row:not(.settled) .greet-do"); await pg.wait_for_timeout(1500)
         if await pg.evaluate("!!document.querySelector('#greetSheet .greet-go')"):
             await pg.click("#greetSheet .greet-go"); await pg.wait_for_timeout(600)
     if await pg.evaluate("typeof feature_Tour !== 'undefined' && feature_Tour.at >= 0"):
