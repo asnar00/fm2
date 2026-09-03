@@ -47,6 +47,16 @@ the function whose 22 KB answer #p158 caught being refused, now returns
 **28 characters**. A planted world in the old shape went from a 13,158-byte
 list to **523** and back to 13,158, byte for byte.
 
+**What this does to the budget `/room-for-a-team` raised the same evening.**
+That node widened `LIST_CAP` to 640 KB and the wire to 1 MB so a pictured list
+would fit; with the pictures out of the list those numbers stop being
+load-bearing and become headroom. Nothing here changes them — the shelf is
+theirs — but the three gates that read them (`/cards`' `chose`, `/photo`'s
+and `/poster`'s) now measure a 28-character reference where they measured
+twelve thousand characters, so they are true again rather than merely
+generous. `CAP` and `EDGE`, which decide how big one picture is, are
+untouched and are the next thing free to grow.
+
 **This is why the change is nearly free at every consumer.** Every reader of a
 picture in the tree — `card_page_html`, `card_tile_html`, `/map`'s
 `map_face_of`, `/portrait`'s face, `/reel` and its four descendants, `/live`'s
