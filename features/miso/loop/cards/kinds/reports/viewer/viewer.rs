@@ -38,7 +38,16 @@ impl feature_Viewer {
         if reports_card_of(who.clone(), id.clone()).is_null() {
             return json_response(404, "{\"ok\":false,\"error\":\"no such report\"}".to_string());
         }
-        let file = format!("{}/{}.html", reports_dir(who), reports_safe(id));
+        let dir = reports_dir(who.clone());
+        let file = format!("{}/{}.html", dir, reports_safe(id.clone()));
+        // a report printed before the page was kept: the print dir still holds
+        // the page of the LAST report printed, so the newest report can have
+        // it (/retrofit — the one report a team has today is that one)
+        let file = if std::path::Path::new(&file).exists() || !viewer_is_newest(who, id) {
+            file
+        } else {
+            format!("{}/work/report.html", dir)
+        };
         match std::fs::read(file) {
             Ok(bytes) => response { status: 200, ctype: "text/html; charset=utf-8".to_string(),
                                     body: bytes, set_cookie: String::new(),
@@ -46,5 +55,25 @@ impl feature_Viewer {
             Err(_) => json_response(404,
                 "{\"ok\":false,\"error\":\"there is no page for that report yet\"}".to_string()),
         }
+    }
+
+    // is this report the owner's most recently generated one?
+    fn viewer_is_newest(who: String, id: String) -> bool {
+        let list: serde_json::Value = serde_json::from_str(&exchange_cards_of(who))
+            .unwrap_or(serde_json::json!([]));
+        let empty: Vec<serde_json::Value> = Vec::new();
+        let mut best = 0u64;
+        let mut best_id = String::new();
+        for c in list.as_array().unwrap_or(&empty) {
+            if c["type"].as_str().unwrap_or("") != "report" {
+                continue;
+            }
+            let g = reports_state_of(c)["generated"].as_u64().unwrap_or(0);
+            if g > best {
+                best = g;
+                best_id = c["id"].as_str().unwrap_or("").to_string();
+            }
+        }
+        best > 0 && best_id == id
     }
 }

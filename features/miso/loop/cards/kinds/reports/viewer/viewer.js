@@ -6,7 +6,7 @@ const feature_Viewer = {
     const s = document.createElement('div');
     s.id = 'repView';
     s.innerHTML = '<div class="repview-bar"><div class="repview-back" role="button">‹</div>'
-      + '<div class="repview-title"></div><div class="repview-share" role="button">share</div></div>'
+      + '<div class="repview-title"></div><div class="repview-share" role="button">export PDF</div></div>'
       + '<iframe class="repview-frame" title="report"></iframe>';
     document.body.appendChild(s);
     this.sheet = s;

@@ -300,3 +300,21 @@ Tag is on the title's centreline within a pixel and its right edge on the media'
 > also, when viewing the report, there's no way to get back to the app.
 
 Build 541 is live. Now the two new items: expunging the "doorstep" idea, and a way back from the report.
+
+Writing the two report nodes now: the wording fix (with a small extension point in the parent) and an in-app viewer with a way back.
+
+Build 543 is live with both.
+
+**The "doorstep" idea is gone.** I found it in three places and corrected all of them:
+- My memory now states plainly that posts are the team's own notes and impressions, usually after the fact, and that the app never records the public. The old note about the legacy fieldnote app's audio is marked as history of a different app.
+- The report writer's instructions said the data was "doorstep posts written or dictated by canvassers", and the corpus heading read "DOORSTEP POSTS". Both now say the posts are the team's own notes, written or dictated by team members, and tell the writer never to describe them as recordings of the public. Reports already written keep their old wording until you run them again.
+- Two lines of spec prose in the tree used the word. Reworded.
+
+**A way back from a report.** Open now puts the report in a sheet over the app: ‹ top-left comes back, share top-right hands the PDF to the phone's share sheet. A report made before this build has no in-app page yet, so its open button works the old way until you press "again" on it once. Your existing reports need that one refresh.
+
+Today's tally, all shipped and stamped: 531, 532, 536 to 541, 543. The wifi watchdog has logged two quiet hourly OKs.
+
+### p15
+*2026-09-03 12:33*
+
+> not seeing a back button over the pdf view. let's also add an "export to pdf" button on that page
