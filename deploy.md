@@ -123,6 +123,14 @@ a server with no successor waiting — the port does go quiet then.
 - Device reports: `ssh <mini> tail -f /tmp/miso-diag.log` (launches, errors,
   enrolment outcomes — the remote eyes on installed phones)
 - The system panel on any device shows its running build and recent changes.
+- **Reset a test user** (2026-09-03): `python3 tools/reset_user.py <name>`
+  on the mini (`--list` shows the guest list, `--dry-run` says what would
+  go). Their copies in other people's worlds become tombstones through the
+  op door, their guest-list row goes to `~/.miso-auth/removed.json`, their
+  auth lines go, their world log moves to `~/.miso-context/removed/`, and
+  the server restarts by handover so it forgets the world. Nothing is
+  deleted; the same number can be invited again at once. Refuses a user
+  with authority without `--force`.
 
 ## The toggle-proof gate (added 2026-09-02, settings #p4–#p5)
 
