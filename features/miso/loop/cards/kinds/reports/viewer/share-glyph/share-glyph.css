@@ -1,0 +1,6 @@
+.repview-share.repview-glyph {
+  width: 40px; height: 36px; padding: 0;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: #e6e6ea; line-height: 0;
+}

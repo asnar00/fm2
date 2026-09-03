@@ -1,1 +1,2 @@
 - [x] fit-page
+- [x] share-glyph
