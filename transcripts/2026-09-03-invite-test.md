@@ -2994,3 +2994,130 @@ I'd record this as the ruling in notes.md and build the proposal queue after Sat
 > I think this is something we build later, not now. For the moment, let's just make it so that all non-admin requests get "proposed", I manually accept them and prioritise them, they get built in a batch, and everyone gets them. People can always disable features, but they (for the moment) can't just build whatever they want.
 
 Agreed. That's a one-line change in the ask acknowledger plus a ruling in the notes. Doing both now.
+
+### p157a
+*2026-09-03 20:07*
+
+> <task-notification>
+> <task-id>b4079z3ks</task-id>
+> <summary>Monitor event: "field asks from miso devices (admin: building at once; others: proposed)"</summary>
+> <event>watching /Users/microserver/.miso-context (5 worlds) for asked,proposed</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Done. From now on an ask from anyone who isn't admin or support is stamped "proposed" the moment it's seen, and nothing is built until you say so. Yours and support's still stamp "building" at once. The monitor is rearmed with the new rule, the ruling is in notes.md with the later design parked beside it, and the project instructions say a proposal builds only on your word.
+
+Two practical notes:
+
+- **How you accept.** For now, tell me in conversation: "build the close one" or "build them all". I stamp it building, build the batch, and stamp shipped. A tap on the sheet to accept is part of the later work.
+- **Tara's sheet.** Tonight's six asks already show shipped, since they arrived under the old rule.
+
+The thumbnail worker is still running; I'll relay its report when it lands.
+
+### p158
+*2026-09-03 20:15*
+
+> <task-notification>
+> <task-id>a79873bd475afd052</task-id>
+> <tool-use-id>toolu_01WLadqrRSK2o8D2HV5QTcnp</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/a79873bd475afd052.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Fix missing video thumbnail" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>The rig is down, the live server is untouched (build 596 answering), and my worktree is clean — this is a **contact report**, not a delivery. Here is what I found.
+> 
+> ## Diagnosis (observed, not inferred)
+> 
+> **The poster block never arrived, but not through a delivery gap — the device refused to send it.** The card `asnaroo.1788449987543` (rec `vid-1788449987543`, Soho 51.5138/−0.1353, 12 s mp4) carries a `picture` block with `data: ""` and **no `poster` mark at all**, next to a `video` and a `location` block. The Brixton card `asnaroo.1788383373739` has the same shape with `poster: true` and 22,523 chars. I walked all 55 `cards` ops in `~/.miso-context/phone%3A%2B447813943023.log`: from the mint at 15:39:47 UTC onward the Soho card's picture block has never been anything but empty. The three surfaces are innocent — `map_face_of` returns `""`, `poster_block` requires non-empty data, so all three correctly fall back to a letter.
+> 
+> **The cause is `/cards`' list budget, and `/poster` is behaving exactly as its spec says.** `poster.js make()` gates on `feature_Cards.held('', 1) + data.length &gt; feature_Cards.LIST_CAP`, and returns `null` silently. Measured in the composed runtime on a rig (headless Chrome, my worktree's build):
+> 
+> - `CAP 24576, LIST_CAP 160000, EDGE 384` — `/roomier` + `/wider` as composed.
+> - The shipped `feature_Poster.grab()` on a real MediaRecorder clip produced a **21,771-char** poster — independently confirming the ~22 KB size of the two posters already on ash's phone.
+> - `feature_Cards.held('', 1)` on ash's real list = **176,020**, i.e. room = **−16,020**.
+> - Verdict: **REFUSED**, for the measured poster and for both observed phone posters (22,523 / 22,559).
+> 
+> At the moment of the recording the list was 155,583 → room 4,417, still far under 21,771. So it was refused then too. The list has sat at ~155 K for the whole log window, meaning posters stopped landing silently some time before this clip; the Soho clip is simply the first video recorded since.
+> 
+> *Labelled as hypothesis:* I cannot tell from here whether `grab()` also failed on the phone. It doesn't matter — the gate refuses any poster of the size that phone produces, so the refusal is a sufficient cause on its own.
+> 
+> *Ruled out:* the upload is fine. The clip is on the server at `/Users/microserver/.miso-blobs/phone:+447813943023/vid-1788449987543` (1,467,816 bytes, 16:39 local).
+> 
+> ## Why I stopped instead of building
+> 
+> The brief's plan was a refinement of `/poster` plus a retrofit. That plan cannot hold: **while `held() &gt; LIST_CAP` even a 1 KB poster is refused.** The only moves that make one land are (a) raising `LIST_CAP` — that is `/wider`'s node, outside the footprint, and it pushes ash *toward* the failure below — or (b) taking the poster out of the cards list, which is `/poster`'s central design decision plus all three surfaces. A `/poster`-only change would need a second fix to hold. That is the #p5 tripwire, so I filed this instead.
+> 
+> ## The bigger thing, and it is time-critical
+> 
+> **ash's phone is one pictured colleague card away from a permanently jammed outbox.** Proven on the rig against the real build:
+> 
+> ```
+> ash's cards list today            body= 177704  HTTP 200
+> + one more pictured colleague     body= 197903  HTTP 400
+> + two more                        body= 217153  HTTP 400
+> ```
+> 
+> `msg_endpoint` truncates over `msg_body_cap()` (196,608), the truncated body parses as untyped → 400; `messaging.js flush()` does `if (!r.ok) break;` on a FIFO queue, so the oversized op stays at the head forever and **every later op is stuck behind it**. Ash has 18,904 bytes of wire headroom; a pictured profile card is ~19 KB. Saturday is a canvassing session where a dozen people exchange pictured profile cards. Current headroom, all users: `+447813943023` **18,904** (1 card), `+15551234741` 62,060 (3), `+97100683256098060` 87,154 (4), `+15551234567` 107,501 (5). 94 % of ash's list (166,084 of 176,020 chars) is inline picture data across 8 cards. The named rung in `cards.md` — a var per card, blobs beside the card — is the real fix.
+> 
+> ## Ready for triage: the retrofit, proven on a rig
+> 
+> I did **not** write to the live server. The body is built and waiting:
+> 
+> ```
+> curl -s -X POST 'localhost:8095/diag/context?user=phone:+447813943023' \
+>   --data-binary @/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/scratchpad/retrofit-body.json
+> ```
+> 
+> It takes the middle frame off the server's own copy of the clip, square-cropped, at **128 px / q5 = 4,507 chars** — deliberately small, not `/roomier`'s 384 px: a 22 KB poster would take the op to ~196 K and jam him. Result: list 176,050 → 180,571, op body 182,198 (14,410 under the cap). The script re-reads live state, refuses if the card moved, and asserts the body is under the cap before writing the file. Rebuild with `python3 .../scratchpad/retrofit.py`. Proven on the rig with ash's real cards: the Soho tile, the map pin over Soho and the reel card all show the street corner (`fix-posts.png`, `fix-browse_map.png`) where before they were blank squares with a dash (`sym-posts.png`, `sym-browse_map.png`). At tile and pin size it reads as well as the Brixton poster; on the full-width post page it will be soft — name that to ash.
+> 
+> ## Evidence artifacts (all absolute)
+> 
+> - `/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/scratchpad/probe.py` — the runtime budget/gate observation
+> - `.../scratchpad/wirejam.py` — the 200/400/400 wire result
+> - `.../scratchpad/symptom.py`, `after.py` — before/after on the rig
+> - `.../scratchpad/sym-posts.png`, `sym-browse_map.png`, `fix-posts.png`, `fix-browse_map.png`
+> - `.../scratchpad/retrofit.py`, `retrofit-body.json`, `poster-128-5.jpg`
+> - `.../scratchpad/others.py` — per-user headroom
+> 
+> ## Open risks
+> 
+> 1. **The outbox jam is one card away for ash and needs a ruling before Saturday.** Once jammed, nothing he does reaches the server, and the recovery is not obvious to a user.
+> 2. **Every poster is silently refused on any phone whose list is near full** — and `/poster`'s spec says failing quietly is correct, so nobody will ever notice.
+> 3. **The retrofit adds 4.5 KB to a list that is already the problem.** It buys ash the thumbnail and costs him 4.5 KB of the 18.9 KB he has left. Worth it only if the list fix follows.
+> 4. **Latent:** both `poster.js` and `photo.js` call `feature_Cards.held('', 1)` — `''` matches no card, so the block being replaced is never discounted. Harmless today (the block is empty) but wrong if either ever overwrites a filled block.
+> 5. **Unverified:** whether `grab()` also failed on the phone; and whether the two working posters were taken when the list was smaller (both predate my log window — inference, not observation).
+> 6. My worktree has no commits and no diff. `products/miso/build` was rebuilt (gitignored); `git status` is clean.</result>
+> <usage><subagent_tokens>177456</subagent_tokens><tool_uses>117</tool_uses><duration_ms>1258623</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a79873bd475afd052</worktreePath><worktreeBranch>worktree-agent-a79873bd475afd052</worktreeBranch></worktree>
+> </task-notification>
+
+The worker came back with a contact report rather than a fix, and it found something that matters for Saturday.
+
+**The thumbnail.** The Soho clip uploaded fine, but its poster never got into the card. Your cards list is over the size budget the phone allows itself, so the poster maker refused to add one, silently, as its spec says. Every video poster on your phone has been refused since the list crossed that line. The three surfaces are innocent: there is nothing to show.
+
+**The bigger thing.** Your cards list is 176 KB, 94% of it inline picture data across eight cards, and the server refuses a message over 192 KB. One more pictured colleague card, about 19 KB, and your phone's outbox jams: the oversized write sits at the head of the queue, gets refused forever, and nothing you do after it reaches the server. The worker proved that on the rig with your real list. Saturday is a dozen people exchanging pictured cards.
+
+**What I propose, in order:**
+
+1. **Now:** run the worker's retrofit for the Soho poster. It takes a small frame off the server's copy of the clip, 4.5 KB, proven on the rig on tile, pin and reel. It costs 4.5 KB of your 19 KB headroom, so only worth it with the next step.
+2. **Before Saturday, two small nodes:** raise the list and wire caps about fourfold, and make the outbox drop a write the server refuses as too big, with a diag report, instead of blocking everything behind it. That removes the jam as a failure mode. The cost is bigger writes on the wire when a list is large.
+3. **After Saturday:** the foundation the handover already names, one var per card with pictures stored beside the card rather than inside the list. That is the real fix and too big for two days.
+
+Say yes to 1 and 2 and I'll run the retrofit and build the two nodes tonight. The worker's evidence and screenshots are in its scratch files if you want to see the before and after.
+
+### p159
+*2026-09-03 20:17*
+
+> do everything now
+
+Doing all three. First the retrofit for the Soho poster, then two workers in parallel: one for the caps and the outbox, one for the per-card foundation.
+
+The Soho poster is on your card now, 4.5 KB, and will reach your phone on its next turn. Launching the two workers.
+
+All three are in motion:
+
+1. **Done:** the Soho poster is on your card, 4.5 KB, proven on the rig before it was written. It reaches your phone on its next turn.
+2. **Building:** a worker is raising the list and wire budgets about fourfold and teaching the outbox to drop a write the server refuses, with a diag report, instead of blocking behind it.
+3. **Building:** a second worker is on the foundation, pictures stored beside a card rather than inside the list every edit sends, with a non-destructive retrofit for the cards you already have. That one is a day's work and may come back with a contact report if the footprint doubles.
+
+Both announcements are on the team's sheet as building. I'll integrate, prove and ship each as it lands, the caps first.
