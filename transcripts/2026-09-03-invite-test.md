@@ -632,3 +632,242 @@ That settles it: the join fixes it, so the bad copy came from an in-place update
 > <event>1788457177876 {"t":"2026-09-03T17:39:37.828Z","launch":true,"running":"573","server":"573","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}</event>
 > If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
 > </task-notification>
+
+### p41b
+*2026-09-03 17:41*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788457305417 {"t":"2026-09-03T17:41:45.413Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Reproduced without the node: after the swap the page behaves as a first run and lands on the 👤 card, the fresh-world symptom. Now with the node.
+
+### p41c
+*2026-09-03 17:42*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788457347754 {"t":"2026-09-03T17:42:27.753Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+With the node the row is unchanged after the swap and taps stays hidden. Committing and deploying.
+
+The fix is committed and in the gate. I'll commit the ledger entry once the deploy finishes, since the build number is the commit count.
+
+### p42
+*2026-09-03 17:44*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788457452989 {"t":"2026-09-03T17:44:12.988Z","launch":true,"running":"first-run","server":"573","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Gate pass one.
+
+### p43
+*2026-09-03 17:44*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788457494786 {"t":"2026-09-03T17:44:54.785Z","launch":true,"running":"573","server":"573","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Pass two.
+
+### p44
+*2026-09-03 17:45*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788457534804 {"t":"2026-09-03T17:45:34.545Z","launch":true,"running":"573","server":"573","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Pass three. Handover next.
+
+### p45
+*2026-09-03 17:46*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 52509 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Handover under way.
+
+### p46
+*2026-09-03 17:46*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 56503 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p47
+*2026-09-03 17:46*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 56503 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p48
+*2026-09-03 17:46*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 56557 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p48a
+*2026-09-03 17:46*
+
+> <task-notification>
+> <task-id>bzed2ozw5</task-id>
+> <tool-use-id>toolu_01QUeeYMh4gsQoYFgDGaaMKZ</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/bzed2ozw5.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy the world-along build through the smoke gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 574 is live and stamped.
+
+**What it fixes.** An update that swaps the Rust in place used to start a fresh world on the phone: every switch at its default, the current project dropped, tap counts stamped with a fresh epoch. That is what brought taps back after each of today's three updates. Now the swap carries your world across and rejoins, so the first frame the new code draws is the world you had. Proven on the rig: before the fix a swap landed the page on the 👤 card as if it were a first run, after it the toolbar was unchanged.
+
+**On your phone.** This update changes the page itself, so it arrives as a full reload, not a swap. Your world comes from the server on that boot, so taps stays hidden.
+
+**Recorded** in misses.md: a node's promise is made against the tree as it was, and a later node that moves where something lives owes the older promises a re-read.
+
+The name-only scan test is ready whenever you are.
+
+### p49
+*2026-09-03 17:46*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788457585755 {"t":"2026-09-03T17:46:25.711Z","launch":true,"running":"574","server":"574","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Your phone is on 574.
+
+### p50
+*2026-09-03 17:48*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>qr: a name-only claim — placeholder number minted
+> qr: Tara joined on phone:+447813943023's code 8859a6… (…3754)
+> doors: …3754 is invited into asnaroo.1787704828987 as candidate</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p50a
+*2026-09-03 17:48*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>qr: …3754 is in on the scan — cookie issued</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Tara's scan went through on the live server: a placeholder number was minted, the guest-list row written, the code's project role given (candidate in your project), and the cookie issued. The second iPhone should be in the app as Tara now. When you're done looking around, `python3 tools/reset_user.py Tara` takes her out again.
+
+### p51
+*2026-09-03 17:48*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788457714115 {"t":"2026-09-03T17:48:34.100Z","launch":true,"running":"first-run","server":"574","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}
+> exchange: Tara handed 1 card(s) to 1 person(s)</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Tara's phone launched the installed app on 574 and her profile card has been handed to you. Her card should be in your people list now.
+
+### p52
+*2026-09-03 17:48*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>invited-into: Tara joined asnaroo.1787704828987 as candidate</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+And Tara has joined your project as candidate. The whole road from scan to project membership ran without a text message.
+
+### p53
+*2026-09-03 17:48*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>exchange: Tara handed 1 card(s) to 1 person(s)</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Tara edited her card and the copy reached you. Nothing to act on.
+
+### p54
+*2026-09-03 17:49*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>exchange: Tara handed 1 card(s) to 1 person(s)</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Another edit from Tara's phone, delivered. Still watching.
+
+### p55
+*2026-09-03 17:49*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>exchange: Tara handed 1 card(s) to 1 person(s)</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Routine card sync from Tara's phone.
+
+### p56
+*2026-09-03 17:49*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>exchange: Tara handed 1 card(s) to 1 person(s)</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Same again, routine.
+
+### p57
+*2026-09-03 17:50*
+
+> OK, I signed up as Tara - but I should see the other users in the sevenoaks project, I just see Tara.
