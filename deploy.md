@@ -218,8 +218,11 @@ Bring-up, once per device:
    simulator rig there runs on `MISO_PORT=8098` (8097 is `com.noob.learn`,
    8096 `com.noob.rsc`, 8090 muon; survey `lsof -nP -iTCP -sTCP:LISTEN` and
    the LaunchAgents plists before choosing), and the web clip's URL carries
-   the port — re-add the clip if the port changes. **A rig is ended by its
-   PID, never by clearing its port**: `lsof -ti :PORT | xargs kill` killed
+   the port — re-add the clip if the port changes. **A rig is ended by its OWN
+   PID — the one its start wrote to its own file, checked against
+   `ps -o command=` before the signal — never by clearing its port, and
+   never by a search over every `miso_server` (a worker's fallback killed
+   the live server on 2026-09-03; misses.md)**: `lsof -ti :PORT | xargs kill` killed
    ash's learn server on 2026-09-02 when a rig had moved.
    Add `MISO_RIG_KEEP=1` (`/diag/rig/keep-worker`, 2026-09-02) and the rig
    keeps the page's service worker and caches, so the cache path — a mixed
