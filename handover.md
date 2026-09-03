@@ -79,6 +79,22 @@ for the join page) before it shipped, and then again by Tara's phone.*
   map's pins, live or placed). `kinds/posts` and `cards/page` are both at
   the six-child cap — the next child there forces a regroup.
 
+- **Builds 597–601, the cards budget (evening, Opus workers):** the Soho
+  video's poster had been silently refused by `/poster` because ash's
+  cards list (176 KB, 94% inline pictures) was over `LIST_CAP`; one more
+  pictured card would have jammed his outbox behind a 400 from
+  `msg_body_cap`. Retrofit run through the op door (a 4.5 KB frame from the
+  server's clip); `wider/room-for-a-team` (LIST_CAP 640 K, wire 1 MB);
+  `messaging/past-a-refusal` (a 4xx that cannot succeed on retry is dropped
+  with a diag report and a local `misoDropped` ring; `refused(status, msg)`
+  is the seam opened in `/messaging`). A third worker is on the foundation:
+  pictures beside the card, not inside the list (handover item 4).
+  **Named risks:** the broadcast slot is capped by count, re-parsed 5×/s by
+  every waiting phone — linear in list size × clients; `fmlink --prove`
+  calls a parent-refactor-plus-child "implied" (a node's own files count as
+  inside it) — the classifier needs the /confined shape; `flush()` shifts
+  the head by position after an await (latent).
+
 ## FOR SATURDAY
 
 Reset any test rows (`tools/reset_user.py --list`). Show one code from 👤
