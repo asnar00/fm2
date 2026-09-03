@@ -124,6 +124,9 @@ async def pass_gate(pg):
         for _ in range(20):
             if await pg.evaluate("!!document.querySelector('.card-page .card-text')"): break
             await pg.wait_for_timeout(250)
+        # /greetings: the first welcome page stands over the card; let's go
+        if await pg.evaluate("!!document.querySelector('#greetSheet .greet-go')"):
+            await pg.click("#greetSheet .greet-go"); await pg.wait_for_timeout(600)
         await pg.evaluate("""(() => {
             const s = JSON.parse(feature_Loop.state); const cards = JSON.parse(s.cards || '[]');
             const me = cards.find(c => c.type === 'profile' && !c.from); if (!me) return;
@@ -139,6 +142,10 @@ async def pass_gate(pg):
         print(f"      (profile gate lifted in {took} ms)" if took >= 0 else "      (profile gate never lifted)")
         if took < 0:
             await dump(pg, "profile-first"); return False
+        # /greetings: the second page, once the gate is down; got it
+        await pg.wait_for_timeout(600)
+        if await pg.evaluate("!!document.querySelector('#greetSheet .greet-go')"):
+            await pg.click("#greetSheet .greet-go"); await pg.wait_for_timeout(600)
     if await pg.evaluate("typeof feature_Tour !== 'undefined' && feature_Tour.at >= 0"):
         await pg.evaluate("feature_Tour.end()"); await pg.wait_for_timeout(600)
     return True
