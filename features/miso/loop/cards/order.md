@@ -1,6 +1,6 @@
 - [x] page
 - [x] look
-- [x] guard
+- [x] store
 - [x] browse
 - [x] exchange
 - [x] kinds
