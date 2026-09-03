@@ -1,3 +1,4 @@
 - [x] square-posts
 - [x] fan-out
 - [x] black-stem
+- [x] bigger-faces

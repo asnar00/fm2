@@ -1,0 +1,7 @@
+/* half again: 34 → 51 px faces on a 60 × 75 pin, drawn from /map's 40 × 50
+   box and pulled up and out so the tip still stands on the place */
+.map-pin { width: 60px; height: 75px; margin-left: -10px; margin-top: -25px; }
+.map-pin-face { width: 51px; height: 51px; font-size: 22px; }
+.map-pin-stem {
+  border-left-width: 7px; border-right-width: 7px; border-top-width: 18px;
+}
