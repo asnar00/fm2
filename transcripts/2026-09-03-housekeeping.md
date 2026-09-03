@@ -226,3 +226,42 @@ The wifi watchdog is running and quiet so far. Ready for the invite workflow, or
 *2026-09-03 12:00*
 
 > yeah correct, all posts should carry the location at which the media was taken, in preference to the time/place the post was made or opened.
+
+Still checking why the place did not land on the simulator. Instrumenting the geolocation call and the send path.
+
+The node works: the trace shows the device asked once after the recording is saved, and the card placed with the recording's own time. Shipping it.
+
+Build 539 is live. Every recording, video or audio, now takes the device's position the moment it is saved, stamped with the recording's own time. Photo posts already took theirs from the picture.
+
+**About the overlap you saw.** The fan is on your phone and working. Those two posts were never at one place on the map. The photo post from last night carries Brixton from its picture. The video post carried no place at all until you opened it this morning at 09:30, when the page asked the phone where it was and stamped it there, in Soho. So what you saw overlapping was that video sitting on the cluster of older Soho posts and the project, not the Brixton pair.
+
+**Two things to check when the phone updates:**
+- The Soho cluster should now fan. If those pins still lie on top of each other, tell me and I will dig into the phone's record.
+- The misplaced video cannot be put right by the app, since nothing recorded where it was filmed. I can move it to the photo's Brixton coordinates by hand on the server if you want that. Say so and I will do it.
+
+Watchdog is quiet, one hourly OK so far. Fable at 46% at last check.
+
+### p11
+*2026-09-03 12:08*
+
+> what is the location of the misplaced video? Doesn't the recorded video have a GPS location?
+
+Its stored place is 51.5129, -0.1335, which is Soho, around Golden Square just north of Piccadilly Circus. The stamp on it is 09:30 this morning, and the source is the phone's own fix, not the media.
+
+No, the clip has no location of its own. A photo from the camera roll carries EXIF metadata, which includes GPS, and that is where a photo post's place comes from. A video recorded inside the app comes out of the browser's recorder as a bare MP4 stream with no metadata at all, so there is nothing to read. That is why the fix that just shipped asks the phone where it is at the moment the recording is saved, and stamps the post with the recording's time. From now on a clip is placed where you filmed it. Last night's clip was made before that existed, so its place is whatever the phone said the first time you opened it.
+
+If you want it in Brixton, tell me and I will move it to the photo's coordinates by hand.
+
+### p12
+*2026-09-03 12:09*
+
+> yeah, let's move it to the same as the other brixton post - it was taken in the same exact location
+
+Done. The video post now sits at the photo's exact coordinates, 51.4656, -0.1147 in Brixton, with the recording's own time on it. The server accepted the change and reads it back correctly.
+
+Your phone should pick it up on its next exchange with the server. If the map still shows that clip in Soho after the phone has synced, tell me and I will check whether the phone's own copy wrote back over it.
+
+### p13
+*2026-09-03 12:12*
+
+> they look great. nice one! one small tweak - can the "arrow" part of the marker be black, the same as the outline of the post? That would make it stand out better against the dark grey map.
