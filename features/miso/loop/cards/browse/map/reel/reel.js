@@ -37,9 +37,18 @@ const feature_Reel = {
         if (typeof p.lat === 'number' && typeof p.lon === 'number') places[p.id] = [p.lat, p.lon];
       }
     } catch (e) { /* no places */ }
+    // the tool's own set, when the page says which — a post the current
+    // project sifts out of the map is not in the band either (#p22)
+    let allowed = null;
+    try {
+      const data = document.getElementById('mapData');
+      const ids = data ? data.getAttribute('data-ids') : null;
+      if (ids !== null) allowed = new Set(ids.split(',').filter((x) => x));
+    } catch (e) { allowed = null; }
     const out = [];
     for (const c of cards) {
       if (!c || c.type !== 'post') continue;
+      if (allowed && !allowed.has(c.id)) continue;
       const blocks = Array.isArray(c.blocks) ? c.blocks : [];
       const pic = blocks.find((b) => b && b.kind === 'picture' && typeof b.data === 'string' && b.data);
       const text = blocks.find((b) => b && b.kind === 'text' && b.text);

@@ -52,3 +52,8 @@ body.fm-reel .leaflet-bottom { bottom: 6px; }
   overflow: hidden;
 }
 .reel-meta { color: #9a9aa2; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* room at the end, so the last lozenge can reach the left edge and be the
+   current one — without it the two oldest posts could never be focused
+   (#p22) */
+.reel-list::after { content: ''; flex: 0 0 36%; }

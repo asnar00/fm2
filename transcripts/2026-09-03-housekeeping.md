@@ -410,3 +410,16 @@ Each was driven with real touches on the simulator before shipping. Today's buil
 *2026-09-03 13:43*
 
 > also, the highlighted lozenge in the reel should always be the leftmost fully displayed one
+
+Build 553 is live.
+
+- **The ring is on the map now.** The pin of the post the reel is on wears the light grey ring in place of its dark halo. Every other pin keeps the halo. Each pin now carries its post's id, so two posts at one place ring one pin, not both.
+- **The lozenge keeps a plain outline** to show the link, and the arrow is gone.
+- **The current post is the leftmost lozenge fully in view**, with a few pixels of grace for the snap.
+
+One thing I found while proving it: two of this morning's reel nodes were fighting over the same function, so the mark could be lost depending on load order. The reel now has a proper seam for where the map goes, and the highlighting survives either order. Proven on the simulator by scrolling to the second lozenge and checking it, and exactly one pin with its id, were marked.
+
+### p22
+*2026-09-03 13:55*
+
+> the map-focus function seems to work only on image/video posts and not on audio-only posts
