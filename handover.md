@@ -95,6 +95,22 @@ for the join page) before it shipped, and then again by Tara's phone.*
   inside it) — the classifier needs the /confined shape; `flush()` shifts
   the head by position after an await (latent).
 
+- **Builds 602–609, pictures beside the card (`cards/store/pic-beside`,
+  Opus worker):** a picture block holds `pic/<24 hex>`; the bytes live in
+  `~/.miso-blobs/pics/<id>`, write-once, served only to a logged-in caller
+  whose own cards name the id; old inline pictures keep drawing; the
+  device keeps its own copy in IndexedDB and uploads on its own queue;
+  `tools/pics.py` is the retrofit door (dry by default; `--back` is the
+  proven inverse). `/guard` moved under the new `/store` (a regroup; the
+  old `guard*/enabled` ticks are orphan ops). **The live retrofit was run
+  (`--go`) at session end** — ash's list 180 KB → 10 KB, 24 pictures over
+  4 worlds. Risks the worker named: copies keep inline bytes until the
+  owner's next real edit; the video road proven at the seam only; the
+  local picture store is never pruned; the dressing is a regex over
+  `src="pic/…"`. **Outage 22:46:** the worker's rig reset killed the live
+  server by a fallback pgrep — misses.md "the rig that killed the server";
+  the rule is now in the worker seat and deploy.md.
+
 ## FOR SATURDAY
 
 Reset any test rows (`tools/reset_user.py --list`). Show one code from 👤

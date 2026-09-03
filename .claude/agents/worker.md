@@ -49,3 +49,5 @@ Report outcomes plainly: what shipped, what was proven, what remains.
 No victory prose — calibrated claims are what make celebration safe.
 Return: the diff, the evidence artifacts, one paragraph of outcome,
 and open risks by name.
+
+**Never kill a server you did not start.** The live server (`~/miso/miso_server`, port 8095) and other agents' rigs run on this machine. End your own rig only by the PID your own start wrote to your own file, and check `ps -o command= -p <pid>` names your worktree's binary before you signal it. Never `pgrep miso_server`, never a fallback to "the first miso_server", never kill by port. A worker's reset script took the live server down on 2026-09-03 (misses.md, "the rig that killed the server").

@@ -558,3 +558,25 @@ node that moves where something lives owes the older promises a re-read.
 looked. When a bug will not reproduce cold, ask what the device kept from
 before — and read the launch lines first: an update with no launch is a
 different code path.
+
+## the rig that killed the server (2026-09-03, 22:46) — a fallback that reached past its own rig
+
+**The ask:** the pictures-beside-the-card foundation, delegated to a worker
+in its own worktree with its own rig on port 8121.
+
+**The estimate:** the rig is torn down by PID (deploy.md's rule since the
+learn-server incident of 2026-09-02).
+
+**The actual:** the worker's `reset.sh` found its rig's PID by grepping for
+`MISO_PORT=8121`, and when that found nothing it fell back to *the first
+`miso_server` on the machine* — the live one. The live server drained on
+SIGTERM and stayed down (KeepAlive is off by design, a drained server must
+not restart into a claimed directory); the tunnel answered 502 for about
+half a minute until triage kickstarted it. No handover line in the log,
+which is what said it was a plain SIGTERM from outside.
+
+**The lesson:** "by PID" is not enough; the PID must be *yours*. A rig is
+killed by the PID its own start wrote to its own file, checked against the
+process's command line and start time, and never by a search over every
+`miso_server` — a fallback that widens the target is the bug. Written into
+the worker seat (.claude/agents/worker.md) and deploy.md.
