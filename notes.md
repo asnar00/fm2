@@ -2917,3 +2917,18 @@ commit was released (the deploy stamp names it).
 Saves two links and a flow rerun per node, and retires the transient
 untick of a shared order.md (the "restore in the same breath" hazard).
 Removes nothing from the ticked-state proof.
+
+## the learning loop (2026-09-03, housekeeping #p31–#p32)
+
+Ash asked for a self-improvement process: look at how asks were refined
+after shipping, so the next build is shaped the way the asker likes by
+default. Decision: the tree already holds the data — every node carries its
+ask, and a refinement is a child born after its parent — so `tools/tweaks.py`
+walks it (git dates each node) and prints the digest over all history; the
+distillation is a builder's act at session end, written into
+`taste/learned/learned.agent.md`, which the skillset carries to every
+builder. First run: 169 refinements of 76 asks, one asker; thirteen defaults
+extracted, each with its precedent nodes. A rule lives while its precedent
+holds; an ask that contradicts it amends it. Per-asker rules are the next
+rung once a second asker files tweaks (`--user`).
+

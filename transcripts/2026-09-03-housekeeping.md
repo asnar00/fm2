@@ -475,3 +475,169 @@ Just the watchdog's hourly OK at 15:59. The mini's wifi has been steady all afte
 > </task-notification>
 
 A field ask from your phone just landed and was stamped building: the report display should zoom out to show the margins. Looking at the report page's width.
+
+The tap isn't reaching the page at all now, so something native may be sitting over the simulator. Checking.
+
+### p25a
+*2026-09-03 15:15*
+
+> <task-notification>
+> <task-id>bsa3dosk1</task-id>
+> <summary>Monitor event: "field asks arriving (stamped building on sight)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788448511509 tool=- at=-
+> text: move tooltips a bit further from the tool button
+> ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p25b
+*2026-09-03 15:15*
+
+> <task-notification>
+> <task-id>bsa3dosk1</task-id>
+> <summary>Monitor event: "field asks arriving (stamped building on sight)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788448540972 tool=- at=-
+> text: users view should also show reel just posts
+> ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Two more field asks landed and are stamped building: tooltips further from the button, and the reel on the people map too. Building both.
+
+### p25c
+*2026-09-03 15:18*
+
+> <task-notification>
+> <task-id>bsa3dosk1</task-id>
+> <summary>Monitor event: "field asks arriving (stamped building on sight)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788448692127 tool=- at=-
+> text: let’s make map Thumbnails 50% bigger
+> ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+A third ask: map thumbnails 50% bigger. Building it with the other two, then one proof pass.
+
+### p25d
+*2026-09-03 15:18*
+
+> <task-notification>
+> <task-id>bsa3dosk1</task-id>
+> <summary>Monitor event: "field asks arriving (stamped building on sight)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788448728397 tool=- at=-
+> text: in reel view, response time
+> ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p25e
+*2026-09-03 15:19*
+
+> <task-notification>
+> <task-id>bsa3dosk1</task-id>
+> <summary>Monitor event: "field asks arriving (stamped building on sight)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788448785850 tool=- at=-
+> text: highlighted (focused) map pin arrow should change colour to light gray also
+> ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Three proven. Two more asks arrived: the reel's response time, and the focused pin's stem in light grey. Building those, then one deploy for all five.
+
+Build 560 is live, and all five of your field asks from the phone are stamped shipped on your sheet:
+
+- **Tooltips further from the button.** The tool card sits 22 px above the button now, was 10.
+- **Reel on the people map.** Under 👤's map, the band shows posts, the same set the posts tool shows. A post's place there comes from its own card, so the map follows even though the pins are people.
+- **Map thumbnails 50% bigger.** Pin faces are 51 px, was 34, with the stem in proportion. The pin's tip still stands on the place, fanned or not.
+- **Reel response time.** I read this as "quicker": the outline now moves with the scroll, the map starts following after 60 ms instead of 140, and the glide is 0.3 s instead of 0.45. Your sheet carries that reading in the stamp, so shout if you meant something else.
+- **Focused pin's arrow in light grey.** Ring and stem match.
+
+Each was driven on the simulator before shipping. Earlier, build 555 also shipped the report page zoomed to fit with its margins.
+
+### p26
+*2026-09-03 15:26*
+
+> <task-notification>
+> <task-id>bsa3dosk1</task-id>
+> <summary>Monitor event: "field asks arriving (stamped building on sight)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788449200573 tool=- at=-
+> text: share pdf button should be the standard share icon
+> ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+A new ask: the export button should be the standard share icon. Building it.
+
+Build 561 is live and the ask is stamped shipped. The report sheet's top-right button is now the standard share glyph, the tray with the arrow rising out of it, drawn in the app's ink, with "share the PDF" as its label for assistive readers. Tapping it still hands the PDF to the phone's share sheet. Checked on the simulator with the report open.
+
+### p27
+*2026-09-03 15:37*
+
+> <task-notification>
+> <task-id>bsa3dosk1</task-id>
+> <summary>Monitor event: "field asks arriving (stamped building on sight)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788449864303 tool=- at=-
+> text: The users reel should show users not posts
+> ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+The reel on the people map should show people, not posts. That reverses the earlier reading, so a child node overrides it.
+
+Build 562 is live and the ask is stamped shipped. Under 👤's map the band now holds the people the map draws, newest place first: each lozenge is their picture, their name and line, and when they were last placed. A flick glides the map to them, a tap opens their card, and their pin gets the ring. The posts map's band is unchanged.
+
+### p28
+*2026-09-03 15:48*
+
+> <task-notification>
+> <task-id>bsa3dosk1</task-id>
+> <summary>Monitor event: "field asks arriving (stamped building on sight)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788450507238 tool=- at=-
+> text: users reel should only show users who are sending live positions right now
+> ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Another ask: the people reel should list only those sending live positions. Reading how the live pins carry their rows.
+
+Build 563 is live and the ask is stamped shipped. Under 👤's map the band now holds only the people whose pins are live right now, newest beat first. As someone arrives or leaves, the band redraws on the next beat; as they walk, the lozenge's place moves with them and the map follows the one you are on. Live pins carry their card id now, so the current person's pin gets the ring. Nobody live means no band.
+
+Proven on the simulator: with one person live, the band held that one lozenge with the live coordinates, and their pin was ringed.
+
+### p29
+*2026-09-03 15:59*
+
+> <task-notification>
+> <task-id>bi2lfmc4s</task-id>
+> <summary>Monitor event: "the mini's wifi watchdog log (DOWN / CYCLE / UP, hourly OK)"</summary>
+> <event>2026-09-03 16:59:28 OK gw=192.168.1.254 Wi-Fi Power (en1): On</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Watchdog's hourly OK at 16:59. Six quiet checks in a row now, no drops, no cycles. Nothing to act on.
+
+### p30
+*2026-09-03 16:07*
+
+*(edited and resent — superseded by the next prompt; do not cite)*
+
+> great stuff! made a number of asks from the app and they all landed in decent time, few tweaks needed but nothing out of the ordinary. I'd like to set up a "self improvement" / "learning" process that looks at how the user asked for modifications to initial asks, so we can get better at anticipating the tweaks a given user will ask for, and build those in anyway
+
+### p31
+*2026-09-03 16:07*
+
+> great stuff! made a number of asks from the app and they all landed in decent time, few tweaks needed but nothing out of the ordinary. I'd like to set up a "self improvement" / "learning" process that looks at how the user asked for modifications to initial asks, so we can get better at anticipating the tweaks a given user will ask for, and build things the way the user likes by default
+
+This is worth building properly, and today gave it a rich first data set. My plan, then I'll build it:
+
+1. **A tool that finds the tweak pairs.** Every commit subject names its node and its ask, and a refinement is a child node made soon after its parent. So the lineage is already in the tree: parent node's provenance quote, then each child's quote, in order. A script mines that into a digest of "asked for X, then wanted Y".
+2. **A place the lessons live where every build reads them.** The tree's agent instructions compose into the skillset that agents read at session start. A `taste/learned` instruction node holds the distilled preferences, seeded from today.
+3. **A cadence.** At each session end, run the digest since the last run, distil anything new into that node, same as the misses ledger.

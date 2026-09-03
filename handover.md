@@ -49,6 +49,14 @@ carries nine agent-instruction nodes now; the newest are /retrofit and
   "State on the mini"). The cycle itself is dry-tested only — a live cycle
   would have cut the session; the first real DOWN/CYCLE/UP in the log is the
   proof. A Monitor tails the log in-session; rearm it each session.
+- **The learning loop (housekeeping #p31–#p32):** `tools/tweaks.py` is
+  the tweak digest — every ask paired with the refinements its children
+  asked for, all of history; `features/miso/shell/taste/learned/
+  learned.agent.md` is where the patterns live (13 defaults, in the
+  skillset). **Cadence: at every session end run `python3 tools/tweaks.py
+  --since <last session's date>`, read what was asked after shipping, and
+  write any new pattern into learned.agent.md with its precedents** — the
+  misses ledger's discipline, for taste.
 - Build numbers: the misses commit landed mid-deploy, so the released sha
   is the docs commit and the live build reads 533.
 
