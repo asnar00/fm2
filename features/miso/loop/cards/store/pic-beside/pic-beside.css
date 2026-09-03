@@ -1,0 +1,4 @@
+/* a picture whose bytes have not arrived: gone, not broken. The container
+   keeps its own ground — a tile's dimmed face, a pin's circle — which reads as
+   "no picture yet", the truth, where a broken-image icon reads as a fault. */
+img.pic-away { display: none; }
