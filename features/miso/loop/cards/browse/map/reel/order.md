@@ -1,2 +1,3 @@
 - [x] floating
 - [x] current
+- [x] opens-over-map

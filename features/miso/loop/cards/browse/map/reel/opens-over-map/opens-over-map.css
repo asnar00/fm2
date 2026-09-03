@@ -1,0 +1,13 @@
+/* the map behind the page: the dotted ground goes clear, the page grows in */
+body.fm-map-behind, body.fm-map-behind #app {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+body.fm-map-behind .card-page {
+  z-index: 3;
+  animation: fm-card-grow 0.18s ease-out;
+}
+@keyframes fm-card-grow {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
