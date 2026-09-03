@@ -1,0 +1,54 @@
+/* the band: a zone of its own between the map and the toolbar, on the
+   page's ground, as tall as one lozenge and its breathing room */
+#mapReel {
+  display: none;
+  position: fixed;
+  left: 0; right: 0;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 72px);
+  height: 108px;
+  z-index: 2;
+  background: #101012;
+  border-top: 1px solid #202026;
+}
+/* the map makes room while the band shows */
+body.fm-reel #misoMap { bottom: calc(env(safe-area-inset-bottom, 0px) + 180px); }
+body.fm-reel .leaflet-bottom { bottom: 6px; }
+
+.reel-list {
+  display: flex; gap: 10px;
+  height: 100%;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.reel-list::-webkit-scrollbar { display: none; }
+
+/* one and a half: each lozenge is two thirds of the band, less the gap */
+.reel-post {
+  flex: 0 0 calc(66% - 10px);
+  scroll-snap-align: start;
+  display: flex; gap: 10px; align-items: center;
+  padding: 8px;
+  border-radius: 14px;
+  background: #1a1a1d; border: 1px solid #202026;
+  box-sizing: border-box;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+.reel-face {
+  flex: 0 0 68px; width: 68px; height: 68px;
+  border-radius: 10px; overflow: hidden;
+  background: #121215; border: 1px solid #202026;
+  display: flex; align-items: center; justify-content: center;
+  color: #c9c9d2; font-size: 22px; font-weight: 600;
+}
+.reel-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.reel-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.reel-words {
+  color: #e6e6ea; font-size: 14px; line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.reel-meta { color: #9a9aa2; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

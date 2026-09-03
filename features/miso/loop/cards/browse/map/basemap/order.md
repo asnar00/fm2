@@ -1,0 +1,3 @@
+- [x] squares
+- [x] boundaries
+- [x] quiet-credits

@@ -1,6 +1,5 @@
-- [x] boundaries
-- [x] quiet-credits
+- [x] basemap
 - [x] live
 - [x] pins
-- [x] squares
 - [x] recentre
+- [x] reel

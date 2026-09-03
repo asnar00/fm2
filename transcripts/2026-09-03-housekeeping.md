@@ -336,3 +336,16 @@ One thing to know: if the PDF is already filling the app window from an earlier 
 *2026-09-03 12:40*
 
 > build 544 still isn't showing the back button or the share button. can you check it on the simulator before the next push? thanks
+
+Build 545 is live, and this time it was proven the way you asked. I planted a ready report in the simulator's world, tapped open with a real finger, and got the sheet with ‹ at the top-left and export PDF at the top-right, the app still underneath. ‹ closed it.
+
+The cause of the two dud builds: the viewer checked for the report's page with a HEAD request, and no route on the server answers HEAD, so every tap fell back to the old link. My earlier check called the sheet directly instead of tapping open, which is why it looked fine. I have saved that lesson: proof means the user's own tap path end to end.
+
+Kill the app, reopen it on 545, and tap open on your report.
+
+### p18
+*2026-09-03 12:54*
+
+> it works nicely now, thanks. In map view, I'd like one change: in the bottom area of the map, I'd like a zone that shows posts as a most-recent first scrolling horizontal list; each post should appear as a short-form lozenge showing the image thumbnail and part of the text, with date/time and author. the zone should show about 1.5 posts horizontally, so you can see when there's more than one;  scrolling the list horizontally should smoothly move the map to the current post's location. New posts should appear at the head of the list (leftmost).
+
+A bigger one. The map is at its six-child cap again, so this needs a regroup first, then the new node. Reading the map's host layout and what the pins carry.
