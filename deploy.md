@@ -106,6 +106,15 @@ a server with no successor waiting — the port does go quiet then.
   `passkeys.txt`, `push-subs.txt`, `challenges.txt`, `last-notified`,
   `invite-qr.json` (`/qr`'s live canvassing codes — one row per inviter,
   expiring; deleting the file revokes every code and costs nothing else).
+- `~/.miso-blobs/`: `<world key>/` holds `/dictate`'s clips and their index;
+  `pics/<id>` holds `/pic-beside`'s pictures, one file per picture, addressed
+  by id alone and never rewritten. A picture is readable by whoever holds a
+  card naming it, which is why it can be served to a recipient where a clip
+  cannot. **The retrofit is `tools/pics.py`** — dry by default, `--go` to
+  write, `--back --go` for the tested inverse; the work is the server's
+  `POST pic/retrofit`, screened as `POST diag/context` is. Run the dry first
+  and read the byte counts: on the rig a planted old-shape world went
+  13,150 → 515 bytes, and `back` restored it byte for byte.
 - `~/.agent-config.json`: Vonage credentials (shared with ftr).
 - **Wifi watchdog** (2026-09-03, housekeeping #p4): the mini is on wifi
   (`en1`; the ethernet port is empty), and its link dropped four times on
