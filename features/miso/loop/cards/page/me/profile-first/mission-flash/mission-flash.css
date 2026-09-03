@@ -1,0 +1,3 @@
+/* the accent, twice, quick (/taste 3, 5) */
+@keyframes mission-flash { 0%, 100% { border-color: #2c2c33; } 50% { border-color: #9db7d8; } }
+.card-text.mission-flash { animation: mission-flash 0.35s ease-in-out 2; }
