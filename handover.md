@@ -69,6 +69,16 @@ for the join page) before it shipped, and then again by Tara's phone.*
   a look before Saturday; (e) `co-members` seeds profiles only; posts in a
   project stay `/audience`'s.
 
+- **Builds 590–596, the field asks from Tara's phone** (all stamped
+  shipped on her sheet): `tag/with-close` (a ✕ on every card, sending ‹'s
+  event), `titled/byline` + `byline/plain` (author · date under a post's
+  title; clip length, owner note and map pill hidden on post pages — scoped
+  by the page's own `post` class), `browse/flick` (vertical sweep at the
+  page's end walks the surface's list), `square-posts/sound` (a speaker on
+  an audio-only post's pin), `live-only/everyone` (the people reel is the
+  map's pins, live or placed). `kinds/posts` and `cards/page` are both at
+  the six-child cap — the next child there forces a regroup.
+
 ## FOR SATURDAY
 
 Reset any test rows (`tools/reset_user.py --list`). Show one code from 👤
