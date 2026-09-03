@@ -145,3 +145,12 @@ The crop is right: the square shows the clip's middle, with the top and bottom b
 *2026-09-03 11:09*
 
 > the frame shouldn't be black until it plays - it should show the poster frame
+
+### p5b
+*2026-09-03 11:12*
+
+> OK. so the next modification I want to make is to the map view. When there's more than one post / user at the same location, the markers overlap so you can't distinguish them. What we should do in this case is rotate the "arrow" part of the marker, so the posts/users "fan out" in a circle around the map point.
+
+The player now carries the face. Looking at the paused frame to confirm it isn't black.
+
+Not black any more. Shipping face-first, then on to the map markers.

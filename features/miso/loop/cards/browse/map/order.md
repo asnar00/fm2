@@ -1,6 +1,6 @@
 - [x] boundaries
 - [x] quiet-credits
 - [x] live
-- [x] square-posts
+- [x] pins
 - [x] squares
 - [x] recentre

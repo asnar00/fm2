@@ -1,0 +1,13 @@
+/* a pin turns about its tip — the stem's point is the map point, and the
+   marker is anchored there — so a fanned pin's stem still touches the place.
+   The face turns back the other way (set inline with the pin's angle) and
+   stays upright. Eased like everything else the app moves. */
+.map-pin {
+  transform-origin: 50% 100%;
+  transition: transform 0.18s ease-out;
+}
+.map-pin .map-pin-face {
+  transition: transform 0.18s ease-out;
+}
+/* a fanned pin's face may lie over a neighbour's stem; the face wins */
+.map-pin.fm-fanned .map-pin-face { position: relative; z-index: 1; }
