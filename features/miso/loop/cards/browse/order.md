@@ -2,3 +2,4 @@
 - [x] portrait
 - [x] map
 - [x] backdrop
+- [x] flick
