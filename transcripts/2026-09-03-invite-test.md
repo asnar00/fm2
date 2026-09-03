@@ -256,3 +256,31 @@ I picked it up from the QR node's own spec, which describes the code as somethin
 > just to be clear - we won't be inviting members of the public. The correct context (and please update the node with this) is at the start of a canvassing session, where we want to get all canvassers signed up and in with the fastest possible workflow. This way they all just take pictures of the same QR code and set themselves up.
 
 Noted. Updating the node with that ruling, and the parent QR spec's framing too since it's what misled me.
+
+Done. The ruling is recorded in three places:
+
+- **The scan-is-proof node** now quotes your words as its context: one code at the start of a canvassing session, every canvasser photographs it, types their own name and number, and is in. Its judgements are reworded to be about colleagues, not the public.
+- **The parent QR spec** carries a correction note at the top of its user section, since its "person at the door" framing was what misled me.
+- **My memory** holds it alongside the earlier rule that the app is for the team's own notes, never the public.
+
+Committed as documentation only, so no new build. The live app is unchanged at 570, and the spec change rides out with the next deploy.
+
+### p16
+*2026-09-03 17:09*
+
+> I notice that the QR code just goes to miso.noob.org/install - that means that same link would then let anyone in. The link address in the QR code should carry some unique indicator that encodes a timeout or random hash or something, so that if someone tries to use that link after the timeout, it doesn't work.
+
+Let me check which code that was, because the invite tool's code is supposed to carry a token.
+
+The code itself does carry a token. What you saw on the address bar was the landing page after the scan had already logged the phone in.
+
+**What the QR encodes.** The invite tool's code is the address of the join page with a 32-character random token on it. The token is a row on the server, not a signed string, so it can be counted, capped and revoked. It dies a day after it was made, after 25 uses, or the moment you tap **new code**. A scan after that gets "this invite link isn't valid".
+
+**Why the bar said /install.** Once the join page has logged the phone in, the app opens, sees it's running in a browser tab, and shows the add-to-home-screen steps, which live at /install. That is the address left in the bar. I checked it just now with no cookie: /install answers with the login page, not the app. So passing that address on lets nobody in.
+
+**One thing worth deciding.** A day is a long life for a code shown once at the start of a session. If you'd rather it died after an hour, or the moment you put the sheet away with **done**, that's a one-line change to the token's life and I'll make it. Say which.
+
+### p17
+*2026-09-03 17:10*
+
+> one hour
