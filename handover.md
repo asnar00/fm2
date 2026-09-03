@@ -7,6 +7,76 @@ the ledger is `misses.md`. Read the composed skillset alongside this — it
 carries nine agent-instruction nodes now; the newest are /retrofit and
 /confined.*
 
+## TODAY, EVENING (2026-09-03): builds 565–589 — the invite test with two iPhones
+
+*Written at session end (transcripts/2026-09-03-invite-test.md). 24
+commits, Fable 50% → 54% for three hours of triage-built work; the
+worker seat was not used. Ash drove the second iPhone; every build was
+proven on the rig (curl, headless Chrome as a fresh user, the simulator
+for the join page) before it shipped, and then again by Tara's phone.*
+
+- **The reset tool** (`tools/reset_user.py <name>`, deploy.md): copies
+  tombstoned through the op door (a `set` cannot delete — `/guard`; a
+  tombstone is the only write that removes), guest-list row to
+  `~/.miso-auth/removed.json`, world log to `~/.miso-context/removed/`,
+  then a handover restart. `--list`, `--dry-run`. Removes the first row
+  by name — two Taras took two runs.
+- **The scan is the login** (`qr/scan-is-proof`, 570): a fresh number on a
+  live code gets the cookie at the claim; a number already on the list
+  keeps the PIN (a code proves the lead let you in, not that you own a
+  colleague's number — ash may relax it). `qr/one-hour` (572). `qr/name-only`
+  (573): no number needed; a 17-digit placeholder number, `/add-number`'s
+  row on the card for a real one later. `scan-is-proof/seeded` (577): the
+  scan seeds the inviter's cards as the PIN road did. **Ruling (#p15): the
+  code is for the canvassing team at a session's start, never the public.**
+- **Project membership is the second visibility cue** (`exchange/co-members`,
+  577): `exchange_links` widens to every role on every project card the
+  person holds; at `invited_into_stamp` the newcomer is seeded with every
+  member's profile and hands theirs to all — nobody waits on anyone (#p59).
+  Parked: the people page ranks a co-member as unknown; leaving a project
+  keeps the copies.
+- **The world that stayed behind** (`patch/world-along`, 574; misses.md):
+  `/patch`'s hot swap started a fresh wasm world — switches at default,
+  project dropped, epoch 0 — since `/context` moved the world into the
+  module. The swap now carries the last payload's records across and
+  rejoins. Diagnosed from the diag log: a launch line for 572, none for 573.
+- **The first run** (`profile-first/greetings` 583, `greetings/set-up` 584,
+  `greetings/last-word` 589): welcome-to-the-project, the card, Face ID +
+  notifications with **got it** held until both settle, "that's it! hold
+  any button", no tour. `greeted` (user var, 0–3). `tick-right`,
+  `mission-flash` (587). The smoke gate walks all three pages
+  (`tools/smoke.py pass_gate`).
+- **Surfaces:** `current-project/title` (578; the chip retires), `frame/hint`
+  (583), `install/smaller-logo`, `install/welcome` (580), `install/steps/
+  menu-below` (585), `/counter` unticked in the miso product (589 — the
+  taps tool is gone for everyone; ash's old switch is an orphan op the
+  replay skips).
+- **Rig lessons:** `diag/rig/plain-cookie` (a rig strips `Secure` from every
+  route now, not only the ones older than `/rig`); the product's own
+  `order.md` and symlink are needed under a product-local override dir
+  (qr/ has one — `instant` is unticked there); commit with `git -C
+  /Users/microserver/fm2` — twice a commit landed in the triage worktree
+  after a `cd`; `tweaks.py --since` takes a date, not a time; a deploy
+  refuses a dirty tree, so commit everything before chaining deploys, and
+  stamp shipped only on the deploy's exit code (two stamps went out wrong
+  and were reverted).
+- **Residuals:** (a) `mission-flash`'s focus after the toolbar's blur is
+  unverified (the probe crashed on its print; the flash itself is proven);
+  (b) the rig's `users.json` holds a dozen test rows; (c) the triage
+  worktree has two stray commits on a detached head; (d) the audience
+  floor: ash's three newest posts were filed at `admin` while a candidate
+  cannot see them — by design, ash agreed, but the default floor may want
+  a look before Saturday; (e) `co-members` seeds profiles only; posts in a
+  project stay `/audience`'s.
+
+## FOR SATURDAY
+
+Reset any test rows (`tools/reset_user.py --list`). Show one code from 👤
+with the project current; every canvasser scans it, types a name, taps
+join, lands on the welcome, fills the card, enables Face ID and
+notifications, taps done. They see each other at once. Posts they should
+see must have a floor at or below their grade.
+
 ## TODAY (2026-09-03): builds 531–564 — the taps' real cause, the map reel, the learning loop
 
 *Written at session end. 34 commits, every build proven with a real finger

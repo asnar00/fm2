@@ -3,7 +3,7 @@
 *You are building a surface of miso. These are the defaults ash's own
 tweaks have taught — each was asked for after a first cut shipped
 without it (`tools/tweaks.py`, the digest of 169 refinements of 76 asks,
-2026-08-13 to 09-03). Build them in first; the tweak that would have
+2026-08-13 to 09-03, plus the invite-test day). Build them in first; the tweak that would have
 asked for them is then never filed. Precedents are node names. An ask
 that contradicts a rule amends it; nothing else does. Re-distilled at
 session end from the digest since the last run.*
@@ -85,3 +85,21 @@ session end from the digest since the last run.*
     surface that shipped drew two to four refinements within a day, most
     within an hour. Ship the literal ask, then name the likely next three
     in the spec and give each a function to redefine (`/anticipation`).
+
+14. **Every road in does the whole enrolment.** A person who came in by a
+    scan gets what a texted login gets: the seed of their inviter's cards,
+    Face ID, notifications, the project's members. A second way in that
+    skips a step the first way took is a bug the next tester finds within
+    the hour. (`scan-is-proof/seeded`, `greetings/set-up`, `exchange/co-members`;
+    2026-09-03.)
+
+15. **A first run is pages, one thing each, and no demo.** Welcome and the
+    project; the card; the two switches; "that's it". Each page one action,
+    each seen once per person on any device; the guided tour is not wanted
+    once the pages have said the one thing it was for. (`profile-first/greetings`,
+    `greetings/set-up`, `greetings/last-word`; 2026-09-03.)
+
+16. **Steps that depend on the phone's own UI say where to look, not which
+    glyph.** "in the browser menu below", "view more" with no icon: the same
+    words whichever way Safari draws its bar. (`install/steps/menu-below`,
+    2026-09-03.)
