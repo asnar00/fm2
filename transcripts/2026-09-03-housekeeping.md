@@ -61,3 +61,36 @@ Still on the wifi check. The mini's log has 1.2M lines for the evening, so I'm f
 Wifi verdict is in hand. Now reading the video post layout and the tap handling code.
 
 Still digging. I'm now reading the tap-handling code and pulling ash's stored video post to see if it got a poster.
+
+Quick update: the black box gives a crisp signature for the lost taps, so I'm about to prove it on the simulator, and I'm writing the video-post fix in parallel.
+
+Build is up and the rig restarted. Checking the new fragments actually composed, then reloading the app on the simulator.
+
+Both taps proofs pass on the simulator. Now running the existing tap-heavy simulator tests for regressions and checking the video rule composed.
+
+Deploy is running through the gate in the background. Meanwhile I'm rearming the ask monitor and checking the announce tool.
+
+### p3a
+*2026-09-03 10:41*
+
+> <task-notification>
+> <task-id>bsa3dosk1</task-id>
+> <summary>Monitor event: "field asks arriving (stamped building on sight)"</summary>
+> <event>watching /Users/microserver/.miso-context (4 worlds) for asked,proposed</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Release build finished; the smoke gate is running now. While it runs I'm checking the ledger format so the taps finding gets its entry.
+
+### p3b
+*2026-09-03 10:44*
+
+> <task-notification>
+> <task-id>bs5bnwyg8</task-id>
+> <tool-use-id>toolu_01KrchztVP5WSJQuo4YrshA8</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/8c2a4676-8164-433a-8e54-10fdede97b18/tasks/bs5bnwyg8.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy both nodes through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 533 is live and both announcements are stamped shipped. Writing the handover entry, then reporting.
