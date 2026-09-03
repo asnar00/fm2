@@ -341,9 +341,19 @@ async def s_qr(pg):
     return drawn and gone and still
 
 
-@step("posts: + makes a post ready to write")
+@step("posts: + makes a post ready to write (or, under /video-only, records)")
 async def s_post(pg):
     await open_tool(pg, "posts")
+    # /video-only (2026-09-03): the add button records a video and there is
+    # no kind chooser. A headless browser has no camera, so the road is
+    # asserted by its shape and a post is minted through /new's own event,
+    # as tests/sim/one-level.json does.
+    if await pg.evaluate("!!document.querySelector('.toolbar [data-ev=\"vid_rec\"]') && !document.querySelector('.toolbar [data-ev=\"posts_new\"]')"):
+        shape = await pg.evaluate("!document.querySelector('.toolbar [data-ev=\"oneadd_pick\"]') && !document.querySelector('.toolbar [data-ev=\"capture_photo\"]') && !document.querySelector('.toolbar [data-ev=\"dict_rec\"]')")
+        await pg.evaluate("feature_Loop.send({type:'CardNew', data:{owner:'_smoke', type:'post', title:'a post', t:Date.now()}})"); await pg.wait_for_timeout(2000)
+        ok = shape and await pg.evaluate("!!document.querySelector('.card-page')")
+        await go_home(pg)
+        return ok
     await pg.click('[data-ev="posts_new"]'); await pg.wait_for_timeout(2000)
     ok = await pg.evaluate("!!document.querySelector('.card-page .card-text[contenteditable=true]')")
     await go_home(pg)
