@@ -2719,3 +2719,176 @@ Glad it feels right. Before Saturday I'll write today's handover now so the next
 *2026-09-03 19:21*
 
 > how are we doing on fable usage credits
+
+All wrapped up. Handover is committed for the next session, the learned defaults gained three rules from today, and the rig is stopped.
+
+**Where things stand for Saturday.**
+- Build 589 is live: one code at the start of the session, every canvasser scans it, types a name, and walks the three welcome pages. They see each other at once. Face ID and notifications are asked for on the way in.
+- The reset tool takes any test user out in seconds. The guest list is you, alice, bob and one Tara right now.
+- One thing to check beforehand: posts you file while you're the project's admin carry the admin floor, so a candidate won't see them. Use the up-arrow on each post or raise Tara's rank if you want her to see those.
+
+**Left over, all small:** the mission-flash focus timing is unverified, the rig's guest list is full of test rows, and the people page ranks a fellow project member as "unknown" rather than with a "same project" word.
+
+Fable is at 54% with the reset on Tuesday. Good luck on Saturday.
+
+### p151
+*2026-09-03 19:27*
+
+> <task-notification>
+> <task-id>b2n9e20ex</task-id>
+> <summary>Monitor event: "field asks from miso devices (acked building on sight)"</summary>
+> <event>ASK asked user=phone:+97100683256098060 t=1788463654477 tool=- at=-
+> text: All cards (posts, profiles, etc etc) should have a close button at top right. Move the type lozenge left to make room
+> ACK building: stamped phone:+97100683256098060: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+A field ask just came in from Tara's phone: a close button at the top right of every card, with the type lozenge moved left to make room. Building it now.
+
+### p151a
+*2026-09-03 19:28*
+
+> <task-notification>
+> <task-id>b2n9e20ex</task-id>
+> <summary>Monitor event: "field asks from miso devices (acked building on sight)"</summary>
+> <event>ASK asked user=phone:+97100683256098060 t=1788463692230 tool=- at=-
+> text: author name and date on a post should be just below the title
+> ACK building: stamped phone:+97100683256098060: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p151b
+*2026-09-03 19:28*
+
+> <task-notification>
+> <task-id>b2n9e20ex</task-id>
+> <summary>Monitor event: "field asks from miso devices (acked building on sight)"</summary>
+> <event>ASK asked user=phone:+97100683256098060 t=1788463728652 tool=- at=-
+> text: remove video duration, “video stays with its owner” and “map location” from card / post view
+> ACK building: stamped phone:+97100683256098060: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p151c
+*2026-09-03 19:29*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788463738960 {"t":"2026-09-03T19:28:58.958Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Two more asks arrived from the same phone: author and date under the title, and stripping three lines from the post view. Queued behind the close, which I'm proving now.
+
+### p151d
+*2026-09-03 19:29*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788463757316 {"t":"2026-09-03T19:29:17.314Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+The ✕ sits right of the tag on the title line and closing works. Committing it, and locating the three lines the next asks name.
+
+### p151e
+*2026-09-03 19:30*
+
+> <task-notification>
+> <task-id>b2n9e20ex</task-id>
+> <summary>Monitor event: "field asks from miso devices (acked building on sight)"</summary>
+> <event>ASK asked user=phone:+97100683256098060 t=1788463807285 tool=- at=-
+> text: in post or user view, swipe up and down to scroll to prev/next visible post/user without having to close
+> ACK building: stamped phone:+97100683256098060: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p151f
+*2026-09-03 19:30*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788463839524 {"t":"2026-09-03T19:30:39.522Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p151g
+*2026-09-03 19:31*
+
+> <task-notification>
+> <task-id>b2n9e20ex</task-id>
+> <summary>Monitor event: "field asks from miso devices (acked building on sight)"</summary>
+> <event>ASK asked user=phone:+97100683256098060 t=1788463866276 tool=- at=-
+> text: for audio only posts, show a “sound” icon rather than the author initial in map
+> ACK building: stamped phone:+97100683256098060: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Three asks in hand now, two more queued behind them. Building the byline and the plainer post view together, since the second scopes on a marker the first adds.
+
+### p151h
+*2026-09-03 19:32*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788463940905 {"t":"2026-09-03T19:32:20.899Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p151i
+*2026-09-03 19:33*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788464004609 {"t":"2026-09-03T19:33:24.604Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Byline under the title, the map pill gone from the post page. Committing both nodes and deploying the three asks.
+
+### p151j
+*2026-09-03 19:34*
+
+> I'm seeing repeated "Monitor event: "invite/login/launch lines from the live server and device logs" in this log, why is that ?
+
+Narrower watch armed. Now reading the map pin's face code and the browse page's open/set seams for the two remaining asks.
+
+Both remaining asks are clear enough to build now: a vertical flick between cards, and a sound glyph on the pin of an audio-only post.
+
+### p151k
+*2026-09-03 19:37*
+
+> <task-notification>
+> <task-id>by2chjz3w</task-id>
+> <tool-use-id>toolu_01DHXKksYDKH3ZP2ARnfYrs2</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/by2chjz3w.output</output-file>
+> <status>failed</status>
+> <summary>Background command "Deploy the three field asks; stamp each shipped on success" failed with exit code 1</summary>
+> </task-notification>
+
+### p151l
+*2026-09-03 19:37*
+
+> <task-notification>
+> <task-id>b2n9e20ex</task-id>
+> <summary>Monitor event: "field asks from miso devices (acked building on sight)"</summary>
+> <event>ASK asked user=phone:+97100683256098060 t=1788464261004 tool=- at=-
+> text: reel in users map view should show all visible users
+> ACK building: stamped phone:+97100683256098060: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+The deploy fell over in its features export, a directory that would not delete mid-clean, which looks like a transient race. Rerunning it, and fixing my rig probe in parallel.
+
+Flick up went to the next post twice, flick down came back, and the audio-only post's pin carries the speaker. Checking the pin's look and the deploy, and reading the people reel for the newest ask.
