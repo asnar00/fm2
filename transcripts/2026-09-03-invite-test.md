@@ -2301,3 +2301,143 @@ Pass three. Handover next.
 *2026-09-03 19:03*
 
 > let's split the "notifications" and "hold button to see what it does" into two pages; the notifications page should just be about login + notification. Then the next page should say "that's it! hold any button to find out what it does" - we don't need any of the special demo stuff.
+
+Understood. Page two becomes Face ID and notifications only, page three is "that's it! hold any button to find out what it does", and the tour no longer runs. This is a refinement node on the greetings. Writing it.
+
+### p131a
+*2026-09-03 19:03*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 73882 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p131b
+*2026-09-03 19:03*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 76650 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p131c
+*2026-09-03 19:03*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover — pid 76650 holds /Users/microserver/.miso-context, asking it to leave</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p131d
+*2026-09-03 19:03*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>miso: handover complete — pid 76688 holds /Users/microserver/.miso-context</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p131e
+*2026-09-03 19:03*
+
+> <task-notification>
+> <task-id>bspep53bs</task-id>
+> <tool-use-id>toolu_01GGtkxsdvCoSsopbeoLjQC7</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/745f3d4c-9e6f-40ae-b167-5902245543f9/tasks/bspep53bs.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy the profile-page build; stamp shipped only on success" completed (exit code 0)</summary>
+> </task-notification>
+
+### p131f
+*2026-09-03 19:03*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788462232189 {"t":"2026-09-03T19:03:52.181Z","launch":true,"running":"587","server":"587","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p131g
+*2026-09-03 19:04*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788462250552 {"t":"2026-09-03T19:04:10.555Z","launch":true,"running":"587","server":"587","authed":true,"pwa":true,"sw":true,"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like G"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Build 587 with the profile-page changes is live on both phones. Now proving the three-page welcome on the rig.
+
+### p131h
+*2026-09-03 19:04*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788462291299 {"t":"2026-09-03T19:04:51.296Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p131i
+*2026-09-03 19:05*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788462302820 {"t":"2026-09-03T19:05:02.818Z","error":"set-up passkey: The relying party ID is not a registrable domain suffix of, nor equal to the current domain. Subsequently, an attempt to fetch the .well-known/webauthn resource of the claimed RP ID failed."}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p131j
+*2026-09-03 19:05*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788462309981 {"t":"2026-09-03T19:05:09.976Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p131k
+*2026-09-03 19:06*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788462373662 {"t":"2026-09-03T19:06:13.658Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p131l
+*2026-09-03 19:06*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788462385192 {"t":"2026-09-03T19:06:25.190Z","error":"set-up passkey: The relying party ID is not a registrable domain suffix of, nor equal to the current domain. Subsequently, an attempt to fetch the .well-known/webauthn resource of the claimed RP ID failed."}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p131m
+*2026-09-03 19:06*
+
+> <task-notification>
+> <task-id>b6fr9i4fh</task-id>
+> <summary>Monitor event: "invite/login/launch lines from the live server and device logs"</summary>
+> <event>1788462392415 {"t":"2026-09-03T19:06:32.412Z","launch":true,"running":"first-run","server":"offline","authed":true,"pwa":false,"sw":true,"ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Hea"}</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+### p131n
+*2026-09-03 19:06*
+
+> I'd like to disable the taps toolbar for all users - tara shouldn't see it on start.

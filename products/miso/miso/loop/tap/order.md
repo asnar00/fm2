@@ -1,1 +1,3 @@
-../../../../../features/miso/loop/tap/order.md
+- [x] sync
+- [ ] counter
+- [x] square
