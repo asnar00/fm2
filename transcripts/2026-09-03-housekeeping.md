@@ -318,3 +318,21 @@ Today's tally, all shipped and stamped: 531, 532, 536 to 541, 543. The wifi watc
 *2026-09-03 12:33*
 
 > not seeing a back button over the pdf view. let's also add an "export to pdf" button on that page
+
+Build 544 is live. Your existing report now opens in the sheet too: I kept its printed page under its id by hand, and the app now also falls back to the last printed page for a team's newest report, so nobody needs to press "again" first.
+
+The button on the sheet reads "export PDF". It hands the PDF file to the phone's share sheet, where you can save it, AirDrop it or send it on.
+
+One thing to know: if the PDF is already filling the app window from an earlier tap, that is the old path and has no way back. Kill the app, reopen it, let it take build 544, then tap open on the report card. You should see the report with ‹ at the top-left and export PDF at the top-right.
+
+### p16
+*2026-09-03 12:40*
+
+*(edited and resent — superseded by the next prompt; do not cite)*
+
+> build 544 still isn't showing the back button. can you check it on the simulator before the next push? thanks
+
+### p17
+*2026-09-03 12:40*
+
+> build 544 still isn't showing the back button or the share button. can you check it on the simulator before the next push? thanks

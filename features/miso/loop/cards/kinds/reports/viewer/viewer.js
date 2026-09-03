@@ -25,27 +25,30 @@ const feature_Viewer = {
     const href = link.getAttribute('href') || '';
     const id = this.idOf(href);
     if (!id) { window.open(href, '_blank'); return; }
-    // a report printed before this node has no kept page: the old way
-    let ok = false;
+    // a report printed before this node has no kept page: the old way. The
+    // page is fetched here (GET — the routes answer GET) and put into the
+    // frame as a document of its own, so the frame never asks the server twice
+    let html = '';
     try {
-      const r = await fetch('reports/view?id=' + id, { method: 'HEAD', cache: 'no-store' });
-      ok = r.ok;
-    } catch (e) { ok = false; }
-    if (!ok) { window.open(href, '_blank'); return; }
+      const r = await fetch('reports/view?id=' + id, { cache: 'no-store' });
+      if (r.ok) html = await r.text();
+    } catch (e) { html = ''; }
+    if (!html) { window.open(href, '_blank'); return; }
     this.make();
     this.pdf = href;
     const card = link.closest('.card-page, .rep-card, .crow');
     const t = card ? card.querySelector('.card-title, .rep-title, .browse-title') : null;
     this.title = t ? t.textContent.trim() : 'report';
     this.sheet.querySelector('.repview-title').textContent = this.title;
-    this.frame.src = 'reports/view?id=' + id;
+    this.frame.removeAttribute('src');
+    this.frame.srcdoc = html;
     this.sheet.classList.add('show');
   },
 
   close() {
     if (!this.sheet) return;
     this.sheet.classList.remove('show');
-    this.frame.src = 'about:blank';
+    this.frame.srcdoc = '';
   },
 
   // the PDF to the phone's share sheet as a file; a browser that cannot
