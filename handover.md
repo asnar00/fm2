@@ -177,6 +177,15 @@ canvassing team; a test walkabout tonight or in the morning first.*
   `tools/reset_user.py` for the test rows — **ash resets before the real
   session**; main is ~70 commits ahead of origin, not pushed.
 
+## FOR TUESDAY (when Fable resets — ash's plan, field-walk)
+
+Run across the whole tree, filter the cruft (notes.md "de-crufting"),
+write a fresh specs-only tree, and hand it en masse to a fresh Fable 5.1
+instance with only the tree as handover — can it rebuild the app? Decide
+first what rides with the tree (doctrine docs, tools/fmlink, data assets,
+live state) and measure by composed-output diff per node (notes.md,
+"Tuesday's plan").
+
 ## FOR SATURDAY
 
 Reset any test rows (`tools/reset_user.py --list`). Ethernet cable in the

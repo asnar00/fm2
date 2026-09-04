@@ -3108,3 +3108,19 @@ skillset, `/learned` and misses.md name nodes; they fold with the code or
 rot. A rule for eligibility (live and unfolded for a week, say) makes it a
 periodic pass rather than a one-off. Transcript anchors stay valid, since
 the tree's provenance points into the transcripts, not the other way.
+
+**Tuesday's plan (ash, field-walk #p157, when Fable resets):** run across the
+whole tree, analyse and filter the cruft, write a fresh specs-only tree
+(the `.md` of every surviving node — user, spec, hostile cases, code
+description — no code), and hand the whole thing en masse to a fresh Fable
+5.1 instance with only the tree as its handover: can it rebuild the app
+from the specs? What the experiment needs decided first: which documents
+ride with the tree (agents.md and fm.md are the discipline; the skillset's
+agent nodes are in the tree already), whether tools/ and the linker ride
+(the tree is meaningless without fmlink), which assets are data not code
+(the boundary geojson, the stt model, the streets file), and what state the
+rebuilt app must read (the live worlds, the guest list, the keys — none in
+the tree). The measure is a byte diff of the composed output against the
+tree it was written from, node by node: where the rebuilt code differs and
+still passes the gate, the spec was enough; where it fails, the spec was
+short — and that is the list of specs to sharpen.

@@ -1,4 +1,4 @@
-# transcript: field walk
+# transcript: the field walk
 *session `b70435b4-6806-4a25-aadb-e68df3da3413`, exported by tools/export_transcript.py — do not edit; anchors `#pN` are stable*
 
 ### p1
@@ -4062,3 +4062,82 @@ Both are small nodes under the vocabulary and transcribed nodes. For tomorrow th
 *2026-09-04 20:42*
 
 > build both now, I think. We'll probably need a manual transcription error fix UI later - we'll build that once we have some real field data.
+
+Both building. Announcing with their nodes so the deploy closes them, then the transcription worker, which owns all of that ground.
+
+Sent. The manual fix UI goes on the list for after the field test, recorded now so the correction log feeds it.
+
+Committed. What I need next, and what each depends on:
+
+- The transcription worker's two nodes, seeding from the post's location and the correction pass. Pending its return.
+- The reel worker's end-of-list fix. Pending its return.
+- A deploy for each as it lands, which stamps itself, and a final handover line. Both depend on the workers.
+
+Every item depends on a pending result, so there is nothing to request in this turn.
+
+### p156
+*2026-09-04 20:43*
+
+> <task-notification>
+> <task-id>a481d67a8bff6672b</task-id>
+> <tool-use-id>toolu_017yXiCsjWnir6FkCmYw65Pc</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a481d67a8bff6672b.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build four map-reel refinements" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Both halves of ash's report turned out to be one fault — and it was neither of the two you predicted.
+> 
+> ## `72a38d5` — `carries-the-card/rubber-band/stays-put`
+> 
+> On main's tip (`8ef6626`), gate green, `--prove` implied (confined).
+> 
+> ## Which road fires at each end: neither
+> 
+> Measured in WebKit at both ends, with the numbers you asked for:
+> 
+> | | card | `/rubber-band` list / index | `/unbroken` list / index | paints | clicks | two `.card-page` | same node | same parent |
+> |---|---|---|---|---|---|---|---|---|
+> | top (first, dragged down) | 965287 | 27 / **0** | 27 / **0** | 0 | none | 0 frames | **true** | **true** |
+> | bottom (last, dragged up) | 619607 | 27 / **26** | 27 / **26** | 0 | none | 0 frames | **true** | **true** |
+> 
+> The two nodes' end detection **agrees exactly**; no strip starts, nothing is reparented, no turn goes, and the card element is the same object with the same parent before and after. So it is not `/unbroken`'s ghost road and not an end-detection disagreement.
+> 
+> ## What it actually is
+> 
+> The frames at the moment the carry ends:
+> 
+> ```
+>  44 ms  will-change transform,opacity  matrix(1,0,0,1,0…)   fm-carried
+> 563 ms  will-change transform          matrix(0.96,0,0,0…)  fm-settling
+> 575 ms                                 matrix(0.965393,…)
+>   …                                    climbing to 1
+> 745 ms  will-change auto               none
+> ```
+> 
+> The card **scales 0.96 → 1 after the finger has gone**. That is `/opens-over-map`'s `fm-card-grow`, whose keyframes are `from { transform: scale(0.96); opacity: 0 }` — the whole card *and its ground* fading in from nothing. `/carries-the-card` suppresses that animation while it holds the card and lets the suppression go when the carry ends, and **a rule going from `animation: none` back to a named animation starts it**. So the card replayed its own arrival at the end of every carry: at the top that reads as the entire card flashing; at the bottom, on a card with no other mark, as a new card scrolling in when it is the same one. One cause, both symptoms, and it explains why the log shows no paint and no turn.
+> 
+> This exact trap is already written down in `/from-the-lozenge` — which is why a card opened from a lozenge carries `fm-loz-settled` and never showed it. A card reached by sweeping never gets that mark, because it is only added on a repaint of an already-open card, and at the ends there are no repaints.
+> 
+> **The fix**: one class on the card when a gesture takes it, never removed — not a toggle, because a class that comes off is a class that can restart what it was holding back. After, at both ends: `none` → `matrix(1,0,0,1,0…)` under the finger → `none`, **no scale sequence at all**, paints 0, clicks none, one `.card-page`, same node, same parent.
+> 
+> ## Risks
+> 
+> - **Not proven on the simulator.** My device is shut down and the Pro belongs to another holder; installing a fresh clip has failed repeatedly today. This is Playwright's WebKit — same engine family, and the evidence is element-level (identity, parent, classes, transforms, paint and click counts) rather than pixel-level. If ash still sees anything, the `media3` release line from `/no-flash` is already in his log.
+> - The mark also goes on for a gesture that never engages (a scroll, a tap) — right in substance, but it means almost any touch ends that card's arrival animation for good.
+> - `/no-flash`'s 140 ms `will-change` hold is now belt-and-braces rather than the cure; on this evidence the layer drop alone was never the flash. Worth revisiting whether it earns its place.
+> 
+> My rig was stopped by its own PID (`92948`), checked first; the tree is clean and builds.</result>
+> <usage><subagent_tokens>902922</subagent_tokens><tool_uses>21</tool_uses><duration_ms>627473</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a481d67a8bff6672b</worktreePath><worktreeBranch>worktree-agent-a481d67a8bff6672b</worktreeBranch></worktree>
+> </task-notification>
+
+The end-of-list fault is found, and it is one cause for both symptoms: when the carry let go of the card, the card's own arrival animation restarted, fading the whole card in from nothing. Landing and deploying.
+
+Deploying. What I need next: this deploy's output to confirm it stamped the end-of-list announcement itself, and the transcription worker's two nodes. Both are pending results with nothing independent of them, so there is nothing to request in this turn.
+
+**What the fault was, plainly:** a card opening from a lozenge fades in from nothing with a slight grow. While your finger carries a card, that animation is held off. When the carry let go, the hold came off, and a rule going from "no animation" back to a named animation starts it, so the card replayed its own arrival. At the top that read as the whole card flashing; at the bottom, as a new card scrolling in. The fix is a mark that never comes off once a gesture has taken the card.
+
+### p157
+*2026-09-04 20:47*
+
+> note for tuesday, when fable usage resets: we're going to run across the whole feature tree, analyse and filter out the cruft, and write a fresh specs-only feature tree and then hand the whole thing en masse to a fresh fable 5.1 instance (=you, but with only the tree as handover) and see what happens?
