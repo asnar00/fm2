@@ -1,3 +1,4 @@
 - [x] vocabulary
 - [x] api
 - [x] mini
+- [x] keeps-trying

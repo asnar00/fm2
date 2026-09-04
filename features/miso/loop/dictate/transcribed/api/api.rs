@@ -119,10 +119,23 @@ impl feature_Api {
             .unwrap_or(serde_json::Value::Null);
         let text = api_words(&r);
         if text.is_empty() {
-            println!("api: {} came back with no words ({})",
-                     j["id"].as_str().unwrap_or(""),
-                     r["error"].as_str().unwrap_or("no reason given"));
-            return existing.transcribe_rung(job);
+            // a script that RAN and heard nothing is not a script that failed.
+            // Speechmatics answers a clip with no speech in it with a perfectly
+            // good empty transcript, and reading that as a failure is what had
+            // two silent morning clips retried five times each and then dropped
+            // (2026-09-04). `provider` is only ever written on the way out of a
+            // successful run, so it is the honest test for "this one ran".
+            if r["provider"].as_str().unwrap_or("").is_empty() {
+                println!("api: {} came back with no words ({})",
+                         j["id"].as_str().unwrap_or(""),
+                         r["error"].as_str().unwrap_or("no reason given"));
+                return existing.transcribe_rung(job);
+            }
+            println!("api: {} has no speech in it; nothing to land",
+                     j["id"].as_str().unwrap_or(""));
+            return serde_json::json!({
+                "text": "", "rung": "api", "grade": api_grade(), "silent": true })
+                .to_string();
         }
         println!("api: {} transcribed, {} characters, {} phrases seeded",
                  j["id"].as_str().unwrap_or(""), text.len(), phrases.len());

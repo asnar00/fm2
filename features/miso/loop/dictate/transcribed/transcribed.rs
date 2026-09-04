@@ -257,13 +257,36 @@ impl feature_Transcribed {
         86400000
     }
 
+    // ---- the two ends of a job that did not land ---------------------------
+    // seams, so that WHAT HAPPENS to a job nothing could do today is one
+    // decision in one place. The answers here are exactly what this node did
+    // before they had names: a few more tries and then the job is gone.
+    // /keeps-trying redefines both — nothing is ever dropped, and the ladder
+    // is a schedule rather than a count.
+
+    // true means "finished with"; false means "it will be tried again".
+    fn transcribed_retry(world: String, id: String, tries: u64, why: String) -> bool {
+        if tries >= transcribed_max_tries() {
+            println!("transcribed: {} after {} tries; dropping ({})", id, tries, why);
+            transcribed_forget(world, id);
+            return true;
+        }
+        transcribed_bump(world, id, tries);
+        false
+    }
+
+    // a job so old that nothing is coming for it.
+    fn transcribed_expire(world: String, id: String) -> bool {
+        println!("transcribed: giving up on {} in {} (too old)", id, world);
+        transcribed_forget(world, id);
+        true
+    }
+
     fn transcribed_run(world: String, job: serde_json::Value) -> bool {
         let id = job["id"].as_str().unwrap_or("").to_string();
         let at = job["at"].as_u64().unwrap_or(0);
         if at == 0 || now_ms() > at + transcribed_job_life_ms() {
-            println!("transcribed: giving up on {} in {} (too old)", id, world);
-            transcribed_forget(world, id);
-            return true;
+            return transcribed_expire(world, id);
         }
         let path = format!("{}/{}", transcribed_world_dir(world.clone()), id);
         if !std::path::Path::new(&path).exists() {
@@ -274,13 +297,7 @@ impl feature_Transcribed {
         let card = transcribed_card_of(world.clone(), id.clone());
         if card.is_null() {
             let tries = job["tries"].as_u64().unwrap_or(0) + 1;
-            if tries >= transcribed_max_tries() {
-                println!("transcribed: no post for {} after {} tries; dropping", id, tries);
-                transcribed_forget(world, id);
-                return true;
-            }
-            transcribed_bump(world, id, tries);
-            return false;
+            return transcribed_retry(world, id, tries, "no post for it yet".to_string());
         }
         // a tombstone is never re-worded: the words left the world when the
         // author deleted the note, and a transcript arriving later must not
@@ -322,14 +339,12 @@ impl feature_Transcribed {
         let text = a["text"].as_str().unwrap_or("").trim().to_string();
         if text.is_empty() {
             let tries = job["tries"].as_u64().unwrap_or(0) + 1;
-            if tries >= transcribed_max_tries() {
-                println!("transcribed: no rung answered for {} after {} tries; dropping",
-                         id, tries);
-                transcribed_forget(world, id);
-                return true;
-            }
-            transcribed_bump(world, id, tries);
-            return false;
+            let why = if transcribe_best_grade() == 0 {
+                "no rung reachable".to_string()
+            } else {
+                "no rung answered".to_string()
+            };
+            return transcribed_retry(world, id, tries, why);
         }
         let rung = a["rung"].as_str().unwrap_or("server").to_string();
         let grade = a["grade"].as_i64().unwrap_or(1);
