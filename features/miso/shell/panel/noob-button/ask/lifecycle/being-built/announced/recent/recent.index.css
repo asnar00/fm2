@@ -1,0 +1,7 @@
+/* three amber stages and one that is done: the pill stays the amber of
+   /being-built while a thing is in flight, and goes quiet when the phone is
+   running it. Same shape, same weight — only the colour says "finished". */
+#building .bstatus.stage-installed { background: #1e3a2c; color: #8fd6b0; }
+
+/* what a stopped deploy left behind, under the row it belongs to */
+#building .stage-why { padding: 0 0 6px; font-size: 11px; color: #9a8f7a; }

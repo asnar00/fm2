@@ -110,9 +110,53 @@ def in_tree(node, known):
     return any(names(t)[-len(a):] == a for t in known if len(names(t)) >= len(a))
 
 
+def stage(a, nodes, since):
+    """the way out, one word at a time (announced/recent). The set is the same
+    one `--ship` would close — the announcements naming a node this release
+    touches — and nothing here ever writes a build number or touches an entry
+    that has already shipped."""
+    builds = s.builds_read(a.local)
+    moving = ["building", "testing", "deploying"]
+    hit = []
+    for b in builds:
+        node = b.get("node")
+        if not node or b.get("status") not in moving:
+            continue
+        if not any(covers(node, t) for t in nodes):
+            continue
+        if a.stage == "building" and b.get("status") == "building":
+            continue      # nothing of this deploy's to put back
+        if b.get("status") == a.stage and not a.why:
+            continue
+        hit.append(b)
+    for b in hit:
+        was = b.get("status")
+        print(f"  {was} -> {a.stage}: {b.get('text')!r} [node {b['node']}]"
+              + (f" ({a.why})" if a.why else ""))
+        if a.dry:
+            continue
+        b["status"] = a.stage
+        if a.why:
+            b["why"] = a.why
+        else:
+            b.pop("why", None)
+    if hit and not a.dry:
+        s.builds_write(builds, a.local)
+    if not hit:
+        print(f"  nothing to move to {a.stage} "
+              f"(since {since[:8] or 'the head commit'}, {len(nodes)} node(s) touched)")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--build", type=int, required=True, help="the build number that shipped")
+    ap.add_argument("--build", type=int, help="the build number that shipped")
+    ap.add_argument("--stage", choices=["testing", "deploying", "building"],
+                    help="move the announcements this release will close to a stage "
+                         "of the way out, without shipping anything: `testing` when the "
+                         "gate starts, `deploying` when it has passed, `building` to put "
+                         "them back if the deploy stops (announced/recent)")
+    ap.add_argument("--why", help="with --stage building: what stopped the deploy")
     ap.add_argument("--since", help="the sha the last release was at (default: released.sha)")
     ap.add_argument("--head", default="HEAD", help="the sha that just shipped")
     ap.add_argument("--dry", action="store_true", help="say what would be stamped, write nothing")
@@ -120,12 +164,18 @@ def main():
     ap.add_argument("--port", default=s.PORT)
     a = ap.parse_args()
     s.PORT = a.port
+    if not a.stage and a.build is None:
+        ap.error("--build is required to stamp a ship (or give --stage)")
+    if a.why and a.stage != "building":
+        ap.error("--why goes with --stage building")
 
     since = a.since if a.since is not None else released_sha()
     head = git("rev-parse", a.head).strip() or a.head
     subs = subjects(since, head)
     nodes = touched_nodes(since, head)
     ids = sorted({int(m) for line in subs for m in ASK_ID.findall(line)})
+    if a.stage:
+        return stage(a, nodes, since)
     print(f"ship {a.build}: {len(subs)} commit(s) since {since[:8] or '(no released.sha)'}, "
           f"{len(nodes)} node(s) touched, {len(ids)} ask id(s) cited")
 
@@ -148,6 +198,7 @@ def main():
         if not a.dry:
             b["status"] = "shipped"
             b["build"] = a.build
+            b.pop("why", None)   # a stopped deploy's reason, retired by the ship
     if hit and not a.dry:
         s.builds_write(builds, a.local)
     if not hit:
@@ -205,7 +256,9 @@ def main():
     now = int(time.time() * 1000)
     stale = []
     for b in (builds if a.dry else s.builds_read(a.local)):
-        if b.get("status") != "building" or now - int(b.get("t") or 0) < DAY_MS:
+        if b.get("status") not in ("building", "testing", "deploying"):
+            continue
+        if now - int(b.get("t") or 0) < DAY_MS:
             continue
         node = b.get("node")
         if not node:

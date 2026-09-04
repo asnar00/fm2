@@ -43,6 +43,29 @@ RELEASED="$SRC/products/miso/build/released.sha"
 # stamps at the bottom need the range this deploy is shipping
 PREV=""
 [ -f "$RELEASED" ] && PREV="$(cat "$RELEASED")"
+
+# the sheet's stages (ask/lifecycle/being-built/announced/recent): the work
+# queue on everyone's panel reads building → testing → deploying → installed,
+# and the first three are stamped here, because this script is what knows when
+# the gate starts and when the ship lands. `testing` goes on before the first
+# gate; a deploy that stops anywhere after it puts the entries back to
+# `building` with the reason, through the trap below. Neither stamp is allowed
+# to stop a deploy.
+SHIP_LOCAL=""
+[ "$HOST" = localhost ] && SHIP_LOCAL="--local"
+STAGED=no
+ship_stage_undo() {
+  st=$?
+  if [ "$st" != 0 ] && [ "$STAGED" = yes ]; then
+    python3 "$SRC/tools/stamp_ship.py" --stage building ${PREV:+--since "$PREV"} \
+      $SHIP_LOCAL --why "the deploy stopped before shipping (exit $st)" || true
+  fi
+  exit $st
+}
+trap ship_stage_undo EXIT
+python3 "$SRC/tools/stamp_ship.py" --stage testing ${PREV:+--since "$PREV"} $SHIP_LOCAL \
+  && STAGED=yes || echo "  NOTE: the testing stamps did not go out" >&2
+
 if [ "${PROOF:-check}" != "skip" ]; then
   if [ -f "$RELEASED" ]; then
     python3 "$SRC/tools/toggle_proof.py" --since "$(cat "$RELEASED")" || {
@@ -246,6 +269,11 @@ case "$PLIST" in
   *SuccessfulExit*) case "$PLIST" in *MISO_HANDOVER*) [ -n "$LIVEPID" ] && HANDOVER=yes ;; esac ;;
 esac
 
+# the gates are behind us and the bytes are about to move: the sheet says
+# deploying (announced/recent)
+python3 "$SRC/tools/stamp_ship.py" --stage deploying ${PREV:+--since "$PREV"} $SHIP_LOCAL \
+  || echo "  NOTE: the deploying stamps did not go out" >&2
+
 if [ "$HANDOVER" = yes ]; then
   echo "handover: pid $LIVEPID is serving; shipping the binary first"
   rsync -a "$SRC/products/miso/build/server/target/release/miso_server" "$HOST:miso/"
@@ -359,8 +387,7 @@ for _, a in sorted(latest.items()):
 # every ask whose id a commit subject cites, then lists the announcements
 # nothing can close. It must never fail a deploy that has already shipped, so
 # its own failure is a note and not an exit.
-SHIP_LOCAL=""
-[ "$HOST" = localhost ] && SHIP_LOCAL="--local"
+STAGED=no        # the ship happened: the stages are the ship stamp's business now
 MISO_HOST="$HOST" python3 "$SRC/tools/stamp_ship.py" \
   --build "$(cat "$SRC/products/miso/build/site/version")" \
   ${PREV:+--since "$PREV"} $SHIP_LOCAL \
