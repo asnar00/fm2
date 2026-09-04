@@ -4850,3 +4850,104 @@ What I need next is only the people deploy's result, to confirm the two self-sta
 > <status>completed</status>
 > <summary>Background command "Land the two people nodes on main and deploy through the gate" completed (exit code 0)</summary>
 > </task-notification>
+
+Build 713 is live, and that was the last one. The people page shows everyone on the project under any filter, you first then most recently active, held still while you look. Both announcements stamped themselves. The handover and transcript are committed, the tree is clean, no workers are out, and nothing is queued.
+
+**Where the day ends**
+
+| | |
+|---|---|
+| Live build | 713 |
+| Builds today | 615 to 713 |
+| Nodes shipped | about 60 |
+| Field asks and announcements | all closed by their deploys |
+
+**For the morning:** the handover carries the Saturday list, the residuals, and the Tuesday plan. Reset the test users, plug in the cable, leave the local whisper off. Tara shows now; check it on the second phone before the team arrives.
+
+**One oddity to note:** the usage endpoint reset your counters to near zero at 20:55 UTC with the same reset date. I'll report what it says first thing tomorrow rather than trust it tonight.
+
+Nothing is pending, so nothing more to request. Good night, and good luck with the team.
+
+### p195
+*2026-09-04 21:40*
+
+> <task-notification>
+> <task-id>boxew0c6u</task-id>
+> <summary>Monitor event: "field asks from the phone (stamped on arrival)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788558038133 tool=- at=-
+> text: On user profiles, instead of saying “profile”, show the role(rank) in the lozenge</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+A late field ask: a person's lozenge should say their role, not "profile". Stamped on arrival; to the people worker.
+
+### p195a
+*2026-09-04 21:40*
+
+> <task-notification>
+> <task-id>boxew0c6u</task-id>
+> <summary>Monitor event: "field asks from the phone (stamped on arrival)"</summary>
+> <event>ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Sent, and the ask shows building on your sheet. A person's lozenge and card tag will read their role in the current project, candidate, team, admin and so on, with "profile" only when no project is chosen.
+
+What I need next is that worker's return; its deploy stamps the ask itself and one handover line follows. That is the only pending result, so there is nothing more to request in this turn.
+
+### p196
+*2026-09-04 21:41*
+
+> <task-notification>
+> <task-id>boxew0c6u</task-id>
+> <summary>Monitor event: "field asks from the phone (stamped on arrival)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788558075894 tool=- at=-
+> text: remove “map location” button from all cards
+> ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Another: remove the "map location" button from all cards, which makes sense now the map is behind every card. To the reel worker, which is free.
+
+Sent. The worker picks the honest shape: a product untick if that node is only the button, otherwise a child that removes the button and keeps the location mark.
+
+What I need next, and what each depends on:
+
+- The role-in-the-tag node from the people worker. Pending its return.
+- The map-location removal from the reel worker. Pending its return.
+- A deploy for each, which stamps its ask itself, and a handover line. Both depend on the workers.
+
+Every item depends on a pending result, so there is nothing to request in this turn.
+
+### p197
+*2026-09-04 21:41*
+
+> <task-notification>
+> <task-id>boxew0c6u</task-id>
+> <summary>Monitor event: "field asks from the phone (stamped on arrival)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788558115121 tool=- at=-
+> text: on profiles, only show “add number” if you don’t have the users phone number
+> ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Another: "add number" should show only when the number is missing. To the stamp worker, which is free and knows the users side.
+
+Three workers hold three field asks now: the role in the lozenge, the map-location button, and "add number" only when missing. Each deploys as it lands and stamps its ask itself.
+
+What I need next is each worker's return; the deploys and a handover line follow from those. Every item depends on a pending result, so there is nothing to request in this turn.
+
+### p198
+*2026-09-04 21:45*
+
+*(edited and resent — superseded by the next prompt; do not cite)*
+
+> in the feature request (ask) workflow, it's a bit confused - I make a request and it goes straight to building, but also pops up a suggestion. Let's drop the suggestion part.
+
+### p199
+*2026-09-04 21:46*
+
+> in the feature request (ask) workflow, it's a bit confused - I make a request and it goes straight to building, but also pops up a suggestion. Let's drop the suggestion part. Instead, go to "asked", and if the feature exists already (concierge, i.e. you, determines), you send a text message ad-hoc explaining how they can use the UI to do it. I think that makes more sense.
