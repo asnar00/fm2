@@ -168,3 +168,10 @@ session end from the digest since the last run.*
     a browse tool, the dots under the launcher — and changes it only with
     a stated reason. The parent's choice of ground is part of its meaning.
     (ash, 2026-09-04; `map-only/always-the-ground`.)
+
+29. **Nothing sends from inside the paint.** A handler that can fire while
+    the page is being painted (a map's `moveend` inside `setView`, a resize,
+    a scroll the app itself made) never calls `send` there — it defers to
+    after the paint, latest value wins. A move the app makes is not a move
+    the user made, and is not recorded as one. (`map/keeps-its-view`, the
+    690 rollback, 2026-09-04.)

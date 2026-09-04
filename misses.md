@@ -631,3 +631,22 @@ hand. **The rule:** a stamp must not lose to the asker's own resend; the
 acknowledgement wants the same protection `/guard` gives a card (newer
 `edited` wins, or a per-ask merge rather than a whole-list last-write), and
 until then triage checks the sheet after a burst of asks.
+
+## the send inside the paint (2026-09-04, build 690) — "syncing…" that never lifted
+
+`map/keeps-its-view` applied the remembered view on every sync rather than
+only when a Leaflet was actually made (`/map`'s `mount` self-guards and
+`sync` calls it every time). Each application fired `moveend`; the
+handler sent an event synchronously; Leaflet fires `moveend` inside
+`setView`, which was inside `sync`, inside `paint`, inside `apply` — so
+the send re-entered the loop from inside its own paint, which produced
+another sync, another snap, another send. `/veil` lifts the "syncing…"
+cover in the line after the inner apply returns, so the cover stayed up
+and the growing loop crashed the page. Ash's phone: stuck, then dead;
+reverted as 691 within minutes. **The rules:** a wrapper on a
+self-guarding function asks whether the guard fired before doing its own
+work; nothing calls `feature_Loop.send` from a handler that can fire inside
+`paint` — defer to after the paint, latest value wins (`/keep`'s idiom);
+and a move the app makes is not a move the user made — hush the whole of
+`sync`, not a list of today's moves. Found and proven on the installed
+clip through four real updates in a row.

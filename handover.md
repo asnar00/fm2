@@ -45,12 +45,14 @@ shipped on its own. Fable 60% → ~62%.*
   + `tools/sweeps.py` — mid-list the picture is complete at insertion and
   never changes; the ends had no rebuild at all, it was the compositor.
   Three rig hypotheses were disproved before the readout was built.
-- **Rolled back:** `map/keeps-its-view` (build 690) stuck ash's phone at
+- **Rolled back, then re-landed as build 696:** `map/keeps-its-view` (build 690) stuck ash's phone at
   "syncing…" and crashed the page; reverted as 691 (came up fine); the
-  worker is reproducing the 689→690 update on the simulator. Until it
-  re-lands, the map may pop to the world once after an update (the
-  placeholder `setView(…, 3)` in `/map`'s mount, visible since
-  `always-the-ground` shows the map where no set fits it).
+  cause was a send from inside the paint (misses.md "the send inside the
+  paint", learned 29); the fix hushes the whole of `/map`'s `sync`, defers
+  the record to after the paint, restores only when a Leaflet is made, and
+  treats a stored zoom at the placeholder as no memory — proven on the
+  installed clip through four updates in a row. Phones that ran 690 hold a
+  poisoned `map_view` at zoom 0, healed by that floor.
 - **Proposals in notes.md:** de-crufting the tree as a periodic fold pass
   (#p80, for after the field test).
 - **Residuals named by workers, not yet ruled on:** once a level is picked
