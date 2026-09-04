@@ -1,0 +1,42 @@
+/* the region page: twenty-seven names and nothing else to say. Pills rather
+   than a list, because a ward name is a short label a thumb picks out of a
+   field — /taste 4's full-round for a small interactive thing, on /taste 1's
+   pill ground, with /taste 3's one accent for "chosen" and no second colour
+   anywhere. No heading: the row above the page already says where you are
+   (/taste 7 — nothing explains a thing that shows what it does). */
+.region-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-content: flex-start;
+  padding: 2px 0 8px;
+}
+
+.region-pill {
+  padding: 7px 12px;
+  border: 1px solid #2a2a30;
+  border-radius: 999px;
+  background: #121215;
+  color: #c9c9d2;
+  font-size: 13px;
+  line-height: 1.15;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: border-color 0.18s ease-out, color 0.18s ease-out;
+}
+
+/* the whole patch is the default and the widest choice, so it leads the field
+   on a line of its own — hierarchy by dimness and position, never by size
+   (/taste 2) */
+.region-pill.whole {
+  flex-basis: 100%;
+  text-align: center;
+  color: #eee;
+}
+
+/* chosen is #9db7d8 and means exactly one thing everywhere in the app */
+.region-pill.sel {
+  border-color: #9db7d8;
+  color: #9db7d8;
+}
