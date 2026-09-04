@@ -1,2 +1,3 @@
 - [x] poster
 - [x] flip
+- [x] streams

@@ -23,6 +23,16 @@ const feature_Mirror = {
     };
   },
 
+  // how a recording's bytes reach the exchange. A seam, because the WHOLE
+  // blob after the fact is only one way to do it: /streams sends the pieces
+  // as they are made and answers here with what is left to send. True means
+  // "the exchange has it"; false means "not now" and the pass stops, to be
+  // tried again on the next reconnect.
+  async sendBytes(meta, blob) {
+    const r = await fetch('blob/' + meta.id, { method: 'POST', body: blob });
+    return r.ok;
+  },
+
   // ---- eager metadata + catch-up upload: every not-yet-uploaded blob POSTs
   // to the exchange, then announces through the persistent outbox
   uploading: false,
@@ -36,8 +46,7 @@ const feature_Mirror = {
         const blob = await feature_Dictate.getBlob(m.id);
         if (!blob) continue;
         try {
-          const r = await fetch('blob/' + m.id, { method: 'POST', body: blob });
-          if (!r.ok) break;             // offline or refused: retry later
+          if (!(await this.sendBytes(m, blob))) break;   // offline or refused: retry later
         } catch (e) { break; }
         m.uploaded = true;
         await feature_Dictate.put('meta:' + m.id, m);

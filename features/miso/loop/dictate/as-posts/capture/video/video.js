@@ -26,6 +26,43 @@ const feature_Video = {
     return { video: { facingMode: 'environment' }, audio: true };
   },
 
+  // ---- three seams, all answering "as before" ------------------------------
+  // opened for /streams, which sends the clip up while it is being made. The
+  // answers here are exactly what this node did without them: no timeslice
+  // (one blob at stop), nothing done per chunk, and the metadata unchanged.
+
+  // undefined is what MediaRecorder.start() means by "no timeslice", so the
+  // recorder behaves as it always did.
+  timeslice() {
+    return undefined;
+  },
+
+  onChunk(blob, n) {
+    const _ = [blob, n];
+  },
+
+  metaFor(meta) {
+    return meta;
+  },
+
+  // a companion audio-only recording, kept beside the video and never listed
+  // or uploaded: whisper eats audio, and pulling the audio track back out of
+  // a recorded video container is not something every browser will do. This
+  // way the transcript never depends on that question. A seam, because the
+  // whole point of it is /phone's on-device model — retire that and this
+  // recording is a second encode of every note for nobody.
+  companionAudio() {
+    if (!this.media) return;
+    const tracks = this.media.getAudioTracks();
+    if (!tracks.length) return;
+    try {
+      this.arec = new MediaRecorder(new MediaStream([tracks[0]]),
+                                    { audioBitsPerSecond: 64000 });
+      this.arec.ondataavailable = (e) => { if (e.data.size) this.achunks.push(e.data); };
+      this.arec.start();
+    } catch (e) { this.arec = null; }
+  },
+
   async start() {
     try {
       this.media = await navigator.mediaDevices.getUserMedia(this.constraints());
@@ -36,22 +73,14 @@ const feature_Video = {
     }
     this.chunks = []; this.achunks = []; this.startedAt = Date.now();
     this.recorder = new MediaRecorder(this.media, this.opts());
-    this.recorder.ondataavailable = (e) => { if (e.data.size) this.chunks.push(e.data); };
+    this.recorder.ondataavailable = (e) => {
+      if (!e.data.size) return;
+      this.chunks.push(e.data);
+      this.onChunk(e.data, this.chunks.length - 1);
+    };
     this.recorder.onstop = () => this.save();
-    this.recorder.start();
-    // a companion audio-only recording, kept beside the video and never
-    // listed or uploaded: whisper eats audio, and pulling the audio track
-    // back out of a recorded video container is not something every browser
-    // will do. This way the transcript never depends on that question.
-    const tracks = this.media.getAudioTracks();
-    if (tracks.length) {
-      try {
-        this.arec = new MediaRecorder(new MediaStream([tracks[0]]),
-                                      { audioBitsPerSecond: 64000 });
-        this.arec.ondataavailable = (e) => { if (e.data.size) this.achunks.push(e.data); };
-        this.arec.start();
-      } catch (e) { this.arec = null; }
-    }
+    this.recorder.start(this.timeslice());
+    this.companionAudio();
     this.viewfinder();
     this.cap = setTimeout(() => feature_Loop.send({ type: 'click', ev: 'vid_stop' }),
                           this.LIMIT);
@@ -70,12 +99,12 @@ const feature_Video = {
     const blob = new Blob(this.chunks, { type: this.recorder.mimeType });
     const id = 'vid-' + this.startedAt;
     const t = new Date(this.startedAt);
-    const meta = {
+    const meta = this.metaFor({
       id, t: this.startedAt, here: true, kind: 'video',
       dur: Math.round((Date.now() - this.startedAt) / 1000),
       size: blob.size, mime: this.recorder.mimeType,
       label: t.getHours() + ':' + String(t.getMinutes()).padStart(2, '0'),
-    };
+    });
     // the disk can be full, and a clip that cannot be stored must not become
     // a post pointing at nothing: the meta is written LAST, and only if the
     // bytes are down. A failure says so and leaves no wreckage — the words
