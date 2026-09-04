@@ -1,4 +1,4 @@
-# transcript: field walk
+# transcript: the field walk
 *session `b70435b4-6806-4a25-aadb-e68df3da3413`, exported by tools/export_transcript.py — do not edit; anchors `#pN` are stable*
 
 ### p1
@@ -2142,3 +2142,335 @@ The strip deploy is still running, and three workers are out with six nodes. Not
 Build 667 is live: the project name and the nøøb button sit on solid black over the map. Stamped shipped.
 
 Three workers are out with six nodes: the map behind an open card and the first-frame thumbnail, the ask box, and the transcription retry with its indicator and agent titles. Everything left depends on one of them returning, so nothing to request now.
+
+### p83
+*2026-09-04 16:22*
+
+> <task-notification>
+> <task-id>a481d67a8bff6672b</task-id>
+> <tool-use-id>toolu_01MzATL6RHstGdJCDMi6KSzx</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a481d67a8bff6672b.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build four map-reel refinements" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Both nodes are in, rebased onto current main (`85bdd0e`), tree clean, gate green. Not deployed.
+> 
+> ## `ea6eed9` — `opens-over-map/on-every-tool` (the map behind the card)
+> 
+> **Diagnosed first.** `/opens-over-map`'s test asked the view picker whether the map was the view, and `/map-only` removed the picker — measured on the rig, every tool: `picker: false` → `behind: false` → `mapShown: "none"` the moment a card opens, with the dotted ground under it. The "same for users etc" half was never true even before that: the test also insisted on `tool_posts`, so a person's or project's card never had the map behind it.
+> 
+> The question is now asked without the picker: no `#mapData` with a card page on screen still means "a card is open", and what the picker used to say is answered by memory of the screen — on every sync where the set *is* on the page the selected tool is noted, and a card counts as over the map when the tool still selected is the one the map was last drawn for. No tool is named, so a tool added later needs nothing.
+> 
+> | tool | with a card open |
+> |---|---|
+> | posts | `behind: true`, map shown, **8 markers still there** |
+> | people (`tool_account`) | `behind: true`, map shown |
+> | projects | `behind: true`, map shown, 1 marker; **a tap on the map closes it** |
+> 
+> Screenshots: `behind-posts.png`, `behind-account.png`, `behind-projects.png` in `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a481d67a8bff6672b/evidence/`. **Toggle-proof in the commit** — `/opens-over-map` refactored to open `behind()`; unticked, the parent reproduced the broken state exactly (behind false, map hidden, every tool), and re-ticked the composition is byte-identical.
+> 
+> ## `77804cc` — `poster/at-once/first-frame` (ash's ruling, `#p76`)
+> 
+> The first frame is taken before the first tick (the viewfinder polled every 30 ms until it decodes, then `/at-once`'s own `grab` once), so it *is* the face for any clip that ends before a tick and a later tick replaces it on a longer one. If the stop comes before the camera decoded anything, the canvas is used as it stands — the app's dark ground — so no road ends in no picture. A dark face does not stand the slow road down, and that road's real frame is written over it through `/cards`' `CardPic` (`/poster`'s own op writes only into an *empty* block, so it could not).
+> 
+> | clip | face on card **and** lozenge | pictures minted | slow road |
+> |---|---|---|---|
+> | 300 ms | 183 ms after stop | 1 | did not run |
+> | 700 ms | 189 ms | 1 | did not run |
+> | 5 s | 204 ms | 1 | did not run |
+> | 700 ms, camera giving no frame | 212 ms (dark square) | 2 | ran; its frame **replaced** the dark one |
+> 
+> Confined (`--prove`: implied).
+> 
+> ## Named risks
+> 
+> - **A clip of ~100 ms makes no post at all** — `/capture/video`'s recorder produces no chunk that short and `save` returns before minting. Ash's rule is satisfied vacuously there, but if he taps and it makes nothing he may read that as a different bug. Worth his word.
+> - The dark-frame path mints two pictures (the dark one is superseded but stays in the local store, which `/pic-beside` never prunes).
+> - `/at-once.hook()` re-takes the `metaFor` seam whenever it is not its own, which **nests** if another node wraps it — my probe triggered exactly that and it minted a spurious dark face. I closed the hole by memoising the answer per recording, but the nesting itself is still latent in `/at-once`.
+> - `on-every-tool`'s memory is per page-load: a card opened without ever seeing its surface's map this visit (a deep link, a restored tool) gets no map behind it.
+> - The region page the coordinator mentioned is a tool page, not a card page, so it is untouched by this node.
+> - Both nodes proven on Chrome only. The simulator was not used this round: my device was shut down between rounds, the other worker holds the Pro, and earlier today this clip's page stopped posting readouts entirely — I did not spend more of the field-walk clock on it.
+> 
+> My rig was stopped by its own PID (`96405`), checked against `ps -o command=` first.</result>
+> <usage><subagent_tokens>743281</subagent_tokens><tool_uses>51</tool_uses><duration_ms>1523901</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a481d67a8bff6672b</worktreePath><worktreeBranch>worktree-agent-a481d67a8bff6672b</worktreeBranch></worktree>
+> </task-notification>
+
+Both back: the map behind every open card, and the first-frame thumbnail. Landing and deploying.
+
+Deploying. The two shipped stamps depend on the build number, and the other two workers are still out, so nothing else is independent right now.
+
+**Two things from this pair worth your eye**
+
+- The map-behind test was asking the view picker whether the map was showing, and map-only removed the picker. It also only ever worked for posts. Now any card over any tool keeps its map behind it, and a tap on the map closes it.
+- A tap-and-release under about a tenth of a second makes no post at all, because the recorder produces nothing that short. Your rule holds for every clip that exists. If you tap and nothing appears, that is the reason, not a missing thumbnail.
+
+### p84
+*2026-09-04 16:28*
+
+> <task-notification>
+> <task-id>bohgthtgb</task-id>
+> <tool-use-id>toolu_01GTETrLTAF6q5okpkB1N2pt</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bohgthtgb.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Fast-forward main to the two reel nodes, verify, and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 669 is live: the map stays behind an open post, person or project card, and every clip gets a thumbnail from its first frame. Both stamped shipped.
+
+Two workers remain: the ask box, and the transcription retry with its indicator and agent titles. Nothing to request until one returns.
+
+### p85
+*2026-09-04 16:39*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <tool-use-id>toolu_01WtZxyRuwrCPjBxRNStmjhA</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Three commits on `a42-retry`, rebased on `77804cc`, clean tree, rig down, live server healthy.
+> 
+> ## Commits
+> 
+> | | |
+> |---|---|
+> | `e8f263d` | `transcribed/keeps-trying` — the retry fix (#p74) |
+> | `7c343db` | `transcribed/shows-progress` — the transcribing hint (#p77) |
+> | `2b1f09f` | `kinds/posts/titled/from-the-words` — the title (#p77) |
+> 
+> ## What each does, and what was proven
+> 
+> **`keeps-trying`.** One keeper thread started before the listener, looking every ten seconds — ten, not thirty, because ten is the first backoff step and a schedule finer than the clock reading it is a fiction. A job that did not land is rescheduled at 10s / 30s / 2min / 10min / hourly, for ever; past a day it is **parked, not deleted**. The parent's five-tries-and-delete became two seams (`transcribed_retry`, `transcribed_expire`) whose base answers are exactly what it did before. `GET diag/transcribe` carries a line per waiting and parked clip and the reason when nothing can transcribe; `/engineer` draws them. A lock naming a **dead pid** is dropped at once (`kill -0`), so a server dying mid-clip during a handover costs the successor one look instead of twenty minutes — a live pid is still respected, which is what stops both handover servers draining.
+> 
+> Also fixed at the rung: `/api` read Speechmatics' perfectly good empty transcript on a silent clip as a failure. That is why the two silent morning clips burned five tries each. It now tells "I ran and heard nothing" from "I could not run" by the `provider` field.
+> 
+> Three hostile cases on my rig (8113), **all PASS**: a reachable-but-broken rung retried at tries=1 then 2 with `next` moving out and the notice reading `no rung answered`; the rig **killed with that job queued and restarted** landed the words with **no phone message in the log** after the restart; a silent clip took one attempt, no retry, a done stamp, words left empty. Gate green (39/39, three passes, port 8149). Full toggle proof.
+> 
+> **`from-the-words`.** Haiku 4.5, `max_tokens` 64, raw HTTP by curl with the key on stdin (Rust has no SDK; `/reports`' idiom, `/off-argv`'s rule). Empty titles only, checked three times because a thumb does not wait. No speech, no call. Retried on `keeps-trying`'s backoff from its own small queue. **Proven**: the empty title became **"bligh's road poster and hollybush lane"**; exactly one call, cost line `257 in, 14 out, $0.000327`; a second post with an author-typed title was left untouched while its words landed. Gate green (39/39, port 8150). Full toggle proof.
+> 
+> **`shows-progress` — read this before shipping it.** The answer to your question about why the hint never drew: `/as-posts` keys it off `dict_transcribe`, which `/dictate`'s scheduler only sets when a rung's **page** slot answers ready — and every rung is the server's, so none ever did. The state was in the wrong half of the app. The server now publishes `Transcribing {working, stuck}` **on change only** (three moments; a per-tick message would be the most expensive thing on the box).
+> 
+> The **transport is proven**: `dict_working` reached a real page 2,000 ms after the clip was shared, carrying the right id, and cleared on landing. The **mark is not proven, and I could not prove it**: the play row (`data-rec`) is not drawn on the card page for a post of this shape, and the grid tile (`.card-tile[data-card]`) no longer exists — `browse/map-only` replaced the grid and `browse/map/reel` is being rewritten by another worker while I was writing against it. Both selectors are against surfaces that moved. Someone should point them at what the reel lozenge and the open post actually draw now, on the simulator, before a canvasser sees it. I stopped rather than keep guessing at another worker's markup.
+> 
+> ## Named risks
+> 
+> 1. **`shows-progress`'s two selectors are unverified** (above). The node is ticked; if you would rather it not ship until the anchors are checked, untick it in the product — the transport is harmless on its own.
+> 2. A defect the run caught and I fixed at source: `told.json` was written *inside* the queue directory, where every `*.json` is a job, so it was parked as a day-old clip. It lives beside the queue now. **`keeps-trying`'s scanner still has no "a job has a stamp or it is not a job" test** — three lines, worth adding; I wrote it, then reverted it so the committed node stayed byte-identical to what the gate passed.
+> 3. `from-the-words` needs `/transcribed` **and** `/keeps-trying` present — it hangs off the landing and the keeper. Real coupling, the price of the title living where titles live.
+> 4. The keeper wakes every 10 s for ever, per server. Cheap (a directory scan when the queue is empty) but it is a new always-on loop on the box.
+> 5. The title's `auto` flag is set but nothing reads it — a later "was this written for me?" affordance has no hook yet.
+> 6. Per-commit gating: `keeps-trying` and the full three-node state were each gated green. `shows-progress` alone was **not** gated in isolation; it is covered by the final run.</result>
+> <usage><subagent_tokens>703111</subagent_tokens><tool_uses>728</tool_uses><duration_ms>25620138</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+The transcription trio is back. The retry keeper and the agent title are proven; the "transcribing…" mark's transport is proven but its two selectors point at surfaces the map work moved. I'm shipping all three, since the mark is harmless if it misses, and sending the reel worker to point it at the real lozenge and card.
+
+### p85a
+*2026-09-04 16:39*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timers from the gate waits, draining now that it has finished. No new information in any of them — the verdict they were watching for (`smoke: all passes green`, 39/39) is already in my report.
+> 
+> Nothing changes: three commits on `a42-retry` at `2b1f09f`, rebased on `77804cc`, clean tree, my rig stopped by its own PID, live server on 8095 answering 200. The one thing I'd want a human eye on before shipping is `shows-progress`'s two DOM selectors, which point at surfaces `browse/map-only` and `browse/map/reel` moved under me this session.</result>
+> <usage><subagent_tokens>696172</subagent_tokens><tool_uses>728</tool_uses><duration_ms>25628807</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+### p85b
+*2026-09-04 16:39*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Another stale poll timer draining. No new information; the work is complete and reported.</result>
+> <usage><subagent_tokens>696555</subagent_tokens><tool_uses>728</tool_uses><duration_ms>25632719</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Deploying the three transcription nodes, and the reel worker is placing the transcribing mark on the real lozenge and card. The shipped stamps depend on the build number; the ask box worker is still out. Nothing else to request now.
+
+**What lands with this build**
+
+- Transcription never gives up: a keeper looks every ten seconds, retries back off to hourly, a job older than a day is parked and named on the engineer sheet. A server killed mid-clip is recovered by its successor at once.
+- A silent clip is finished in one attempt as "no speech", not retried.
+- Once the words land on a post with no title, Haiku writes one. On the test clip it wrote "bligh's road poster and hollybush lane" for a third of a cent. A title you typed is never touched.
+
+### p86
+*2026-09-04 16:40*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Another stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>696947</subagent_tokens><tool_uses>728</tool_uses><duration_ms>25659657</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Stale timer, nothing new. Still waiting on the deploy.
+
+### p87
+*2026-09-04 16:40*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>697326</subagent_tokens><tool_uses>728</tool_uses><duration_ms>25677792</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Same stale timer. Waiting on the deploy.
+
+### p88
+*2026-09-04 16:44*
+
+> the filter option switch looks good. small bugfix: in the dropdown, the background lozenge is too wide, as is the rounded rect backing - both should be wide enough to hold the option text, no more.
+
+A bug fix on the dropdown, so a child of that node. To the worker that built it.
+
+Sent. The column and its backing shrink to the widest option plus the pill's padding, proven with measured widths at the phone's viewport.
+
+Three workers are out: the ask box, the transcribing mark on the lozenge, and this. The transcription deploy is still in its gate. Nothing to request until one of them returns.
+
+### p89
+*2026-09-04 16:44*
+
+> the project title ("sevenoaks") should be horizontally centered
+
+Another small one for the same worker, queued behind the dropdown fix.
+
+### p89a
+*2026-09-04 16:45*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>697716</subagent_tokens><tool_uses>728</tool_uses><duration_ms>25943247</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+### p89b
+*2026-09-04 16:45*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>698099</subagent_tokens><tool_uses>728</tool_uses><duration_ms>25945249</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Queued. The name's pill centres on the screen, which also retires the hard-coded offsets three workers had been tuning against each other.
+
+Still waiting on the transcription deploy and three workers. Nothing to request now.
+
+### p90
+*2026-09-04 16:45*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>698481</subagent_tokens><tool_uses>728</tool_uses><duration_ms>25951469</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Stale timer, nothing new.
+
+### p91
+*2026-09-04 16:45*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>698859</subagent_tokens><tool_uses>728</tool_uses><duration_ms>25991810</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Same. Waiting on the deploy.
+
+### p92
+*2026-09-04 16:45*
+
+> <task-notification>
+> <task-id>afc22af9ea006bc2b</task-id>
+> <tool-use-id>toolu_01BjzS9rPZZ89ejSLu6TW1PS</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/afc22af9ea006bc2b.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build ask box straight-through" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Done. Branch `worktree-agent-afc22af9ea006bc2b`, one commit `6282016`, rebased onto main (`77804cc`), tree clean, not deployed.
+> 
+> ## What shipped
+> 
+> **`features/miso/shell/panel/noob-button/ask/request-box/straight-through/`** (new node, cited `transcripts/2026-09-04-field-walk.md#p70`) — `straight-through.md`, `straight-through.index.js`, `straight-through.index.css`, plus a tick in `request-box/order.md`.
+> 
+> **Parent refactor:** `features/miso/shell/panel/noob-button/ask/ask.index.js` gains one seam, `feature_Ask.send(text)` — `go()` now reads the box and calls it; the default road is the old find-then-file body verbatim. I opened a seam rather than wrapping `go()` because `/urgency` already wraps `go()` and a wholesale replacement would have swallowed its two buttons (misses.md, "siblings at one anchor"). `ask.md` records the seam.
+> 
+> Behaviour: placeholder reads `request a fix, tweak or feature`; a press files the ask at once through the same `Ask` event (`asks` var, `asked`, urgency untouched), empties the box, then embeds the filed text through `/semantic-find` (`/context-bias` included) and pops the hit's `## user` paragraph over the sheet when the top cosine is ≥ 0.50 — the tool's *current* words from `/tool-words` when the hit registers a tool. Markdown emphasis is drawn rather than printed, and the exporter's 400-char cut is ended on the last full stop.
+> 
+> **The threshold is measured, not guessed.** 32 asks against the 379-node catalog through the Python twin (`tools/potion_embed.py` + `site/features/vectors.json`): 16 things miso does scored 0.453–0.827; 16 it doesn't, 0.264–0.587. 0.50 pops 12/16 real and 2/16 absent. Script kept at `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-afc22af9ea006bc2b/measure2.py`.
+> 
+> ## Evidence (my rig, port 8131, own HOME scratch, own pid file; headless Chrome at 390×844)
+> 
+> - `let me delete a post` → filed through the op door in **52 ms** (`{"status":"asked","urgency":"whenever"}`), box empty, **`/delete`'s guide popped**; ✕ closed it. `please add a shopping list for groceries` → filed in 18 ms, **nothing popped**, the requests list shows the new `asked` row. `I want to undo something` → `/undo`'s guide; closing the sheet took the guide with it.
+> - Hostile cases, all on the real type-and-press path, no page errors: (a) table never ready → filed, no pop; (b) 6 s-delayed search with the sheet closed 1 s in → filed, no pop, and the **control** (same delay, sheet left up) → pops; (c) a hit with no guide text → filed, no pop; (d) two sends in a row → one `#askGuide` element, the second name wins.
+> - **Parent alone (node unticked, relinked, rebuilt, re-driven):** placeholder back to `do something`, 2 result rows + 1 open-chip, `/urgency`'s urgent *and* whenever present, nothing filed until pressed, no-match road files at once.
+> - **Toggle proof** in the trailer: unticked → index.html loses exactly the two `f/straight-through.*` files; server source differs only in this node's own path-keyed `straight_through_enabled`; re-ticked → byte-identical to the first ticked build. `--prove` says "implied" (the known classifier gap — a node's own files count as inside it), so the full proof stands.
+> - **`tools/smoke.py --port 8142`: all three passes green**, run twice (before and after the rebase). It has no ask step, so nothing needed fixing there. The trailing `!! the page closed` is handover residual (c), unrelated.
+> - Screenshots: `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-afc22af9ea006bc2b/shots/` — `exists-1-after.png`, `missing-1-after.png`, `hostile-d-reentry.png`, `parent-alone-1-results.png`.
+> 
+> **4a:** judged against `/taste` — dark-family card (`#161619`) on a 1px `#3a3a3f` border at 14px radius, name `#fff` / prose `#c9c9d2`, 0.18s rise, no shadow, no new colour; it lands directly under the box you typed in with the sheet and the map still showing around it (learned rule 2). Good enough. The one compromise I'd flag: the card's separation from the panel rests on the border alone, since a shadow and a brighter ground are both forbidden by taste 1.
+> 
+> The simulator is held by other workers; this is a sheet, so headless Chrome at the iPhone viewport is what I used, and I say so.
+> 
+> ## Named risks
+> 
+> 1. **`/urgency`'s two buttons are now unreachable.** With no results step there is no footer, so every ask files as `whenever` — its default. Urgency becomes triage's stamp, not the asker's. Named in the spec's hostile cases and as the third named next rung; if ash wants the choice back it needs a design that doesn't cost a second step.
+> 2. **`/context-bias` can lift a near miss over the line.** An ask made inside a tool gives that tool's family +0.08, so a 0.45 non-match asked inside its family can pop. That is the same tilt the results list already had; the cost is a card the asker closes.
+> 3. **Two false pops in sixteen** at 0.50 ("let me draw on a photo" → `/frame` at 0.538). Misses of meaning, not arithmetic; the line is one number (`strong`) on the node's object.
+> 4. **The offline case is reasoned, not observed** — the outbox queues the ask and the table is service-worker cached, but I did not drive an offline rig. Labelled as such in the spec.
+> 5. **`/quiet`'s untick no longer restores its line**, because this road never writes an `.asknote`. Recorded in the spec.
+> 6. **The card's width matches the panel by formula, not by measurement** — if a later node changes `#panel`'s width the two diverge. `place()` measures the vertical only.
+> 7. **A guide can still arrive up to the length of an 8 MB fetch after the filing** on a phone's very first ask. Guarded by the turn number and the sheet check, so it can only arrive over the sheet it was typed into — but it is a late arrival, not an instant one.</result>
+> <usage><subagent_tokens>191185</subagent_tokens><tool_uses>141</tool_uses><duration_ms>2803828</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-afc22af9ea006bc2b</worktreePath><worktreeBranch>worktree-agent-afc22af9ea006bc2b</worktreeBranch></worktree>
+> </task-notification>
+
+The ask box is back, proven with a measured threshold. It lands after the running transcription deploy finishes. Looking at its guide card meanwhile.
+
+### p92a
+*2026-09-04 16:46*
+
+> let's draw the boundary lines between wards into the map tiles rather than drawing them separately as an overlay
