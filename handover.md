@@ -110,6 +110,13 @@ shipped on its own. Fable 60% → ~62%.*
   no build numbers drawn; a stopped deploy puts its entries back to
   building with the reason under the row. Field asks keep their own rows
   (no node, so no stages).
+- **A dead road for the fold:** `comms/push/to-one` (+ `bench-only`, which
+  screens it to the box) duplicated `/attention`, which has rung an asker
+  with a builder's note since August — an `answered` stamp rang twice
+  until the worker removed the duplicate call. Nothing calls `push/one`
+  now; revert both in Tuesday's pass. The lesson is in notes.md ("the road
+  that was already there"): grep the composition for what a road would do
+  before adding it.
 - **The deploy stamps (build 699, `announced/by-the-ship`):** announce
   with `--node <tree path>`; deploy.sh, after `released.sha`, stamps
   shipped on every announcement whose node the release touched and every

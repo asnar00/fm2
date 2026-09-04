@@ -5254,3 +5254,179 @@ The monitor is watching. Nothing else new.
 *2026-09-04 22:37*
 
 > I had an idea for the "building" list of features showing the work queue. why not keep those features there, and change the label; eg. "building", "testing", "deploying", "installed" - showing the most recent N features, whatever their status? That way we don't have to care about version numbers or whatever. It's just a feature list, most recent first.
+
+That is a better list, and it fits the self-stamping deploy: it already knows when the gate starts and when a ship lands, and the phone knows which build it runs. Announcing and briefing the worker who built the stamping.
+
+Sent. The stages come from what the machine already knows: building on the announcement, testing when the gate starts on a release touching it, deploying when the gate passes, and installed when that phone runs the build, so it is per phone. No build numbers on the sheet.
+
+What I need next, and what each depends on:
+
+- The ask-flow deploy's output, to confirm its self-stamp. Pending.
+- The handover commit, after that deploy. Depends on it.
+- The bench-only push screen. Pending the ask-box worker.
+- The recent-features list. Pending the stamp worker.
+- A deploy for each, and a last handover line. Depend on those returns.
+
+Every item depends on a pending result, so there is nothing to request in this turn.
+
+### p209
+*2026-09-04 22:40*
+
+> <task-notification>
+> <task-id>bfuble46l</task-id>
+> <tool-use-id>toolu_01FiVPUxNPDudBXvvfAQm2L5</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bfuble46l.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the ask-flow change on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 721 is live: the ask box files and nothing pops, asks sit at "asked", and I can answer one with a note that also rings your phone. The handover is committed.
+
+What I need next, and what each depends on:
+
+- The bench-only screen on the push route. Pending the ask-box worker.
+- The recent-features list. Pending the stamp worker.
+- A deploy for each as it lands, which stamps its own line, and a last handover line. Both depend on those returns.
+
+Every item depends on a pending result, so there is nothing to request in this turn.
+
+### p210
+*2026-09-04 22:53*
+
+> <task-notification>
+> <task-id>a562b5d6fde125be5</task-id>
+> <tool-use-id>toolu_01Bx3yz7BuwxE2UWVVsa2KHJ</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a562b5d6fde125be5.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build per-ask stamp merge" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Done — the fifth brief.
+> 
+> **Commit `c85e98c`** on branch `recent-a562b5d6`, rebased onto current main (`1734b3f`), relinked clean. Five files, 316 insertions: `/Users/microserver/fm2/.claude/worktrees/agent-a562b5d6fde125be5/features/miso/shell/panel/noob-button/ask/lifecycle/being-built/announced/recent/{recent.md,recent.index.js,recent.index.css}` (new), that node's line in `announced/order.md`, plus `tools/stamp_ship.py` (+`--stage`, +`--why`) and `tools/deploy.sh` (two stage stamps and an EXIT trap). `toggle_proof.py`: **implied**. No transcript commit needed — main's export already carries `#p208`.
+> 
+> **What it does.** The block is now the most recent **eight** announcements, whatever their status, newest first — eight because that is what fits above the requests and the feature list before it pushes them off the screen, and it is about a working day's worth. Three of the four words are stamped by `deploy.sh`, which is the thing that knows when its gate starts and when its bytes move: `testing` before the first gate, `deploying` once every gate has passed and immediately before the rsync, and the ship stamp `/by-the-ship` already wrote. The fourth is decided on the phone — *installed* means "this phone runs it", so the page compares the build it launched from with the build the announcement shipped in, and a colleague who has not updated still reads *deploying* on the same row. No build number is drawn anywhere. A deploy that stops returns its entries to `building` with the reason on the entry, shown as a dim line under the row.
+> 
+> **Field asks: left exactly as they were, and here is why.** An ask carries no node, so no deploy can move it through testing and deploying — the stage words would be a promise the machinery cannot keep. Their rows still read `building` and still leave the block when they ship. `building` is the same word in both sets, so the block still reads as one list.
+> 
+> **Evidence** (rig on 8143, own home and context, stopped by its own pid file; 8095 answered 200 throughout). Fourteen assertions in headless Chrome with the panel open, reading the rows off the sheet: announced → **building**; `--stage testing` → **testing**; `--stage deploying` → **deploying**; shipped at 701 while the phone runs 700 → still **deploying**; the rig's `version` file moved to 701 and the page reloaded so the phone took the build → **installed**, wearing the finished pill; a second announcement taken to testing and put back with `--why` → **building** with "the smoke gate failed" under the row, while the shipped one stayed shipped; ten announcements → eight rows. Screenshots `stage-1-building.png` … `stage-7-eight.png` in `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a562b5d6fde125be5/`.
+> 
+> Then **`deploy.sh` itself**, run end to end with its stamps pointed at the rig and a HEAD the toggle-proof gate refuses: both entries went to `testing` before the gate, the gate refused, and the trap put them back to `building` saying *"the deploy stopped before shipping (exit 1)"* — with nothing shipped and nothing touched on the live box. Smoke gate green in all three passes.
+> 
+> **4a.** The green `installed` pill against the amber reads as "done" without changing the row's shape or weight. The heaviest case is eight rows all at `building` (screenshot 7) — a wall of one colour; in real use the stages differ and the green breaks it up, and the block still leaves room for the build line and the features button beneath. Good enough.
+> 
+> **Risks, named.** The stage words are only as true as the deploy's own reading — an announcement whose `--node` is misspelt never moves, and one whose node a release touches incidentally moves early; that is `/by-the-ship`'s exposure, now visible as a word on the sheet rather than only in a stamp. A build number is still doing the work behind `installed`: the ask was to stop *caring* about version numbers, not to stop having one, and the comparison is numeric. The trap is `sh` — it fires on every exit the shell controls, not on a kill -9, so the sheet can hold a stale `testing` until the next deploy touching that node (the day-old reminder names it). And the **successful** deploy path is still proven only by the stamper plus reading: a real green deploy ships to `~/miso` and kickstarts the live agent, so it cannot be rigged — the `deploying` stamp's placement before the rsync is held by inspection.
+> 
+> **Five branches now waiting**, none deployed: `worktree-agent-a562b5d6fde125be5` @ `53a682f` (`/stamp-stands`, with the placement question), `withdrawn-agent-a562b5d6fde125be5` @ `1e8a19c` (`/withdrawn`), `by-the-ship-a562b5d6` @ `14e0faa` (superseded — `/by-the-ship` is already in main; the branch's transcript commit can be dropped), `only-when-missing-a562b5d6` (landed as `bce7bd9`), and this one.</result>
+> <usage><subagent_tokens>482273</subagent_tokens><tool_uses>54</tool_uses><duration_ms>946561</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a562b5d6fde125be5</worktreePath><worktreeBranch>worktree-agent-a562b5d6fde125be5</worktreeBranch></worktree>
+> </task-notification>
+
+The recent-features list is back, proven through a real refused deploy that put its entries back to building. Landing and deploying; this run shows the stage words live.
+
+While it deploys, the handover line for the recent-features list, which is independent of it.
+
+Written; it commits after the deploy. What I need next, and what each depends on:
+
+- This deploy's output, to see the stage words fire and the self-stamp. Pending.
+- The handover commit, after that deploy. Depends on it.
+- The bench-only screen on the push route. Pending the ask-box worker.
+- Its deploy, the last of the night. Depends on that return.
+
+Every item depends on a pending result, so there is nothing to request in this turn.
+
+### p211
+*2026-09-04 22:59*
+
+> <task-notification>
+> <task-id>bq6sk8pwa</task-id>
+> <tool-use-id>toolu_01EHbv8wB3DJ9s4qNDJ9MTGZ</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bq6sk8pwa.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the recent-features list on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 723 is live and the deploy walked its own announcement through testing, deploying and shipped. On your sheet that row reads "installed" once your phone has taken the build. The handover is committed, tree clean.
+
+What I need next is only the bench-only screen on the push route from the ask-box worker. Its deploy and one handover line follow from that single pending result, so there is nothing to request in this turn.
+
+### p212
+*2026-09-04 22:59*
+
+> <task-notification>
+> <task-id>afc22af9ea006bc2b</task-id>
+> <tool-use-id>toolu_014xiNyjtXJnFiJn3NVvMg9p</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/afc22af9ea006bc2b.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build ask box straight-through" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Branch `bench-only-afc22af9ea006bc2b`, two commits on `c85e98c`, clean, rebased, not deployed, nothing stamped. **Read the second half of this first — I found a defect in what I landed an hour ago, and it is live.**
+> 
+> ## The commit you asked for
+> 
+> **`46b5dcf` — `features/miso/comms/push/to-one/bench-only/`** (`bench-only.md`, `bench-only.rs`, tick in a new `to-one/order.md`). Cites field-walk #p199.
+> 
+> ```rust
+> fn push_one_route(r: request) -&gt; response {
+>     if r.tunnel { return text_response(404, "not found"); }
+>     existing.push_one_route(r)
+> }
+> ```
+> 
+> `r.tunnel` is `/serve`'s flag from the `cf-connecting-ip` header cloudflared adds, and `/loopback` binds the listener to `127.0.0.1`, so "not through the tunnel" is kernel-backed as "on the box". A cookie changes nothing either way. The refusal is `text_response(404, "not found")` — byte-identical to what `/serve`'s base `route` answers for any unrouted path, so a probe cannot learn the road exists.
+> 
+> **On `MISO_HOST` remote runs — verified, not assumed:** `stamp_ask.py`'s `sh()` runs every command through `ssh &lt;MISO_HOST&gt; …` unless `--local`, exactly as `reset_user.py` does, so its curl executes on the box.
+> 
+> **Rig proof** (port 8131, own scratch, planted P-256 subscription pointing at a local relay):
+> 
+> | request | result | rings |
+> |---|---|---|
+> | from the box, no cookie | `200 {"ok":true,"sent":1}` | 0 → 1 |
+> | from the box, **with the admin's cookie** | `200 {"ok":true,"sent":1}` | 1 → 2 |
+> | tunnel (`cf-connecting-ip`), no cookie | **`404 'not found'`** | none |
+> | tunnel, **with the admin's cookie** | **`404 'not found'`** | none |
+> | `push/no-such-route`, for comparison | `404 'not found'` | — |
+> | the ssh'd curl `stamp_ask` sends | `200 {"ok":true,"sent":1}` | 4 → 5 |
+> 
+> **Toggle proof:** confined (`toggle_proof.py` says implied). I ran the untick anyway, and it is behavioural: with `bench-only` off, `tunnel + admin cookie` → `200 {"ok":true,"sent":1}` — the hole, open. The composed dispatch flips `feature_BenchOnly::push_one_route` → `feature_ToOne::push_one_route` and nothing else moves but the node's own path-keyed `enabled` var; index.html is identical (server-only node); re-ticked, `main.rs` is byte-identical. Gate green, all three passes.
+> 
+> ## Contact report — the premise was false, and I shipped a double buzz
+> 
+> Chasing an unexplained extra POST at the relay, I found that **`/attention` has carried a builder's note to its asker since 2026-08-23** (plans #p17–#p19): it watches the `asks` var across a builder's op through the op door and sends the changed entry's question or note to that person's subscriptions — `attention_push_to_user`, the same walk of `push-subs.txt` — choosing the channel by where they are, with `/present` holding the push back for anyone with a long-poll wait open.
+> 
+> So `to-one` duplicated a shipped mechanism, and **an `answered` stamp rang the asker twice**, the second ring ignoring the foreground/background rule #p18 and #p19 set. Measured on the rig before the fix: one stamp → **2 POSTs**, and the server log carrying both `attention: …0131 -&gt; … (status 201)` and `push one: …0131 -&gt; … (status 201)`.
+> 
+> **`e8f5fff`** removes the `push_note` call (and its helpers) from `stamp_ask.py`, records the finding in `notes.md` ("the road that was already there"), corrects the false claim in `to-one.md` with a dated erratum, and fixes the CLAUDE.md sentence to name `/attention` rather than the tool. After: one stamp → **1 ring**, `stamp_ask` says nothing about pushing, and the flushed log shows `attention: …0131 is away — notifying` / `attention: … (status 201)` with **no** `push one:` line for the stamp.
+> 
+> I fixed this rather than only reporting it because the team carries phones tomorrow and a duplicate notification is user-visible — but the consequence is a decision I have not taken:
+> 
+> **Nothing calls `push/one` any more.** `comms/push/to-one` is a dead road. `bench-only` makes it harmless where it stands, but whether it should stand at all — untick it for miso, or revert it — is yours. Both commits are correct either way; if you revert `to-one`, revert `bench-only` with it.
+> 
+> The lesson, written into notes.md: *before adding a road, grep the composition for the thing it would do, not for the name you would give it.* `grep 'send_push(' products/miso/build/server/src/main.rs` would have found `attention_push_to_user` in one line, on the first day. My spec's phrase "the one road that was missing" was a claim about the whole tree, and the whole tree was one grep away.
+> 
+> ## Named risks
+> 
+> 1. **`to-one` is dead code on main** until you rule on it. Reachable only from the box now, and only by a caller who knows the path.
+> 2. **The screen fails closed for anything on the box that forwards `cf-connecting-ip`** — a future local proxy would silently lose the road. Named in the node's hostile cases so the next person knows why.
+> 3. **`bench-only` rests on `/loopback`.** If `/loopback` were ever unticked, `!r.tunnel` stops meaning "on the box" and anything on the LAN could ring phones. Named in the spec, as `/loopback`'s own spec names it for `/gate`.
+> 4. **I did not re-verify the rest of the `answered` flow end to end after removing `push_note`** beyond the stamp + one ring + the note landing on the ask; the sheet rendering was proven on the previous branch and is untouched by this one.
+> 5. **`/attention`'s body is the whole note, not its first line** — a long multi-line answer becomes a long notification. That is `/attention`'s existing behaviour, not something I changed, but it is now the only channel and worth a look if answers get wordy.</result>
+> <usage><subagent_tokens>380730</subagent_tokens><tool_uses>212</tool_uses><duration_ms>4354035</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-afc22af9ea006bc2b</worktreePath><worktreeBranch>worktree-agent-afc22af9ea006bc2b</worktreeBranch></worktree>
+> </task-notification>
+
+The worker closed the hole and, chasing a stray notification, found that a route already existed: the app has rung an asker with a builder's note since August. Its own push duplicated it, so an answer rang twice, and it removed the duplicate. Landing both commits; the dead route is harmless behind the bench-only screen and goes in Tuesday's fold.
+
+While that deploys, the handover line for the fold list, since the dead route and the lesson belong there.
+
+Written; it commits after the deploy. What I need next is only this deploy's output, to confirm the build and that an answer now rings once. The handover commit and the final transcript export depend on that deploy finishing so the tree is clean at its start. Nothing is independent of it, so there is nothing more to request in this turn.
+
+### p213
+*2026-09-04 23:05*
+
+> <task-notification>
+> <task-id>bds3c49mf</task-id>
+> <tool-use-id>toolu_01TFMpe111USzTBLKs2ACsaT</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bds3c49mf.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the bench-only screen and the double-ring fix on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
