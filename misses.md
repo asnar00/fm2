@@ -620,3 +620,14 @@ named for its worktree, as its port already is (`scratchpad/rig-<agent>/`);
 and the readout/drive paths want an env var (`/diag/rig`'s job) so a
 second simulator rig can exist — until then a brief says who has the
 simulator, and the rest prove on WebKit and name the gap.
+
+## the stamp the phone wrote over (2026-09-04, evening)
+
+Four field asks arrived inside two minutes. `ask_ack.py` stamped each
+`building` on arrival and said so, but two of them showed `asked` on ash's
+sheet: the phone had resent its own asks list — carrying the older status —
+after the ack's write, and the var is last-write. The stamp was put back by
+hand. **The rule:** a stamp must not lose to the asker's own resend; the
+acknowledgement wants the same protection `/guard` gives a card (newer
+`edited` wins, or a per-ask merge rather than a whole-list last-write), and
+until then triage checks the sheet after a burst of asks.
