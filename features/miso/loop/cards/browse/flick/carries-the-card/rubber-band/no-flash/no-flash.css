@@ -1,0 +1,5 @@
+/* the layer, held a little past the animation that needed it. The parent
+   promotes the card while the finger has it (`fm-carried`) and lets go of the
+   promotion in the same frame as it cancels the animation and clears the
+   inline transform — which is where the media re-rasterises. */
+.card-page.fm-settling { will-change: transform; }
