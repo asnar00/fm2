@@ -1,0 +1,35 @@
+/* the popover sits ON the row it belongs to: fixed, directly above the
+   toolbar, across the same safe width the page uses. /long-press' card is the
+   house shape for a thing that hangs off a button, and it measures the
+   button's rectangle to centre itself — right for a two-line card, wrong for
+   seven rows of prose, which are wider than any 50px button. So this one is
+   anchored to the row's edge instead of the button's centre: it rises out of
+   the toolbar, which is what "in the current toolbar" means.
+
+   The ground is /long-press' card's, one step lighter than a page's, because
+   it is over the page rather than instead of it (/taste 1, learned 2 — the
+   context stays visible under whatever opens). It scrolls inside itself if
+   the list ever outgrows the room above the row. */
+.armed-pop {
+  position: fixed;
+  z-index: 25;
+  left: calc(env(safe-area-inset-left) + 16px);
+  right: calc(env(safe-area-inset-right) + 16px);
+  bottom: calc(env(safe-area-inset-bottom) + 66px);
+  box-sizing: border-box;
+  max-height: calc(100vh - env(safe-area-inset-top, 0px) - 48px - 90px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  text-align: left;
+  background: #17171a;
+  border: 1px solid #3a3a3f;
+  border-radius: 12px;
+  padding: 12px;
+  animation: armed-pop-in 0.18s ease-out;
+}
+
+/* quick, not bouncy — /taste 5's 0.18s ease-out, the toolbar's own. */
+@keyframes armed-pop-in {
+  from { transform: translateY(6px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

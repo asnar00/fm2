@@ -382,14 +382,24 @@ async def s_post(pg):
         await pg.click('[data-ev="tool_record"]'); await pg.wait_for_timeout(1200)
         row = await pg.evaluate("""(() => {
             const q = (s) => !!document.querySelector('.toolbar ' + s);
+            const level = q('[data-ev="tool_level"]') || q('[data-ev="armed_pick"]');
             return q('[data-ev="vid_rec"]') && q('[data-ev="armed_flip"]')
-                && q('[data-ev="tool_level"]') && q('.armed-act.off')
+                && level && q('.armed-act.off')
                 && !q('[data-ev="vid_stop"]');
         })()""")
-        await pg.click('[data-ev="tool_level"]'); await pg.wait_for_timeout(1200)
-        page = await pg.evaluate("document.querySelectorAll('.armed-page .armed-pill').length")
+        # /in-place (2026-09-04): the sliders pop the list up in the row rather
+        # than descending. Either shape is walked the same way — open the list,
+        # count the levels, put it away, and climb back to the posts.
+        pop = await pg.evaluate("!!document.querySelector('.toolbar [data-ev=\"armed_pick\"]')")
+        opener = '[data-ev="armed_pick"]' if pop else '[data-ev="tool_level"]'
+        where = '.armed-pop' if pop else '.armed-page'
+        await pg.click(opener); await pg.wait_for_timeout(1200)
+        page = await pg.evaluate(f"document.querySelectorAll('{where} .armed-pill').length")
+        if pop:
+            # the row is untouched under the popover — that is the whole ask
+            page = page if await pg.evaluate("!!document.querySelector('.toolbar [data-ev=\"vid_rec\"]') && !!document.querySelector('.toolbar [data-ev=\"armed_flip\"]')") else -1
         await pg.click('[data-ev="tools_home"]'); await pg.wait_for_timeout(1000)
-        back = await pg.evaluate("!document.querySelector('.armed-page') && !!document.querySelector('.toolbar [data-ev=\"vid_rec\"]')")
+        back = await pg.evaluate(f"!document.querySelector('{where}') && !!document.querySelector('.toolbar [data-ev=\"vid_rec\"]')")
         await pg.click('[data-ev="tools_home"]'); await pg.wait_for_timeout(1000)
         home = await pg.evaluate("!!document.querySelector('.toolbar [data-ev=\"tool_record\"]')")
         await pg.evaluate("feature_Loop.send({type:'CardNew', data:{owner:'_smoke', type:'post', title:'a post', t:Date.now()}})"); await pg.wait_for_timeout(2000)

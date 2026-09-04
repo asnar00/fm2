@@ -172,8 +172,22 @@ impl feature_Armed {
         out.push_str(&armed_act_button("vid_stop".to_string(), "stop".to_string(),
                                        armed_square_svg(), recording));
         out.push_str(&armed_camera_button());
-        out.push_str(&armed_level_button(false));
+        out.push_str(&armed_level_button(armed_level_lit(state)));
         out
+    }
+
+    // the two /extensible functions/ the level button hangs on: which event it
+    // carries, and whether it is lit. Both were literals — `tool_level` and
+    // `false` — and answer exactly what those literals answered. They are
+    // functions so that a node making the list open IN this row, rather than
+    // one level below it, has somewhere to say so without touching /tools.
+    fn armed_level_ev() -> String {
+        "tool_level".to_string()
+    }
+
+    fn armed_level_lit(state: String) -> bool {
+        let _ = state;
+        false
     }
 
     // the two acts wear the posts tool's own colour, because they are what the
@@ -210,8 +224,8 @@ impl feature_Armed {
     // lit on the level it opens, the way an open tool's own button is.
     fn armed_level_button(sel: bool) -> String {
         let s = if sel { " sel" } else { "" };
-        format!("<div class=\"tool-button ctrl armed-set{}\" data-ev=\"tool_level\" title=\"publish level\">{}</div>",
-                s, armed_sliders_svg())
+        format!("<div class=\"tool-button ctrl armed-set{}\" data-ev=\"{}\" title=\"publish level\">{}</div>",
+                s, armed_level_ev(), armed_sliders_svg())
     }
 
     // written out here rather than borrowed from /posts' `posts_before_undo`,
