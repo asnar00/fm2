@@ -1,0 +1,56 @@
+/* the post says its words are coming. On the play row of an open post, in
+   place of nothing: a dot that breathes at the house rate (1.6s ease-in-out
+   opacity — /taste 5, and /dictate's rec-dot is the same idea) and one quiet
+   line of text. Never a spinner. */
+
+.post-play[data-work] .post-dur {
+  display: none;                 /* the clip's length is not the news */
+}
+
+.post-play[data-work]::after {
+  content: 'transcribing…';
+  font-size: 13px;
+  opacity: 0.62;
+  letter-spacing: 0.2px;
+}
+
+.post-play[data-work='stuck']::after {
+  content: 'still trying';
+}
+
+.post-play[data-work]::before {
+  content: '';
+  width: 7px; height: 7px; border-radius: 50%;
+  background: currentColor;
+  opacity: 0.55;
+  margin-right: 2px;
+  animation: transcribing-breath 1.6s ease-in-out infinite;
+}
+
+/* the tile in the grid gets the same dot and nothing else — a fourth mark in
+   a row is more than was asked for (/as-posts made the same call). */
+.card-tile[data-work] .card-tile-title::after {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+  margin-left: 5px;
+  vertical-align: middle;
+  animation: transcribing-breath 1.6s ease-in-out infinite;
+}
+
+@keyframes transcribing-breath {
+  0%, 100% { opacity: 0.62; }
+  50% { opacity: 0.16; }
+}
+
+/* a person who has asked for less motion gets the dot, steady. The mark is
+   the information; the breathing is only the manner. */
+@media (prefers-reduced-motion: reduce) {
+  .post-play[data-work]::before,
+  .card-tile[data-work] .card-tile-title::after {
+    animation: none;
+    opacity: 0.5;
+  }
+}

@@ -2,3 +2,4 @@
 - [x] api
 - [x] mini
 - [x] keeps-trying
+- [x] shows-progress
