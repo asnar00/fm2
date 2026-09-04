@@ -3183,3 +3183,56 @@ Deploying. Nothing left is independent: the stamp waits on the build number, and
 > <status>completed</status>
 > <summary>Background command "Land the inherited map ground on main and deploy through the gate" completed (exit code 0)</summary>
 > </task-notification>
+
+The deploy refused a dirty tree, the transcript export from the last ask. It is committed now; deploying again.
+
+Deploying again. What I need next, and what each depends on:
+
+- This deploy's build number, for the stamp. Pending.
+- The level picker worker's two nodes, role wording and visibility. Pending.
+- The withdrawal worker's node and its live repair. Pending.
+- The handover rewrite, which names the final build. Depends on all of the above.
+
+Nothing is independent of a pending result, so there is nothing more to request now.
+
+### p117
+*2026-09-04 17:48*
+
+> swipe up/down now works nicely without a flash on post scrolling - except at the ends. When we "bounce back" to the same post, the post video flashes.
+
+That confirms the strip fix, and your phone has now written what happens at the ends. Let me read it before briefing.
+
+The map-ground deploy is still in its gate. Everything else waits on a worker: the end-of-list flash, the role wording and visibility popover, and the withdrawal with its repair. Nothing is independent of a pending result right now.
+
+**Plain summary of where the flash stands:** mid-list is fixed, your log proves it. At the ends there is no rebuild at all, so the flash is the animation itself: the phone re-drawing the media layer when the spring-back finishes. The likely fix is one line, keeping the card's layer promoted for the whole drag, and the worker has the frames to take to prove it.
+
+### p118
+*2026-09-04 17:53*
+
+> <task-notification>
+> <task-id>b1md9hdf1</task-id>
+> <tool-use-id>toolu_01CALfrDP6vjBgewESkRrTwJ</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/b1md9hdf1.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy the inherited map ground through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 685 is live: inside posts, people and projects the map stays under every level and page, and only the launcher keeps its dots. Stamped shipped.
+
+Three workers hold the rest: the end-of-list flash, the role wording with the visibility popover, and the withdrawal with its live repair. Everything remaining depends on one of them returning, so nothing to request now.
+
+### p119
+*2026-09-04 17:54*
+
+> on that last update, the map on my phone popped to a max-zoomed-out view - breaking our rule of not disturbing state during updates. be good to find out why
+
+A real rule break, and I want the why as much as the fix. The map-ground node is the likely cause: it now draws the map when nothing has told it where to look yet, and a map made with no view opens on the whole world. Sending its worker to prove that and fix it.
+
+Sent. The worker has to reproduce it on its rig first, taking an update the way the phone does with the map panned somewhere, and read the centre and zoom before and after. Then the fix: the map's view is remembered on the device, and any map made at any time opens at the remembered view, the same promise scroll already keeps through an update.
+
+Four workers hold the rest: this, the end-of-list flash, the role wording with the visibility popover, and the withdrawal with its repair. Everything else depends on one of them returning, so nothing to request now.
+
+### p120
+*2026-09-04 17:59*
+
+> let's show post visibility on all posts (in expanded view), even for posts not authored by this user
