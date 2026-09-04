@@ -1,0 +1,7 @@
+# the png crate alone, not `image`. This node decodes two 256px squares and
+# encodes one; `image` would bring jpeg, gif, webp, tiff and rayon along for
+# a job that is one format in and the same format out. png 0.17's whole tree
+# is pure Rust — flate2/miniz_oxide, fdeflate, crc32fast, bitflags — so it
+# compiles for wasm32-unknown-unknown as well as the native server, which it
+# must: fmlink merges every node's deps into BOTH crates.
+png = { version = "0.17", default-features = false }
