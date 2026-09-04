@@ -2010,3 +2010,14 @@ Report anything from the phone's ask box as you go. It is stamped on arrival and
 *2026-09-04 16:06*
 
 > for the thumbnail, just use the first frame as a default - that should work regardless of length of clip. we *never* want a situation where theres no thumbnail - that degrades user confidence.
+
+A field-grade ruling, so it builds: every clip has a frame, the first one taken the moment recording starts. Queued to the reel worker behind the map-behind-card fix.
+
+Queued. The first frame is grabbed the instant the viewfinder decodes after rec, and it stays as the face unless a later frame replaces it, so a clip of any length always has a thumbnail. If the viewfinder has not even decoded by stop, the phone takes whatever the canvas holds rather than nothing.
+
+Four workers are out. Nothing to request until one returns.
+
+### p77
+*2026-09-04 16:07*
+
+> we should also show a "transcribing..." indicator on the post with some animation to let the user know that something is happening. I'd also suggest that we use our agent to figure out a title for the post once the transcription comes through
