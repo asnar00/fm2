@@ -1,4 +1,4 @@
-# transcript: the field walk
+# transcript: field walk
 *session `b70435b4-6806-4a25-aadb-e68df3da3413`, exported by tools/export_transcript.py — do not edit; anchors `#pN` are stable*
 
 ### p1
@@ -2121,3 +2121,24 @@ I'd make it a periodic pass with a rule, say a node is eligible after it has bee
 *2026-09-04 16:11*
 
 > yes, write it up in notes.md as a proposal for after tomorrow - we'll talk about it some more, and maybe look at a few examples together
+
+The proposal is in notes.md, but the anchor came out blank. Fixing that.
+
+Done. The proposal is in notes.md under "de-crufting the tree — a fold pass", anchored to your prompt, marked for after the field test. It has what the cruft is with today's examples, why the tree accumulates it by design, the fold with its byte-identical proof, and the cautions. We'll pick examples together when you're ready.
+
+The strip deploy is still running, and three workers are out with six nodes. Nothing to request until one returns.
+
+### p82
+*2026-09-04 16:14*
+
+> <task-notification>
+> <task-id>babsr4mex</task-id>
+> <tool-use-id>toolu_01LyyKzeV4oup1w8WGkjNLFd</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/babsr4mex.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Fast-forward main to the strip fix, verify, and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 667 is live: the project name and the nøøb button sit on solid black over the map. Stamped shipped.
+
+Three workers are out with six nodes: the map behind an open card and the first-frame thumbnail, the ask box, and the transcription retry with its indicator and agent titles. Everything left depends on one of them returning, so nothing to request now.
