@@ -5,6 +5,64 @@
 `deploy.md`; the pipeline in `hybrid.md`; the ledger is `misses.md`. Read the
 composed skillset alongside this — `/learned` carries 21 defaults now.*
 
+## TODAY, EVENING (2026-09-04): builds 650–694 — the walkabout's asks, live as they came
+
+*Written late, before the last node landed. Ash walked and filed from the
+phone; each ask went to the worker that owned its ground (SendMessage to
+a finished worker keeps its context — cheaper than a fresh brief) and
+shipped on its own. Fable 60% → ~62%.*
+
+- **Field asks shipped:** the time filter's marks ride every event
+  (`since/marks-with-the-tap`; the boot send was a latch that never
+  retried), `since/one-word` + `hugs-its-words` + `in-the-middle`; the
+  thumbnail at once (`poster/at-once`, `at-once/first-frame` — never no
+  picture); camera switch mid-take (`flip/while-recording`, a canvas-backed
+  recorder — battery unmeasured on a phone); `audience/plain-words`,
+  `plain-words/on-every-post`, `armed/explained/own-role` (no "same as me";
+  "role" everywhere, never "rank"), `audience/visibility` (the eye replaces
+  promote; `PostSetFloor`); `reel/current/from-the-pin` (a pin tap selects,
+  the lozenge opens); `opens-over-map/on-every-tool`; `map-only/strip-on-
+  black`, `map-only/always-the-ground` (a level inherits its parent's
+  ground — learned 28; the launcher keeps its dots); `region/baked/lines-
+  too` (the map is ONE tile layer; the vector overlay is gone);
+  `being-built/stamp-stands` (fields have owners; the ack no longer loses to
+  the phone's resend); `request-box/straight-through` (the ask box files
+  at once, pops the guide at cosine ≥ 0.50; urgency is now triage's stamp);
+  `transcribed/keeps-trying` (a keeper every 10 s, backoff to hourly, parked
+  after a day, engineer lines), `shows-progress` + `on-the-reel`, `titled/
+  from-the-words` (Haiku 4.5 titles an untitled post, ~$0.0003 a call);
+  `carries-the-card/unbroken` (the switch fires under the finger; the old
+  card ghosts; two cards on screen), `rubber-band/no-flash` (the compositing
+  hint held 140 ms past the spring); `audience/withdrawn` (a raised floor
+  hands the holder a tombstone; `tools/withdraw_copies.py` ran live —
+  Tara's and bob's stale copies gone).
+- **Found live and fixed:** ffmpeg not on the launchd PATH (every clip "no
+  words" — both scripts resolve it by path now); the transcription drain ran
+  only on a phone's message (now the keeper); a stamp written over by the
+  phone's resend; a stale `open_tool` mirror under map-only; the map's
+  placeholder view (see below).
+- **The flash, settled by the phone's own log:** `blackbox/arriving-picture`
+  + `tools/sweeps.py` — mid-list the picture is complete at insertion and
+  never changes; the ends had no rebuild at all, it was the compositor.
+  Three rig hypotheses were disproved before the readout was built.
+- **Rolled back:** `map/keeps-its-view` (build 690) stuck ash's phone at
+  "syncing…" and crashed the page; reverted as 691 (came up fine); the
+  worker is reproducing the 689→690 update on the simulator. Until it
+  re-lands, the map may pop to the world once after an update (the
+  placeholder `setView(…, 3)` in `/map`'s mount, visible since
+  `always-the-ground` shows the map where no set fits it).
+- **Proposals in notes.md:** de-crufting the tree as a periodic fold pass
+  (#p80, for after the field test).
+- **Residuals named by workers, not yet ruled on:** once a level is picked
+  it no longer follows a role change; a demoted/removed member keeps copies
+  (the repair covers it); `/map` is at the six-child cap; five wrappers on
+  `feature_Map` where order is load-bearing; the op door accepts a key that
+  is not a world (writes nowhere, silently); old baked-tile stamp dirs never
+  swept; the clip's first frame is black on the canvas recorder; a
+  backgrounded app freezes video, not audio; `/steady`/`/glide` pay one
+  extra animation on a way-back tap; the transcript export dirties main and
+  blocked three deploys today (export only right before a commit).
+
 ## TODAY (2026-09-04): the field-walk day — five Opus workers in parallel, builds 615–649
 
 *Written at session end. Fable 57% → 59% for the whole day: triage on Fable,
