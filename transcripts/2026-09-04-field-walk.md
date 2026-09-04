@@ -3797,3 +3797,150 @@ Cleared. The only building line left on your sheet is the two-clips flip, and th
 *2026-09-04 19:18*
 
 > can we figure out the fix to the build reporting? that shouldn't require intervention - something went wrong, let's make sure it doesn't happen again?
+
+Agreed, and the fault is structural: an announcement is matched to its shipping by the exact words, typed twice by hand, and stamped only when I remember. The fix is to tie both to what the deploy already knows.
+
+The worker is on it. What it builds:
+
+- An announcement names the node it will ship as, so the words no longer have to match twice.
+- The deploy itself, on a successful ship, stamps shipped on every announcement whose node is in the release and on every field ask whose id appears in the release's commit subjects. No hand, and never on a failed deploy.
+- At every deploy it prints any announcement still building after a day with no node, so a superseded one surfaces instead of living in my memory.
+
+What I need next: the two workers' returns, the two-clips flip and the self-stamping deploy. Then a deploy and a handover line for each. Both are pending results, so there is nothing more to request now.
+
+### p144
+*2026-09-04 19:32*
+
+> <task-notification>
+> <task-id>a562b5d6fde125be5</task-id>
+> <tool-use-id>toolu_01J37Lb3ke93gi2hmWCXib3a</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a562b5d6fde125be5.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build per-ask stamp merge" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Done. All three briefs are complete; this is the third.
+> 
+> **Commits on branch `by-the-ship-a562b5d6`, on top of current main (`d8a5fc7`), tree clean:**
+> - `6fd3dcf` — the node and the tooling. `/Users/microserver/fm2/.claude/worktrees/agent-a562b5d6fde125be5/features/miso/shell/panel/noob-button/ask/lifecycle/being-built/announced/by-the-ship/{by-the-ship.md,by-the-ship.agent.md}` (new), that node's `order.md` (new file — `/announced` had no children), `tools/stamp_ship.py` (new), `tools/stamp_ask.py` (+`--node`, `builds_read`/`builds_write` extracted), `tools/deploy.sh` (+`PREV`, +the call). `toggle_proof.py`: **implied**.
+> - `14e0faa` — the transcript re-export carrying `#p143`. Separate so you can drop it if main's own export lands first; without it the linker refuses the node (I lost this once mid-run to a `commit -am` and had to re-export).
+> 
+> **What it does.** An announcement names its node (`--announce "…" --node browse/map-only/since`; a tail is enough, descendants count, a bare `--announce` still works and warns). `deploy.sh` calls `stamp_ship.py --build N --since &lt;the sha the last release stood at&gt;` **after `released.sha` is written** — past every gate that can still stop a ship, which is the first line at which "shipped" is a true sentence — and it stamps `shipped (build N)` on every announcement whose node the release touched and every ask whose `t` a subject cites as `asks#&lt;t&gt;`. Then the reminder: every announcement still `building` for over a day that nothing can ever close (no node, or a node that has left the tree). The call cannot fail a deploy that already shipped — its failure is a printed note carrying the re-run command. `ask_ack.py` untouched.
+> 
+> **Evidence.** Rig on 8143 (own home/context, started and stopped by its own pid file; 8095 answered 200 throughout). A planted sheet of six announcements and two asks against a synthetic two-commit release: both entries naming the touched node shipped at the build; the cited ask shipped; a cited ask id no world holds skipped with a note; the entry shipped at build 600 kept 600; the hour-old nodeless entry left alone; the reminder listed exactly the three-day-old nodeless entry and the one whose node has left the tree. Re-run for the same build: nothing changed. `stamp_ask.py --announce --node` and the bare-announce warning both exercised. **A failing deploy stamps nothing**: with an unreachable `MISO_HOST` and a deliberately unconfined HEAD, `deploy.sh` exits at the toggle-proof gate and the rig's `_global.log` and every world log are byte-identical (`shasum` before and after). Smoke gate green in all three passes. `fmlink` composes the instruction last in the skillset (13 fragments).
+> 
+> **The one thing I could not prove, and why.** `deploy.sh` has no rig target: `pick_host` resolves to `localhost` or the mini, and every route from there rsyncs into `~/miso` and kickstarts `com.noob.miso`. There is no parameterisation that would make a full run "a rig deploy" — it would *be* the live deploy. So the success path is proven as its two halves: the stamper end-to-end against the rig, and `deploy.sh`'s control flow proven to reach an exit before the call when a gate fails. That the call fires on success rests on reading its placement after `released.sha`, not on an execution. That is the gap in this proof, and the first real deploy is where it gets tested.
+> 
+> **Live data: I wrote nothing.** A read-only `--dry` against the live sheet (range `872ec0f..main`, build 697) reports what tomorrow would close. The live list holds two `building` entries with no node — the flip mid-take clip, and triage's own announcement of *this* build — both under a day old, so the reminder is correctly silent today and will name them at the first deploy after they pass 24h. Worth doing before that deploy: re-announce this one with `--node announced/by-the-ship` and it closes itself.
+> 
+> **Risks, named.** A misspelt `--node` closes nothing and surfaces in the reminder a day later. A release touching a node for an unrelated reason will close an announcement naming it — the alternative (match the commit that *added* the node's spec) misses every announcement whose work lands as an edit, so this is named, not solved. `deploy.sh`, `stamp_ship.py` and `stamp_ask.py` are `tools/`, outside the tree, so the node's toggle proof covers the node and its instruction only. And the instruction supersedes the second call in `/announced`'s `agent.md` by being newer in the skillset rather than by editing it — if `/by-the-ship` is ever unticked, the older two-call instruction stands again, which is the correct fallback.
+> 
+> **Still unlanded from the earlier briefs:** `worktree-agent-a562b5d6fde125be5` at `53a682f` (`/stamp-stands`, with the placement question I flagged) and `withdrawn-agent-a562b5d6fde125be5` at `1e8a19c` (`/withdrawn`, whose live data repair I already ran and verified).</result>
+> <usage><subagent_tokens>375492</subagent_tokens><tool_uses>56</tool_uses><duration_ms>821192</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a562b5d6fde125be5</worktreePath><worktreeBranch>worktree-agent-a562b5d6fde125be5</worktreeBranch></worktree>
+> </task-notification>
+
+The self-stamping deploy is back. Landing it, re-announcing its own line with its node so the first real run closes it, and deploying.
+
+Deploying. This run is the proof of the self-stamping road: the deploy's own output should show it stamping its own announcement shipped, with no hand.
+
+What I need next, and what each depends on:
+
+- This deploy's output, to see the stamp fire. Pending.
+- The two-clips flip worker's return. Pending.
+- A handover line for each, and the final commit. Both depend on the above.
+
+Nothing is independent of a pending result, so there is nothing more to request now.
+
+### p145
+*2026-09-04 19:32*
+
+> <task-notification>
+> <task-id>byu26jl92</task-id>
+> <tool-use-id>toolu_014gVqGhxMmJQiGfb4wcB1iH</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/byu26jl92.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the self-stamping node, re-announce it with its node, deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+The dirty-tree refusal once more, the transcript export. Committing it and deploying.
+
+Deploying now. What I need next: this deploy's output for the self-stamp, and the two-clips flip worker's return. Both are pending results with nothing independent of them, so there is nothing more to request in this turn.
+
+### p146
+*2026-09-04 19:38*
+
+> <task-notification>
+> <task-id>bezzaimjk</task-id>
+> <tool-use-id>toolu_014wbQbvSToWwwMNzTBDoZ9U</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bezzaimjk.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Commit the transcript and deploy the self-stamping node through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Handover updated and committed. What I need next is only the two-clips flip worker's return; the deploy that carries it will stamp itself, and one handover line follows. That is a single pending result with nothing independent of it, so there is nothing more to request now.
+
+### p147
+*2026-09-04 20:10*
+
+> <task-notification>
+> <task-id>a27755b799c22c34e</task-id>
+> <tool-use-id>toolu_01NzAoDZDHPb4RijtqxrMTyF</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a27755b799c22c34e.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build capture/options node" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Committed on branch **`two-clips`** as **`2c2a7c1`**, sitting directly on main's tip `35a6d2a`. Tree clean, rig down, live server untouched.
+> 
+> ## What shipped
+> 
+> `capture/video/flip/while-recording/segments` — one node, `--prove` **confined** (new node plus its parent's `order.md`, additions only).
+> 
+> Named `segments`, not `two-clips`: after your follow-up it is N, and the code, the marks and the join are all loops.
+> 
+> **The phone.** The recorder is native on the camera again — the canvas road stands down through the seam its parent opened, so unticking restores it whole (`wr.canvas=none`, `wr.src=none`, `drawing=false`, no `#vidSrc`; the one canvas in the DOM is `frameCanvas`, another node's). A flip opens the new camera **first**, then stops the recorder and starts another on the new camera with the **same microphone track**. Part numbers keep counting, so `/streams` and the server's join loop are untouched. One number per segment is added — `marks`, the part index each container starts at — riding on the clip's metadata beside `parts`.
+> 
+> ## Evidence
+> 
+> - **Three flips:** `marks=[0,2,4,6]`, 8 parts → `segments: … joined from 4 segments over 8 pieces` → one file, **13.19s**, h264+aac, luma **20 → 138 → 20 → 135** with changes at ~3s, ~7s, ~10s.
+> - **Repeated four times** (the failure below was 1-in-4, so one good take is not evidence): 13.188 / 13.188 / 13.188 / 13.210, video and audio agreeing to a tenth in every one.
+> - **The gap: 7, 8, 9 ms** across the three flips — the whole `cut()`, measured on the phone.
+> - **Hostile:** flip inside 300 ms → `marks=[0]`, segment dropped, take starts clean. Two flips 0.5s apart → `marks=[0,2,3]`, three real segments, joined to 8.06s with the half-second middle segment visible in the scan (135 → 22 → 137).
+> - **The phone's playback:** before the fetch 890,578 bytes reading **3.32s** (the first segment); after **13.188s** — the joined take — with `joined: true` stamped so it does not refetch.
+> - **The face still minted:** newest post carries `picture: pic/0506661ac3`. `poster/at-once` reads the viewfinder, which this node keeps pointed at the current camera.
+> - **Transcription:** both joined clips are queued (`queue/vid-…json`), and by construction the job reads `&lt;world&gt;/&lt;id&gt;` — the file my join writes before queuing. The run itself did not execute: **0 transcriptions have ever completed on this rig**, before my change as after. Unexercised, not broken.
+> - Gate green ticked and unticked; untick removes `feature_Segments` entirely, adds only two chain heads rebinding to `/streams` and `/stamp-stands`, and drops one script tag.
+> 
+> ## Three bugs the rig found, all fixed here
+> 
+> 1. **`-f concat -c copy` over MediaRecorder mp4 is unsafe.** The demuxer offsets each input by what the previous file's *header* claims, and an incrementally-written mp4's header is not always the truth: the fourth take came out **991 seconds for ten seconds of video** — 434 frames, packet stamps to 947s, audio a sane 10.1. The join now goes **through MPEG-TS** (mp4 → ts with `h264_mp4toannexb`, concat protocol, ts → mp4 with `aac_adtstoasc`, `+faststart`). Still no re-encode.
+> 2. **A stuck `swapping` flag.** A cut whose `getUserMedia` was behind the camera prompt when the take ended left the flag set, and every later flip was silently ignored. A take now starts clean, and a cut that returns to a finished take releases the camera it just opened.
+> 3. **The re-fetch tested the wrong thing** — that the joined file was *bigger* than the local pieces. It usually is not: 506,565 local vs 507,572 joined. Any file at `blob/&lt;id&gt;` is the joined one, because the exchange only writes it after ffmpeg succeeds.
+> 
+> ## Named risks
+> 
+> 1. **All of this is a mock camera on a simulator.** The 7–9 ms gap is `getUserMedia` on a synthetic device; a real iPhone camera takes far longer to open — 100–400 ms is the usual range — so the visible cut on the phone will be longer than anything measured here. That is the number to watch tomorrow.
+> 2. **ffmpeg must be on the machine.** The lookup tries `MISO_FFMPEG`, both brew paths and `/usr/bin` before trusting `PATH`, because launchd starts the server without brew in it. If none is found the clip stays in pieces and says so; it is never written half-joined.
+> 3. **A codec change mid-take would need a transcode** and is not built — named, not guessed at.
+> 4. **The join is not retried on a later trigger** beyond the two `/streams` already has (the announcement, and a late piece arriving). An ffmpeg failure leaves the clip in pieces until another piece lands.
+> 5. **The phone asks for the joined file on the next play**, not when the join completes; a post opened in the seconds between stop and join shows its first segment. Parked in the spec as the mini telling the phone instead.
+> 6. **Transcription on the joined file is proven by construction, not by a run** — see above.</result>
+> <usage><subagent_tokens>884935</subagent_tokens><tool_uses>94</tool_uses><duration_ms>3620421</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a27755b799c22c34e</worktreePath><worktreeBranch>worktree-agent-a27755b799c22c34e</worktreeBranch></worktree>
+> </task-notification>
+
+The segments node is back with three flips proven in one file, and the join runs through a transport stream after a real concat bug it found. Landing, naming the announcement's node so the deploy closes it, and deploying.
+
+While that deploys, the handover line for the segments node, so the morning's picture is complete.
+
+Written; it commits after the deploy so the tree stays clean at the deploy's start. What I need next is only the deploy's output, to confirm the build and that it stamped the flip's announcement itself. Nothing else is independent of that, so I wait on it.
+
+### p148
+*2026-09-04 20:16*
+
+> <task-notification>
+> <task-id>bcpuyqi8o</task-id>
+> <tool-use-id>toolu_01MCh2FisgfuXnXWgHmuTULr</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bcpuyqi8o.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Fast-forward main to the segments node, name its announcement's node, deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
