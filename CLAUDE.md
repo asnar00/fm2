@@ -16,15 +16,18 @@ plain words in the first message of every session — days remaining, or
 "lasts the week" — before anything else. Hourly samples come from the
 launchd job `com.noob.usagelog`; the log is `~/.claude/usage-log.jsonl`.
 
-**Field asks get instant feedback (ash, 2026-09-02; flow ruled 2026-09-03):**
-the ask monitor runs piped through `tools/ask_ack.py`, which stamps every new
-ask the moment it is seen — `building` for an admin or support asker,
-`proposed` for anyone else (anyone may ask; the payer decides what is built:
-ash accepts and orders proposals, they build in a batch, everyone gets them —
-notes.md "feature flow"). Rearm it as
+**Field asks sit at `asked`; triage stamps building or proposed, or answers
+with a note (ash, 2026-09-04, field-walk #p199).** No stamp is written by a
+machine: the ask monitor runs piped through `tools/ask_ack.py`, which now only
+announces each new ask and names the asker's authority. Rearm it as
 `python3 tools/ask_monitor.py --local | python3 -u tools/ask_ack.py`. Triage
-stamps `shipped` (with the build) or a did-you-mean question; a proposal is
-built only on ash's word.
+then stamps by hand — `building` for an admin or support asker, `proposed` for
+anyone else (anyone may ask; the payer decides what is built: ash accepts and
+orders proposals, they build in a batch, everyone gets them — notes.md
+"feature flow"), `shipped` (with the build), a did-you-mean question, or, when
+the thing already exists, `answered` with a note saying how to do it in the UI
+(`stamp_ask.py --status answered --note "…"`, which also rings the asker's
+phone once). A proposal is built only on ash's word.
 
 **Building and shipping: see `deploy.md`** — build/run commands, what
 deploy.sh does, the mini, tunnel, state locations, and how to check on the

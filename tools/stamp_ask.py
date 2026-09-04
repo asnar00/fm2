@@ -24,6 +24,15 @@ asker answers it with one tap in their panel.
 
 `--note` also rides along with a plain `--status` stamp, which is how a
 hedge reaches the asker beside the build they did not quite ask for.
+
+The concierge reply (field-walk #p199): when the thing asked for already
+exists, answer instead of building. The ask goes to the terminal status
+`answered` and the note is the answer, shown under the ask on the sheet
+(ask/request-box/straight-through/no-guide); the asker's phone rings once
+with the note's first line, through `/push/to-one`.
+
+  stamp_ask.py --text "delete a post" --status answered \\
+      --note "open the post and tap the bin in the control row"
 """
 
 import argparse, time
@@ -51,6 +60,47 @@ def sh(cmd, local):
 
 PORT = os.environ.get("MISO_PORT", "8095")
 BUILDS_PATH = "miso/shell/panel/noob-button/ask/lifecycle/being-built/announced"
+
+
+def sh_soft(cmd, local):
+    """like sh(), but a failure is reported to the caller instead of ending the
+    run — for the courtesies that must never cost a stamp"""
+    if local:
+        r = subprocess.run(["bash", "-c", cmd], capture_output=True, text=True)
+    else:
+        r = subprocess.run(["ssh", "-o", "BatchMode=yes", MINI, cmd],
+                           capture_output=True, text=True)
+    return r.stdout if r.returncode == 0 else ""
+
+
+def push_note(user, note, local):
+    """Ring the asker once with the note's first line (comms/push/to-one).
+    The sheet is the record and this is the courtesy, so every way it can go
+    wrong — no phone in the world key, no push road composed, no subscription,
+    no server — is reported and none of them fails the stamp."""
+    if not user.startswith("phone:"):
+        print(f"  no push for {user}: not a phone world")
+        return
+    phone = user.split(":", 1)[1]
+    first = next((l.strip() for l in str(note).splitlines() if l.strip()), "")
+    if not first:
+        print("  no push: the note is empty")
+        return
+    body = json.dumps({"phone": phone, "title": "miso", "body": first})
+    body_sh = body.replace("'", "'\\''")
+    out = sh_soft(f"curl -s -X POST 'localhost:{PORT}/push/one' -d '{body_sh}'", local)
+    try:
+        res = json.loads(out)
+    except (json.JSONDecodeError, TypeError):
+        print(f"  no push for {phone}: push/one answered {out.strip()[:80]!r} "
+              f"(is comms/push/to-one composed?)")
+        return
+    if not res.get("ok"):
+        print(f"  no push for {phone}: {res.get('error', out.strip()[:80])}")
+        return
+    n = res.get("sent", 0)
+    print(f"  pushed to {phone}: {n} device(s)"
+          + ("" if n else " — nobody has notifications on"))
 
 
 def builds_read(local):
@@ -128,16 +178,22 @@ def main():
                          "have to be typed twice (ask/lifecycle/being-built/announced/"
                          "by-the-ship)")
     ap.add_argument("--status",
-                    choices=["asked", "proposed", "building", "shipped"])
+                    choices=["asked", "proposed", "building", "shipped", "answered"],
+                    help="the ladder: asked -> proposed -> building -> shipped, "
+                         "or answered (the thing already exists; --note carries "
+                         "how to do it and the asker's phone rings once)")
     ap.add_argument("--build", default=None, type=int,
                     help="build number to stamp (shipped)")
     ap.add_argument("--question", help="ask the asker instead: the question text")
     ap.add_argument("--option", action="append", default=[], metavar="KEY=LABEL",
                     help="one reading, repeatable, order preserved")
     ap.add_argument("--likely", help="the option key silence would get built")
-    ap.add_argument("--note", help="the builder's hedge, shown under the ask")
+    ap.add_argument("--note", help="the builder's words, shown under the ask — "
+                                   "a hedge beside a build, or the answer itself "
+                                   "with --status answered")
     ap.add_argument("--only-if", dest="only_if", metavar="STATUS",
-                    choices=["asked", "proposed", "building", "shipped", "question"],
+                    choices=["asked", "proposed", "building", "shipped",
+                             "question", "answered"],
                     help="stamp only an ask still at this status; one already "
                          "past it is left alone and said so. The automatic ack "
                          "passes --only-if asked so it can never write over a "
@@ -151,6 +207,8 @@ def main():
         ap.error("give exactly one of --text and --announce")
     if a.node and not a.announce:
         ap.error("--node belongs to an announcement (--announce)")
+    if a.status == "answered" and not a.note:
+        ap.error("--status answered needs --note: the note IS the answer")
     if a.announce:
         if a.only_if:
             ap.error("--only-if is for an ask, not an announcement")
@@ -239,6 +297,11 @@ def main():
               + (f" (build {a.build})" if a.build is not None else "")
               + (f" ({len(question['options'])} readings)" if question else ""))
         stamped += 1
+        # the concierge reply rings once, after the words are safely in the
+        # world — never before, so a push can never describe a stamp that
+        # failed to land (field-walk #p199)
+        if status == "answered" and a.note:
+            push_note(user, a.note, a.local)
     if not stamped:
         sys.exit(f"stamp_ask: no ask matching {a.text!r} found in any world")
     return 0

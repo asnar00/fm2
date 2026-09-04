@@ -2952,6 +2952,17 @@ the chooser. Later, chosen but not built: the proposal queue with seconds
 ("wanting is cheap"), the payer's sheet with the budget beside it, and the
 flow down the ladder with the asker's rank as the feature's floor.
 
+**Amended 2026-09-04 (field-walk #p199): no stamp is written by a machine.**
+The ruling above stands on who gets `building` and who gets `proposed`; what
+changed is that a person writes it. `ask_ack.py` stopped stamping on arrival
+— every ask sits at `asked` until triage looks — because a request that filed
+itself and then stamped itself `building`, next to a popup arguing the feature
+already existed, read as three answers to one press. And there is a fourth
+stamp now: `answered`, when the thing already exists — triage replies with a
+note saying how to do it in the UI, the note shows under the ask on the sheet,
+and the asker's phone rings once with its first line
+(`straight-through/no-guide`, `push/to-one`).
+
 ## the audience floor, ruled (2026-09-04, morning before the field walk)
 
 Ash's rulings, taken in conversation: his own test posts stay admin-only;

@@ -1,27 +1,46 @@
 #!/usr/bin/env python3
-"""ask_ack.py — quick feedback on a field ask: stamp it `building` the moment
-the monitor sees it, before triage writes a word (ash, 2026-09-02: "it would
-be good to get quick feedback when something is being built").
+"""ask_ack.py — announce a field ask the moment the monitor sees it, and say
+who asked, so triage can stamp it without a lookup.
 
-Reads tools/ask_monitor.py's stream on stdin, passes every line through to
-stdout unchanged (the Monitor's event stream), and for each new ASK (not the
-BACKLOG at startup) calls tools/stamp_ask.py --local --text <the ask's first
-words> --status building. Triage's own stamps follow as usual (shipped, or a
-did-you-mean question).
-
-Feature flow, ruled 2026-09-03 (invite-test #p160): anyone may ask, but the
-person paying for the builds decides what gets built. An ask from an admin
-or support user is stamped `building` at once; an ask from anyone else is
-stamped `proposed` — ash accepts and orders proposals by hand, they are
-built in a batch, and everyone gets them (a person can switch a feature off
-in the chooser). The asker's authority is read from ~/.miso-auth/users.json
-by the world key the monitor prints.
+It used to stamp too: `building` for an admin or support asker, `proposed`
+for anyone else, before triage had written a word (ash, 2026-09-02: "it would
+be good to get quick feedback when something is being built"). Ash withdrew
+that on 2026-09-04 (field-walk #p199): a request that files itself AND stamps
+itself building reads as the machine deciding, and it was doing so beside a
+popup that argued the feature already existed. **Every ask now sits at
+`asked` until a person stamps it.**
 
     python3 tools/ask_monitor.py --local | python3 -u tools/ask_ack.py
+
+Reads the monitor's stream on stdin, passes every line through to stdout
+unchanged (the Monitor's event stream), and for each new ASK (not the BACKLOG
+at startup) prints one line naming the asker's authority — which is what
+triage needs to choose the stamp:
+
+    ASK from admin — stamp: building / answered / a did-you-mean
+
+Feature flow, ruled 2026-09-03 (invite-test #p160) and unchanged: anyone may
+ask, but the person paying for the builds decides what gets built. An ask from
+an admin or support user is normally stamped `building`; an ask from anyone
+else is stamped `proposed` — ash accepts and orders proposals by hand, they
+are built in a batch, and everyone gets them. What changed in #p199 is only
+who writes the stamp: a person, always. And there is a fourth answer now — if
+the thing already exists, triage replies instead of building:
+
+    tools/stamp_ask.py --text "<the ask>" --status answered --note "<how>"
+
+The asker's authority is read from ~/.miso-auth/users.json by the world key
+the monitor prints.
 """
-import json, subprocess, sys, os
-HERE = os.path.dirname(os.path.abspath(__file__))
+import json, sys, os
 AUTH = os.environ.get("MISO_AUTH_DIR") or os.path.expanduser("~/.miso-auth")
+
+# what a person might stamp, by who asked — printed as a reminder, never written
+ADVICE = {
+    "admin": "building / answered / a did-you-mean",
+    "support": "building / answered / a did-you-mean",
+    "": "proposed / answered / a did-you-mean",
+}
 
 
 def authority_of(key):
@@ -52,16 +71,7 @@ for line in sys.stdin:
     if pending and s.startswith("text:"):
         who, pending = pending, ""
         words = s[len("text:"):].strip()
-        key = words[:48]
-        status = "building" if authority_of(who) in ("admin", "support") else "proposed"
-        try:
-            # --only-if asked: this stamp fires without a person watching, so
-            # it must never write over one triage made in the meantime
-            # (ask/lifecycle/being-built/stamp-stands)
-            r = subprocess.run([sys.executable, os.path.join(HERE, "stamp_ask.py"), "--local",
-                                "--text", key, "--status", status, "--only-if", "asked"],
-                               capture_output=True, text=True, timeout=30)
-            out = (r.stdout.strip().splitlines() or [""])[-1]
-            print(f"ACK {status}: {out}", flush=True)
-        except Exception as e:
-            print(f"ACK failed: {e}", flush=True)
+        auth = authority_of(who)
+        # no stamp: the ask stays `asked` until a person looks at it (#p199)
+        print(f"ASK from {auth or 'guest'} — stays `asked`; "
+              f"stamp: {ADVICE.get(auth, ADVICE[''])}  [{words[:48]}]", flush=True)
