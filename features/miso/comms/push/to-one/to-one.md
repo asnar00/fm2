@@ -10,9 +10,20 @@ When the builder answers your request, your phone rings — yours only. Nobody e
 
 ## spec
 
+> **Erratum, the same evening it shipped.** "The one road that was
+> missing" was wrong. `/attention` (2026-08-23) has carried a builder's
+> note to its asker all along — `attention_push_to_user`, the same walk
+> of `push-subs.txt`, triggered by the op-door write itself and choosing
+> its channel by where the person is. This node duplicated it, and an
+> `answered` stamp rang twice until `stamp_ask.py`'s call was removed.
+> **Nothing calls `push/one` now.** `/bench-only` shuts its door to the
+> tunnel so it is harmless where it stands; whether it should stand at
+> all is a decision for the tree's owner, recorded in notes.md, "the road
+> that was already there". Read the rest of this spec with that in mind.
+
 `/push` sends to everybody, because until #p199 every notification was
 news for everybody: a deploy. Answering one person's request is news for
-that person alone, so this node adds the one road that was missing —
+that person alone, so this node adds a road for it —
 the same VAPID and the same RFC 8291 encryption, one recipient.
 
 `POST push/one` takes `{phone, title, body}` and rings every

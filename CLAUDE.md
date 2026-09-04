@@ -26,8 +26,9 @@ anyone else (anyone may ask; the payer decides what is built: ash accepts and
 orders proposals, they build in a batch, everyone gets them — notes.md
 "feature flow"), `shipped` (with the build), a did-you-mean question, or, when
 the thing already exists, `answered` with a note saying how to do it in the UI
-(`stamp_ask.py --status answered --note "…"`, which also rings the asker's
-phone once). A proposal is built only on ash's word.
+(`stamp_ask.py --status answered --note "…"`; `/attention` takes the note to
+the asker by the right channel — in place, a pulse, or one notification).
+A proposal is built only on ash's word.
 
 **Building and shipping: see `deploy.md`** — build/run commands, what
 deploy.sh does, the mini, tunnel, state locations, and how to check on the

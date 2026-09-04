@@ -3135,3 +3135,36 @@ the tree). The measure is a byte diff of the composed output against the
 tree it was written from, node by node: where the rebuilt code differs and
 still passes the gate, the spec was enough; where it fails, the spec was
 short — and that is the list of specs to sharpen.
+
+## the road that was already there (2026-09-04, evening — a worker's own miss)
+
+The concierge reply of field-walk #p199 was built with a new push road,
+`comms/push/to-one` (`POST push/one`), and a call to it from
+`tools/stamp_ask.py`. **The tree already had that road.** `/attention`
+(2026-08-23, plans #p17–#p19) watches the `asks` var across a builder's op
+through the op door and pushes the changed entry's question or note to the
+owner's subscriptions — `attention_push_to_user`, the same walk of
+`push-subs.txt` — and it does it *by the three-channel rule*: the open panel
+updates in place and stays silent, a foreground app pulses the lozenge, only
+a backgrounded one is notified, with `/present` holding the push back for
+anyone who has a long-poll wait open.
+
+So an `answered` stamp rang the asker **twice**, and the second ring came
+from a road that knows nothing about where they are — a notification landing
+on someone looking straight at the panel, which is exactly what #p18 and #p19
+ruled out. Proven on the rig: one stamp, two POSTs to the relay, and the
+server log carrying both `attention: … -> … (status 201)` and
+`push one: … -> … (status 201)`.
+
+The `push_note` call is gone from `stamp_ask.py`; `/attention` carries the
+answer, as it always did. **`comms/push/to-one` now has no caller** —
+`comms/push/to-one/bench-only` shuts its door to the tunnel so it is harmless
+where it stands, but the node itself wants a decision: untick it for miso, or
+revert it. That is not a worker's call.
+
+**The lesson, for the ledger:** before adding a road, grep the composition
+for the thing it would do, not for the name you would give it —
+`grep 'send_push('` over the composed `main.rs` would have found
+`attention_push_to_user` in one line, on the first day. A spec that says "the
+one road that was missing" is a claim about the whole tree, and the whole
+tree is one grep away.
