@@ -30,6 +30,20 @@ import urllib.error
 import urllib.request
 import uuid
 
+
+def ffmpeg_path():
+    """ffmpeg by path, not by PATH: the server runs under launchd with
+    /usr/bin:/bin only, and ffmpeg is Homebrew's (found live 2026-09-04 —
+    ash's 15:30 clip came back "no words" because `ffmpeg` was not found).
+    FFMPEG in the environment wins; then the usual homes; then PATH."""
+    import shutil
+    cands = [os.environ.get("FFMPEG", ""), "/opt/homebrew/bin/ffmpeg",
+             "/usr/local/bin/ffmpeg", shutil.which("ffmpeg") or ""]
+    for c in cands:
+        if c and os.path.exists(c):
+            return c
+    return "ffmpeg"
+
 API_BASE = "https://asr.api.speechmatics.com/v2"
 
 
@@ -175,7 +189,7 @@ def to_wav(clip):
     wav = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
     wav.close()
     r = subprocess.run(
-        ["ffmpeg", "-y", "-i", clip, "-ac", "1", "-ar", "44100", "-vn", wav.name],
+        [ffmpeg_path(), "-y", "-i", clip, "-ac", "1", "-ar", "44100", "-vn", wav.name],
         capture_output=True)
     if r.returncode != 0 or os.path.getsize(wav.name) == 0:
         os.unlink(wav.name)

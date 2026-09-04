@@ -38,6 +38,20 @@ import tempfile
 import time
 import warnings
 
+
+def ffmpeg_path():
+    """ffmpeg by path, not by PATH: the server runs under launchd with
+    /usr/bin:/bin only, and ffmpeg is Homebrew's (found live 2026-09-04 —
+    ash's 15:30 clip came back "no words" because `ffmpeg` was not found).
+    FFMPEG in the environment wins; then the usual homes; then PATH."""
+    import shutil
+    cands = [os.environ.get("FFMPEG", ""), "/opt/homebrew/bin/ffmpeg",
+             "/usr/local/bin/ffmpeg", shutil.which("ffmpeg") or ""]
+    for c in cands:
+        if c and os.path.exists(c):
+            return c
+    return "ffmpeg"
+
 warnings.filterwarnings("ignore")
 
 MODEL = "mlx-community/whisper-large-v3-turbo"
@@ -82,7 +96,7 @@ def to_wav(clip):
     trim = ("silenceremove=start_periods=1:start_duration=0.1:start_threshold=-45dB:"
             "stop_periods=-1:stop_duration=1.0:stop_threshold=-45dB")
     r = subprocess.run(
-        ["ffmpeg", "-y", "-i", clip, "-ac", "1", "-ar", "16000", "-vn",
+        [ffmpeg_path(), "-y", "-i", clip, "-ac", "1", "-ar", "16000", "-vn",
          "-af", trim, wav.name],
         capture_output=True)
     if r.returncode != 0 or not os.path.exists(wav.name):
@@ -175,7 +189,7 @@ def serve(root):
     # is exactly when it would run out.
     warm = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
     warm.close()
-    subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=16000:cl=mono",
+    subprocess.run([ffmpeg_path(), "-y", "-f", "lavfi", "-i", "anullsrc=r=16000:cl=mono",
                     "-t", "1", warm.name], capture_output=True)
     try:
         mw.transcribe(warm.name, path_or_hf_repo=MODEL)
