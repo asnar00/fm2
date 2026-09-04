@@ -3944,3 +3944,62 @@ Written; it commits after the deploy so the tree stays clean at the deploy's sta
 > <status>completed</status>
 > <summary>Background command "Fast-forward main to the segments node, name its announcement's node, deploy through the gate" completed (exit code 0)</summary>
 > </task-notification>
+
+Everything is landed. Build 701 is live, the deploy stamped the flip's announcement itself, the handover and transcript are committed, the tree is clean, no workers are out, and the transcription queue is empty.
+
+**Where the phone stands for tomorrow**
+
+- Every note is a video, streamed up while you film, transcribed by Speechmatics with street seeding, titled by Haiku, and on the team's maps at its floor within seconds.
+- The map is the only view, with baked ward lines and a chosen region, a time filter, the reel with unbroken sweeps and no flash, and a view that survives updates.
+- The + arms a row, camera flips mid-take with the native recorder, the level picker speaks of roles, and the eye on a post sets who sees it. A raised floor withdraws copies.
+- Every ask from the phone is stamped on arrival and closed by the deploy that carries it.
+
+**The morning list is in the handover:** reset the test users, plug in the cable, leave the local whisper off. Watch on real phones: the cut at a camera flip, the "transcribing…" mark landing, and the region tiles under many zooms.
+
+Fable ends at about 62%, all-models at 48%, both well inside the reset. Sleep well, and good luck with the team.
+
+### p149
+*2026-09-04 20:23*
+
+> can we re-run the new transcription path on all the older posts? (the ones before we put the new path in) - and do the titles as well.
+
+Yes. The three older clips from the first, second and third are the ones with whisper-tiny words. The keeper now drains the queue on its own, so I only need to queue them; the landing replaces a machine transcript that the author never edited, and a title is written only where the title is empty. Queuing now and watching.
+
+Two of the three came back "no speech", yet they carry whisper words that read like speech. Checking the clips themselves for an audio track before I believe either side.
+
+Local whisper hears speech in it, so Speechmatics returning empty is the script's problem, not the clip's. Reading its job handling to see where the words are lost.
+
+The re-run is done, with one real result and one finding.
+
+**What happened**
+
+- The clip from the third (the "big street corner" one) re-transcribed through Speechmatics with street seeding. Its title is being written by Haiku now; the first answer was rejected as not a title and the retry is on its backoff. I'm watching for it.
+- The clips from the first and second came back "no speech" from Speechmatics. I did not believe that, so I ran local whisper on the same audio: it heard only a hallucinated "You" and a repeated "I need to stop". Two engines agree there is no intelligible speech in those files.
+
+**Why they ever had words:** on those old builds the phone ran a second, audio-only recorder alongside the video, and the on-device whisper transcribed that. The companion audio never left the phone. The video file's own audio track is loud but not speech, most likely a bad audio path in that old recorder. So there is nothing on the server to re-transcribe, and their old words stay as they are.
+
+Everything filmed since the streaming road went in has its audio in the file itself, and today's clips prove that path.
+
+### p150
+*2026-09-04 20:26*
+
+> <task-notification>
+> <task-id>byni6fxhi</task-id>
+> <tool-use-id>toolu_016iTBM5RjAZSUFGQfrG3ERy</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/byni6fxhi.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Wait up to three minutes for the title retry and read the post's title" completed (exit code 0)</summary>
+> </task-notification>
+
+Applying the fix now: log the model's answer when it is rejected, and end the job on a "none" instead of retrying forever.
+
+Deploying the fix. While it runs, the finding about the older clips goes into the handover, since it explains why two of them keep their old words.
+
+Written; it commits after the deploy. What I need next: the deploy's result, then the title job's next retry to see the logged answer, then the handover commit. Each depends on the one before, so there is nothing more to request now.
+
+### p151
+*2026-09-04 20:32*
+
+> I'm still not happy with the end-post scroll behaviour. At the top of the list, the bounce works correctly, but the entire card flashes (including the background - not just the media). At the bottom of the list, it feels like a new card scrolls into view, but it's the same as the card scrolling out. In both cases, I want the bounce to happen (i.e. we ping back to the card and prevent scroll) and the same card to stay onscreen, and not flash or be updated in any way.
+
+That is two end-detection faults, not compositing: at the top something sends a turn and repaints the whole card, and at the bottom the strip is bringing in a neighbour that is the same card. Your phone's log should show both. Reading it, then the reel worker gets it as a priority.

@@ -63,6 +63,17 @@ shipped on its own. Fable 60% → ~62%.*
   the cut at a flip is the camera's open time (100–400 ms on hardware; 7–9
   ms on the mock), and transcription on a joined file is proven by
   construction only.
+- **The older clips, re-run through the new path (late):** the Sep 3 clip
+  re-transcribed (Speechmatics, seeded); the Sep 1 and Sep 2 clips came
+  back "no speech" from Speechmatics AND local whisper large (a hallucinated
+  "You"), though their video audio is loud (−18 dB) — on those builds the
+  phone's whisper-tiny read a separate companion audio recording that never
+  left the phone, and the video's own audio track carries no speech. Their
+  old words stay. Found on the way: a title answer of "none" was retried
+  forever — fixed in `from-the-words` (a none ends the job; a rejected answer
+  is logged as said). Seeding is by the post's location, so a London post
+  gets Sevenoaks streets 30 km away — harmless, but the vocabulary should be
+  empty when the nearest street is far.
 - **The deploy stamps (build 699, `announced/by-the-ship`):** announce
   with `--node <tree path>`; deploy.sh, after `released.sha`, stamps
   shipped on every announcement whose node the release touched and every
