@@ -1896,3 +1896,79 @@ In flight: the pin-tap deploy, the strip lozenges, this one, and the queue watch
 *2026-09-04 15:58*
 
 > let's change the suggested text in the miso input field to "request a fix, tweak or feature"; instead of doing the semantic search, file it through as a feature request straight away; if it turns out the feature exists already, then we should pop up the guide to the feature.
+
+A conversation ask, so it builds. Fresh worker, since the others are busy. Announcing and briefing.
+
+### p70a
+*2026-09-04 15:58*
+
+> <task-notification>
+> <task-id>b8mcqaj4l</task-id>
+> <tool-use-id>toolu_01FP56kZbFt2nFCbVnXyyp2S</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/b8mcqaj4l.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Watch up to ten minutes for the transcription queue to drain after the phone opens" completed (exit code 0)</summary>
+> </task-notification>
+
+Progress: your 3:30 clip has left the queue. The two morning clips keep coming back with no words. Checking the post's words and running one morning clip by hand for the reason.
+
+Your 3:30 post now reads "Hello? It's me. Here's another test thing. Walking through the fields of Covent Garden." That came from Speechmatics with the street seeding, through the real road, once your phone kicked the queue.
+
+The two morning clips come back with no words because there is no speech in them. Speechmatics returns an empty transcript and the server gives up after five tries, which is the right outcome. The "you" they showed before was the old on-device model inventing a word from silence.
+
+In flight: the pin-tap deploy, the strip lozenges, the map behind an open card, and the ask box. Nothing to request until one returns.
+
+### p71
+*2026-09-04 16:01*
+
+> <task-notification>
+> <task-id>b6yoxy7h6</task-id>
+> <tool-use-id>toolu_01HRJtNTAqE6xUWd3cc7BvLS</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/b6yoxy7h6.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Fast-forward main to the pin-tap node, verify, and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 661 is live: tapping a pin now scrolls the band to that post's lozenge and rings the pin, without opening it. The lozenge tap opens as before. Stamped shipped. No stray gate server is left; the two servers running are the live workers' rigs.
+
+Three workers are out: the strip lozenges, the map behind an open card, and the ask box. Nothing to request until one returns.
+
+### p72
+*2026-09-04 16:01*
+
+> how are we doing for fable usage credits?
+
+Better than the morning's estimate, because today's spend was mostly Opus.
+
+| | used | reset |
+|---|---|---|
+| Fable, this week | 60% | Tuesday 04:00 UTC |
+| All models, this week | 42% | same |
+
+Fable moved from 57% to 60% across the whole day, with about 25 nodes shipped. The report's "runs out Sunday" line is driven by the three-day average, which includes Wednesday and Thursday's heavier days. At today's pace, roughly three points a day, it lasts the week with room to spare. Saturday's field session on the same pattern, triage here and workers on Opus, should cost a few points at most.
+
+The all-models budget is the one to watch now. Five Opus workers all day took it from 32% to 42%, and Saturday could be similar. That still lands under the reset at this rate.
+
+### p73
+*2026-09-04 16:03*
+
+> ok. so I'm pretty happy with the system, I feel like we're ready for tomorrow - I'm sure there will be lots of feedback from the session - we just need to make sure we have enough to get through tomorrow.
+
+Good. We are in decent shape for it.
+
+**Budget for tomorrow:** Fable at 60% and all-models at 42% with three and a half days to the reset. The pattern from today holds: I triage on Fable, workers build on Opus. That costs Fable a few points a day and the all-models budget around ten. Both clear the reset. If it gets tight I'll say so in the morning report before anything else.
+
+**Still landing tonight:** the strip lozenges, the map behind an open card, and the ask box. I'll ship each as it returns and update the handover, so the morning starts clean.
+
+**Before you go out**
+
+- Plug the ethernet cable into the mini and reset the test users, both from the handover's Saturday section.
+- Make sure your phone has taken the latest build before the team scans the code.
+- The local whisper fallback stays off. Speechmatics is carrying transcription and it worked on your real clip today.
+
+**Two things I know are imperfect and am leaving:** a transcription that gets dropped waits for the next recording from any phone before it is retried, and the ward file still outlines seven wards outside the constituency. Neither blocks a session. Both are in the handover as tomorrow's first rungs if they bite.
+
+### p74
+*2026-09-04 16:04*
+
+> let's fix transcription and make it retry immediately if dropped - we can add notifications to the engineer section if need be.
