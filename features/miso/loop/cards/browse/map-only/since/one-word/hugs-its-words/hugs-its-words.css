@@ -1,0 +1,21 @@
+/* The column was a 96px box with the pills stretched across it, so "all" wore
+   a lozenge four characters too wide and the backing stood wider than any of
+   its words. Both hug now.
+
+   `max-content` on the column is the width of its widest row and no more;
+   `min-width: 0` retires the 96px floor that was holding it open. */
+.since-drop {
+  min-width: 0;
+  width: max-content;
+}
+
+/* and each pill is its own word plus /since's padding: `align-self` stops the
+   column's default stretch, `max-content` sizes it to the text. So the lit
+   lozenge is exactly as wide as the word it is lighting, which is what the
+   report was about — a short word wearing a long lozenge. The rows stay
+   left-aligned against the column's edge, so they read as a list of words
+   rather than as a ragged set of buttons. */
+.since-drop .since-pill {
+  width: max-content;
+  align-self: flex-start;
+}
