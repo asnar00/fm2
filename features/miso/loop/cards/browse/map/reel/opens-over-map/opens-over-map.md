@@ -26,4 +26,9 @@ When a post opens in the posts tool, Rust draws its page instead of `#mapData`, 
 
 `opens-over-map.js` — wraps `feature_Map.sync`: the map kept and the body marked while a page is up over the map view; one map click listener that puts the page away.
 
+`behind()` is the test, and an /extension point/: no `#mapData` (Rust drew the
+page instead of the set), a card page on the screen, and the picker saying the
+surface underneath was the map on the posts tool. A node that widens which
+surfaces count redefines this one function.
+
 `opens-over-map.css` — the marked body's transparent ground, the page's grow-in.

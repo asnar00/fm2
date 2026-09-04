@@ -1,13 +1,26 @@
+const feature_OpensOverMap = {
+  // is a card page standing over the map right now? An /extension point/: the
+  // test names the surfaces this node was written for, and a node that widens
+  // them redefines this one function.
+  //
+  // Rust draws the page INSTEAD of the set, so no #mapData is what "a card is
+  // open" looks like from here; the picker's own selected button is what says
+  // the surface underneath was the map.
+  behind() {
+    const page = document.querySelector('.card-page');
+    const mapView = document.querySelector('.browse-view.browse-on[data-ev="browse_map"]');
+    return !document.getElementById('mapData') && !!page && !!mapView
+      && !!document.querySelector('.toolbar .tool-button.sel[data-ev="tool_posts"]');
+  },
+};
+
 {
   if (typeof feature_Map !== 'undefined') {
     const fm_overSync = feature_Map.sync;
     feature_Map.sync = function () {
       fm_overSync.call(this);
       try {
-        const page = document.querySelector('.card-page');
-        const mapView = document.querySelector('.browse-view.browse-on[data-ev="browse_map"]');
-        const behind = !document.getElementById('mapData') && !!page && !!mapView
-          && !!document.querySelector('.toolbar .tool-button.sel[data-ev="tool_posts"]');
+        const behind = feature_OpensOverMap.behind();
         document.body.classList.toggle('fm-map-behind', behind);
         if (behind) {
           this.show();
