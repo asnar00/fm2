@@ -53,9 +53,19 @@ const feature_Ask = {
 
   async go() {
     const input = $('askText');
-    const box = $('askResults');
     const text = (input.value || '').trim();
-    if (!text || !box) return;
+    if (!text) return;
+    return this.send(text);
+  },
+
+  // the send road: what pressing the button does with the words. The
+  // default finds first and files second (below); it is one function so a
+  // later node can redefine the whole road without touching go()'s reading
+  // of the box or the wraps other nodes have put around it.
+  async send(text) {
+    const input = $('askText');
+    const box = $('askResults');
+    if (!box) return;
     const words = this.words(text);
     const tools = this.tools(words);
     const feats = await this.features(words);

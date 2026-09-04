@@ -1,0 +1,18 @@
+/* the guide, over the sheet: the panel's own column and width, the pages'
+   ground so it reads as a thing on top rather than more panel. `top` and
+   `max-height` are set by place() — under the box you typed in. */
+#askGuide { position: fixed; z-index: 20; left: 50%; top: 12vh;
+  transform: translateX(-50%) translateY(6px); width: min(92vw, 22rem);
+  max-height: 60vh; overflow-y: auto; background: #161619;
+  border: 1px solid #3a3a3f; border-radius: 14px; padding: 12px 14px 14px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .18s ease-out, transform .18s ease-out; }
+#askGuide.on { opacity: 1; transform: translateX(-50%) translateY(0);
+  pointer-events: auto; }
+#askGuide .agtop { display: flex; align-items: flex-start; gap: 10px; }
+#askGuide .agtop b { flex: 1; color: #fff; font-size: 15px; font-weight: 600; }
+#askGuide .agx { font: inherit; font-size: 14px; line-height: 1;
+  padding: 4px 7px; border-radius: 9px; border: 1px solid #333;
+  background: #1a1a1d; color: #9a9aa2; }
+#askGuide .agtext { margin-top: 6px; color: #c9c9d2; font-size: 13.5px;
+  line-height: 1.45; }

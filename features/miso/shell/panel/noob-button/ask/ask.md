@@ -93,3 +93,5 @@ reads `/tmp/miso-vars/user.*.asks.json` on the mini and prints every
 entry still `"asked"`.
 
 *(Seam added 2026-08-26 for `/everywhere`: `feature_Ask.stripTicks(box)` — the default strips the ticks from result rows; a click on a tick is ignored by the row handler, as the chooser's own is.)*
+
+*(Seam added 2026-09-04 for `/straight-through`: `feature_Ask.send(text)` — the send road. `go()` reads the box and calls it; the default road is the find-then-file body above, unchanged. A node that changes what pressing the button does redefines `send` and leaves `go` — and the wraps other nodes have put around `go`, `/urgency`'s among them — where they are.)*
