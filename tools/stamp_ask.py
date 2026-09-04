@@ -53,41 +53,66 @@ PORT = os.environ.get("MISO_PORT", "8095")
 BUILDS_PATH = "miso/shell/panel/noob-button/ask/lifecycle/being-built/announced"
 
 
+def builds_read(local):
+    """the global `builds` list. The door writes the shared layer but reads it
+    as a fresh world, so the current list is the last `set` in the layer's own
+    log (rig-found, 2026-08-26). Shared with tools/stamp_ship.py, which stamps
+    the same list from the deploy (ask/lifecycle/being-built/announced/
+    by-the-ship)."""
+    last = sh(f"grep '\"name\":\"builds\"' {CTX_DIR}/_global.log 2>/dev/null | tail -1 || true", local)
+    if not last.strip():
+        return []
+    try:
+        op = json.loads(last.strip())
+    except json.JSONDecodeError:
+        sys.exit(f"stamp_ask: bad op in _global.log: {last[:120]}")
+    if op.get("path") != BUILDS_PATH:
+        return []
+    return json.loads(op.get("value") or "[]")
+
+
+def builds_write(builds, local):
+    builds = sorted(builds, key=lambda b: b.get("t", 0))[-40:]
+    body = json.dumps({"path": BUILDS_PATH, "name": "builds", "value": json.dumps(builds)})
+    body_sh = body.replace("'", "'\\''")
+    out = sh(f"curl -s -X POST 'localhost:{PORT}/diag/context?user=_global' -d '{body_sh}'", local)
+    if '"ok":true' not in out:
+        sys.exit(f"stamp_ask: POST refused for _global: {out}")
+
+
 def announce(a):
-    """the global `builds` list: one entry per announced build, keyed by its words"""
-    q = "_global"
-    # the door writes the shared layer but reads it as a fresh world, so the
-    # current list is the last `set` in the layer's own log (rig-found,
-    # 2026-08-26)
-    last = sh(f"grep '\"name\":\"builds\"' {CTX_DIR}/_global.log 2>/dev/null | tail -1 || true", a.local)
-    builds = []
-    if last.strip():
-        try:
-            op = json.loads(last.strip())
-            if op.get("path") == BUILDS_PATH:
-                builds = json.loads(op.get("value") or "[]")
-        except json.JSONDecodeError:
-            sys.exit(f"stamp_ask: bad op in _global.log: {last[:120]}")
+    """one entry per announced build, keyed by its words — and, since
+    /by-the-ship, carrying the node it will ship as, so the deploy can close it
+    without the words being typed a second time."""
+    builds = builds_read(a.local)
     key = a.announce.strip().lower()
     entry = next((b for b in builds if str(b.get("text", "")).strip().lower() == key), None)
     if entry is None:
         entry = {"t": int(time.time() * 1000), "text": a.announce.strip()}
         builds.append(entry)
-    if entry.get("status") == a.status and (a.build is None or entry.get("build") == a.build):
+    same = (entry.get("status") == a.status
+            and (a.build is None or entry.get("build") == a.build)
+            and (a.node is None or entry.get("node") == a.node))
+    if same:
         print(f"announced already: {a.status}")
         return
     entry["status"] = a.status
+    if a.node is not None:
+        entry["node"] = a.node
     if a.build is not None:
         entry["build"] = a.build
     elif a.status == "building":
         entry.pop("build", None)
-    builds = sorted(builds, key=lambda b: b.get("t", 0))[-40:]
-    body = json.dumps({"path": BUILDS_PATH, "name": "builds", "value": json.dumps(builds)})
-    body_sh = body.replace("'", "'\\''")
-    out = sh(f"curl -s -X POST 'localhost:{PORT}/diag/context?user={q}' -d '{body_sh}'", a.local)
-    if '"ok":true' not in out:
-        sys.exit(f"stamp_ask: POST refused for {q}: {out}")
-    print(f"announced: {entry['text']!r} -> {a.status}" + (f" (build {a.build})" if a.build is not None else ""))
+    builds_write(builds, a.local)
+    print(f"announced: {entry['text']!r} -> {a.status}"
+          + (f" (build {a.build})" if a.build is not None else "")
+          + (f" [node {entry['node']}]" if entry.get("node") else ""))
+    if a.status == "building" and not entry.get("node"):
+        # /by-the-ship: without a node the deploy cannot close this entry, and
+        # it will sit on everyone's sheet until somebody remembers it — which
+        # is the thing that went wrong on 2026-09-04 (field-walk #p143)
+        print("  WARNING: no --node given, so this announcement will need a hand "
+              "at ship time. Every deploy will list it until it has one.")
 
 
 def main():
@@ -96,6 +121,12 @@ def main():
     ap.add_argument("--announce", metavar="TEXT",
                     help="a build asked for in conversation: put it on everyone's sheet "
                          "(global `builds` var); the words match a later shipping call")
+    ap.add_argument("--node", metavar="PATH",
+                    help="the feature node this announcement will ship as, e.g. "
+                         "browse/map-only/since — the deploy stamps it shipped when a "
+                         "release touches that node or one under it, so the words never "
+                         "have to be typed twice (ask/lifecycle/being-built/announced/"
+                         "by-the-ship)")
     ap.add_argument("--status",
                     choices=["asked", "proposed", "building", "shipped"])
     ap.add_argument("--build", default=None, type=int,
@@ -118,6 +149,8 @@ def main():
         ap.error("give exactly one of --status and --question")
     if bool(a.text) == bool(a.announce):
         ap.error("give exactly one of --text and --announce")
+    if a.node and not a.announce:
+        ap.error("--node belongs to an announcement (--announce)")
     if a.announce:
         if a.only_if:
             ap.error("--only-if is for an ask, not an announcement")

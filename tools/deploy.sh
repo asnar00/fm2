@@ -39,6 +39,10 @@ echo "deploying to $HOST"
 # once the ship lands); PROOF=skip overrides for a hotfix — say so in the
 # commit.
 RELEASED="$SRC/products/miso/build/released.sha"
+# where the last release stood, read BEFORE this one overwrites it: the ship
+# stamps at the bottom need the range this deploy is shipping
+PREV=""
+[ -f "$RELEASED" ] && PREV="$(cat "$RELEASED")"
 if [ "${PROOF:-check}" != "skip" ]; then
   if [ -f "$RELEASED" ]; then
     python3 "$SRC/tools/toggle_proof.py" --since "$(cat "$RELEASED")" || {
@@ -347,5 +351,19 @@ for _, a in sorted(latest.items()):
 
 # the released sha: where the next deploy's toggle-proof gate starts from
 (cd "$SRC" && git rev-parse HEAD) > "$RELEASED"
+
+# the deploy stamps (ask/lifecycle/being-built/announced/by-the-ship, field-walk
+# #p143). Every line above this one can still exit non-zero and stop the ship;
+# here the release IS live, so this is the first point at which "shipped" is
+# true. It closes every announcement naming a node this release touched and
+# every ask whose id a commit subject cites, then lists the announcements
+# nothing can close. It must never fail a deploy that has already shipped, so
+# its own failure is a note and not an exit.
+SHIP_LOCAL=""
+[ "$HOST" = localhost ] && SHIP_LOCAL="--local"
+MISO_HOST="$HOST" python3 "$SRC/tools/stamp_ship.py" \
+  --build "$(cat "$SRC/products/miso/build/site/version")" \
+  ${PREV:+--since "$PREV"} $SHIP_LOCAL \
+  || echo "  NOTE: the ship stamps did not go out — run tools/stamp_ship.py --build $(cat "$SRC/products/miso/build/site/version") --since ${PREV:-HEAD~1} by hand" >&2
 
 echo "deployed — https://miso.nøøb.org"
