@@ -1,4 +1,4 @@
-# transcript: the field walk
+# transcript: field walk
 *session `b70435b4-6806-4a25-aadb-e68df3da3413`, exported by tools/export_transcript.py — do not edit; anchors `#pN` are stable*
 
 ### p1

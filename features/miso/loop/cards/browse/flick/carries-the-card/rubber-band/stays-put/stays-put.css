@@ -1,0 +1,9 @@
+/* the arrival is over for this card, for good. /carries-the-card suppresses
+   /opens-over-map's grow while it has the card (`animation: none` under
+   `.fm-carried`) and lets go of that suppression when the carry ends — and a
+   rule going from `animation: none` back to a named animation STARTS it, so
+   the card played its arrival again: 96% and opacity ZERO, the whole card and
+   its ground fading in from nothing. That is the flash at the ends, where no
+   paint and no turn happen to explain it any other way. */
+.card-page.fm-put,
+body.fm-map-behind .card-page.fm-put { animation: none; }

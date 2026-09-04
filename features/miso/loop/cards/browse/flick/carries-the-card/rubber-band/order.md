@@ -1,1 +1,2 @@
 - [x] no-flash
+- [x] stays-put
