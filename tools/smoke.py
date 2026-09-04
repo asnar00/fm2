@@ -438,6 +438,43 @@ async def s_map(pg):
     return ok
 
 
+@step("the time filter cuts the set: today drops last month's post, all brings it back")
+async def s_since(pg):
+    # /since. The post is minted through /new's own event and dated through
+    # /post-time's CardWhen, as the post step does; the evidence is #mapData's
+    # data-ids, which is the set the map draws AND the set the band lists.
+    await open_tool(pg, "posts")
+    if await pg.evaluate("document.querySelectorAll('.since-pill').length") != 4:
+        print("      (the four pills are not on the strip)"); await dump(pg, "since-pills"); return False
+    old = int(time.time() * 1000) - 40 * 86400000
+    await pg.evaluate("(w) => feature_Loop.send({type:'CardNew', data:{owner:'_smoke', type:'post', title:'an old post', t:w}})", old)
+    await pg.wait_for_timeout(1200)
+    cid = await pg.evaluate("""(() => { const cs = JSON.parse(JSON.parse(feature_Loop.state).cards || '[]');
+        const ps = cs.filter(c => c.type === 'post'); return ps.length ? ps[ps.length - 1].id : ''; })()""")
+    await pg.evaluate("([id, w]) => feature_Loop.send({type:'CardWhen', data:{id:id, when:w, source:'photo', t:Date.now()}})", [cid, old])
+    await pg.wait_for_timeout(1200)
+    await go_home(pg)
+    await open_tool(pg, "posts")
+
+    async def ids():
+        return await pg.evaluate("(() => { const d = document.getElementById('mapData'); return d ? (d.getAttribute('data-ids') || '') : ''; })()")
+
+    async def pill(which):
+        await pg.click(f'.since-pill[data-ev="since_{which}"]'); await pg.wait_for_timeout(1400)
+        return await ids()
+
+    under_all, under_today, back = await pill("all"), await pill("today"), await pill("all")
+    ok = (cid in under_all.split(",")) and (cid not in under_today.split(",")) and (cid in back.split(","))
+    if not ok:
+        print(f"      (the old post {cid}: all={cid in under_all.split(',')} "
+              f"today={cid in under_today.split(',')} back={cid in back.split(',')}; "
+              f"all held {len(under_all.split(',')) if under_all else 0}, today held "
+              f"{len(under_today.split(',')) if under_today else 0})")
+        await dump(pg, "since")
+    await go_home(pg)
+    return ok
+
+
 @step("the lozenge still opens the panel after all of that")
 async def s_lozenge_again(pg):
     return await s_lozenge(pg)
@@ -484,6 +521,11 @@ async def passes(port: int, cookie: str) -> int:
             print(f"== {label}")
             if not await pass_gate(pg):
                 print("  [FAIL] the profile gate did not lift"); failures += 1; continue
+            await go_home(pg)
+            # start every pass unfiltered, whatever the last pass left behind:
+            # /since's `period` is a USER var and the world outlives the pass
+            await open_tool(pg, "account")
+            await pg.evaluate("(() => { const v=document.querySelector('[data-ev=\"since_all\"]'); if (v) v.click(); })()"); await pg.wait_for_timeout(800)
             await go_home(pg)
             for name, fn in STEPS:
                 try:

@@ -1,0 +1,60 @@
+/* the picker's own place, on the picker's own measurements: top left of the
+   screen, level with the nøøb lozenge, /raised's inset + 2px, the lozenge's
+   16px margin, its #121215-on-#3a3a3f round and its 33px height (3px padding,
+   a 25px row and a 1px border). The top strip does not change shape when the
+   picker leaves and these arrive. */
+.since-pills {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 2px);
+  left: calc(env(safe-area-inset-left, 0px) + 16px);
+  display: flex; gap: 0;
+  padding: 3px;
+  border-radius: 999px;
+  background: #121215; border: 1px solid #3a3a3f;
+  z-index: 6;
+  user-select: none; -webkit-user-select: none;
+  /* the ring is decoration; only the words are targets. /backdrop closes an
+     open card on a tap that is nobody's, and its owned list names
+     `.browse-picker` and `[data-ev]` — the pills carry a data-ev and are
+     owned, but the 3px of ring around them would have been "the ground".
+     Letting the ring fall through hands that tap to #misoMap, which /backdrop
+     already owns, so nothing happens — which is what a tap on a ring means. */
+  pointer-events: none;
+}
+/* /audience's grade-pill grammar: a small closed set, dim, no label, nothing
+   to submit. Dimness is the hierarchy (/taste 2). */
+.since-pill {
+  height: 25px; padding: 0 7px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 999px;
+  color: #c9c9d2; opacity: 0.45;
+  font-size: 12px; line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: opacity 0.18s ease-out;
+}
+/* the one accent, meaning what it means everywhere else: this is the thing
+   you have chosen (/taste 3) */
+.since-pill.since-on {
+  opacity: 1;
+  color: #101012; background: #9db7d8; font-weight: 600;
+}
+
+/* four words take more of the strip than three glyphs did, and /title's name
+   is centred on the screen — so with the pills there the two overlap on every
+   phone, whatever width the name is given (measured on the rig: pills 16..202,
+   title 164..238 at 402px). Ash asked for the name "between the selector and
+   the noob button" (#p63); centring was how that was met while the selector
+   was 96px wide. It is met here by pinning the name INTO the gap instead —
+   the same place, said in the measurements this strip now has. Written in the
+   node that took the space, for the reason /title itself hides
+   /current-project's chip from its own stylesheet: the node that takes a place
+   owns what that costs its neighbour. */
+.proj-title {
+  left: calc(env(safe-area-inset-left, 0px) + 200px);
+  right: calc(env(safe-area-inset-right, 0px) + 102px);
+  transform: none;
+  max-width: none;
+  text-align: center;
+}
