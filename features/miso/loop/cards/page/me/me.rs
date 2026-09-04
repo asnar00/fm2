@@ -12,9 +12,15 @@ impl feature_Me {
     // today; exchange is what earns it.
     fn render(state: String) -> String {
         let base = existing.render(state.clone());
-        let s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        if s["open_tool"].as_str().unwrap_or("") != "account" || !me_landing() {
+        // the live context, not the bridged mirror in `state`: /payload
+        // republishes `open_tool` part-way down the update chain and /people
+        // writes it back at a later link (👤 tapped over an open card means
+        // "back to the people", which closes the tool and re-opens it), so
+        // `s["open_tool"]` is one turn stale on exactly that tap — and this is
+        // a renderer, which /browse says may not read a stale value. Your own
+        // card would have been drawn a turn late, with the toolbar already
+        // showing 👤 open.
+        if open_tool_read() != "account" || !me_landing() {
             return base;
         }
         let card = card_of_type(cards_read(), String::new(), "profile".to_string());

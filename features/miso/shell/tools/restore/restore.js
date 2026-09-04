@@ -1,11 +1,31 @@
 const feature_Restore = {
-  // remember every change to the open tool, launcher included
-  watch() {
+  // which tool is open, read from the ROW that was just painted rather than
+  // from `state.open_tool`. The var is bridged and /payload republishes it
+  // part-way down the update chain, while /people, /posts and /projects each
+  // write it back at a later link (the tap that means "back to the set" closes
+  // the tool and re-opens it) — so on exactly that tap the mirror says "" and
+  // this would remember the launcher for a tool that is plainly open, and
+  // reopen at the launcher next time. `watch` runs after the paint, so the row
+  // on screen is this turn's answer (/reel's rule, housekeeping #p19).
+  // No toolbar yet — boot, or the toolbar unticked — falls back to the mirror,
+  // which is what this read always was.
+  openTool() {
+    try {
+      const sel = document.querySelector('.toolbar .tool-button.sel[data-ev^="tool_"]');
+      if (sel) return sel.getAttribute('data-ev').slice(5);
+      if (document.querySelector('.toolbar .tool-button[data-ev^="tool_"]')) return '';
+    } catch (e) { /* fall through to the mirror */ }
     let s = {};
     try { s = JSON.parse(feature_Loop.state || '{}'); } catch (e) {}
-    if (typeof s.open_tool !== 'string') return; // toolbar off: nothing to remember
-    if (localStorage.miso_open_tool !== s.open_tool) {
-      localStorage.miso_open_tool = s.open_tool;
+    return typeof s.open_tool === 'string' ? s.open_tool : null;
+  },
+
+  // remember every change to the open tool, launcher included
+  watch() {
+    const open = this.openTool();
+    if (typeof open !== 'string') return;   // toolbar off: nothing to remember
+    if (localStorage.miso_open_tool !== open) {
+      localStorage.miso_open_tool = open;
     }
   },
   init() {

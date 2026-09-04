@@ -21,9 +21,15 @@ impl feature_Projects {
     // /undo's button is last in every row, so this one goes in FRONT of it.
     fn tool_controls(state: String) -> String {
         let row = existing.tool_controls(state.clone());
-        let s: serde_json::Value = serde_json::from_str(&state)
-            .unwrap_or(serde_json::json!({}));
-        if s["open_tool"].as_str().unwrap_or("") != "projects" {
+        // which tool is open comes from the CONTEXT, not from the bridged
+        // mirror in `state`: /payload republishes `open_tool` part-way down
+        // the update chain and this node writes it back at a later link (the
+        // tap that means "back to the projects" closes the tool and re-opens
+        // it), so `s["open_tool"]` is one turn stale on exactly that tap and
+        // **new** vanished from the row until some other event happened to
+        // arrive. /browse states the rule: a budget may read a stale value,
+        // a renderer may not. `browse_open_read()` below was already right.
+        if open_tool_read() != "projects" {
             return row;
         }
         if !browse_open_read().is_empty() {
