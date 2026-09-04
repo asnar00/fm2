@@ -1,5 +1,5 @@
 - [x] mirror
-- [x] phone
+- [ ] phone
 - [x] transcript
 - [x] as-posts
 - [x] transcribed

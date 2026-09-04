@@ -100,9 +100,15 @@ python3 "$SRC/tools/export_features.py"
 # the on-device whisper model ships with the site; without it every phone's
 # transcription fails silently (the mini's fresh clone shipped six builds
 # without it, 2026-08-28). The recipe is tools/fetch_stt.py.
-if [ ! -d "$SRC/features/miso/loop/dictate/phone/assets/stt/models" ]; then
-  echo "deploy: the STT model is absent — run tools/fetch_stt.py first (or STT=skip)"
-  [ "${STT:-}" = "skip" ] || exit 1
+# Asked only while /phone is ticked FOR THIS PRODUCT: since 2026-09-04 miso
+# transcribes on the mini and unticks it, and a deploy must not demand 133 MB
+# of model that nothing composes (dictate/transcribed).
+if grep -qE '^- \[x\] +phone' "$SRC/products/miso/miso/loop/dictate/order.md" 2>/dev/null \
+   || [ ! -f "$SRC/products/miso/miso/loop/dictate/order.md" ]; then
+  if [ ! -d "$SRC/features/miso/loop/dictate/phone/assets/stt/models" ]; then
+    echo "deploy: the STT model is absent — run tools/fetch_stt.py first (or STT=skip)"
+    [ "${STT:-}" = "skip" ] || exit 1
+  fi
 fi
 
 # catalog embeddings for on-device semantic find (loop/compute/semantic-find);
