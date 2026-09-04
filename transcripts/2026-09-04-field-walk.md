@@ -3620,3 +3620,180 @@ Deploying the three. What I need next: this deploy's build number for three stam
 > <status>completed</status>
 > <summary>Background command "Cherry-pick the three level-picker commits onto main and deploy through the gate" completed (exit code 0)</summary>
 > </task-notification>
+
+The handover's evening section is written and committed: every field ask that shipped, what was found live, how the flash was settled, the rollback, and the residuals the workers named.
+
+The only thing outstanding is the map-view fix, with its worker reproducing the update on the simulator. Its return is the one pending result; the re-land, the stamp and a one-line handover patch all depend on it, so there is nothing more to request now.
+
+**Where the phone stands at 694:** everything from today except the remembered map view. Filming, thumbnails, transcription with titles, the map with baked lines and region, the recording row and visibility, the unbroken sweep with no flash, and stamps that stand.
+
+### p135
+*2026-09-04 18:58*
+
+> <task-notification>
+> <task-id>a1c81bb1f2f5c01de</task-id>
+> <tool-use-id>toolu_012YWphaWbfTDVYVFepuppnf</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a1c81bb1f2f5c01de.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build map-only and time filter" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Done. Branch `keeps-its-view-fixed`, one commit on current main (`e8ec58c`, after your revert), five files, gate green, `--prove` implied, tree clean, both my rigs stopped, the clip restored, live server untouched.
+> 
+> ## The cause — measured, and it was mine
+> 
+> **Two faults, one feeding the other.**
+> 
+> `/map`'s `mount` self-guards (`if (this.map) return true`) and `/map`'s `sync` calls it on **every sync**. My first cut applied the remembered view on *every one of those calls*, not only when a Leaflet was actually made — so the map snapped back out from under the hand a second after every drag. And each snap fired `moveend`, whose handler sent an event **synchronously**: Leaflet fires `moveend` inside `setView`, `setView` was inside `sync`, `sync` is inside `paint`, `paint` is inside `apply`. So the send **re-entered the loop from inside its own paint**, producing another sync → another snap → another send.
+> 
+> Rig readout on 690's composition:
+> 
+> ```
+> re-entrant sends (depth &gt; 0):
+>    depth 1  type MapView   at feature_Loop.send …
+>    depth 2  type MapView   at feature_Loop.send …
+>    depth 1  type MapView   at feature_Loop.send …
+> ```
+> 
+> `/veil` lifts the cover in the line **after** the inner apply returns, in its own wrapper on `apply` — so anything that never returns down there leaves "syncing…" up for good, and the growth of that loop is the crash that followed. The second suspect (the page half replaced, `/map` waiting for a view) is not the cause: `/map` remounts fine; it simply had no view worth having. (`/patch` was never in play — my node adds a JS fragment, so `/delta` forbids the hot swap and 690 took the full reload.)
+> 
+> I also caught a third thing on the device: `invalidateSize()`'s own `moveend` was recording **the world at zoom 0** as "where the user was looking".
+> 
+> ## The fix — none of it a guard
+> 
+> - **A move the app makes is not a move the user made, so it is not recorded.** Every app move is inside `/map`'s `sync` — `mount`'s `setView`, `draw`'s `fitBounds`, `invalidateSize`'s resize. Every hand move is outside it, including `/recentre`, which moves the map from its own click listener. So `sync` is hushed *whole* — the rule, not a list of today's moves — and `/recentre` needs nothing from this node.
+> - **A view worth recording is sent after the paint, never during it** — one deferred timer, latest value wins. `/keep`'s own idiom for this exact hazard.
+> - **The restore happens on the transition and nowhere else**: `mount` notices whether there was no map before the inner call.
+> - **A zoom at or below `/map`'s placeholder is treated as no memory.** That is the globe, no hand chose it, and it is exactly what the broken build recorded — **every phone that ran 690 has one stored**. Ignoring it lets the fit take over and heals the field rather than only stopping the next one.
+> 
+> ## Proof — the installed clip, the real update path
+> 
+> `site/version` bumped under a running app, so `/watch` → `/auto` → `/review` → reload, exactly as the phone does:
+> 
+> ```
+> 689 → 690 → 691 → 692 → 693   four updates in a row
+> after each:  misoVersion follows,  joined: true,  veil: false
+> ```
+> 
+> No stuck "syncing…", no crash. Then with a view recorded by hand at **51.27190,0.19040 z15**, the update to 693 came back at **51.27190,0.19040 z15**.
+> 
+> In Chrome on the final build: **zero** re-entrant sends (three before, one at depth 2), the veil lifts, no page errors, the hand's `setView` is the only move on the map, and both reload paths — onto the set and onto a card page with `mapData=no` — return the user's centre and zoom.
+> 
+> ## Open risks
+> 
+> 1. **Anyone who ran 690 has a poisoned `map_view` (zoom 0).** The floor handles the ones I can recognise, but a poisoned value at zoom 4–10 recorded from a fit would be restored as if it were the user's. I saw only zoom 0 on the rig; a higher-zoom poisoning is possible in principle.
+> 2. **`feature_Map` now carries five wrappers** — `sync` ×4 (`/opens-over-map`, `/on-every-tool`, `/always-the-ground`, mine) plus `mount` and `draw` ×2 (`/recentre` and mine). Order is load-bearing in several places and my `sync` hush covers `/map`'s own body but not the wrappers that load after mine.
+> 3. **The lesson is bigger than this node**: a wrapper on a self-guarding function must ask whether the guard fired, and nothing may call `feature_Loop.send` from a handler that can fire inside `paint`. That is worth a misses.md entry and possibly a line in `/learned` — I have not written either.
+> 4. `/map` is at six children; the next forces a regroup.
+> 5. The `#p127` regression prompt is quoted in the spec as a revision (the anchor stays `#p119`), and the transcript in my worktree was only borrowed for the link — main's copy already carries both.</result>
+> <usage><subagent_tokens>872507</subagent_tokens><tool_uses>76</tool_uses><duration_ms>1792317</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a1c81bb1f2f5c01de</worktreePath><worktreeBranch>worktree-agent-a1c81bb1f2f5c01de</worktreeBranch></worktree>
+> </task-notification>
+
+The cause is measured: the remembered view was applied on every sync, each one fired a move event, and the move sent an event from inside the paint, a loop that never returned, so the "syncing…" veil never lifted. Fixed at the rule level, and proven through four real updates in a row on the installed clip. Landing and deploying.
+
+While that deploys, the lesson goes into the ledger and the learned defaults, since it is a rule and not a one-off.
+
+Written. What I need next is the deploy's result, and everything after it depends on that: the stamp needs the build number, the handover line names it, and the commit of the ledger and learned entries should follow the deploy so the tree is clean at its start. Nothing is independent of the deploy, so I wait on it.
+
+### p136
+*2026-09-04 19:04*
+
+> <task-notification>
+> <task-id>by2axxdsm</task-id>
+> <tool-use-id>toolu_01Sx5kp6NZEhCG9jMheX8oD8</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/by2axxdsm.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the fixed map-view node on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 696 is live with the map-view fix re-landed, stamped, and the ledger, learned defaults and handover are committed. One item shows in your transcription queue; checking what it is.
+
+The queue holds no jobs, only the done folder. Nothing is pending anywhere: no workers out, no asks unstamped, the tree clean, the live server on 696.
+
+**Take the update now.** The veil should lift as normal; if it sticks again, kill and relaunch and tell me, and the phone's log will say why.
+
+**Where the day ends**
+
+| | |
+|---|---|
+| Live build | 696 |
+| Nodes shipped today | about 45 |
+| Fable used this week | 62% |
+| All models this week | 48% |
+
+Both budgets clear Tuesday's reset at today's pace. The handover carries everything for the morning: reset the test users, plug the cable in, the local whisper stays off, Speechmatics carries transcription, and the promote-then-undo case is fixed.
+
+The three things I'd watch tomorrow on the team's phones: the canvas recorder's battery cost on a long take, the "transcribing…" mark landing on the lozenge, and the region tiles when many phones zoom into a ward at once. Good luck out there.
+
+### p137
+*2026-09-04 19:06*
+
+> explain "canvas recorder" issue?
+
+When you asked to switch camera while recording, the direct way was not possible: iOS ends a recording if you swap the camera feeding it. So the worker put a step in between. The live camera is drawn onto an offscreen canvas about thirty times a second, and the recorder records the canvas, not the camera. Flipping the camera just changes which one is drawn, and the recorder never notices.
+
+The cost is that the phone normally sends camera frames straight to its video encoder without touching them. Now every frame is copied through the canvas by the phone's graphics chip first. On the simulator that is free. On a real phone it means more work per second for as long as you film, and that is what I cannot measure from here. A ten-second note will be fine. A three-minute one on a warm afternoon is the test.
+
+If the phone runs hot or the battery drops fast during long takes, the fix is one number in that node, the frame rate, dropping from thirty to twenty-four or twenty. And it only matters while the camera button is live mid-take; a clip filmed on one camera pays the same cost, so watching one long note tomorrow tells you.
+
+### p138
+*2026-09-04 19:07*
+
+> I'm presuming that the 30fps sample also is going to result in dropped frames?
+
+Yes, in two ways, and one of them you would see.
+
+The camera runs at whatever rate the phone picks, usually thirty, sometimes sixty. The canvas is redrawn on the browser's animation tick, also around sixty, but the recorder is told to take thirty frames a second from it. So the camera's frames are being resampled onto a different clock. When the two clocks drift you get an occasional doubled frame or a skipped one. On a talking-head note that is invisible.
+
+The one you would see is when the phone falls behind. If the animation tick slows because the phone is busy, the canvas is not redrawn in time, and the recorder captures the same frame again. That reads as a stutter in the video. It shows up on a long take when the phone is warm, which is the same condition as the battery question, so it is the same test tomorrow.
+
+The proper fix if it bites is to record from the camera directly and only use the canvas road when a flip actually happens mid-take, which is a small change in that node. I've held off because it is untested on a phone either way and tonight is not the time.
+
+### p139
+*2026-09-04 19:09*
+
+> could you do something sneaky like this: if the user hits the flip button while recording, start recording a new clip and then after the fact, join the two clips together?
+
+Yes, and that was the other road I gave the worker; it chose the canvas because the join needed the mini. But the pieces already go to the mini and get joined there, so the sneaky road fits now:
+
+- On a flip mid-take the phone stops the recorder, starts a new one on the other camera, and uploads the second clip as more pieces with a marker between.
+- The mini joins the two with ffmpeg. Two recordings are two containers, so it is a re-mux, not a byte join, but ffmpeg does that in well under a second.
+- The phone keeps the native recorder the whole time. No canvas, no copying, no clock mismatch.
+
+The costs: a gap of a few hundred milliseconds at the flip and a small audio hiccup there. On the phone the post plays its first piece until the joined file arrives from the mini.
+
+I'll have the worker build it as the road under the flip node, with the canvas kept as the fallback.
+
+The worker is on it, with the canvas road standing down while the new one is ticked. It measures the gap at the flip and proves the joined file on the mini with the camera change visible at the right second.
+
+What I need next is that worker's return; the deploy, stamp and a handover line all follow from it. Nothing else is pending, so there is nothing more to request now.
+
+### p140
+*2026-09-04 19:10*
+
+*(edited and resent — superseded by the next prompt; do not cite)*
+
+> the gap won't hurt us, I don't think. Make sure that it works for multiple flips during the recording though
+
+### p141
+*2026-09-04 19:10*
+
+> the gap won't hurt us, I don't think. Make sure that it works for multiple flips during the recording though
+
+Sent. The node handles any number of segments, and the proof now includes a take with three flips showing all three camera changes at the right seconds in one joined file, plus two flips inside a second.
+
+What I need next is only that worker's return. The deploy, the stamp and the handover line all follow from it, so there is nothing else to request now.
+
+### p142
+*2026-09-04 19:17*
+
+> miso is showing two building items: a flip mid-take starts a second clip; and an options-button in the posts row
+
+The second one is mine to clear: the morning's announcement for the options button was superseded by the recording row, which shipped as build 634 under different words, so its line never got its stamp. Stamping it shipped at that build.
+
+Cleared. The only building line left on your sheet is the two-clips flip, and that is the one worker still out. Its return is the sole pending result, and the deploy, stamp and handover line follow from it, so there is nothing more to request now.
+
+### p143
+*2026-09-04 19:18*
+
+> can we figure out the fix to the build reporting? that shouldn't require intervention - something went wrong, let's make sure it doesn't happen again?
