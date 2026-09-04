@@ -51,7 +51,7 @@ impl feature_Doors {
             return "you can't invite people".to_string();
         }
         if !audience_is_grade(rank.clone()) {
-            return "that isn't a rank".to_string();
+            return "that isn't a role".to_string();
         }
         let proj = audience_project_in(exchange_cards_of(who.clone()), project);
         if proj.is_null() {

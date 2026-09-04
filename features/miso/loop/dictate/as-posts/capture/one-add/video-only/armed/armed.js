@@ -62,7 +62,7 @@ const feature_Armed = {
     };
     feature_ToolWords.TOOLS.level = {
       name: 'publish level',
-      intro: 'Who your next posts reach. Same as me, or any rank at or below your own.',
+      intro: 'Who your next posts reach. Your own role, or a wider one.',
     };
     feature_ToolWords.BUTTONS.armed_flip = {
       name: 'camera',

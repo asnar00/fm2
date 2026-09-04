@@ -41,7 +41,7 @@ impl feature_Explained {
             None => return String::new(),
         };
         match word.as_str() {
-            "" => "your own rank, and up".to_string(),
+            "" => "your own role".to_string(),
             "admin" => "the project's admins only".to_string(),
             "candidate" => "candidates and up".to_string(),
             "team" => "the team and up".to_string(),

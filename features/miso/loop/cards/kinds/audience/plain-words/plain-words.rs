@@ -35,7 +35,7 @@ impl feature_PlainWords {
             None => return String::new(),
         };
         if word.is_empty() {
-            return "your own rank".to_string();
+            return "your own role".to_string();
         }
         plain_words_of(word)
     }

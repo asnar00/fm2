@@ -403,7 +403,9 @@ async def s_post(pg):
         await pg.click('[data-ev="tools_home"]'); await pg.wait_for_timeout(1000)
         home = await pg.evaluate("!!document.querySelector('.toolbar [data-ev=\"tool_record\"]')")
         await pg.evaluate("feature_Loop.send({type:'CardNew', data:{owner:'_smoke', type:'post', title:'a post', t:Date.now()}})"); await pg.wait_for_timeout(2000)
-        ok = shape and row and page == 7 and back and home and await pg.evaluate("!!document.querySelector('.card-page')")
+        # six roles since /own-role took the seventh ("same as me") away;
+        # seven before it, so either count is a composition the gate knows
+        ok = shape and row and page in (6, 7) and back and home and await pg.evaluate("!!document.querySelector('.card-page')")
         if not ok:
             print(f"      (shape={shape} row={row} pills={page} back={back} home={home})")
         await go_home(pg)
