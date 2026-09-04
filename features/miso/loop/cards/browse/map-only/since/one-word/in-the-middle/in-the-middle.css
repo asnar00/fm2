@@ -1,0 +1,23 @@
+/* The name goes back to the middle of the screen, where /title first put it.
+   It had been pinned at a left offset since /since took the strip's left half:
+   four filter pills were 175px wide and centring would have overlapped them,
+   so the name was pushed into the gap that was left, and every node that
+   touched the strip afterwards had to re-tune the number (200px, then 80px).
+
+   /one-word retired the reason. One word takes about 50 points, so the middle
+   is free again, and the name can be centred on the SCREEN rather than in a
+   gap — which is what ash asked for and what the strip wanted all along.
+
+   `left: 50%` with a half-width shift is /title's own idiom, restated here
+   because /since and /one-word had replaced it. The one number left is the
+   clearance: 210 is the strip's two ends — the widest filter word on the left,
+   the nøøb lozenge on the right — with a gap either side, and a centred box
+   may be at most the screen less that. A long name ellipsises inside its pill
+   at that width (the ellipsis is /title's and untouched) and neither
+   neighbour moves. */
+.proj-title {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 210px);
+}
