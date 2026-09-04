@@ -1535,3 +1535,364 @@ Nothing to request until a worker returns.
 *2026-09-04 15:21*
 
 > Let’s fix that issue as well? It felt janky.
+
+A conversation ask, so it builds. A fresh worker, since the three are busy.
+
+A fourth worker is on it. The fix is the same idea the app already uses for cards: the asks list merges per ask rather than as a whole, and a status can only move forward, so your phone's resend can never drag a stamp back. Announced on your sheet.
+
+Five asks are in flight with four workers. Nothing to request until one returns.
+
+### p58
+*2026-09-04 15:27*
+
+> <task-notification>
+> <task-id>a27755b799c22c34e</task-id>
+> <tool-use-id>toolu_014jpb4Kxqtjv4k1b7k5TQat</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a27755b799c22c34e.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build capture/options node" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Both asks are in, on a clean tree rebased onto main's tip, rig torn down. The live server and the other worker's rig were untouched.
+> 
+> ## What shipped
+> 
+> Branch **`flip-while-recording`**, two commits on main `c873eeb`:
+> 
+> - **`6b52061`** — `capture/video/flip/while-recording` (`asks#1788532375916`)
+> - **`00a4fd2`** — `cards/kinds/audience/plain-words` (`asks#1788532427384`)
+> 
+> ## 1. Switching camera mid-take
+> 
+> **Road (a), the canvas — measured before it was built, not assumed.** A probe on the simulator recorded a canvas-captured stream with the camera swapped halfway: `video/mp4; codecs=avc1.42000a,mp4a.40.2` (the same container the app already picks), 5.1s in, played back at 5.22s. So the recorder is handed `canvas.captureStream(30)` with `/video`'s own microphone track; the current camera is drawn onto that canvas each frame; a flip changes only which camera is drawn. Road (b) — stop/restart and an ffmpeg concat on the mini — was not needed, so the clip is one file everywhere from the moment it is made.
+> 
+> **Placement is `/flip`, not `/armed`, and the code decided it.** `/armed`'s camera button is already drawn and already answered while a recording runs — it needed no change. What was missing is that nothing *acted* on the var once `start` had its stream, and the sentence promising it could not be done is `/flip`'s own spec.
+> 
+> **One seam in `/video`:** `new MediaRecorder(this.media, …)` → `new MediaRecorder(this.recordStream(), …)`, with `recordStream()` answering `this.media`. The microphone never moves (the new camera is asked for `audio: false`); the viewfinder follows the flip at once.
+> 
+> **Evidence — the strongest artifact is the file itself.** Pulled off the rig server and read with ffprobe/ffmpeg rather than sampled in-page (my in-page sampler returned black and I did not trust it):
+> 
+> - Take 1: `vid-1788533247180`, **33.65s, h264+aac, 640×480, 2.46MB, one file.** Frame at t=3s is the grey mock camera (device 2); frame at t=28s is the black "Bip" camera (device 1). Luma scan pins the change to **between 15.2s and 15.4s, 136 → 22 in one step, with no black frame at the join.**
+> - Take 2, on the final rebased tree (with main's new `poster/at-once` composed): `vid-1788535433684`, **27.2s, h264+aac, 640×480**, flipped the other way — luma ~19 through 16s, 136 by 24s.
+> - Live readouts across the flip: `recState=recording` throughout, `facing` and the live track label moving `Mock video device 2` → `1` (and back on take 2), viewfinder label following.
+> - Frames: `.../scratchpad/evidence/frames/half1-t3.png`, `half2-t28.png`, `join-before-15.2.png`, `join-after-15.4.png`, `final-front-t5.png`, `final-back-t24.png`.
+> 
+> **`poster/at-once` (landed on main mid-build) does not conflict** — it grabs from `feature_Video.view`, which my node keeps pointed at the current camera, and its own `videoWidth` guard covers the decode gap. Verified by running the full flip on the rebased tree.
+> 
+> ## 2. The wording
+> 
+> `audience/plain-words` holds **one** table and answers **both** surfaces — `/audience`'s `audience_line` and `/explained`'s `armed_says` — so there is no fifth copy and the two cannot drift. Byline on the simulator: **"visible to supporters"**; promote arrow: **"visible to everyone in the project"**; column: `same as me → your own rank`, `admin → the project's admins only`, `candidate → candidates`, … `public → everyone in the project`. Screenshots: `.../evidence/plain-words-column.png`, `.../evidence/plain-words-byline.png`. `--prove` says confined (new node plus a new `order.md` in the parent, additions only).
+> 
+> ## Named risks
+> 
+> 1. **The simulator is not a phone, and the battery cost is unmeasured.** Every number above is a 640×480 mock camera drawn by a Mac's GPU. On an iPhone the camera is larger and the canvas road gives up the zero-copy path from camera to encoder. This is the thing to watch on the walk. If it bites, the answer is a lower `FPS` in this node — one number.
+> 2. **The first frame is black.** The canvas is filled black and drawn as soon as the source decodes; confirmed in the scan (`t=0 luma 0`). Named in the spec, not fixed.
+> 3. **A backgrounded tab freezes the picture, not the audio** — `requestAnimationFrame` stops, so the recorded video holds its last frame while sound continues. Named, not fixed.
+> 4. **`--prove` under-calls a grandparent refactor** again (it called `while-recording` implied because `video.js` sits inside the node it descends from). I did the full untick proof and carried the trailer. Third occurrence — the classifier needs the `/confined` shape.
+> 5. **`/undo` still does not cover either setting**, unchanged from the earlier build.
+> 6. **I started `tools/ask_monitor.py` by mistake** while looking for the ask text and stopped it immediately with TaskStop; it polls the live server, and nothing was stamped.</result>
+> <usage><subagent_tokens>676300</subagent_tokens><tool_uses>95</tool_uses><duration_ms>3215858</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a27755b799c22c34e</worktreePath><worktreeBranch>worktree-agent-a27755b799c22c34e</worktreeBranch></worktree>
+> </task-notification>
+
+The camera switch and the wording are back with the recorded file itself as proof, the join clean at fifteen seconds. Cherry-picking both onto main and deploying.
+
+Deploying. After it lands, the two asks get their shipped stamps, which depend on the build number. Nothing else is independent of that.
+
+**For the walk:** the camera switch works by drawing the live camera onto a canvas that the recorder records, so a flip mid-take swaps what is drawn and the file stays one clip. The cost is that the phone's zero-copy path from camera to encoder is gone. The simulator cannot measure battery, so a long take on your phone is the real test. If it runs hot, the frame rate is one number to lower.
+
+The first frame of a clip is black, and a backgrounded app freezes the picture but not the sound. Both are named in the spec, neither fixed.
+
+### p59
+*2026-09-04 15:33*
+
+> <task-notification>
+> <task-id>bt7dksnaa</task-id>
+> <tool-use-id>toolu_012uXJrgEmyKPrG4UJcNsrzf</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bt7dksnaa.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Cherry-pick the camera switch and plain words onto main, deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 655 is live: you can flip the camera mid-take and the clip stays one file, and the level words now read "visible to candidates" and so on, in the column and under a post, from one place. Both asks stamped shipped.
+
+Three asks remain with two workers: the time filter marks, the dropdown selector, and the stamp merge. Nothing to request until one returns.
+
+### p60
+*2026-09-04 15:36*
+
+> <task-notification>
+> <task-id>boxew0c6u</task-id>
+> <summary>Monitor event: "field asks from the phone (stamped on arrival)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788536169816 tool=- at=-
+> text: tapping a post in the map should scroll to its reel lozenge
+> ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+One more: tapping a pin on the map should scroll the reel to that post's lozenge. Stamped building. It reads as "select, don't open", since the close already scrolls the reel when a card was open. To the reel worker.
+
+Sent. I read the ask as a pin tap selecting the post and scrolling the reel to it, without opening the card, because a tap on the lozenge already opens it and the close already scrolls the reel. If you meant the pin should open the card as well, say so and it is a one-line change.
+
+Four asks are with three workers. Nothing to request until one returns.
+
+### p61
+*2026-09-04 15:38*
+
+> btw, I made a new post at 3:30, but the transcript still hasn't shown up - that seems like a bug
+
+That should have arrived within a minute or two. Looking at the live box now: the queue, the join, and the server's log.
+
+### p61a
+*2026-09-04 15:38*
+
+> <task-notification>
+> <task-id>a1c81bb1f2f5c01de</task-id>
+> <tool-use-id>toolu_016iyaF9uz8gb5i9FqLaGCbz</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a1c81bb1f2f5c01de.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build map-only and time filter" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Both asks done. Branch `since-marks-with-the-tap`, two commits on `2423432`, gate green, `--prove` implied for each, clip restored, no rig of mine running, live server untouched.
+> 
+> ## `1922289` — `since/marks-with-the-tap` (asks#1788532331774)
+> 
+> **The bug, found by reading before the rig:** `feature_Since.tell` had two faults in one road. It polled for `typeof feature_Loop !== 'undefined'` — true as soon as the fragment parses, long before the wasm world is up; `restore.js`, two nodes away, correctly waits for `feature_Loop.state !== null`. And it assigned `this.sent = m` **above** the send, inside a `try` whose `catch` says "not up yet" and does nothing — so a send that failed was recorded as sent, and every later call returned early on `m === this.sent`. One missed send at boot was permanent for the life of the page. The desktop rig booted fast enough; the installed app did not.
+> 
+> The coordinator's read of ash's world log ("zero SinceMarks") was a red herring on its own — `day_starts` is device-scoped and a device write queues no op, so it would never appear there. The mechanism is the latch.
+> 
+> **The cure, then ash's sharpening.** Every event the page sends now carries the three midnights at its **top level** (`data` belongs to whoever minted the event; nothing reads an unknown top-level key), written before the chain runs. Ash's case made the tap-only version insufficient: *shut for two days, come back, touch nothing* — stale marks are worse than none, because `today` then means a day that is not today and the map looks right while being wrong. So three roads need no finger: a boot chase on the real readiness test that retries until a send lands, a re-tell on `visibilitychange`, and a timer at the next local midnight that resends and repaints. `/since`'s own `tell()` is untouched — the parent's code, and unticking must give it back.
+> 
+> **Evidence.** Deterministic in headless Chrome with the boot road blocked at the innermost wrap: **before** — every period showed all five, with **exactly one** `SinceMarks` dropped, which is the latch made visible; **after** — today 1, week 3, month 2, all 5. Ash's case with marks planted stale: `today` showed yesterday's post; after a cold open touching nothing, only today's.
+> 
+> ## `9e5c1b7` — `since/one-word` (asks#1788534899566)
+> 
+> The slot holds one word (~50pt where four pills took 175, so `/title`'s name gets the middle back). A tap drops the four under it, `/in-place`'s popover shape one screen edge up — open is a flag on the turn's state, no op, no level. A pick closes it and is `/since`'s own event unchanged, so the marks still ride the tap. ‹ is caught before the chain so it closes the column instead of climbing.
+> 
+> ## The simulator — done, both asks, real fingers
+> 
+> I got the installed app up (`display-mode: standalone` true) on `A697BC56` against my own port, and drove it with `idb` at absolute points.
+> 
+> - **Dropdown:** one word in the slot; a tap drops four with the chosen lit; picked today → **1** (today post), week → **3**, month → **2**, all → **5**, the column closing on each pick and the word following; the word tapped twice puts it away changing nothing. Screenshots: `simshots/slot.png`, `simshots/column.png` — judged against `/taste` (house ground `#17171a` on `#3a3a3f`, 12px radius, one accent for chosen, the map showing through — `/learned` 2). Good enough.
+> - **Marks, earlier in the session:** all → 5, today → 1, week → 3, month → 2, and after a kill and cold launch with `today` stored and no finger, the map opened already filtered to 1.
+> - **Ash's two-day case on the device:** period `today`, marks planted two days old, kill and cold launch, **no pill touched** → `word=today → 1: today post`. The clock cannot be moved on a simulator, so the marks were aged instead, which is what a phone that slept holds.
+> 
+> Two rig lessons worth the ledger: `simctl launch` cannot start a web clip and Spotlight's Top Hit is **not** stably the clip (it was Reminders on one attempt) — read `describe-all` and take the square tile, never a fixed point. And this clip renders with browser chrome despite reporting standalone, so simrig's 62px inset is wrong for it; the offset was measured off the screen (`screen_y = page_y + 116`).
+> 
+> ## What I got wrong, and fixed
+> 
+> I started my rig on **8125** because that port's owner appeared to be gone. They came back, and `/reuseport` let both servers bind it — my server was answering their simulator for a few minutes. I stopped mine as soon as I saw it and moved to my own port 8171. Separately, my Chrome rig had been running `MISO_RIG=1` all session, which makes every page post to the machine-wide `/tmp/miso-readout.json`; headless Chrome does not need it (localhost is a secure context, which is why smoke.py runs without it), so I dropped the flag. Both are worth a line in misses.md: **a port belongs to the worktree whose clip points at it, not to whoever finds it free**, and **`MISO_RIG=1` is a claim on two machine-wide files — do not set it for a Chrome rig**.
+> 
+> ## Open risks
+> 
+> 1. **The one frame this does not reach.** The first paint after a cold launch is drawn from whatever the device last stored, before any event. The boot chase fires as soon as the loop has state — well before the map has a world — and the device test showed no stale frame, but the correction is one turn, not zero. Making it zero means not persisting `day_starts`, which is `/since`'s var to change.
+> 2. **Every event is now ~40 characters larger**, and `/blackbox` records the whole event. Small, but it is on every event in the app.
+> 3. **`.proj-title`'s left edge is still a hardcoded number** (now 80px, was 200px), tuned to the slot's width in two nodes' stylesheets.
+> 4. `tests/sim/since-filters.json` is committed but does **not** pass as written — simrig's tap maths is wrong for this clip. The proof was driven by hand at absolute points. Either the test needs a per-clip offset or the clip needs reinstalling properly; I left the file as the recorded intent and say so here rather than leaving a green-looking test that is not.</result>
+> <usage><subagent_tokens>655037</subagent_tokens><tool_uses>148</tool_uses><duration_ms>3931900</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a1c81bb1f2f5c01de</worktreePath><worktreeBranch>worktree-agent-a1c81bb1f2f5c01de</worktreeBranch></worktree>
+> </task-notification>
+
+Patching both scripts now, then committing with the filter fixes and deploying; the re-queue comes after the deploy.
+
+Speechmatics answers with words under the server's own PATH now. Committing the fix with the two filter commits and deploying; the re-queue follows the deploy.
+
+Deploying now. Once it lands I re-queue your 3:30 clip and the two from this morning, then watch the words arrive. Those depend on the new build being up, so nothing else to request yet.
+
+**What went wrong, plainly:** your clip arrived fine, in six pieces while you filmed, and joined. The transcriber ran, but the server under launchd has a bare PATH and could not find ffmpeg to pull the audio out, so Speechmatics was never called and the job was dropped after five tries. Run by hand under the same environment with the fix, your clip came back in six seconds: "Hello? It's me. Here's another test thing. Walking through the fields of Covent Garden."
+
+### p62
+*2026-09-04 15:45*
+
+> <task-notification>
+> <task-id>bpn04o8e5</task-id>
+> <tool-use-id>toolu_01QkDXxqDAdGwdM3a3B9HPRA</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bpn04o8e5.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Commit the ffmpeg fix and deploy it with the two filter commits" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 658 is live, both filter asks stamped, and the three clips are queued. Now watching the server pick them up.
+
+Waiting on the drain. The only follow-ups are checking the words landed on the three posts and stamping nothing further, both of which depend on the drain finishing, so there is nothing else to request now.
+
+On the phone now: the time filter works, with one word in the slot and a tap dropping the four, and the app knows what day it is on every event, including after two days closed.
+
+### p63
+*2026-09-04 15:48*
+
+> <task-notification>
+> <task-id>bolteogu3</task-id>
+> <tool-use-id>toolu_018rNygVdYChyCMSkNJdZ12F</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bolteogu3.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Wait up to three minutes for the queue to drain and show the transcription log lines" completed (exit code 0)</summary>
+> </task-notification>
+
+The queue didn't move in three minutes and the log lines are the old ones, so nothing picked the jobs up. I need to see what triggers the drain.
+
+Watching. Nothing else to request until the queue moves or a worker returns.
+
+### p64
+*2026-09-04 15:49*
+
+> <task-notification>
+> <task-id>a562b5d6fde125be5</task-id>
+> <tool-use-id>toolu_012Hcbfxhn2KKtkv6Dduw59c</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a562b5d6fde125be5.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build per-ask stamp merge" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>**Commit `53a682f`** on `worktree-agent-a562b5d6fde125be5`, rebased onto current main (`5e73113`). Diff: 3 files added/changed under one node plus two scaffolding tools — `features/miso/shell/panel/noob-button/ask/lifecycle/being-built/stamp-stands/{stamp-stands.md,stamp-stands.rs}` (new), `.../being-built/order.md` (+1 line), `tools/stamp_ask.py` (+18), `tools/ask_ack.py` (+5). `toggle_proof.py HEAD` says **implied** — no untick, no trailer. Not deployed.
+> 
+> **Two places I departed from the brief, both deliberate, both yours to overrule.**
+> 
+> 1. **Placement.** `/ask` is *also* at the six-child cap (open-chip, birthplace, propose, lifecycle, miso-button, request-box) — the brief assumed it had room and told me to name the regroup and stop otherwise. I did not stop. The node sits at `/ask/lifecycle/being-built/stamp-stands` (being-built had one child), because being-built is the node that owns the builder's stamp and `stamp_ask.py`, and ash's ask was a bug report about that stamp. If you disagree, the honest home is a new grouping node under `/ask` in the shape of `/cards/store` — that regroup is a prompted event and costs only an `/enabled` flag address, so moving this node later is cheap. I judged that shipping the fix before Saturday beat buying that ruling tonight.
+> 
+> 2. **The rule is field ownership, not the ladder.** The brief's ladder (asked → proposed → building → shipped) is broken in the tree as it stands: `/did-you-mean` moves an answered ask *backwards* to `asked` on purpose, so a forward-only ladder would silently swallow every answer; and `question` is stamped over `building` when the acker got there first while `building` is stamped over `question` when silence gets the likely reading built, so no ranking of those two is right in both directions. What is built instead: the list has two authors, and each field is taken from the side that can write it while the other side may only *fill* it. Which side is which is read from `_from` — the bench reaches `/diag/context` on the box with no cookie, so its op carries no proven sender; a device's always does. A device may move a status only when it carries the thing that earns the move (a new `answer`, a new `proposal`). The brief's out-of-order case (a late `building` on a `shipped`) is closed at the writer instead: `stamp_ask.py --only-if &lt;status&gt;`, and `ask_ack.py` passes `--only-if asked`, so the automatic ack can never write over a human stamp — while a person can still correct a stamp backwards, which happened for real today with the build-621 announcements.
+> 
+> **Evidence** (rig on port 8143, own HOME/context under `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a562b5d6fde125be5/`; started and stopped by its own pid file, cwd- and port-checked; 8095 answered 200 before and after). `prove.py`: 22 assertions, all green, through the two real doors — `/msg` with a cookie-proven session as the page sends it, and `stamp_ask.py --local` through `/diag/context` as the bench does. Covered: the case itself (stamp, then the phone's older list — `building` stands, text and urgency intact); the reverse order; a bench ship against a stale snapshot while the phone files a new ask (both survive); the did-you-mean answer honoured and its replay refused once the bench moved on; a second question replacing the first over a stale phone copy; an ask the phone's list dropped (kept); duplicate `t`s folded; a device trying to promote its own ask (refused); the late ack (`left alone: 1 already past asked`). `look.py` in headless Chrome: the panel shows the amber `building` pill on the ask, the phone resends every status as `asked`, the panel still shows `building` — `panel-2-after-resend.png` in the rig dir. `relay.py`: an open page is not corrupted by another device's stale write; and the sender's own `/msg` reply carries the merged list, so a stale device is corrected on the write that would have lost the stamp rather than at the next join. `tools/smoke.py --port 8144`: green in all three passes. `fmlink.py miso --quick` builds clean on the rebased tree.
+> 
+> **4a:** the node adds no surface — the judgement is that the sheet is unchanged except that the pill stops flipping back, which is what was asked; nothing new to look at beyond the screenshot above.
+> 
+> **Open risks, named.** A stamp typed through the *tunnel* carries a cookie and is therefore classified as a device write, so it cannot move a status — every real stamp runs on the box (ssh + localhost, or `--local`), and the refusal prints a log line rather than an error to the tool. A page open at `localhost` with no cookie is read as the bench, in a world with no stamps to lose. A later node adding an asker-side field must add it to `asks_asker_fields` or the device will fill it once and never change it again. A signed-in device can *fill* a `build`/`note` the world lacks on its own ask (never change one the world holds, never on anyone else's sheet) — the price of a merge that never drops a field. Two asks minted in the same millisecond in one world fold into one, logged. And the placement above is the one thing I would want your ruling on before this ships.</result>
+> <usage><subagent_tokens>211298</subagent_tokens><tool_uses>120</tool_uses><duration_ms>1653731</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a562b5d6fde125be5</worktreePath><worktreeBranch>worktree-agent-a562b5d6fde125be5</worktreeBranch></worktree>
+> </task-notification>
+
+The stamp fix is back. The worker built ownership per field rather than my forward-only ladder, because the did-you-mean flow legitimately moves an ask backwards, and that is the right call. Landing and deploying.
+
+Deploying the stamp fix. What comes after depends on results I don't have yet: the shipped stamp needs the build number, and the transcript check needs the queue to drain. The pin-tap worker is still out. Nothing else to request now.
+
+### p65
+*2026-09-04 15:51*
+
+> <task-notification>
+> <task-id>a481d67a8bff6672b</task-id>
+> <tool-use-id>toolu_014noEkuETeDveDEjjDcXrfC</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a481d67a8bff6672b.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build four map-reel refinements" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>One node, one commit, on current main (`53a682f`). Not deployed.
+> 
+> ## `37ec327` — `browse/map/reel/current/from-the-pin`
+> 
+> A tap on a pin now makes that post **current** and nothing more: the band scrolls so its lozenge sits at the left edge — which is exactly what `/current` outlines and `/on-the-pin` rings — and the post does not open. Opening stays the lozenge's own tap, which is now right under the thumb; `/back-to-the-lozenge` already scrolls the band the other way on close, so the two directions agree. The mark is also set by hand, because a lozenge already at the edge moves nothing and fires no scroll event. A pin whose post the band does not list has no lozenge to go to, so that tap still opens the post — what every pin did before.
+> 
+> `/map` was refactored to open the seam: the pin's tap was a closure inside `draw` (sending `browse_open:&lt;id&gt;` by hand, because Leaflet stops the DOM event on its own markers) and is now `pinTap(p)`, whose default is that same send.
+> 
+> ## Readouts (desktop rig, the pin's own Leaflet click path)
+> 
+> | | reelLeft | current | pin ringed | card open |
+> |---|---|---|---|---|
+> | start | 12 | first post | — | no |
+> | after tapping the last post's pin | **2664** | that post | that post | **no** |
+> | then tapping that lozenge | — | — | — | **yes** |
+> 
+> The map then panned to that post (`51.2796, 0.1946` — its own pin), which is `/reel`'s own rule for a scrolled band, not this node's decision.
+> 
+> ## Toggle proof (in the commit trailer)
+> 
+> Not confined — `/map` is refactored. Unticking `from-the-pin` removes exactly `f/from-the-pin.js` and its own path-keyed `from_the_pin_enabled` var (74 rs lines, all that var's plumbing) and nothing else; re-ticked, the composition is byte-identical to the ticked snapshot. **The `/map` refactor alone was run unticked on the rig and the pin tap opened the post exactly as it always had** — so the seam changes no behaviour of its own. Smoke gate green.
+> 
+> ## The simulator — a blocker, not a skip
+> 
+> **I could not run this on the iPhone simulator.** Three separate tooling failures, none of them the app: my device (`iPhone 17`) had been shut down between rounds and the other worker holds the Pro, so I booted mine back; after the reboot the clip's page **stopped posting readouts entirely** (`readout.json` frozen at 16:41:52 while I worked past 16:46), so `simrig`'s `js` door returned `null` on every call and `tap` was aiming at a stale snapshot — the taps reported `ok` but the card page never closed. Earlier in the same round a stray Safari tab of mine was answering the drive door alongside the clip (misses.md's own warning), which I cleared by the reboot. The evidence above is therefore the desktop rig only, on the real Leaflet marker click path.
+> 
+> ## Named risks
+> 
+> - Unproven on WebKit: whether Leaflet's marker click reaches `pinTap` identically there, and whether `scrollTo({behavior:'smooth'})` on the band behaves the same under `scroll-snap-type: x mandatory` on iOS.
+> - The map pans after the tap (`/quicker`'s scroll listener). That is the app's own grammar, but it means the map moves right after a finger lands on it — ash may or may not want that; suppressing it would mean fighting `/reel`'s rule.
+> - `/fan-out`'s fanned pins are untested for this; fanning is drawing rather than tapping, so each fanned pin should still mean its own post, but I did not exercise a fanned group.
+> - The band's scroll is reset when a card opens and `/reel` re-renders (pre-existing); only `/back-to-the-lozenge` puts it right again.
+> - The simulator's rig arming looks fragile across a device reboot — worth a misses.md line if another worker hits it.
+> 
+> My rig was stopped by its own PID (`94400`), checked against `ps -o command=` first. Note for triage: there is now a `miso_server` running from the **shared checkout's** build dir (`/Users/microserver/fm2/products/miso/build/...`, pid 20659) — not mine, and not one I touched.</result>
+> <usage><subagent_tokens>684080</subagent_tokens><tool_uses>50</tool_uses><duration_ms>903738</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a481d67a8bff6672b</worktreePath><worktreeBranch>worktree-agent-a481d67a8bff6672b</worktreeBranch></worktree>
+> </task-notification>
+
+The pin-tap node is back, proven on the desktop rig with the map refactor also proven unchanged alone. It lands as soon as the stamp deploy finishes, since two deploys cannot overlap.
+
+The server the worker noticed running from the shared build directory is the smoke gate's own, which the running deploy starts. I'll confirm it is gone afterwards.
+
+### p66
+*2026-09-04 15:53*
+
+> <task-notification>
+> <task-id>boxew0c6u</task-id>
+> <summary>Monitor event: "field asks from the phone (stamped on arrival)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788537194805 tool=- at=-
+> text: Project name and noob button should be on opaque black lozenges
+> ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Another: the project name and the nøøb button on opaque black lozenges. Stamped building. The map-only worker owns the top strip, so it goes there.
+
+Sent. The strip gets solid black lozenges under the project name and the nøøb button, proven over a bright ward. 
+
+In flight: the stamp deploy, the queue watch on your three clips, the pin-tap node waiting to land, and the strip. Nothing to request until one of them returns.
+
+### p67
+*2026-09-04 15:54*
+
+> <task-notification>
+> <task-id>bim65z08d</task-id>
+> <tool-use-id>toolu_01CwLD1KLbc4F2xvPZQfk3MU</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bim65z08d.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Fast-forward main to the stamp fix, verify, and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 659 is live with the stamp fix. The queue still holds the three clips, so your phone has not sent its startup message yet. Landing the pin-tap node now.
+
+Deploying the pin-tap node. Everything else waits on a result: the shipped stamp on the build number, the transcripts on your phone opening, the strip on its worker. Nothing else to request now.
+
+**Your three clips:** the queue only drains when a phone sends a recording or its startup index. Open the app once and they go. I have a fix in mind for that gap, a drain at server boot and on a timer, and will file it as the next node rather than wait on you again.
+
+### p68
+*2026-09-04 15:55*
+
+> the active region thing looks cool and works well. One question: at the bottom of the map there seem to be some outlined wards that are rendering in the dark colour - seems like it's ambiguous whether they are in or out of the selected region.
+
+Good question. Let me check the boundary file itself: whether every ward it draws actually lies inside the constituency polygon.
+
+Not ambiguous, just misleading: they are outside. The boundary file holds 26 wards, and 7 of them lie outside the constituency polygon. They are Sevenoaks *district* wards that belong to the Tonbridge constituency: Ash and New Ash Green, Hartley and Hodsoll Street, Cowden and Hever, both Edenbridge wards, Leigh and Chiddingstone Causeway, and Penshurst, Fordcombe and Chiddingstone. The region is right to leave them dark, but drawing them with the same black outline as the real wards makes them look like part of the patch, and they also appear in the region picker.
+
+I'd drop them: remove the seven from the file, so they stop being outlined and stop being offered as regions. The alternative is to keep them faint as context. Say which and it is a small node.
+
+### p69
+*2026-09-04 15:57*
+
+> <task-notification>
+> <task-id>boxew0c6u</task-id>
+> <summary>Monitor event: "field asks from the phone (stamped on arrival)"</summary>
+> <event>ASK asked user=phone:+447813943023 t=1788537420957 tool=- at=-
+> text: opening a post should keep the map background behind it (same for users etc)</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Another: the map should stay behind an open post, and behind people and project cards. That is the card-over-map node's ground, so it goes to the reel worker.
+
+### p69a
+*2026-09-04 15:57*
+
+> <task-notification>
+> <task-id>boxew0c6u</task-id>
+> <summary>Monitor event: "field asks from the phone (stamped on arrival)"</summary>
+> <event>ACK building: stamped phone:+447813943023: -&gt; building
+> proposal: -</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+Sent, and the ask is stamped building. The map-only change stopped drawing the map set while a card is open, which is why the card-over-map promise broke on the phone. The worker will keep the map mounted behind posts, people and projects alike.
+
+In flight: the pin-tap deploy, the strip lozenges, this one, and the queue watch. Nothing to request until one returns.
+
+### p70
+*2026-09-04 15:58*
+
+> let's change the suggested text in the miso input field to "request a fix, tweak or feature"; instead of doing the semantic search, file it through as a feature request straight away; if it turns out the feature exists already, then we should pop up the guide to the feature.
