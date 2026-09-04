@@ -580,3 +580,27 @@ killed by the PID its own start wrote to its own file, checked against the
 process's command line and start time, and never by a search over every
 `miso_server` — a fallback that widens the target is the bug. Written into
 the worker seat (.claude/agents/worker.md) and deploy.md.
+
+## the fast-forward that never happened (2026-09-04) — a merge read from its first line
+
+Triage merged the transcription branch with `git merge --ff-only` in a
+command that had just stashed nothing (the transcript export was untracked,
+not modified). Git printed `Updating d5fb143..247deb8` and then refused the
+checkout because the untracked `transcripts/2026-09-04-field-walk.md` would
+be overwritten — but the refusal was the second line and the command chain
+ran on. Main stayed where it was; the next deploy shipped build 621 without
+a line of transcription; three announcements were stamped shipped against
+it and had to be put back to building. **The rule:** after a merge, the
+proof is `git branch --contains <tip>` or `git log -1`, never the first
+line of merge output; and a worker's branch that carries the transcript
+file must be landed by cherry-pick with `-X theirs` and a re-export, since
+the same file is regenerated on main.
+
+## the merge commit that touched four nodes (2026-09-04)
+
+The reel branch was landed with a merge commit. deploy.sh proves each commit
+since the last release on its own footprint, and a merge commit's footprint
+is the union of everything it brings in — four nodes, no trailer, refused.
+The worker's own commits each carried their proof. **The rule:** main is
+linear. Land a worker's branch by cherry-pick (or a rebase onto main), never
+by a merge commit, so each commit is judged as the worker proved it.
