@@ -1,1 +1,2 @@
 - [x] since
+- [x] strip-on-black

@@ -1,0 +1,54 @@
+/* The nøøb button is drawn opaque and then made translucent: /button sets
+   `opacity: .55` on the whole element, which takes the ground with it, so the
+   map reads through the lozenge and through the glyph. Opacity is put back to
+   1 and the quietness moves to the ink, where it belongs — #9a9aa2 is /taste
+   2's "purpose" grey, which is what .55 of the page's own white over #121215
+   was already reading as. */
+#build {
+  opacity: 1;
+  color: #9a9aa2;
+}
+
+/* the two pulses breathed the whole element, which is the same translucency by
+   another road. They breathe the INK instead, so the meaning each colour
+   carries is untouched — blue for a build waiting (/update), parchment for a
+   message (/attention) — and the ground stays solid under both. */
+#build.update {
+  animation: fm_strip_update 1.6s ease-in-out infinite;
+}
+@keyframes fm_strip_update {
+  0%, 100% { color: #4c6588; }
+  50% { color: #8ab8ff; }
+}
+#build.attention {
+  animation: fm_strip_attn 1.6s ease-in-out infinite;
+}
+@keyframes fm_strip_attn {
+  0%, 100% { color: #7d735e; }
+  50% { color: #d9c9a4; }
+}
+
+/* the project's name had no ground at all — bare accent text over whatever the
+   map happened to be under it. It gets the strip's own pill: /since's slot
+   shape, which is the nøøb lozenge's shape, which is the house pill (/taste 1
+   and 4) — #121215 on a #3a3a3f hairline, fully round, no translucency.
+
+   It hugs its name rather than filling the gap: `right: auto` lets a fixed box
+   shrink to fit, and the cap stops it short of the lozenge. Its height and top
+   are set so its centre sits on the same line as the filter word's and the
+   lozenge's, which is what makes the three read as one strip. */
+.proj-title {
+  top: calc(env(safe-area-inset-top, 0px) + 6px);
+  right: auto;
+  height: 25px;
+  max-width: calc(100vw - 210px);
+  box-sizing: border-box;
+  /* block, not inline-flex: `text-overflow: ellipsis` is /title's and it only
+     works in a block container, so the box stays a block and the text is
+     centred by its line instead (25px less the two 1px borders). */
+  line-height: 23px;
+  padding: 0 10px;
+  background: #121215;
+  border: 1px solid #3a3a3f;
+  border-radius: 999px;
+}
