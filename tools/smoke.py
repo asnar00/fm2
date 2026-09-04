@@ -341,13 +341,38 @@ async def s_qr(pg):
     return drawn and gone and still
 
 
-@step("posts: + makes a post ready to write (or, under /video-only, records)")
+@step("posts: + opens the recording row (or records, or writes) and a post is made")
 async def s_post(pg):
     await open_tool(pg, "posts")
-    # /video-only (2026-09-03): the add button records a video and there is
-    # no kind chooser. A headless browser has no camera, so the road is
-    # asserted by its shape and a post is minted through /new's own event,
-    # as tests/sim/one-level.json does.
+    # /armed (2026-09-04): the plus opens a recording row one level down —
+    # rec, stop, camera, publish level — and does not film. The row and the
+    # level under it are walked with real clicks; the post itself is minted
+    # through /new's own event, because a headless browser has no camera.
+    if await pg.evaluate("!!document.querySelector('.toolbar [data-ev=\"tool_record\"]')"):
+        shape = await pg.evaluate("!document.querySelector('.toolbar [data-ev=\"posts_new\"]') && !document.querySelector('.toolbar [data-ev=\"oneadd_pick\"]')")
+        await pg.click('[data-ev="tool_record"]'); await pg.wait_for_timeout(1200)
+        row = await pg.evaluate("""(() => {
+            const q = (s) => !!document.querySelector('.toolbar ' + s);
+            return q('[data-ev="vid_rec"]') && q('[data-ev="armed_flip"]')
+                && q('[data-ev="tool_level"]') && q('.armed-act.off')
+                && !q('[data-ev="vid_stop"]');
+        })()""")
+        await pg.click('[data-ev="tool_level"]'); await pg.wait_for_timeout(1200)
+        page = await pg.evaluate("document.querySelectorAll('.armed-page .armed-pill').length")
+        await pg.click('[data-ev="tools_home"]'); await pg.wait_for_timeout(1000)
+        back = await pg.evaluate("!document.querySelector('.armed-page') && !!document.querySelector('.toolbar [data-ev=\"vid_rec\"]')")
+        await pg.click('[data-ev="tools_home"]'); await pg.wait_for_timeout(1000)
+        home = await pg.evaluate("!!document.querySelector('.toolbar [data-ev=\"tool_record\"]')")
+        await pg.evaluate("feature_Loop.send({type:'CardNew', data:{owner:'_smoke', type:'post', title:'a post', t:Date.now()}})"); await pg.wait_for_timeout(2000)
+        ok = shape and row and page == 7 and back and home and await pg.evaluate("!!document.querySelector('.card-page')")
+        if not ok:
+            print(f"      (shape={shape} row={row} pills={page} back={back} home={home})")
+        await go_home(pg)
+        return ok
+    # /video-only (2026-09-03) without /armed: the add button records a video
+    # and there is no kind chooser. A headless browser has no camera, so the
+    # road is asserted by its shape and a post is minted through /new's own
+    # event, as tests/sim/one-level.json does.
     if await pg.evaluate("!!document.querySelector('.toolbar [data-ev=\"vid_rec\"]') && !document.querySelector('.toolbar [data-ev=\"posts_new\"]')"):
         shape = await pg.evaluate("!document.querySelector('.toolbar [data-ev=\"oneadd_pick\"]') && !document.querySelector('.toolbar [data-ev=\"capture_photo\"]') && !document.querySelector('.toolbar [data-ev=\"dict_rec\"]')")
         await pg.evaluate("feature_Loop.send({type:'CardNew', data:{owner:'_smoke', type:'post', title:'a post', t:Date.now()}})"); await pg.wait_for_timeout(2000)

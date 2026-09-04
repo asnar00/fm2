@@ -230,8 +230,18 @@ impl feature_Audience {
         card["links"] = serde_json::json!([
             { "kind": "in", "to": pid, "t": now }
         ]);
-        card["floor"] = serde_json::json!(grade);
+        card["floor"] = serde_json::json!(audience_new_floor(grade));
         card
+    }
+
+    // the floor a NEW post is stamped at, given the author's own grade in the
+    // project it is filed in. The rule as it stands is "the author's own" —
+    // "visible to all at the same or higher rank" — and that is what this
+    // returns. It is a function rather than the expression it was so that a
+    // node letting somebody choose a level for their posts has one place to
+    // redefine; the answer here is byte-for-byte the answer the line gave.
+    fn audience_new_floor(grade: String) -> String {
+        grade
     }
 
     // ---- and only when that project is chosen -------------------------------

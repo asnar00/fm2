@@ -1,0 +1,76 @@
+/* the publish-level page: one named list on the same ground every page here
+   uses, and nothing else. No form, no labels above boxes, no save.
+
+   The frame is written out rather than borrowed from `.card-page`, because
+   this page is not a card: /editing reads `.card-page` from the DOM after
+   every paint and puts a pencil in the control row for each one it finds,
+   and there is nothing here to edit. (Taking that pencil out again from this
+   node was tried and freezes the page — /editing puts it back on the next
+   paint and the two chase each other.) So the look is copied and the claim
+   is not: /cards' box, /raised's top, /ground's ground, and /hug's floor —
+   which is the floor `/clear-of-toolbar` overrides on a real card page and
+   which one short row genuinely wants (learned 4, a ground that hugs).
+   The cost, named: /backdrop's tap-the-ground-to-close needs a `.card-page`
+   and so does not fire here; ‹ and the lit control are the ways up. */
+.armed-page {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 48px);
+  left: calc(env(safe-area-inset-left) + 16px);
+  right: calc(env(safe-area-inset-right) + 16px);
+  bottom: auto;
+  box-sizing: border-box;
+  max-height: calc(100vh - env(safe-area-inset-top, 0px) - 48px - 72px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  text-align: left;
+  background: #161619;
+  border: 1px solid #202026;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.armed-page > * { flex: none; }
+
+/* the row's name, in the ignorable step (/taste 2): it says which list this
+   is, and then gets out of the way. */
+.armed-row .armed-what {
+  color: #77777e; font-size: 12px;
+  padding-bottom: 7px;
+}
+
+.armed-row .armed-list {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+
+/* the same pill /audience's grade list wears, and deliberately the same: two
+   lists of the same six words on two surfaces must read as one thing
+   (/taste 3, and learned 9 — when one kind gets a shape, give the others the
+   same). */
+.armed-pill {
+  padding: 6px 13px; border-radius: 999px;
+  background: #121215; border: 1px solid #202026;
+  color: #77777e; font-size: 13px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+  transition: color 0.18s ease-out, border-color 0.18s ease-out;
+}
+.armed-pill:hover { color: #c9c9d2; border-color: #3a3a3f; }
+.armed-pill.on {
+  color: #9db7d8; border-color: #9db7d8; font-weight: 600;
+}
+
+/* rec and stop are the lit pair: black ink on the posts tool's colour, the
+   way every making button in a control row is (/glyphs, /plus-tinted). */
+.tool-button.armed-act.tinted { color: #000; }
+
+/* the one that cannot act: no colour, no ink to speak of, and no pointer —
+   it is there so the row keeps its shape, not so it can be pressed. */
+.tool-button.armed-act.off {
+  background: #1a1a1d; color: #3a3a3f;
+  cursor: default;
+}
+
+/* the two settings beside them: quiet, the way /flip's own control was
+   (/taste 2 — hierarchy is dimness). Lit, the sliders button is the level's
+   own icon and goes black on the light ground like every selected button. */
+.tool-button.armed-set { color: #d0d0d6; }
+.tool-button.armed-set.sel { color: #000; }
