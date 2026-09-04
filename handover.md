@@ -53,6 +53,13 @@ shipped on its own. Fable 60% → ~62%.*
   treats a stored zoom at the placeholder as no memory — proven on the
   installed clip through four updates in a row. Phones that ran 690 hold a
   poisoned `map_view` at zoom 0, healed by that floor.
+- **The deploy stamps (build 699, `announced/by-the-ship`):** announce
+  with `--node <tree path>`; deploy.sh, after `released.sha`, stamps
+  shipped on every announcement whose node the release touched and every
+  ask whose `asks#<t>` a commit subject cites, and prints any announcement
+  still building after a day with no node. No hand stamps from now on —
+  the skillset carries the instruction; the two-clips flip announcement
+  has no node and will show in the reminder until its ship cites it.
 - **Proposals in notes.md:** de-crufting the tree as a periodic fold pass
   (#p80, for after the field test).
 - **Residuals named by workers, not yet ruled on:** once a level is picked
