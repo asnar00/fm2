@@ -1,0 +1,4 @@
+- [x] mirror
+- [x] phone
+- [x] transcript
+- [x] as-posts

@@ -50,7 +50,7 @@ symlink into `features/miso/<path>` until a product needs its own
 `order.md` there; then that path is *materialised* — real directories of
 symlinks to each sibling, one real `order.md` — the shape
 `products/miso/miso/loop/tap/counter` set and `users/invite/qr` follows
-(`instant` unticked for miso). Two hazards: writing to
+(`instant` unticked for miso). `loop/dictate`, `as-posts` and `capture` were materialised on 2026-09-04 to untick `photo`. Two hazards: writing to
 `products/miso/miso/<path>/order.md` while it is still a symlink edits
 the shared tree (it happened twice on 2026-09-02 — check `test -L`
 first); and a new sibling landing in the shared tree under a materialised
@@ -140,6 +140,13 @@ a server with no successor waiting — the port does go quiet then.
   the server restarts by handover so it forgets the world. Nothing is
   deleted; the same number can be invited again at once. Refuses a user
   with authority without `--force`.
+
+- **Delete every non-video post** (2026-09-04, asks#1788503662808):
+  `python3 tools/prune_posts.py` lists the still and audio posts in every
+  world, `--go` tombstones them (`/delete`'s shape, in the owner's world and
+  every copy, through the op door). Recordings in `~/.miso-blobs` stay; the
+  op log holds the prior lists. Run once on 2026-09-04: four of ash's posts,
+  thirteen copies over four worlds.
 
 ## The toggle-proof gate (added 2026-09-02, settings #p4–#p5)
 

@@ -1,0 +1,3 @@
+- [x] stored-words
+- [x] capture
+- [x] where-taken
