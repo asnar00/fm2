@@ -1,0 +1,32 @@
+/* the levels stand in a column, one line each, instead of wrapping as pills.
+   Stretched rather than centred, so the seven rows share one left edge and
+   read as a list — /taste 6, the list grammar: status where it sits, the
+   thing itself bold, no headers, no ceremony. */
+.armed-list {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+/* a row, not a lozenge: the full-round pill was right for seven words on
+   three wrapped lines and is wrong for a column. 12px is /taste 4's radius
+   for a card-shaped thing, which is what each of these now is. */
+.armed-pill {
+  display: block;
+  border-radius: 12px;
+  padding: 9px 12px;
+  font-weight: 600;
+}
+
+/* the sentence under the name: the ignorable step (/taste 2), so the level is
+   what you read and the explanation is there when you look for it. It stays
+   quiet on the chosen row too — the accent is the mark, not the prose. */
+.armed-says {
+  display: block;
+  color: #77777e;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  padding-top: 2px;
+}
+.armed-pill.on .armed-says { color: #8a8a93; }
