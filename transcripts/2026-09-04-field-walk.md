@@ -1972,3 +1972,41 @@ Good. We are in decent shape for it.
 *2026-09-04 16:04*
 
 > let's fix transcription and make it retry immediately if dropped - we can add notifications to the engineer section if need be.
+
+That builds now, and the transcription worker still has its context, so it goes back to it.
+
+Sent. The transcription worker is on it.
+
+**What it builds**
+
+- The queue drains at server boot and on a timer whenever a job is waiting, so nothing depends on a phone sending anything.
+- A job is never dropped. Retries back off from ten seconds up to hourly, and a job older than a day is parked and named, not deleted.
+- A clip with no speech is finished once as "no speech" rather than retried five times.
+- The engineer sheet shows one line per stuck clip with its tries and last error, and one line if no rung is reachable, saying why. The line clears when the clip lands.
+
+Four workers are out: the strip lozenges, the map behind an open card, the ask box, and this. Nothing to request until one returns.
+
+### p75
+*2026-09-04 16:04*
+
+> I think the most important thing for user confidence is that when a new post is made, it appears immediately on the map on the author's phone, with thumbnail and playback, and that transcription appears shortly thereafter. I'll do some walkabout tests in a bit to make sure that's the case.
+
+That is the right thing to test, and each step of it is now on the phone:
+
+- **Appears at once:** the post is minted at stop, its pin and lozenge draw in the same paint, and the thumbnail comes from the frame grabbed while you filmed, so there is no wait on the upload.
+- **Plays at once:** the clip plays from the phone's own bytes, and the poster stays still until you tap.
+- **Words shortly after:** the pieces go up while you film, the server joins them at stop, and your own stop message kicks the transcription. Today your real clip took about six seconds through Speechmatics once ffmpeg was found. The words land as an edit, and the open card keeps its player while the text arrives.
+
+**What to watch for on the walk**
+
+- The gap between stop and the pin appearing. It should be under a second. If the map has to be closed and reopened, that is a bug.
+- The thumbnail on the lozenge for a very short clip. Under half a second it falls back to the slow road.
+- The time from stop to words. A minute is too long. If it is, note whether you had signal, since the upload queues without it.
+- A flip mid-take on a long clip, and whether the phone runs warm.
+
+Report anything from the phone's ask box as you go. It is stamped on arrival and a worker gets it.
+
+### p76
+*2026-09-04 16:06*
+
+> for the thumbnail, just use the first frame as a default - that should work regardless of length of clip. we *never* want a situation where theres no thumbnail - that degrades user confidence.
