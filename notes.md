@@ -3069,7 +3069,7 @@ fieldnote built it, plus the nearest streets. Placement: a grouping node
 `dictate/transcribed` holding `api`, `mini` and `context`, since dictate
 would otherwise pass the six-child cap.
 
-## proposal: de-crufting the tree — a fold pass (2026-09-04, field-walk ; for after the field test)
+## proposal: de-crufting the tree — a fold pass (2026-09-04, field-walk #p80; for after the field test)
 
 **Ash's thought.** The tree evolved through many turns, so it holds nodes
 and code that were superseded along the way — cruft. He wants a process
