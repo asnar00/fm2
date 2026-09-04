@@ -1,2 +1,3 @@
 - [x] plain-words
 - [x] withdrawn
+- [x] visibility

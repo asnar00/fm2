@@ -20,13 +20,22 @@ impl feature_OwnRole {
         // reads as the role you hold. That is the same answer it always gave;
         // it is now visible.
         let lit = if chosen.is_empty() { own_role_mine() } else { chosen };
+        armed_level_box("publish level".to_string(),
+                        armed_level_entries("armed_lvl_".to_string(), lit))
+    }
+
+    // the seventh row goes here rather than in `armed_level_row`, so that
+    // every surface drawing this list loses it together — the visibility
+    // picker on a post's page has no "same as me" either, and gets that for
+    // nothing. Whole redefinition rather than a wrapper: the base's answer is
+    // the seven-row list this replaces, not a fallback to fall through to.
+    fn armed_level_entries(prefix: String, lit: String) -> String {
         let mut pills = String::new();
         for g in armed_levels().iter() {
-            pills.push_str(&armed_pill(format!("armed_lvl_{}", g), g.clone(),
+            pills.push_str(&armed_pill(format!("{}{}", prefix, g), g.clone(),
                                        &lit == g));
         }
-        format!("<div class=\"armed-row\"><div class=\"armed-what\">publish level</div><div class=\"armed-list\">{}</div></div>",
-                pills)
+        pills
     }
 
     // your own role in the project you are working in, read the way the floor

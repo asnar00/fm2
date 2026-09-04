@@ -30,8 +30,14 @@ impl feature_PlainWords {
     // `armed_lvl_<word>`, and `armed_lvl_` with nothing after it is the
     // "same as me" entry.
     fn armed_says(ev: String) -> String {
-        let word = match ev.strip_prefix("armed_lvl_") {
-            Some(w) => w.to_string(),
+        // the level is what follows the LAST underscore, whatever the prefix
+        // in front of it: the same list is drawn on more than one surface now
+        // and each names its own event (`armed_lvl_…` in the recording row,
+        // `vis_lvl_…` on a post's page). Keying on one prefix left the other
+        // surface's rows with no sentence at all — found on the rig,
+        // 2026-09-04. A row with nothing after the underscore is "same as me".
+        let word = match ev.rfind('_') {
+            Some(at) => ev[at + 1..].to_string(),
             None => return String::new(),
         };
         if word.is_empty() {

@@ -316,15 +316,35 @@ impl feature_Armed {
     // a departure from — then the six words in rank order. The row carries a
     // one-word name, which is a name and not an explanation (/taste 7).
     fn armed_level_row() -> String {
-        let cur = armed_level_read();
-        let mut pills = armed_pill("armed_lvl_".to_string(),
-                                   "same as me".to_string(), cur.is_empty());
+        armed_level_box("publish level".to_string(),
+                        armed_level_entries("armed_lvl_".to_string(),
+                                            armed_level_read()))
+    }
+
+    // ---- the list, as two /extensible functions/ -----------------------------
+    // split out of `armed_level_row` so a surface that wants the SAME list for
+    // a different subject can have it rather than a copy of it: a picker on a
+    // post's page names its own event prefix and its own lit level and gets
+    // these rows, with whatever wording and shape the nodes beneath have given
+    // them. Both answer exactly what the expression they came out of answered.
+
+    // one row per level, lit where it matches, each carrying `prefix` plus its
+    // own word as its event. The row with nothing after the prefix is
+    // "same as me".
+    fn armed_level_entries(prefix: String, lit: String) -> String {
+        let mut pills = armed_pill(prefix.clone(), "same as me".to_string(),
+                                   lit.is_empty());
         for g in armed_levels().iter() {
-            pills.push_str(&armed_pill(format!("armed_lvl_{}", g), g.clone(),
-                                       &cur == g));
+            pills.push_str(&armed_pill(format!("{}{}", prefix, g), g.clone(),
+                                       &lit == g));
         }
-        format!("<div class=\"armed-row\"><div class=\"armed-what\">publish level</div><div class=\"armed-list\">{}</div></div>",
-                pills)
+        pills
+    }
+
+    // the named box the rows sit in.
+    fn armed_level_box(what: String, entries: String) -> String {
+        format!("<div class=\"armed-row\"><div class=\"armed-what\">{}</div><div class=\"armed-list\">{}</div></div>",
+                what, entries)
     }
 
     // one option. `data-ev` and nothing else: the pill is inside #app, so

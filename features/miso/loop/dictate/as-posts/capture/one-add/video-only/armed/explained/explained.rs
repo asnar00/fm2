@@ -36,8 +36,11 @@ impl feature_Explained {
     // it: `armed_lvl_<word>`, and `armed_lvl_` with nothing after it is the
     // "same as me" entry.
     fn armed_says(ev: String) -> String {
-        let word = match ev.strip_prefix("armed_lvl_") {
-            Some(w) => w.to_string(),
+        // the level is what follows the LAST underscore, whatever the prefix in
+        // front of it — the same list is drawn on more than one surface now and
+        // each names its own event. A row with nothing after it is "same as me".
+        let word = match ev.rfind('_') {
+            Some(at) => ev[at + 1..].to_string(),
             None => return String::new(),
         };
         match word.as_str() {
