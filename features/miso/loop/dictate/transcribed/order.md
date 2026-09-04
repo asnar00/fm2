@@ -3,3 +3,4 @@
 - [x] mini
 - [x] keeps-trying
 - [x] shows-progress
+- [x] corrected
