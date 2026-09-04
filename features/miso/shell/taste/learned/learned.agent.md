@@ -162,3 +162,9 @@ session end from the digest since the last run.*
 27. **A phone bug is measured on the phone before it is fixed.** Three
     rig disproofs of a flash ended in a black-box readout of the arriving
     picture, not a fourth guess. (`blackbox/arriving-picture`, 2026-09-04.)
+
+28. **A level inherits its parent's ground.** A sub-tool panel or nested
+    page keeps the background of the level it opened from — the map under
+    a browse tool, the dots under the launcher — and changes it only with
+    a stated reason. The parent's choice of ground is part of its meaning.
+    (ash, 2026-09-04; `map-only/always-the-ground`.)
