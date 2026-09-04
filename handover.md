@@ -53,6 +53,16 @@ shipped on its own. Fable 60% → ~62%.*
   treats a stored zoom at the placeholder as no memory — proven on the
   installed clip through four updates in a row. Phones that ran 690 hold a
   poisoned `map_view` at zoom 0, healed by that floor.
+- **The flip mid-take is native again (`while-recording/segments`, the
+  last build of the night):** a flip stops the recorder and starts another
+  on the other camera (same microphone); `marks` on the clip's metadata say
+  where each container starts; the mini joins N segments through MPEG-TS
+  (a plain mp4 concat produced a 991-second file once — the header lies);
+  the phone plays its first segment until it fetches the joined file. The
+  canvas road stands down while this is ticked. **Watch on a real phone:**
+  the cut at a flip is the camera's open time (100–400 ms on hardware; 7–9
+  ms on the mock), and transcription on a joined file is proven by
+  construction only.
 - **The deploy stamps (build 699, `announced/by-the-ship`):** announce
   with `--node <tree path>`; deploy.sh, after `released.sha`, stamps
   shipped on every announcement whose node the release touched and every
