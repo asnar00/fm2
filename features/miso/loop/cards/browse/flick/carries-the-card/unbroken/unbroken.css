@@ -1,0 +1,7 @@
+/* the card being left, once it is out of #app: it keeps every rule .card-page
+   has — fixed to the viewport, so being reparented moves it not at all — and
+   only needs to sit at the open card's own depth over the map. */
+.card-page.fm-strip-ghost {
+  z-index: 3;
+  will-change: transform;
+}

@@ -1,4 +1,4 @@
-# transcript: the field walk
+# transcript: field walk
 *session `b70435b4-6806-4a25-aadb-e68df3da3413`, exported by tools/export_transcript.py — do not edit; anchors `#pN` are stable*
 
 ### p1
@@ -2611,3 +2611,151 @@ The ask-box deploy is still in its gate. Nothing to request until it or a worker
 *2026-09-04 16:48*
 
 > when scrolling between posts, the old post scrolls completely offscreen before the new one scrolls in, leaving the screen empty for a short time. I'd like the new one to start scrolling in immeidately as we scroll the old one out, so it feels like an unbroken series.
+
+Related to the flash, since both are about how the next card is built and moved. Queued to the same worker as a second node in that batch.
+
+Queued. The next card gets built while your finger is still down, stacked under the open one, and the pair move as one strip, so the new card's top enters as the old one's bottom leaves. Building it once during the drag is also what should kill the flash, so the worker proves the two together.
+
+The ask-box deploy is still in its gate. Three workers are out with five nodes. Nothing to request until one returns.
+
+### p97
+*2026-09-04 16:51*
+
+> <task-notification>
+> <task-id>a481d67a8bff6672b</task-id>
+> <tool-use-id>toolu_01AS3Kn7vWdy6a38yAwKBN1Z</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a481d67a8bff6672b.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build four map-reel refinements" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>I'm stopping on the flashing fix and filing a contact report, because the black box contradicts the brief's assumed cause.
+> 
+> ## Delivered: `91942ee` — `shows-progress/on-the-reel`
+> 
+> Rebased onto current main, gate green, `--prove` implied. `/shows-progress` already puts `data-work` on anything carrying `data-rec` — which includes `/poster`'s frame and `/capture/video`'s player row — so the open post's mark was on the right element and only wanted a rule that draws it; the band is the page's own half, marked after every sync from `dict_working` and the cards. Rig readouts: after the stop the lozenge carries `data-work="on"` with a 6 px dot at `transcribing-breath`; open, the holder reads `transcribing…`; on stuck both read `still trying`; when the words land the mark is gone from both and the words are there. Screenshots: `transcribing-band.png`, `transcribing-post.png`, `transcribing-stuck.png`, `transcribing-landed.png` in `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a481d67a8bff6672b/evidence/`. One thing the rig corrected: my first cut anchored the mark at the holder's own bottom and it landed *over* the foot of the picture.
+> 
+> ## Contact report: the flashing
+> 
+> **What the plan assumed.** That a sweep is accompanied by ops landing mid-flight — `/at-once`'s slow road, `/shows-progress`, `/from-the-words`, `SinceMarks` — each a repaint that swaps the player, and that the cure is to carry across every repaint road or defer repaints until the sweep settles.
+> 
+> **What the black box says.** Reader: `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a481d67a8bff6672b/sweeps.py` over `/tmp/miso-blackbox.log{,.old}`, ash's lines (`asnaroo:7813df18803a`) — 934 entries, **15 sweeps**. Every one is a lone `browse_next`/`browse_prev` click. Two measured sweeps: down `@288,404` → up `@254,573` (dy +169 px in 161 ms) → `browse_prev`; down `@231,558` → up `@259,440` (dy −118 px in 194 ms) → `browse_next`. **Within ±2.5 s of any sweep there is not one poster op, `Transcribing`, title edit or `SinceMarks`** — the only other loop entry anywhere near one is a single `CtxUpdate` a full second later. (Note: ash's world log has no black-box records at all; they live in `/tmp/miso-blackbox.log`.)
+> 
+> **So there is one paint per sweep, not a storm.** The flash is that single paint building the incoming card: a fresh `&lt;img src="pic/…"&gt;` for a different clip. Carrying cannot help — `/until-play` keys on `data-vid` and the incoming clip is a different one; `/incoming-too` already stops the `&lt;video&gt;` road. On the rig the picture is local and decodes instantly; on the phone a post from another device has no local copy and `/pic-beside`'s observer, by its own spec, loses the race to the parser.
+> 
+> **What the tree needs before this is buildable.** The real cure is the second ask — build the incoming card before the sweep completes — and that needs a way to obtain a neighbouring card's rendered page HTML *without committing `browse_open`*. `/loop`'s only door is `send`, whose payload is the one `html` that `apply` paints; building the card in JS would duplicate the Rust renderer. Two designs I can see, neither a child node:
+> 
+> 1. **A peek road** — `/loop`'s payload gains a second html field, or a wasm export that renders a named card. A real mechanism, to be designed with ash.
+> 2. **Switch early, keep the old card as a ghost** — send the switch when the sweep passes the threshold with the finger still down, move the outgoing `.card-page` out of `#app` and animate both as one strip. No new mechanism, but it changes *when* the turn is sent, which `/flick`'s Rust and its dedupe both see, and a release short of the threshold needs a reverse turn. That is a redesign of `/carries-the-card`'s switch, not a child of it.
+> 
+> **And the proof surface is unavailable to me.** Both asks require the iPhone simulator with the installed clip. Across this session it has failed me three ways: no camera for `getUserMedia`; my device shut down between rounds with the other worker holding the Pro; and after a reboot the clip's page stopped posting readouts entirely (frozen `readout.json`, `simrig js` returning `null`, taps aiming at a stale snapshot). I would be building a redesign I could not prove.
+> 
+> My rig was stopped by its own PID (`85101`), checked against `ps -o command=` first. Nothing else on the machine was touched, and I only ever read the phone logs.</result>
+> <usage><subagent_tokens>786022</subagent_tokens><tool_uses>34</tool_uses><duration_ms>715861</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a481d67a8bff6672b</worktreePath><worktreeBranch>worktree-agent-a481d67a8bff6672b</worktreeBranch></worktree>
+> </task-notification>
+
+A clear contact report from the reel worker. The black box says there is no storm of updates during a sweep, just one paint that builds the incoming card, and the flash is that card's picture being fetched because a post from another phone has no local copy. Pre-building the neighbour needs a mechanism the tree doesn't have, so it stopped. My call: the design that needs no new mechanism, plus warming the neighbours' pictures ahead of time.
+
+Sent. What the worker builds now:
+
+- **Unbroken sweep:** the switch fires as your finger crosses the threshold, the old card stays as a ghost, and old and new move together as one strip. Releasing short of the threshold springs both back.
+- **No flash:** after every sync the page warms the pictures of the two posts either side, so the incoming card's picture is already in the cache when it is built and paints in the same frame.
+
+Proof is on the desktop rig with the network throttled to emulate your phone, then the simulator if its readout door cooperates after a fresh clip install.
+
+The transcribing mark is delivered and lands after the ask-box deploy, which is still in its gate. Nothing to request until something returns.
+
+### p98
+*2026-09-04 16:55*
+
+> <task-notification>
+> <task-id>bc0r96kxy</task-id>
+> <tool-use-id>toolu_017ZqEaMwy9TAQ2kjgp4rUzm</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bc0r96kxy.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Commit the transcript and deploy the ask box through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+The commit sits directly on top of main, so I cherry-pick it and deploy.
+
+Deploying the transcribing mark. Nothing else is independent right now: the stamp waits on the build number, and three workers hold the rest, the unbroken sweep with the flash fix, the dropdown width and centred title, and the baked ward lines.
+
+**On the phone at 674:** the ask box says "request a fix, tweak or feature", files at once, and pops the feature's own guide when one already exists.
+
+### p99
+*2026-09-04 17:01*
+
+> <task-notification>
+> <task-id>b6vhypnap</task-id>
+> <tool-use-id>toolu_018tTcp1xHbrLr6XqURNDRsm</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/b6vhypnap.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Cherry-pick the transcribing mark onto main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 676 is live: a post shows a breathing dot on its lozenge and "transcribing…" under its player while the words are on the way, "still trying" if stuck, and the mark goes when the words land. Its announcement was already stamped shipped with the trio.
+
+Three workers are out: the unbroken sweep with the flash fix, the dropdown width and centred title, and the baked ward lines. Nothing to request until one returns.
+
+### p100
+*2026-09-04 17:02*
+
+> <task-notification>
+> <task-id>a1c81bb1f2f5c01de</task-id>
+> <tool-use-id>toolu_01JGvppWJgVA3VwYAUVbnAQa</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a1c81bb1f2f5c01de.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build map-only and time filter" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Both done. Branch `hugs-its-words`, two commits on current main (`8147b96`), five files, gate green, `--prove` implied for each, tree clean, no rig of mine running, live server untouched.
+> 
+> ## `eed91c4` — `since/one-word/hugs-its-words` (field-walk #p88)
+> 
+> &gt; "in the dropdown, the background lozenge is too wide, as is the rounded rect backing — both should be wide enough to hold the option text, no more."
+> 
+> `/one-word` gave the column a 96px floor and let the pills stretch across it, which is the flex default. Both were arbitrary — 96 was a number that looked about right — and the stretch meant a three-letter word wore a five-letter lozenge. `max-content` is the whole change: the column is its widest row, each pill is its own text plus `/since`'s padding, and `align-self: flex-start` stops the stretch overriding it. Rows stay left-aligned: a list reads down its left edge (`/taste` 6).
+> 
+> **Measured at the iPhone viewport with `all` chosen, so the lit lozenge is the short word — the case reported:**
+> 
+> | | before | after |
+> |---|---|---|
+> | column | 96px | **70px** (6 + the 56px `month` + 6 + borders) |
+> | today | 102px | 52px |
+> | week | 102px | 49px |
+> | month | 102px | 56px |
+> | all (lit) | 102px, text 13.7px, **68px slack** | 34px, **0px slack** |
+> 
+> Slack is 0px on all four, to the pixel.
+> 
+> ## `c529d12` — `since/one-word/in-the-middle` (field-walk #p89)
+> 
+> &gt; "the project title ('sevenoaks') should be horizontally centered"
+> 
+> `/title` put it in the middle to begin with; `/since` took it away — four pills 175pt wide meant a centred name would sit on them, so it was pinned into the gap that was left, at 200pt in `since.css`, re-tuned to 80pt in `one-word.css`, capped in `strip-on-black.css`. That tacit arithmetic across three nodes is the risk I flagged three times, and this retires it: the name is centred on the **screen** (`left: 50%` and a half-width shift — `/title`'s own idiom restated). The one number left is a *clearance*, not an offset — 210pt is the strip's two ends with a gap either side — so it does not move when the slot's word changes, which is what made the old numbers fragile.
+> 
+> **Measured:** before — x=80..170, centre 125 against a viewport centre of 201, **off by 76px**. After — x=156..246, centre **201**, **off by 0px**, clear of the filter slot by 88px and the nøøb lozenge by 62px. A 49-character name: capped at 192px, still centred at 201, **ellipsised** inside its pill, clear of the slot by 37px and the lozenge by 11px.
+> 
+> ## Two placement corrections you should know about
+> 
+> 1. **`centred` is taken tree-globally** by `/tag/aligned/centred`, so the node is `in-the-middle`.
+> 2. **It could not be a child of `/strip-on-black`.** The black-lozenge ask is `asks#1788537194805` = 16:53; #p89 is 16:44. The child would predate its parent and the linker refuses it — causality bounds extension. `/one-word` (16:15) is the truer parent anyway: it is what freed the middle, and its stylesheet holds the `left: 80px` this replaces. `/strip-on-black` composes after and sets `right: auto` and the same cap, so the two agree wherever they meet.
+> 
+> ## Screenshots
+> 
+> `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a1c81bb1/shots/widths-crop.png` — the open column with `all` lit in a lozenge its own width, the backing hugging `month`, and "Sevenoaks" centred above. Also `widths.png` (full screen) and `centred-long.png` (the 49-character name ellipsised and centred).
+> 
+> ## Open risks
+> 
+> 1. **Nothing caps the column's width.** `max-content` would push it past the right edge if a future option were long. Named in the spec rather than guarded — the four words are `/since`'s own and the longest is five characters; the cap belongs with the fifth option.
+> 2. **`in-the-middle`'s premise is `/one-word`.** Untick `/one-word` or `/since` and the slot goes back to four pills 175pt wide, which a centred name would overlap; the arithmetic that used to absorb that difference is what this node removed. Said in the hostile cases — the two should untick together.
+> 3. Below about 260pt of viewport the cap goes to nothing and the pill collapses to its padding. The smallest phone the tree targets is 375.
+> 4. The `strip-on-black` branch (previous ask, `47c968a`) is still separate and unlanded; `in-the-middle` composes correctly with it but has only been proven *with* it present, since it is in my worktree's build. If triage lands them out of order, `in-the-middle` alone still centres — it just centres a pill with no black ground.</result>
+> <usage><subagent_tokens>731900</subagent_tokens><tool_uses>39</tool_uses><duration_ms>1044703</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a1c81bb1f2f5c01de</worktreePath><worktreeBranch>worktree-agent-a1c81bb1f2f5c01de</worktreeBranch></worktree>
+> </task-notification>
+
+Both back with widths measured to zero slack and the title centred to the pixel. Landing and deploying. The strip-on-black branch already shipped as 667, so the order is fine.
+
+Deploying. What I need next: the build number for the two shipped stamps, which depends on this deploy; the reel worker's sweep and flash nodes; and the boundaries worker's baked lines. All three are results I am waiting on, so there is nothing independent to request now.
+
+**A placement note worth knowing:** the centred title could not be a child of the black-lozenge node because your centring ask came nine minutes before the lozenge ask, and the linker refuses a child that predates its parent. It sits under the one-word dropdown instead, which is what freed the middle in the first place.
