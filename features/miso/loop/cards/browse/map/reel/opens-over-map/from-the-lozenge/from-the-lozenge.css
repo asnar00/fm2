@@ -1,0 +1,11 @@
+/* while the page is growing out of its lozenge, /opens-over-map's own arrival
+   is not also running: one motion, not two. */
+body.fm-map-behind .card-page.fm-lozenge-open {
+  animation: none;
+  will-change: transform, opacity;
+}
+
+/* and a repaint is not an arrival: the grow belongs to the opening. A card
+   page is a fresh element after every paint, so /opens-over-map's animation
+   ran again on each one — the card pulsed from 96% while the reader read it. */
+body.fm-map-behind .card-page.fm-loz-settled { animation: none; }
