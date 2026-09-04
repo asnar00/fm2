@@ -1,2 +1,3 @@
 - [x] marks-with-the-tap
 - [x] one-word
+- [x] not-people
