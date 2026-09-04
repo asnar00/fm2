@@ -103,3 +103,33 @@ session end from the digest since the last run.*
     glyph.** "in the browser menu below", "view more" with no icon: the same
     words whichever way Safari draws its bar. (`install/steps/menu-below`,
     2026-09-03.)
+
+17. **Motion moves with the thing it is tied to, or it is baked into it.**
+    A mask recomputed when the zoom ends stands still through the pinch and
+    pings into place; the cure was to bake the boundary into the tiles so
+    one layer scales. An open or close animates size *and* place to the
+    exact rectangle it came from, so it reads as the same thing. The ends of
+    a list rubber-band; they never wrap or fly the same card off and back.
+    (`region/baked`, `back-to-the-lozenge/size-too`,
+    `carries-the-card/rubber-band`, 2026-09-04.)
+
+18. **Media arrives still and plays on the finger.** No autoplay, no seek
+    to a frame, no element swapped under the reader: a poster stands in
+    until the tap, on the open road, the repaint road and the incoming
+    road alike. (`until-play`, `until-play/incoming-too`, 2026-09-04.)
+
+19. **A picker is a column with a sentence each, in the row you are in.**
+    Options stand vertically, each with one plain line saying what it means;
+    the list pops over the current row and closes on any tap outside; it
+    never descends a tool level. (`armed/explained`, `armed/in-place`,
+    2026-09-04.)
+
+20. **The + arms, it does not fire.** A destructive or costly act (start
+    filming, publish) sits behind a row that shows its settings first —
+    rec, stop, camera, level — so there is a moment to set them; the
+    settings persist. (`video-only/armed`, 2026-09-04.)
+
+21. **One view, filtered by time, not several views of the same set.** The
+    map with its band replaced grid and list; the switch's slot became
+    today / week / month / all. A second view of the same cards is a
+    filter in disguise. (`browse/map-only`, `map-only/since`, 2026-09-04.)
