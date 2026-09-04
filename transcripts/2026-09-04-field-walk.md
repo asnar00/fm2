@@ -3236,3 +3236,133 @@ Four workers hold the rest: this, the end-of-list flash, the role wording with t
 *2026-09-04 17:59*
 
 > let's show post visibility on all posts (in expanded view), even for posts not authored by this user
+
+That builds; it is a small refinement of the line under a post, and the worker doing the visibility popover is in that code. Queued to it.
+
+Queued. A copy of someone else's post shows the same "visible to …" line from its own floor, with no button to change it.
+
+What I need next, and what each depends on:
+
+- The level-picker worker's three nodes: role wording, visibility popover, the line on every post. Pending its return.
+- The withdrawal node and its live repair. Pending.
+- The end-of-list flash fix. Pending.
+- The map-view fix and its why. Pending.
+- A deploy and a stamp for each as it lands, then the handover rewrite naming the last build.
+
+Every one of those depends on a worker returning, so there is nothing independent to request now.
+
+### p121
+*2026-09-04 17:59*
+
+> <task-notification>
+> <task-id>a562b5d6fde125be5</task-id>
+> <tool-use-id>toolu_01LPKYUWDdCFpJUtDQfKkwZs</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a562b5d6fde125be5.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build per-ask stamp merge" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Both tasks are done. Here is the second one.
+> 
+> **Commit `1e8a19c`** on branch `withdrawn-agent-a562b5d6fde125be5`, rebased onto current main (`9be508c`), builds clean there. Four files, 429 insertions: `/Users/microserver/fm2/.claude/worktrees/agent-a562b5d6fde125be5/features/miso/loop/cards/kinds/audience/withdrawn/{withdrawn.md,withdrawn.rs}` (new), that node's line in `.../kinds/audience/order.md`, and `/Users/microserver/fm2/.claude/worktrees/agent-a562b5d6fde125be5/tools/withdraw_copies.py`. `toggle_proof.py HEAD`: **implied** — no untick, no trailer. Not deployed. (I dropped my transcript re-export commit: main's own re-export already carries `#p113` at the same anchor, so nothing of mine touches `transcripts/`.)
+> 
+> **What it does.** `/withdrawn` redefines `exchange_give` outside `/audience`'s gate: for every card the gate is about to refuse **that the recipient already holds live**, it hands them `/delete`'s tombstone instead of nothing, stamped one past the copy it replaces. The owner's own card is never touched. Two things I had to decide beyond the brief. First, the **revive**: `/guard` does take a live card over a tombstone by `edited` and restores it whole, so the plain path works — but only while the owner's clock stays ahead of the holder's stamps, and it does not stay ahead once a withdrawal has bumped the holder past him. So a card the recipient holds *as a tombstone* is given one past that stone (`/revert`'s own trick). The rig case that proves it fails without that line. Second, the **repair had a real defect the rig caught**: I first judged each copy by its own `floor`, and a stale copy carries the *old, lower* floor — that staleness is the fingerprint of the bug, not the truth. It now reads the floor from the owner's card in the owner's world and reports where the two disagree.
+> 
+> **Evidence.** Rig on port 8143 (own HOME, own context, started and stopped by its own pid file checked against cwd and port; live 8095 answered 200 throughout). Two users shaped from the live worlds, every write from `_ash` through `/msg` with his cookie — the op a phone sends after a promote — and `_tara`'s world read through the door: 21 assertions, all green. Promote hands the copy over at the promoted floor; undo tombstones it in the same turn (one empty title, no links, newer stamp) while his own post still stands at `admin` and is not deleted; a re-promote brings it back with its words; a holder who never had it is sent nothing; a promote and an undo in one turn leave the last write standing; a promote from behind a stone still revives. Headless Chrome on Tara's page: the post "you" by `_ash` and its pin before, an empty map and empty reel on a cold load after (`tara-1-holding.png`, `tara-3-after.png` in `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a562b5d6fde125be5/`). Repair dry-run then `--go` on the rig withdrew exactly the planted copy. Smoke gate green in all three passes.
+> 
+> **The live repair — I wrote to the live worlds** through `localhost:8095/diag/context` (build 685), after the rig proof and with my rig down. Dry run found two: `asnaroo.1788512223669` on **Tara** (candidate, copy still saying `candidate`) and the same post on **`_bob`** (team, copy still saying `team`) — the second was the "maybe others". `--go` wrote both; read back: both are tombstones at `edited=1788544715479`, and ash's own card is untouched (`LIVE floor=admin`, 5 blocks, `edited=1788543303331`). A second dry run finds nothing. Two cases were deliberately **left alone**: `_alice` holds `asnaroo.1788278031540` without holding that post's project card, and the world `local:alice` is not on the guest list — either can be a project copy that never arrived rather than a real loss of standing, so they need `--all-refused` and a human decision.
+> 
+> **Risks, named.** The fix is committed but **not deployed** — until it ships, a fresh promote-then-undo on ash's phone re-creates exactly this, and the repair would need running again; the data is clean as of now. A person **demoted or removed** from a project keeps the copies they already hold: the withdrawal rides a card write and a role edit is not one — out of scope, named in the spec, and the repair is what covers it today. The repair names a world's holder through `~/.miso-auth/users.json`, so a world whose phone is not on the guest list is skipped and says so. And a withdrawal is not recoverable from the holder's side: the owner's card is intact and a re-promote re-gives it, but the copy's own blocks are gone, as `/delete` intends.
+> 
+> **Still waiting from the first task:** branch `worktree-agent-a562b5d6fde125be5` at `53a682f` (`/ask/lifecycle/being-built/stamp-stands`) — unlanded, and it carries the placement question I flagged (`/ask` is at the six-child cap, so the node went under `/being-built` rather than stopping for a regroup ruling).</result>
+> <usage><subagent_tokens>314079</subagent_tokens><tool_uses>82</tool_uses><duration_ms>1138368</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a562b5d6fde125be5</worktreePath><worktreeBranch>worktree-agent-a562b5d6fde125be5</worktreeBranch></worktree>
+> </task-notification>
+
+The withdrawal is back and the live data is already repaired: Tara's and bob's stale copies of that post are gone, your own untouched. Landing the fix so a promote-then-undo cannot recreate it.
+
+### p121a
+*2026-09-04 17:59*
+
+> <task-notification>
+> <task-id>a481d67a8bff6672b</task-id>
+> <tool-use-id>toolu_014yN7HwB4KF7L57yReNz2bJ</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a481d67a8bff6672b.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build four map-reel refinements" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Found it and fixed it — the readout you shipped last round is what pointed at it.
+> 
+> ## `edbee0f` — `carries-the-card/rubber-band/no-flash`
+> 
+> On main's tip, gate green, `--prove` implied (confined).
+> 
+> **It is not content — it is compositing.** Your reading was right: the bounce writes no MEDIA line because no card arrives. Measured in **real WebKit** (Playwright's own engine, 26.4), sampling every animation frame of a pull at the first post — the card's `will-change`, its transform, its animation count, and its picture:
+> 
+> | frame | will-change | transform | anims | class | picture |
+> |---|---|---|---|---|---|
+> | 1 ms | `auto` | none | 0 | — | complete |
+> | 55 ms | `transform, opacity` | matrix | 0 | carried | complete |
+> | 289 ms | `transform, opacity` | matrix | 1 | carried | complete |
+> | **488 ms** | **`auto`** | **none** | **0** | **—** | complete |
+> 
+> The picture is `complete` in every frame, so nothing reloads. The whole gesture has **exactly one discontinuity**: in a single frame the promotion, the animation and the inline transform all go at once. That is `/carries-the-card`'s own `clear` — cancel the animation, remove the class where `will-change` lives, clear the transform, one turn — and dropping a compositing hint in the same frame as the transform it was hinting about re-rasterises the layer the media sits in.
+> 
+> **The cure was the smallest one on your list**: hold the layer past the animation that needed it. A class of this node's own goes on before the parent clears and comes off 140 ms later on a quiet frame. Same measurement after:
+> 
+> ```
+> 497 ms  transform   none  0  -  img complete     ← transform goes, promotion stays
+> 647 ms  auto        none  0  -  img complete     ← hint dropped alone, nothing else moving
+> ```
+> 
+> Neither frame now changes both the promotion and the transform.
+> 
+> **And the release is in the record**, since the ends write no arrival line by their nature — the same shape `/arriving-picture` uses. From my rig:
+> 
+> ```
+> {"type":"media3","at":"release","card":"965287","src":"pic/","complete":true,
+>  "w":384,"video":false,"ready":null,"will":"transform, opacity"}
+> ```
+> 
+> Mid-list is unchanged and still clean in the same run: `media` at insertion `complete: true`, `media2` a frame later `changed: false`.
+> 
+> ## Risks
+> 
+> - **Proven in Playwright's WebKit, not on the device.** Same engine family, not the same GPU or compositor policy; if ash still sees it, the `media3` line now says what the media element and the card's `will-change` were at that exact release.
+> - 140 ms is a chosen number, not a measured one — long enough to clear the hand-off in this engine, short enough not to hold a full-screen layer around.
+> - The hold also applies to a mid-list switch's clear (harmless, one less re-raster on a road already clean), and `will-change` on a full-screen card costs memory for those 140 ms.
+> - No simulator this round: I used real WebKit with synthetic touches (WebKit hides the `Touch` constructor — `document.createTouch` is the road, worth a deploy.md line if anyone else writes a WebKit rig).
+> 
+> My rig was stopped by its own PID (`23152`), checked against `ps -o command=` first; the tree is clean and builds.</result>
+> <usage><subagent_tokens>877438</subagent_tokens><tool_uses>26</tool_uses><duration_ms>625260</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a481d67a8bff6672b</worktreePath><worktreeBranch>worktree-agent-a481d67a8bff6672b</worktreeBranch></worktree>
+> </task-notification>
+
+The end-of-list flash is found: in one frame the card's compositing hint, its animation and its transform were all dropped together, and the phone re-drew the media layer. The fix holds the layer for a further 140 ms and drops the hint on a quiet frame. It lands after the withdrawal deploy, which is in its gate now. Nothing is independent of that, so I wait.
+
+### p122
+*2026-09-04 17:59*
+
+> <task-notification>
+> <task-id>b0k50dc6l</task-id>
+> <tool-use-id>toolu_017tCBy2r49dup2uDTjew7Qo</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/b0k50dc6l.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the withdrawal node on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+The same dirty-tree refusal, the transcript export from your last two asks. I'm committing it and chaining the end-flash fix into the same deploy.
+
+Deploying the withdrawal and the end-flash fix together. What I need next: that build number for two stamps, then the two remaining workers, the role wording with visibility and the map view. Every item depends on a pending result, so there is nothing more to request now.
+
+### p123
+*2026-09-04 18:00*
+
+> <task-notification>
+> <task-id>b28sdjop3</task-id>
+> <tool-use-id>toolu_01HENFhRiBoRFhk32EAFG59v</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/b28sdjop3.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Commit the transcript, cherry-pick the end-flash fix, deploy both through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+The end-flash commit carried its own transcript export and conflicted with main's. Resolving with main's copy and continuing, then deploying.
