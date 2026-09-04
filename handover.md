@@ -226,9 +226,12 @@ live state) and measure by composed-output diff per node (notes.md,
 
 ## FOR SATURDAY
 
-Reset any test rows (`tools/reset_user.py --list`). Ethernet cable in the
-mini (ash bought one today — plug it in and confirm `en0` carries the
-default route before the watchdog does). Show one code from 👤 with the
+**Done the night before (00:05):** `_alice`, `_bob` and the test `Tara`
+reset — guest list is ash alone, their cards and posts tombstoned in his
+world, worlds under `~/.miso-context/removed/`; live build 726 answered
+after each handover restart. **Not done:** the ethernet cable — `en0` was
+inactive, the default route on wifi `en1`; plug it in and the watchdog
+sees it. The second iPhone is logged out; real Tara scans the code. Show one code from 👤 with the
 project current; every canvasser scans it, types a name, taps join, lands
 on the welcome, fills the card, enables Face ID and notifications, taps
 done. They see each other at once. Posts they should see must have a
