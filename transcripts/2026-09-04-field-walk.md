@@ -4003,3 +4003,62 @@ Written; it commits after the deploy. What I need next: the deploy's result, the
 > I'm still not happy with the end-post scroll behaviour. At the top of the list, the bounce works correctly, but the entire card flashes (including the background - not just the media). At the bottom of the list, it feels like a new card scrolls into view, but it's the same as the card scrolling out. In both cases, I want the bounce to happen (i.e. we ping back to the card and prevent scroll) and the same card to stay onscreen, and not flash or be updated in any way.
 
 That is two end-detection faults, not compositing: at the top something sends a turn and repaints the whole card, and at the bottom the strip is bringing in a neighbour that is the same card. Your phone's log should show both. Reading it, then the reel worker gets it as a priority.
+
+The worker is on it. The rule it must meet: at either end the same element bounces and nothing else happens, proven by the node's identity being unchanged before and after, no second card ever present, zero paints, zero turns.
+
+What I need next: the title-fix deploy's result, then the title job's next retry to see the logged answer, then the handover commit; and the reel worker's return. Each of those is a pending result with nothing independent of it, so there is nothing more to request now.
+
+### p152
+*2026-09-04 20:35*
+
+> <task-notification>
+> <task-id>berawusdp</task-id>
+> <tool-use-id>toolu_01Tv212xAavKKy4qKA7u2M6v</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/berawusdp.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Commit the title fix and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 704 is live with the title fix, and the handover is committed. The job's next retry is on a ten-minute backoff, so I'm watching for its logged answer in the background.
+
+What I need next, and what each depends on:
+
+- The title job's logged answer, from the watch just started. Pending.
+- The reel worker's end-of-list fix. Pending.
+- A deploy for that fix, which stamps itself, and a handover line. Depends on the worker.
+
+Every item depends on a pending result, so there is nothing to request now.
+
+### p153
+*2026-09-04 20:37*
+
+> <task-notification>
+> <task-id>bcv2q3tz2</task-id>
+> <tool-use-id>toolu_01QVaF1iTeKUbHsLc9K3dUbZ</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bcv2q3tz2.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Wait up to twelve minutes for the title job's next line" completed (exit code 0)</summary>
+> </task-notification>
+
+The answer was "none": with the project and the Sevenoaks street list attached, Haiku judged a note about a London street corner too garbled to name, and the job is now ended rather than retried. That is the fix working. Asked without that context it said "bourke and bloor", so on a Sevenoaks walk tomorrow, where the seeded streets are the ones in the note, the titles should come naturally. The London post stays untitled unless you type one.
+
+The only pending result is the reel worker's end-of-list fix; its deploy and the handover line follow from that, so there is nothing more to request now.
+
+### p154
+*2026-09-04 20:40*
+
+> the "bourke and bloor" was taken at a specific GPS location, so we could (if we were being clever) look up the map to figure out what those words were actually likely to be :-) maybe there's a post-transcribe process where we can look over the text and identify words that are "interesting" or seem to be names, and see if we can match them to where we actually are. i'd have thought the seeding with names would have helped?
+
+Seeding did help where it could: the Sevenoaks clip came back "Bligh's Road" seeded and "Bly's Road" unseeded. The London clip got no help because the seed list is the constituency's streets, so a post thirty kilometres away was seeded with the wrong town, plus one geocoded address line. Speechmatics heard "Bourke" and "Bloor" because nothing nearby was offered. For the record, the Soho corner you were on was probably Berwick Street and Broadwick Street, which are close in sound.
+
+Your idea is the right shape, and it is two steps:
+
+- **Seed from where the post is, not from the constituency.** Streets within a few hundred metres of the post's location, pulled live when the post is outside the stocked list. That alone would likely have given "Berwick" and "Broadwick" to the recogniser.
+- **A correction pass after the words land.** Take the tokens that look like names, fetch the streets and places around the GPS point, and match by sound rather than spelling. Haiku with the nearby list and the sentence would do this well: "which of these did the speaker most likely say?" It writes the corrected words as a machine edit, never over anything you typed, and the title runs after it.
+
+Both are small nodes under the vocabulary and transcribed nodes. For tomorrow the first step matters and the second is a nicety, since the team is inside the seeded area all day. I'd build the first tonight if you want it; the second can wait for after the field test.
+
+### p155
+*2026-09-04 20:42*
+
+> build both now, I think. We'll probably need a manual transcription error fix UI later - we'll build that once we have some real field data.

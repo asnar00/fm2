@@ -74,6 +74,11 @@ shipped on its own. Fable 60% → ~62%.*
   is logged as said). Seeding is by the post's location, so a London post
   gets Sevenoaks streets 30 km away — harmless, but the vocabulary should be
   empty when the nearest street is far.
+- **After the field test (ash's word, #p155):** a manual transcription-fix
+  UI, once there is real field data; `transcribed/corrected` logs every
+  before → after so that data exists. Seeding is now from the post's own
+  location (`vocabulary/near-the-post`), a correction pass matches names to
+  nearby streets (`transcribed/corrected`) — both landing tonight.
 - **The deploy stamps (build 699, `announced/by-the-ship`):** announce
   with `--node <tree path>`; deploy.sh, after `released.sha`, stamps
   shipped on every announcement whose node the release touched and every
