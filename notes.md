@@ -2962,3 +2962,94 @@ does — a post is stamped at its author's grade, promote lowers the floor
 one rung and only the author may, a reader sees floors at or below their
 grade — so no node was cut. Test users are reset before the real session
 (`tools/reset_user.py`); an ethernet cable for the mini is being bought.
+
+## design: video notes to the mini (2026-09-04, field-walk #p7 — awaiting ash's approval)
+
+**The ask.** Dictate is deprecated: a note is a video. (1) Stream the
+recording to the server as it is made, or to a local cache with an upload
+queue on a slow or absent connection. (2) Transcribe on the mini with the
+best available method. (3) Seed the transcription with words from a context
+document keyed to the location — street names — and later a briefing
+document. (4) The moment a post is complete it appears on other users'
+grid, list and map at its publishing level.
+
+**What is already there.** `/video` records with MediaRecorder into one
+blob at stop, plus a companion audio recorder feeding `/phone`'s on-device
+whisper-tiny (133 MB of assets in the site). `/mirror` uploads whole blobs
+after the fact (`POST blob/<id>`, retried on `online`, `RecShared` through
+the outbox) — that is the upload queue, whole-clip grained. `/dictate` has
+three transcription rungs as graded slots (`transcribe_local` /
+`_server` / `_api`); only `local` is ticked, so the server rung is an empty
+slot waiting for a node. `/as-posts` lands a transcript into the post's
+words and bumps `edited`, so a landed transcript already travels by
+`/exchange` to everyone at the post's floor; the post itself travels at the
+mint. The mini is an M2 with 8.6 GB; `mlx-community/whisper-large-v3-turbo`
+is in its huggingface cache (fieldnote's road) but no whisper package is
+installed; ffmpeg is.
+
+**The method, compared.** Local candidates on Apple Silicon: mlx-whisper
+large-v3-turbo (python, model cached, takes an `initial_prompt`, ~1.6 GB
+resident, well over real time on an M2); WhisperKit (CoreML on the neural
+engine, fastest and most accurate turbo runtime, also prompt-able, a Swift
+CLI to install); Parakeet v3 on MLX (better English WER than turbo on the
+open leaderboard, lighter — but **no prompt biasing**, which kills (3));
+whisper.cpp (fine, no advantage here). Cloud (OpenAI, Deepgram, Assembly):
+stronger on accents and noise, needs the network and a key, and sends the
+team's notes off the mini — the `api` rung stays the upgrade path, not the
+default. **Choose mlx-whisper turbo now**: it is the one that seeds, it is
+already on disk, and its rung can be swapped for WhisperKit without touching
+the seam. Run it as one resident worker (the model warm, one clip at a
+time — 8.6 GB with the server and the Qwen models cached means never two).
+Sources: spokenly.app/blog/parakeet-vs-whisper, arunbaby.com/speech-tech/
+0073-whisper-vs-parakeet-asr-decision, macparakeet.com/blog/
+whisper-to-parakeet-neural-engine.
+
+**Nodes.**
+
+1. `capture/video/streams` — `start(timeslice)` at ~2 s; each chunk goes to
+   `POST blob/<id>/part/<n>` as it arrives and is also kept in the device
+   store; stop sends the part count with `RecShared`; the server joins the
+   parts in order into `<id>` (MediaRecorder's chunks are one file cut at
+   byte boundaries; ffmpeg `-c copy` rewraps if a joined MP4 will not seek).
+   Offline or slow: parts wait in the store and `/mirror`'s `upload()` sends
+   what is missing, oldest first, on `online` and at boot — the queue is the
+   existing one, finer grained. The companion audio recorder goes with
+   `/phone`: the server takes the audio track with ffmpeg.
+2. `dictate/mini` — the `server` rung: `transcribe_server` answers ready;
+   the server queues a joined clip for `tools/transcriber.py` (launchd,
+   resident, watches a queue dir under `~/.miso-blobs`), which extracts
+   16 kHz mono, runs turbo with `condition_on_previous_text=False` and a
+   silence trim (whisper invents words on silence), and posts the text back
+   through the op door; the server lands it as `/as-posts` lands one today
+   and publishes `Transcribed` to the owner's audience so every instance
+   sees the words arrive. Graded 2, so it replaces a `local` draft where one
+   exists and yields to `api` if that is ever ticked.
+3. `mini/seeded` — the prompt: "Canvassing in <constituency>. Streets:
+   <the ~30 nearest to the post's location>. Names: <the project's
+   members>." Street names come from `tools/streets.py`, run once: an
+   Overpass pull of named highways and places inside the constituency
+   boundary (`/boundaries` has it) into `~/.miso-context/streets.json`;
+   offline after that. Whisper's prompt window is ~224 tokens, so nearest
+   first, cut at the budget. Later `mini/briefed`: a `briefing` block on
+   the project card, its words appended to the prompt.
+4. `phone` unticked in the miso product — 133 MB leave the site and the
+   phone stops running a model on battery. `/transcript`'s panel stays.
+5. (4) needs no node unless proof finds a gap: the post travels at the
+   mint at its floor; the transcript travels as an edit. The proof is two
+   simulators (or the sim and a phone): the post on the second within a
+   second of the first's stop, "transcribing…" on it, the words within the
+   clip's length again.
+
+**Tripwires for the builders.** iOS Safari may honour `timeslice` only at
+stop (then streaming degrades to today's whole-clip upload — still
+correct, report it); a joined MP4 that will not decode (rewrap, else
+transcode once on the mini); the mini's memory under the worker plus the
+server (measure resident set; refuse a second model); hallucinated text on
+silent clips (trim, and land nothing rather than nonsense); a prompt over
+budget; a transcript arriving for a post already deleted (a tombstone is
+never re-worded).
+
+**Not in this design.** Live transcription while recording (the streaming
+makes it possible later: transcribe parts as they land); speaker
+diarisation (pyannote is cached on the mini; a later rung); anything of the
+public's speech — these are the team's own notes.
