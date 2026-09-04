@@ -105,6 +105,12 @@ def main():
                     help="one reading, repeatable, order preserved")
     ap.add_argument("--likely", help="the option key silence would get built")
     ap.add_argument("--note", help="the builder's hedge, shown under the ask")
+    ap.add_argument("--only-if", dest="only_if", metavar="STATUS",
+                    choices=["asked", "proposed", "building", "shipped", "question"],
+                    help="stamp only an ask still at this status; one already "
+                         "past it is left alone and said so. The automatic ack "
+                         "passes --only-if asked so it can never write over a "
+                         "stamp a person made later.")
     ap.add_argument("--local", action="store_true", help="dev server on this machine")
     a = ap.parse_args()
 
@@ -113,6 +119,8 @@ def main():
     if bool(a.text) == bool(a.announce):
         ap.error("give exactly one of --text and --announce")
     if a.announce:
+        if a.only_if:
+            ap.error("--only-if is for an ask, not an announcement")
         if a.status not in ("building", "shipped"):
             ap.error("--announce takes --status building or shipped")
         return announce(a)
@@ -158,8 +166,15 @@ def main():
             continue
         asks = json.loads(row.get("value") or "[]")
         hit = False
+        left = 0
         for entry in asks:
             if a.text.lower() not in str(entry.get("text", "")).lower():
+                continue
+            # an automatic stamp says which status it expects to find, so it
+            # can never write over a stamp a person made later
+            # (ask/lifecycle/being-built/stamp-stands)
+            if a.only_if and str(entry.get("status") or "asked") != a.only_if:
+                left += 1
                 continue
             # a re-run that would change nothing stays quiet, as it always has
             same = (entry.get("status") == status
@@ -176,6 +191,9 @@ def main():
                 entry["note"] = a.note
             hit = True
         if not hit:
+            if left:
+                print(f"left alone {user}: {left} already past {a.only_if}")
+                stamped += 1
             continue
         body = json.dumps({"path": ASKS_PATH, "name": "asks",
                            "value": json.dumps(asks)})

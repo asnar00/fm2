@@ -1,1 +1,2 @@
 - [x] announced
+- [x] stamp-stands

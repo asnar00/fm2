@@ -55,8 +55,11 @@ for line in sys.stdin:
         key = words[:48]
         status = "building" if authority_of(who) in ("admin", "support") else "proposed"
         try:
+            # --only-if asked: this stamp fires without a person watching, so
+            # it must never write over one triage made in the meantime
+            # (ask/lifecycle/being-built/stamp-stands)
             r = subprocess.run([sys.executable, os.path.join(HERE, "stamp_ask.py"), "--local",
-                                "--text", key, "--status", status],
+                                "--text", key, "--status", status, "--only-if", "asked"],
                                capture_output=True, text=True, timeout=30)
             out = (r.stdout.strip().splitlines() or [""])[-1]
             print(f"ACK {status}: {out}", flush=True)
