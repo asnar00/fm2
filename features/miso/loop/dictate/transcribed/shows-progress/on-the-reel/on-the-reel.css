@@ -1,0 +1,75 @@
+/* the two surfaces a post actually has now: its lozenge in the band, and the
+   open post's own media holder. /shows-progress drew on the grid tile and on
+   the audio play row, and /map-only took the grid away while /video-only made
+   every post a clip — so neither of its marks had anywhere to land. The
+   manner is its: one dot, breathing at the house rate, never a spinner, and
+   its own `transcribing-breath` keyframes rather than a second set. */
+
+/* ---- the lozenge ------------------------------------------------------- */
+/* beside the author and the time, where a post's quiet second line already
+   is: the dot says something is happening without a word taking room a
+   66%-wide lozenge does not have. */
+#mapReel .reel-post[data-work] .reel-meta::after {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor;
+  opacity: 0.55;
+  margin-left: 6px;
+  vertical-align: middle;
+  animation: transcribing-breath 1.6s ease-in-out infinite;
+}
+
+/* ---- the open post ------------------------------------------------------ */
+/* the line under the media, where the clip's length sits and where the words
+   will land. The length is not the news while they are coming
+   (/shows-progress made that call for the play row). The holder is a flex
+   COLUMN, so the dot and the words cannot be its ::before and ::after side by
+   side the way the play row's are; instead the length's own line is taken out
+   and the same height given back as padding, and the two marks are placed in
+   that band. Measured first with the marks at the holder's own bottom: they
+   landed over the foot of the picture. */
+.card-page .post-poster[data-work],
+.card-page .post-video[data-work] {
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.card-page .post-poster[data-work] .post-dur,
+.card-page .post-video[data-work] .post-dur {
+  display: none;
+}
+
+.card-page .post-poster[data-work]::after,
+.card-page .post-video[data-work]::after {
+  content: 'transcribing…';
+  position: absolute; left: 15px; bottom: 0;
+  font-size: 13px; color: #9a9aa2;
+  letter-spacing: 0.2px;
+}
+
+.card-page .post-poster[data-work='stuck']::after,
+.card-page .post-video[data-work='stuck']::after {
+  content: 'still trying';
+}
+
+.card-page .post-poster[data-work]::before,
+.card-page .post-video[data-work]::before {
+  content: '';
+  position: absolute; left: 0; bottom: 6px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #9a9aa2;
+  opacity: 0.55;
+  animation: transcribing-breath 1.6s ease-in-out infinite;
+}
+
+/* a person who has asked for less motion gets the mark, steady — the parent's
+   own ruling, for the parent's own reason. */
+@media (prefers-reduced-motion: reduce) {
+  #mapReel .reel-post[data-work] .reel-meta::after,
+  .card-page .post-poster[data-work]::before,
+  .card-page .post-video[data-work]::before {
+    animation: none;
+    opacity: 0.5;
+  }
+}
