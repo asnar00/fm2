@@ -2474,3 +2474,140 @@ The ask box is back, proven with a measured threshold. It lands after the runnin
 *2026-09-04 16:46*
 
 > let's draw the boundary lines between wards into the map tiles rather than drawing them separately as an overlay
+
+### p92b
+*2026-09-04 16:46*
+
+> <task-notification>
+> <task-id>b1oue0bua</task-id>
+> <tool-use-id>toolu_01Mv1u3LP69yVjiuu4VhVGYE</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/b1oue0bua.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Fast-forward main to the transcription trio, verify, and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+### p92c
+*2026-09-04 16:46*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>699244</subagent_tokens><tool_uses>728</tool_uses><duration_ms>26008412</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+The transcription build is live. Now three things at once: stamp its three builds, send the baked-lines brief, and cherry-pick the ask box and deploy.
+
+### p92d
+*2026-09-04 16:46*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>699626</subagent_tokens><tool_uses>728</tool_uses><duration_ms>26018683</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+### p92e
+*2026-09-04 16:46*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>700008</subagent_tokens><tool_uses>728</tool_uses><duration_ms>26026264</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Build 672 is live with the transcription trio, all three stamped. The ask box is picked onto main. Committing the stray transcript export and deploying it.
+
+Deploying the ask box. Everything else is with workers: the transcribing mark, the dropdown width and centred title, and the baked ward lines. Nothing to request until one returns.
+
+**One thing the ask box changes that you should know:** with no results step, the urgent/whenever choice has nowhere to sit, so every ask files as "whenever". Urgency becomes my stamp rather than yours. If you want the choice back, it needs a design that does not cost a second step.
+
+### p93
+*2026-09-04 16:46*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>700392</subagent_tokens><tool_uses>728</tool_uses><duration_ms>26044670</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Stale timer. Waiting on the deploy.
+
+### p94
+*2026-09-04 16:47*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>700774</subagent_tokens><tool_uses>728</tool_uses><duration_ms>26061415</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Same stale timer, nothing new.
+
+### p95
+*2026-09-04 16:47*
+
+> I'm still seeing major "flashing" of the media panel on posts when scrolling from one to another.
+
+That is the one thing you said matters most, so it jumps the queue. I'm sending the reel worker back to it ahead of the transcribing mark, with your phone's black box as the first evidence.
+
+### p95a
+*2026-09-04 16:47*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>701158</subagent_tokens><tool_uses>728</tool_uses><duration_ms>26079942</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+### p95b
+*2026-09-04 16:47*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>701542</subagent_tokens><tool_uses>728</tool_uses><duration_ms>26097324</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Sent, ahead of the transcribing mark. The worker reads your phone's black box first for what happens during a sweep, then reproduces on the simulator with real fingers. My suspicion: several things now land on a post while it is arriving, a poster from the slow road, the new transcribing message, a title, and each one repaints the card and swaps its player unless carried. The fix has to cover every repaint road, not only the one the first cut fixed.
+
+The ask-box deploy is still in its gate. Nothing to request until it or a worker returns.
+
+### p96
+*2026-09-04 16:48*
+
+> when scrolling between posts, the old post scrolls completely offscreen before the new one scrolls in, leaving the screen empty for a short time. I'd like the new one to start scrolling in immeidately as we scroll the old one out, so it feels like an unbroken series.
