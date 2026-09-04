@@ -1,11 +1,99 @@
 # handover
-*state of play for the next session — rewritten 2026-09-03 at session end (transcripts/2026-09-03-housekeeping.md); before that 2026-09-02, morning, at the
-end of a short settings session (transcripts/2026-09-02-settings.md, 6
-prompts) after Saturday's 20-ask day (transcripts/2026-09-01-saturday.md).
-Discipline in `agents.md`; ops in `deploy.md`; the pipeline in `hybrid.md`;
-the ledger is `misses.md`. Read the composed skillset alongside this — it
-carries nine agent-instruction nodes now; the newest are /retrofit and
-/confined.*
+*state of play for the next session — rewritten 2026-09-04 at session end
+(transcripts/2026-09-04-field-walk.md); before that 2026-09-03
+(transcripts/2026-09-03-housekeeping.md). Discipline in `agents.md`; ops in
+`deploy.md`; the pipeline in `hybrid.md`; the ledger is `misses.md`. Read the
+composed skillset alongside this — `/learned` carries 21 defaults now.*
+
+## TODAY (2026-09-04): the field-walk day — five Opus workers in parallel, builds 615–649
+
+*Written at session end. Fable 57% → 59% for the whole day: triage on Fable,
+every build by an Opus worker seat in its own worktree and rig, reviewed
+and shipped by triage. Twenty-two nodes landed, all proven on a rig, most
+on the iPhone simulator. Ash walks tomorrow (Saturday) with the Sevenoaks
+canvassing team; a test walkabout tonight or in the morning first.*
+
+- **The morning:** the still and audio posts tombstoned in every world
+  (`tools/prune_posts.py`, dry by default); `photo` unticked in the miso
+  product (the override now materialises `loop/dictate`, `as-posts`,
+  `capture`). Audience rulings recorded in notes.md: a post is stamped at
+  its author's grade, promote lowers it, newcomers see what reached them —
+  the app already did this.
+- **Transcription** (`dictate/transcribed` + `vocabulary` + `api` +
+  `mini`, `capture/video/streams`, `phone` unticked — 133 MB off the app):
+  design in notes.md ("video notes to the mini" + amendment). The api rung
+  is **Speechmatics with fieldnote's exact config** (key in
+  `~/.agent-config.json` `speechmatics.api_key`, mode 600, never in the
+  repo); the mini rung is mlx whisper turbo from fieldnote's venv, **its
+  launchd plist `tools/com.noob.transcriber.plist` is written and NOT
+  loaded** — the mini had 0.1 GB free with five rigs up; load it when the
+  box is quiet and measure. `tools/streets.py --go` was run: 1,986 named
+  places in `~/.miso-context/streets.json`. The worker found and fixed a
+  real defect: a server-landed transcript did not travel to other people
+  (`/exchange` shares on the route link only). **Unproven:** whether iOS
+  hands over two-second chunks during recording or one blob at stop (the
+  rig has no camera); the joined MP4 was never played back. Ash's walk is
+  the test — watch `/transcribed`'s queue dir under `~/.miso-blobs` and the
+  post's words arriving.
+- **The map view:** `until-play` (+`incoming-too`), `from-the-lozenge`,
+  `carries-the-card` (+`rubber-band`), `back-to-the-lozenge` (+`size-too`;
+  the swipe-away close now shrinks in place — ash: "that's fine");
+  `browse/map-only` (grid and list unreachable, every tool on the map)
+  and `map-only/since` (today / week / month / all, default `all` —
+  triage's call, one line in `since.vars`); the stale `open_tool` mirror
+  fixed in `/under-account`, `projects`, `me`, `invite-tool`, `restore`
+  (the map mints fewer healing turns than the grid did — the durable fix
+  is `/payload` republishing at turn end, a core ask nobody has made).
+- **The recording row** (`video-only/armed` + `explained` + `in-place`):
+  + arms a row — rec, stop, camera (front by default, its own `camera`
+  var), publish level (a column with a sentence each, popping over the
+  row). `/audience` gained `audience_new_floor(grade)`; the chosen level
+  is clamped to the author's rank. Residual: the record level shows bare
+  ground, not the posts list.
+- **Boundaries** (`boundaries/outlined`, `region`, `region/baked`): ward
+  names gone, black outlines; a region sub-tool in the posts row (teal)
+  picks the constituency or a ward, drawn in Stadia Outdoors from
+  server-baked tiles (`tiles/region/<CODE>/z/x/y.png`, cached under
+  `~/.miso-context/tiles-baked/<stamp>/`, ~3 ms a bake, RSS unchanged) so
+  it zooms in step with the ground. Old stamp dirs are never swept. The
+  Stadia budget should go down (only straddling and inside squares are
+  fetched) — a hypothesis, check the account.
+- **Rulings today:** dictate is deprecated, every note is a video;
+  parity with fieldnote (Speechmatics) for transcription; the map is the
+  only view; the + arms rather than fires; shrink-in-place on the swipe
+  close is fine; anyone asks, the payer decides (from yesterday).
+- **Misses today (misses.md):** the fast-forward that never happened
+  (build 621 shipped without transcription; three stamps corrected); the
+  merge commit that touched four nodes (main is linear: land by
+  cherry-pick or ff); five workers, one scratchpad, one simulator (rig dirs
+  named per worktree; `/tmp/miso-readout.json` and `/tmp/miso-drive.json`
+  want an env var — every worker hit this). Also: a transcript export
+  dirties main and blocks the next ff — export only right before a commit.
+- **Residuals, named by the workers, not yet ruled on:** the projects
+  new / me / invite reads are fixed but `/steady` and `/glide` still pay
+  one extra animation on a way-back tap; four copies of the grade ladder
+  (audience.rs, audience.js, armed.rs, explained.rs); the `level` tool
+  level is dead code under `in-place`; `/region`'s row button gates on
+  `browse_view_read() == "map"`, now always true; `.proj-title` is
+  positioned from `since.css` with a hardcoded 200px; DST inside a month
+  can move a card an hour across a boundary; the people-side time filter
+  is proven only through the shared chain; `fmlink --prove` still calls a
+  child-plus-parent-refactor "implied" (hit for real twice today — the
+  workers carried trailers anyway).
+- **Not loaded / not run:** the transcriber launchd job (above);
+  `tools/reset_user.py` for the test rows — **ash resets before the real
+  session**; main is ~70 commits ahead of origin, not pushed.
+
+## FOR SATURDAY
+
+Reset any test rows (`tools/reset_user.py --list`). Ethernet cable in the
+mini (ash bought one today — plug it in and confirm `en0` carries the
+default route before the watchdog does). Show one code from 👤 with the
+project current; every canvasser scans it, types a name, taps join, lands
+on the welcome, fills the card, enables Face ID and notifications, taps
+done. They see each other at once. Posts they should see must have a
+floor at or below their grade — Tara's posts start at candidate; she
+promotes, or sets a publish level in the recording row before filming.
 
 ## TODAY, EVENING (2026-09-03): builds 565–589 — the invite test with two iPhones
 
