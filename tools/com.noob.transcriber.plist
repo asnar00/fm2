@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  The mini's resident transcriber (/dictate/transcribed/mini), as a
+  LaunchAgent. This is a REFERENCE COPY and it is NOT LOADED: loading it puts
+  a 1.5 GB resident model on the box beside the live server, which is triage's
+  call, not a builder's.
+
+    scp tools/com.noob.transcriber.plist <mini>:Library/LaunchAgents/
+    ssh <mini> 'launchctl bootstrap gui/$(id -u) \
+                ~/Library/LaunchAgents/com.noob.transcriber.plist'
+    tail -f /tmp/miso-transcriber.log        # "warm, NNNN MB resident"
+
+  To stop it:  launchctl bootout gui/$(id -u)/com.noob.transcriber
+
+  Three things to know before loading it:
+
+  * The SCRIPT is the feature node's own asset, so it lives in the DEPLOYED
+    site directory (~/miso/site/tools/transcriber.py) and is replaced by every
+    deploy. Unticking /mini takes it away, at which point this job fails to
+    start and the mini rung stops advertising itself — which is correct, and
+    is why the server's readiness test is the heartbeat and not the file.
+
+  * The INTERPRETER is fieldnote's venv, which is where mlx_whisper and the
+    cached whisper-large-v3-turbo weights are. Nothing else on the mini has
+    them. If that venv moves, this path moves with it.
+
+  * KeepAlive is plain true: unlike the server there is no drain and no
+    successor, so a worker that exits for any reason should come back. It
+    holds no port and no state directory, so nothing can be taken from it.
+
+  Memory: about 1.5 GB resident once warm, against the mini's 8.6 GB shared
+  with the live server and the tunnel. One clip at a time is enforced by the
+  worker itself; the server's queue lock enforces it a second time.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.noob.transcriber</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/microserver/nøøb/experiments/fieldnote/venv/bin/python3</string>
+        <string>/Users/microserver/miso/site/tools/transcriber.py</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/microserver/miso</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <!-- the blob root the server writes clips into; the worker watches
+             <root>/whisper. Left to the default ($HOME/.miso-blobs) here,
+             which is what the live server uses. -->
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/miso-transcriber.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/miso-transcriber.log</string>
+</dict>
+</plist>
