@@ -87,17 +87,25 @@ def step(name):
 
 
 async def go_home(pg):
-    """an open tool shows only its own button: tap it until the launcher is back"""
-    for _ in range(4):
-        cur = await pg.evaluate("JSON.parse(feature_Loop.state).open_tool")
-        if not cur: return
-        await pg.click(f'[data-ev="tool_{cur}"]'); await pg.wait_for_timeout(900)
+    """‹ goes one level up (/one-level): press it until it is gone.
+
+    Read from the SCREEN, not from `feature_Loop.state`. `open_tool` is
+    bridged, /payload republishes it part-way down the update chain, and
+    /people, /posts and /projects each write it back at a LATER link — so on
+    the tap that means "back to the set" the mirror says "" while the row
+    already shows the tool open. This helper used to believe the mirror and
+    then click a tool button that /current-only was no longer drawing, which
+    is a 30s timeout and a step blamed on the app (misses.md, "the gate's own
+    caret" and "navigation from the wrong side")."""
+    for _ in range(6):
+        if not await pg.evaluate("!!document.querySelector('.toolbar [data-ev=\"tools_home\"]')"): return
+        await pg.click('.toolbar [data-ev="tools_home"]'); await pg.wait_for_timeout(900)
 
 
 async def open_tool(pg, tool):
-    if await pg.evaluate("JSON.parse(feature_Loop.state).open_tool") != tool:
+    if not await pg.evaluate(f"!!document.querySelector('.toolbar .tool-button.sel[data-ev=\"tool_{tool}\"]')"):
         await go_home(pg)
-        await pg.click(f'[data-ev="tool_{tool}"]')
+        await pg.click(f'.toolbar [data-ev="tool_{tool}"]')
     await pg.wait_for_timeout(1500)
 
 
@@ -222,18 +230,39 @@ async def dump(pg, tag):
     print(f"      (screenshot: {SCRATCH / f'fail-{tag}.png'})")
 
 
-@step("👤 lands on the people surface with the picker")
+@step("👤 lands on the people map — no picker, no grid, the band holds the set")
 async def s_people(pg):
+    # /map-only: the map is the only view, the picker is gone, and everyone in
+    # the set is in the band whether they are on the ground or not
     await open_tool(pg, "account")
     for _ in range(20):
-        if await pg.evaluate("!!document.querySelector('.card-tile') && !!document.querySelector('.browse-picker')"): return True
+        if await pg.evaluate("!!document.getElementById('mapData') && !document.querySelector('.browse-picker') && !document.querySelector('.card-tile')"):
+            return True
         await pg.wait_for_timeout(500)
+    print("      (mapData:", await pg.evaluate("!!document.getElementById('mapData')"),
+          "picker:", await pg.evaluate("!!document.querySelector('.browse-picker')"),
+          "tiles:", await pg.evaluate("!!document.querySelector('.card-tile')"), ")")
+    await dump(pg, "people-map")
     return False
 
 
-@step("the own tile opens an editable card and an edit is saved")
+@step("the own card opens from the band and an edit is saved")
 async def s_edit(pg):
-    await pg.click(".card-tile"); await pg.wait_for_timeout(2000)
+    # with the grid gone the band is the way in, so this step is also the
+    # proof that a placeless person has one (/map-only)
+    me = await pg.evaluate("""(() => {
+        const cs = JSON.parse(JSON.parse(feature_Loop.state).cards || '[]');
+        const m = cs.find(c => c.type === 'profile' && !c.from); return m ? m.id : ''; })()""")
+    if not me:
+        print("      (no own profile card)"); return False
+    sel = f'#mapReel .reel-post[data-ev="browse_open:{me}"]'
+    for _ in range(20):
+        if await pg.evaluate(f"!!document.querySelector('{sel}')"): break
+        await pg.wait_for_timeout(500)
+    else:
+        print("      (own card has no lozenge in the band — nothing on this map opens it)")
+        await dump(pg, "band-own-card"); return False
+    await pg.click(sel); await pg.wait_for_timeout(2000)
     # a card opens read-only since /editing: press edit first if it is offered
     # since /editing/toolbar the control is the pencil in the toolbar; the pill before it
     if await pg.evaluate("!!document.querySelector('.toolbar [data-ctl=card_edit]')"):
@@ -395,17 +424,16 @@ async def s_project(pg):
     return ok
 
 
-@step("the map view mounts Leaflet")
+@step("the map is the only view: Leaflet mounts with nothing to switch to")
 async def s_map(pg):
+    # /map-only: there is no picker to press, so the map is what opening a
+    # browse tool gives you — and there is no way to leave it for a grid.
     await open_tool(pg, "account")
-    await pg.evaluate("(() => { const v=document.querySelector('[data-ev=\"browse_map\"]'); if (v) v.click(); })()")
     took = await until(pg, "!!document.querySelector('.leaflet-container') && getComputedStyle(document.querySelector('.leaflet-container')).display !== 'none'")
     print(f"      (map mounted in {took} ms)" if took >= 0 else "      (map never mounted)")
     ok = took >= 0
-    await pg.evaluate("(() => { const v=document.querySelector('[data-ev=\"browse_grid\"]'); if (v) v.click(); })()"); await pg.wait_for_timeout(1200)
-    # the view is a device var the world cache remembers across passes: leave it on the grid, proven
-    if await pg.evaluate("!!document.querySelector('.leaflet-container') && getComputedStyle(document.querySelector('.leaflet-container')).display !== 'none'"):
-        print("      (map still showing after switching to grid)"); ok = False
+    if await pg.evaluate("!!document.querySelector('[data-ev=\"browse_grid\"]') || !!document.querySelector('[data-ev=\"browse_list\"]') || !!document.querySelector('[data-ev=\"browse_map\"]')"):
+        print("      (a view-picker button is still drawn)"); ok = False
     await go_home(pg)
     return ok
 
@@ -456,10 +484,6 @@ async def passes(port: int, cookie: str) -> int:
             print(f"== {label}")
             if not await pass_gate(pg):
                 print("  [FAIL] the profile gate did not lift"); failures += 1; continue
-            await go_home(pg)
-            # start every pass on the grid, whatever the last pass left behind
-            await open_tool(pg, "account")
-            await pg.evaluate("(() => { const v=document.querySelector('[data-ev=\"browse_grid\"]'); if (v) v.click(); })()"); await pg.wait_for_timeout(800)
             await go_home(pg)
             for name, fn in STEPS:
                 try:

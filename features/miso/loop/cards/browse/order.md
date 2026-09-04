@@ -3,3 +3,4 @@
 - [x] map
 - [x] backdrop
 - [x] flick
+- [x] map-only
