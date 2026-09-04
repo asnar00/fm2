@@ -1,4 +1,4 @@
-# transcript: field walk
+# transcript: the field walk
 *session `b70435b4-6806-4a25-aadb-e68df3da3413`, exported by tools/export_transcript.py — do not edit; anchors `#pN` are stable*
 
 ### p1
@@ -834,3 +834,158 @@ The reel worker is back on all three, as bug-fix children of the nodes they corr
 - **The close** must shrink on every road, the chevron, the map tap and the swipe. The worker's rig said the width did change, so it has to find why the phone shows otherwise, and prove each road with rect readouts on the simulator.
 
 The boundaries deploy is still in its gate, and the level-picker and map-only workers are still out.
+
+### p35
+*2026-09-04 11:36*
+
+> <task-notification>
+> <task-id>bun28yp3o</task-id>
+> <tool-use-id>toolu_01UkBxvKpvrzgzNCVC8zbseL</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bun28yp3o.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Commit the ledger and transcript, then deploy the boundary build through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 637 is live with the boundaries, gate green, both builds stamped shipped.
+
+**On the phone now:** ward names are gone and wards are black outlines. A new region button in the posts row, teal, opens a list of the constituency and its 26 wards. Pick one and it shows in the Stadia Outdoors look, cut cleanly at its boundary, with the rest of the map as before. The constituency is the default.
+
+**One budget note:** the outdoors tiles come from the same Stadia key and are cached on the mini per square, but nothing pre-stocks them the way the dark ground is stocked. Zooming around a whole ward on several phones is a real line on the free tier. Worth watching on the walkabout.
+
+Three workers are out: the level picker, map-only with the time filter, and the three reel fixes.
+
+### p36
+*2026-09-04 11:50*
+
+> checking out the constituency boundary render. It's good, but has one major flaw - when you zoom in and out, the light region stays fixed while zooming and then pings into place, which looks messy - I'd like it to zoom exactly in sync with the background. So we need to cache multi-level tiles that already include the boundaries
+
+That is the right diagnosis: the mask is recomputed only when the zoom ends, so during a pinch it stands still. Baking the boundary into the tiles on the server makes it one layer that Leaflet scales in sync. Sending the boundaries worker back for it.
+
+The boundaries worker is on it as a bug-fix child of the region node.
+
+**The fix:** the server composites each tile for the chosen region, the dark ground with the outdoors look drawn inside the polygon, anti-aliased at the edge, cached per tile on the mini. The phone then draws one tile layer, which Leaflet scales in sync through the pinch. The boundary line stays as the vector on top. Tiles wholly inside or outside the polygon are served as they are, so only the edge tiles cost anything to bake.
+
+**Proof I asked for:** frames captured mid-zoom showing the light region scaling with the ground, the edge as crisp as before at zoom 15, and the bake cost per tile on the mini, which has little memory to spare.
+
+Four workers are out now: the level picker, map-only with the time filter, the three reel fixes, and this. Nothing to request until one returns.
+
+### p37
+*2026-09-04 11:53*
+
+> <task-notification>
+> <task-id>a1c81bb1f2f5c01de</task-id>
+> <tool-use-id>toolu_01CKEYNs628kJcUnx9yLiVPo</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a1c81bb1f2f5c01de.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build map-only and time filter" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Both nodes are built, proven and rebased onto current main. Branch `worktree-agent-a1c81bb1f2f5c01de` in `/Users/microserver/fm2/.claude/worktrees/agent-a1c81bb1f2f5c01de`, three commits on top of `e9a8f64`.
+> 
+> ## What shipped
+> 
+> **`f5665e2` — `/under-account` reads the live tool, not the bridged mirror** (1 file, +11/−1; `--prove`: confined). Not in the brief; it is the fix map-only needed to hold. `open_tool` is bridged, `/payload` republishes it mid-chain, and `/people` writes it back at a later link — so on the tap that means "back to the people" the `state` a renderer gets says no tool is open, and `/under-account` (which read `s["open_tool"]`) dropped the invite plus. On the grid an incidental turn always arrived (`PeopleNear` from the people fetch, `CardEnsure` from the tiles) and healed it; the map mints neither, so it stopped healing. Diagnosed by counting turns on both builds — main: `SEND click/tool_account → "-" → PeopleNear → "account" → CardEnsure → "account"`; mine: `SEND click/tool_account → "-"` and nothing more.
+> 
+> **`1d3e193` — `browse/map-only`** (`--prove`: implied). `browse_view_read()` answers `map`; `browse_picker_html()` becomes `browse_slot_html()`, empty, the seam `/since` takes. Grid and list stay composed and unreachable — the untick is the whole way back. The part that was more than three deletions: with the grid gone, a placeless card needs the band. `map-only.js` (its own file, `/on-people-map`'s idiom, nothing under `/reel` edited) gives the projects map a band it never had, and adds back on every surface the `#mapData` set-members the chain left out — `/everyone` keeps "the pins, live or placed", which was right while the grid held the rest.
+> 
+> **`981373f` — `browse/map-only/since`** (`--prove`: implied). Four pills; `period` a user var defaulting to `all`; the cut applied to `browse_cards` and `posts_set`, upstream of the map, the band and `/flick`, so `/reel`'s contract is untouched. The three local midnights come from the page as one `SinceMarks` event, never a bridged-key write. Fails open before the marks land.
+> 
+> ## Evidence
+> 
+> - **Smoke gate green, all three passes (cold/warm/throttled), on the rebased tree** — including the two new steps and after main moved under `browse/map` (`boundaries/outlined`, `boundaries/region`).
+> - **`data-ids` per pill** (headless Chrome, my rig on 8151, seeded through `/new`'s event + `/post-time`'s `CardWhen`; marks today=Fri 04, week=Mon 31 Aug, month=Tue 01 Sep):
+>   - posts — today: 1 · week: 3 (`today, yesterday, monday`) · month: 2 (`today, yesterday`) · all: 5. The Monday post separates week from month.
+>   - projects (by `created`) — today: 1 · week: 2 · month: 1 · all: 3.
+>   - 👤 — 1 profile under every period: the own-card exemption holding. **The people filter is not separately proven** — it needs a second person's profile card, which needs `/exchange`. It runs the identical `browse_cards` chain that projects proves.
+>   - The band mirrors `data-ids` exactly on all three tools.
+> - **Screenshots** in `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a1c81bb1/shots/` — `posts-{today,week,month,all}.png`, `account-*`, `projects-*`, `top-strip-with-project.png`. Judged against `/taste`: house pill (#121215 on #3a3a3f), dimness as hierarchy, #9db7d8 for chosen, 999px, ash's own words. Good enough. One note for ash: the row is 175px where the picker was 96px, and is now the heaviest thing at the top; losing the shared ring would lighten it.
+> - **Top strip measured** (402px): pills 16..191, project name 200..300, lozenge 308..386 — no overlap. Before `since.css`, pills 16..202 and the centred name 164..238 overlapped by 38px; the name is pinned into the gap instead.
+> - **Both untick claims verified** (transient, restored, tree clean): map-only off → picker markup back, `since-pill` gone, neither JS half composed. `/map` off with map-only on → `browse_set_html` is `/browse`'s, no `#mapData`, the grid returns.
+> 
+> ## Blocker, named not skipped
+> 
+> **No simulator run.** The rig's readout/drive paths are hardcoded, so there is one simulator rig per machine and worker `a27755b799c22c34e` held it (port 8098, `/tmp/miso-readout.json` live). Starting mine would have corrupted theirs. Triage's own misses entry (`e9a8f64`, "five workers, one scratchpad, one simulator") rules that the other workers prove on headless Chrome and say so — that is what this is. The real-touch path is unproven; the DOM path is.
+> 
+> I also hit the shared-scratchpad collision mid-run: another agent overwrote `scratchpad/rig/start.sh` and `stop.sh` under me. I moved to `scratchpad/rig-a1c81bb1/`, stopped my old server by its own checked PID. The live server on 8095 was never touched (still `200` at the end).
+> 
+> ## Open risks
+> 
+> 1. **The mirror-lag class is wider than the one I fixed.** Other nodes read `s["open_tool"]` and can now see a stale `""` for longer on browse surfaces, because the map mints fewer follow-up turns than the grid did: `projects.rs:26` (the projects **new** button, same shape as the plus I fixed), `me.rs:17`, `invite-tool.rs:32`, and on the page half `restore.js`, `steady`/`glide`, `backdrop.js`, `account.js`. I fixed only the one the gate caught. This is the biggest thing to look at before shipping.
+> 2. **`map-only.js` wraps `feature_Reel.showing` and `.posts`** while three workers are changing `/reel`'s subtree. It rebased clean and the gate is green, but the wrap is a contract on functions someone else may reshape.
+> 3. **`/everyone`'s rule is effectively amended** — the people band is no longer "the pins, live or placed" but the whole set. That continues its ask's direction rather than contradicting it, but it is a change to a node shipped 12 hours ago; the reasoning is in `map-only.md`.
+> 4. **Two exemptions ash may not want**: your own profile card is never filtered, and the open card is never filtered while a tool draws it. Both named in `since.md`, one condition each.
+> 5. **Default `all`** is triage's call, not ash's — one line in `since.vars`.
+> 6. **`.proj-title` is repositioned from `since.css`** — my node styling `/title`'s element. Precedented (`/title` hides `/current-project`'s chip the same way) but it couples the name's left edge to the pills' width by a hardcoded 200px.
+> 7. **DST inside the month** can put a card an hour the wrong side of the boundary; named in the spec, not fixed.
+> 8. **"The reel narrows behind an open card" is unverified** — with a card open there is no `#mapData` at all, so what shows behind it is `/opens-over-map`'s business (another worker's). The card staying open is proven.
+> 9. `/current-project`'s chip markup is gone under map-only; invisible today because `/title` hides it, visible only if `/title` is unticked while map-only is on.</result>
+> <usage><subagent_tokens>395891</subagent_tokens><tool_uses>260</tool_uses><duration_ms>5914930</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a1c81bb1f2f5c01de</worktreePath><worktreeBranch>worktree-agent-a1c81bb1f2f5c01de</worktreeBranch></worktree>
+> </task-notification>
+
+The map-only worker is back, but it names a wider class of the bug it fixed: other buttons read the same stale mirror and may vanish on the map. I'm sending it back to close those before I ship, and looking at its screenshots meanwhile.
+
+The time-filter row looks right on the map: today, week, month, all as quiet pills where the picker was, with all chosen. The light region sitting off its outline in that screenshot is the zoom snapping bug the boundaries worker is already fixing.
+
+**What the map-only worker delivered**
+
+- Every browse tool opens on the map. Grid and list stay in the tree but unreachable, so the untick is the way back.
+- The time filter cuts posts by their taken time and people and projects by creation, at the phone's local midnight, week from Monday. Default is all, one line to change.
+- It found and fixed a real bug on the way: on the map, the invite plus vanished after a back tap, because it read a stale mirror that the grid used to heal with extra turns.
+
+**Why I have not shipped it yet:** the worker named three more buttons that read the same stale mirror, including the projects "new" button. I sent it back to fix those and prove each on the map before it returns. Shipping a map-only app with a vanishing new button is not something to find on the walkabout.
+
+Four workers are out. I'll ship map-only as soon as that comes back clean.
+
+### p38
+*2026-09-04 12:09*
+
+> <task-notification>
+> <task-id>a481d67a8bff6672b</task-id>
+> <tool-use-id>toolu_01L1GbGpTevW3sWyokRbBF8m</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a481d67a8bff6672b.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build four map-reel refinements" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Three bug-fix children, three commits, branch on current main (`e9a8f64`). Not deployed.
+> 
+> ## The commits
+> 
+> **`78ff83f` — `poster/face-first/until-play/incoming-too`.** Diagnosed before touching anything: sweeping onto a video post whose poster hasn't arrived makes a `&lt;video src=… preload="metadata"&gt;` **2.25 s after the card**, then `loadstart` → `loadedmetadata` → `canplay` — the browser fetching, decoding and painting a frame unasked (and seeking to `at[id]` for a clip played before, which is literally the "scanning forward" ash described). The cause: `/poster` only replaces `/capture/video`'s player row when the card has *both* a poster block and a video block, and the frame is taken after the recording is saved and travels as its own op — so the post you just made is exactly the post with a bare live player. Cure: a player row the reader hasn't opened is hidden from `mount()` for the length of the call (its `data-vid` is lifted), and a still stands in its place — the square `/clips-too` gives the player, same ground, same corner, `/poster`'s own play mark — drawn in the same turn as the card. Confined.
+> 
+> **`3e22112` — `flick/carries-the-card/rubber-band`.** `/reel` writes the surface's ids on `#mapData`, which is literally the `cards` vector `/flick` walks, so the ends are knowable on the page half; it is kept from the last paint that carried it. At an end the parent is handed a *damped finger* rather than a damped answer, so `/carries-the-card` computes its own offset, transform and spring-back and none of its rules change; and `go` is dropped for that direction outside the parent's wrapper, so the slide-off never starts. Confined.
+> 
+> **`2f869b4` — `reel/opens-over-map/back-to-the-lozenge/size-too`.** Your rig readout was right that width shrank — the *height* did not: a uniform scale left the card 476 px tall at the end against an 88 px lozenge, with the bottom two thirds off the foot of the screen, which is why it read as moving and not shrinking. Both axes now, with the fade deepened and front-loaded. The flick road is brought in per ash's word: `/swipe-away`'s sideways exit is off while this node is ticked (a rule in my own stylesheet, not an edit to its file) and the shrink starts on the release. **Not confined** — the parent gained two extension points (`shrinks(page)`, `frames(page, r)`); full `Toggle-proof:` trailer.
+> 
+> ## Evidence
+> 
+> Gate green on my rig (`tools/smoke.py --port 8144`, own scratch), all three passes. Desktop rig with CDP touches. **iPhone 17 simulator, installed web clip, real fingers**: node 1 — sweeping onto the poster-less post gives `made: []`, `events: []`, `still: true`, `video: null` over 2 paints; node 2 — first post dragged down, finger 180 px, card 85 px, settles to 0, post unchanged; last post dragged up, same; middle sweep tracks 1:1 to −180 and switches; node 3 — caret `370x658 → 245x111 → gone`, map tap `→ 247x119 → gone`, flick `→ 239x88` which is the lozenge exactly, reel then scrolled to it. Screenshots in `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a481d67a8bff6672b/evidence/` (`p1-incoming.png`, `still.png`, `close-0-open.png` … `close-3-done.png`).
+> 
+> ## Named risks
+> 
+> - **The flick no longer moves sideways at all** over the map — it shrinks in place to the lozenge. That follows ash's "every road" ruling but retires a shipped idiom (`/learned` 5, "swipe sideways to put a card away"). Worth his eye.
+> - The flick road's shrink waits on `/swipe-away`'s own send timer, so there is a short hold at the lozenge before the page goes.
+> - `/rubber-band` only knows the ends when the open card is in the kept list; elsewhere (a project card from a person's page, a surface with no map) the old fly-off-and-back stands.
+> - `/incoming-too`'s still is a square; if `/clips-too` were unticked the page would move a little when the clip goes in.
+> - I again redirected `readout_file()`/`drive_file()` into my own rig dir for the simulator run and reverted before committing (tree verified clean) — the env-var fix named in misses.md is still owed.
+> - `MISO_RIG_KEEP=1` left the clip serving a stale service worker and the app never booted (`state: null`, `sw: controlled`); unregistering and clearing caches fixed it. Rig scripts should not set KEEP unless the cache path is under test.
+> - The rig world now holds seven posts (three carried over from the device's previous world) — harmless, but the rig's `_ash` world is not a clean fixture.
+> 
+> My rig was stopped by its own PID (`47763`), checked against `ps -o command=` first; the live server and the other three workers' rigs are untouched.</result>
+> <usage><subagent_tokens>560280</subagent_tokens><tool_uses>124</tool_uses><duration_ms>2175990</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a481d67a8bff6672b</worktreePath><worktreeBranch>worktree-agent-a481d67a8bff6672b</worktreeBranch></worktree>
+> </task-notification>
+
+The three reel fixes are back with simulator proof on each road. Landing and deploying, and looking at the close sequence.
+
+### p38a
+*2026-09-04 12:09*
+
+> <task-notification>
+> <task-id>bw279i5b6</task-id>
+> <tool-use-id>toolu_01WxJbU8JBNDbXecDVC5R17t</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bw279i5b6.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Fast-forward main to the reel fixes, verify, and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+The same trap as this morning: my transcript export dirties main before a merge. Discarding the export, merging, re-exporting, then deploying in one chain.
