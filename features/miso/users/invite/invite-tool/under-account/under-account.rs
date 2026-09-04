@@ -19,7 +19,17 @@ impl feature_UnderAccount {
         let mut html = existing.tool_controls(state.clone());
         let s: serde_json::Value = serde_json::from_str(&state)
             .unwrap_or(serde_json::json!({}));
-        let open = s["open_tool"].as_str().unwrap_or("");
+        // which tool is open is read from the CONTEXT, not from the bridged
+        // mirror in `state`: /payload republishes `open_tool` part-way down the
+        // update chain and /people writes it back at a later link (the tap that
+        // means "back to the people" closes the tool and re-opens it), so
+        // `s["open_tool"]` is one turn stale on exactly that tap and the plus
+        // vanished from the row until some other event happened to arrive.
+        // /browse states the rule this repairs: a budget may read a stale
+        // value, a renderer may not. `invite.may` stays on the state — it is
+        // the page half's own answer and nothing in the chain rewrites it.
+        let open = open_tool_read();
+        let open = open.as_str();
         let may = s["invite"]["may"].as_bool().unwrap_or(false);
         let mut mine = String::new();
         if open == "account" && may {
