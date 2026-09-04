@@ -65,23 +65,9 @@ const feature_BackToTheLozenge = {
       send();
       try { this.aim(id); } catch (e) { /* the band is where /reel left it */ }
     };
-    // /swipe-away has already taken the card off sideways, and that sideways
-    // motion is the platform idiom for putting a card away (/learned 5). A
-    // shrink on top of it would haul the card back into view in order to send
-    // it somewhere else, so that road keeps its own motion and gets the reel
-    // and the map only.
-    const swept = page.classList.contains('fm-swipe-left')
-               || page.classList.contains('fm-swipe-right');
-    if (!r || swept || this.quiet()) { after(); return; }
-    const c = page.getBoundingClientRect();
-    if (!c.width || !c.height) { after(); return; }
-    const s = Math.min(1, r.width / c.width);
-    if (!(s > 0)) { after(); return; }
-    const frames = [
-      { transform: 'none', opacity: 1 },
-      { transform: 'translate(' + (r.left - c.left) + 'px, ' + (r.top - c.top)
-                 + 'px) scale(' + s + ')', opacity: 0.4 },
-    ];
+    if (!r || !this.shrinks(page) || this.quiet()) { after(); return; }
+    const frames = this.frames(page, r);
+    if (!frames) { after(); return; }
     this.going = Date.now();
     this.play(page, id, frames, Date.now(), () => {
       after();
@@ -90,6 +76,31 @@ const feature_BackToTheLozenge = {
       const still = document.querySelector('.card-page');
       if (still && (still.getAttribute('data-card') || '') === id) this.clear(still);
     });
+  },
+
+  // whether this road has a shrink of its own to run. An /extension point/:
+  // /swipe-away has already taken the card off sideways, and that sideways
+  // motion is the platform idiom for putting a card away (/learned 5), so a
+  // shrink on top of it would haul the card back into view in order to send it
+  // somewhere else. A node that owns the whole closing motion says otherwise.
+  shrinks(page) {
+    return !(page.classList.contains('fm-swipe-left')
+          || page.classList.contains('fm-swipe-right'));
+  },
+
+  // where the card goes, as two keyframes — the /extension point/ for the
+  // shape of the closing. The scale is uniform here, so the card ends the
+  // lozenge's width at its own proportions.
+  frames(page, r) {
+    const c = page.getBoundingClientRect();
+    if (!c.width || !c.height) return null;
+    const s = Math.min(1, r.width / c.width);
+    if (!(s > 0)) return null;
+    return [
+      { transform: 'none', opacity: 1 },
+      { transform: 'translate(' + (r.left - c.left) + 'px, ' + (r.top - c.top)
+                 + 'px) scale(' + s + ')', opacity: 0.4 },
+    ];
   },
 
   play(page, id, frames, began, done) {

@@ -1,0 +1,6 @@
+/* the sideways flick's own exit is off while this node is ticked: the closing
+   is one motion, onto the lozenge, on every road out (#p34). /swipe-away still
+   sends — its send has a timer of its own behind the animation — and this
+   node's shrink starts on the gesture rather than waiting for it. */
+body.fm-map-behind .card-page.fm-swipe-left,
+body.fm-map-behind .card-page.fm-swipe-right { animation: none; }

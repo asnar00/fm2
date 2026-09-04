@@ -55,10 +55,15 @@ map's set comes back and puts the scroll at the head while it does (the first
 cut aimed only before, and the band was back at the first post by the time the
 card had gone).
 
-`close(send)` builds the two keyframes — the page's own rectangle, then the
-lozenge's — runs them, and sends afterwards; `play` is the same wall-clock
-animation the opening uses, and `clear(page)` un-shrinks a card that outlived
-its own close.
+`close(send)` runs the motion and sends afterwards; `play` is the same
+wall-clock animation the opening uses, and `clear(page)` un-shrinks a card that
+outlived its own close.
+
+`shrinks(page)` and `frames(page, r)` are the two /extension points/ of the
+closing: whether this road has a shrink of its own to run — `/swipe-away`'s
+does not, having taken the card off sideways already — and the two keyframes
+the card travels between, the page's own rectangle and the lozenge's at a
+uniform scale.
 
 The redefinition of `feature_Loop.send` is the interception, and the wrapper on
 `feature_Loop.paint` carries the shrink across a repaint and releases the
