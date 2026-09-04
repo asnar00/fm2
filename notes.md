@@ -3053,3 +3053,18 @@ never re-worded).
 makes it possible later: transcribe parts as they land); speaker
 diarisation (pyannote is cached on the mini; a later rung); anything of the
 public's speech — these are the team's own notes.
+
+**Amendment, approved by ash (field-walk #p8, "parity with fieldnote"):**
+fieldnote's field pipeline was **Speechmatics** batch (enhanced operating
+point, speaker diarization at sensitivity 0.75, `additional_vocab` built
+from a reverse-geocoded address, ward, district and constituency — its
+`transcribe.py`, provider `speechmatics`); mlx whisper turbo + pyannote was
+its earlier local road (`transcribe_local.py`), still runnable from its
+venv at `~/nøøb/experiments/fieldnote/venv`. So the rungs become: `api` =
+Speechmatics with fieldnote's exact config (parity, grade 3, the one that
+is known to work in the field); `server` = mlx turbo from that venv (grade
+2, the road when the key or the network is absent). Both take the same
+vocabulary from one context node: the reverse-geocoded address as
+fieldnote built it, plus the nearest streets. Placement: a grouping node
+`dictate/transcribed` holding `api`, `mini` and `context`, since dictate
+would otherwise pass the six-child cap.
