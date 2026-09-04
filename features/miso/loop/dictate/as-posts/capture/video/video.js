@@ -63,6 +63,15 @@ const feature_Video = {
     } catch (e) { this.arec = null; }
   },
 
+  // what the recorder is handed. The camera's own stream is what this node
+  // has always recorded; it is a named /extensible function/ so that a node
+  // wanting the take to survive a change of camera can put something between
+  // the two — the recorder cannot be given a different track set once it is
+  // running, but it never has to know which camera is behind the one it has.
+  recordStream() {
+    return this.media;
+  },
+
   async start() {
     try {
       this.media = await navigator.mediaDevices.getUserMedia(this.constraints());
@@ -72,7 +81,7 @@ const feature_Video = {
       return;
     }
     this.chunks = []; this.achunks = []; this.startedAt = Date.now();
-    this.recorder = new MediaRecorder(this.media, this.opts());
+    this.recorder = new MediaRecorder(this.recordStream(), this.opts());
     this.recorder.ondataavailable = (e) => {
       if (!e.data.size) return;
       this.chunks.push(e.data);
