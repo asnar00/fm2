@@ -28,4 +28,6 @@ This node extends `card_page_html`: it takes the page `/cards` drew and inserts 
 
 `tag.rs` — `card_page_html` inserts the tag after the first `>` of the page `existing` returns; `card_tag_colour` is the djb2-style hash into the palette.
 
+`card_tag_word(card)` is the /extension point/ for WHICH word the tag shows: the default is the card's own type, so this node alone draws exactly what it always drew, and a node with a truer word for a kind of card redefines it (`/role-in-the-tag` is the first). The colour keeps being taken from the type rather than the word, so the word may vary while the kind's colour does not.
+
 `tag.css` — the pill, absolutely placed inside the page.

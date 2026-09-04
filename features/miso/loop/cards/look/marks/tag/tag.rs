@@ -12,11 +12,25 @@ impl feature_Tag {
         }
         let tag = format!(
             "<span class=\"card-tag\" style=\"background:{}\">{}</span>",
-            card_tag_colour(kind.clone()), card_esc(kind));
+            card_tag_colour(kind.clone()), card_esc(card_tag_word(&c)));
         match html.find('>') {
             Some(i) => format!("{}{}{}", &html[..i + 1], tag, &html[i + 1..]),
             None => html,
         }
+    }
+
+    // the WORD the tag shows. An /extension point/: the default is the card's
+    // own type, which is what this node was written for and what every card
+    // still wears, and a node with a truer word for a kind of card redefines
+    // it. Opened for /role-in-the-tag, whose people wear their role in the
+    // project instead — with the default unchanged, so this node alone draws
+    // exactly what it drew before.
+    //
+    // The COLOUR is still taken from the type, deliberately: the word varies
+    // and the kind does not, so every person's tag stays one colour and the
+    // tag reads as "the same kind of card, differently labelled".
+    fn card_tag_word(card: &serde_json::Value) -> String {
+        card["type"].as_str().unwrap_or("").to_string()
     }
 
     // one colour per type name, the same on every device: a fixed palette of
