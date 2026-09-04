@@ -116,9 +116,20 @@ impl feature_FromTheWords {
                                  asked["why"].as_str().unwrap_or("no reason given").to_string());
             return;
         }
-        let title = from_the_words_tidy(asked["text"].as_str().unwrap_or("").to_string());
+        let raw = asked["text"].as_str().unwrap_or("").to_string();
+        let title = from_the_words_tidy(raw.clone());
         if title.is_empty() {
-            from_the_words_again(world, id, "the answer was not a title".to_string());
+            // "none" is the model's own answer, not a failure: the words were
+            // too garbled to name. That is final — asking again gets the same
+            // answer (found live 2026-09-04: one post asked three times on the
+            // backoff). Anything else empty is logged as said, and retried.
+            let said = raw.trim().trim_matches('"').trim_end_matches('.').trim().to_lowercase();
+            if said == "none" {
+                println!("titles: {} — the model called the words too garbled to name; leaving it untitled", id);
+                from_the_words_forget(world, id);
+                return;
+            }
+            from_the_words_again(world, id, format!("the answer was not a title: {:?}", raw));
             return;
         }
         from_the_words_write(world.clone(), id.clone(), title);
