@@ -3068,3 +3068,43 @@ vocabulary from one context node: the reverse-geocoded address as
 fieldnote built it, plus the nearest streets. Placement: a grouping node
 `dictate/transcribed` holding `api`, `mini` and `context`, since dictate
 would otherwise pass the six-child cap.
+
+## proposal: de-crufting the tree — a fold pass (2026-09-04, field-walk ; for after the field test)
+
+**Ash's thought.** The tree evolved through many turns, so it holds nodes
+and code that were superseded along the way — cruft. He wants a process
+that filters it out and yields a smaller tree that is easier to reason
+about. Not to be actioned until after Saturday; we will look at examples
+together first.
+
+**What the cruft is, from one day's evidence.** Superseded roads still
+composed and unreachable (grid and list under `/map-only`; the `level`
+tool level under `armed/in-place`; the clip-path road under
+`region/baked`; `/poster`'s slow road under `at-once`). Chains where an
+outer link never calls `existing`, so the inner body is dead but still
+compiled and still read. Copies (the six grade words in four files).
+Nodes unticked in every product (`photo`, `dictate/phone`), which are
+history in the shared tree. Orphan addresses: path-keyed enabled switches
+left in worlds by every regroup and untick.
+
+**Why it accumulates by design.** The tree is also the changelog: one ask,
+one node; and the untick rule keeps the parent's old behaviour alive under
+each child. That is what makes proof cheap and parallel work safe — but it
+means the tree carries every state the app has been in, not the one it is
+in. The history already lives in transcripts and git.
+
+**The proposal: a fold.** A child ticked in every product since it shipped
+folds into its parent; the merged node's spec says what the thing is now
+and keeps both provenance anchors; the intermediate state (parent without
+child) stops being reachable, which is fine where no product wants it.
+Dead links and copies go in the same pass. The proof is a regroup's: the
+composed output byte-identical before and after (`--chains` diff), so the
+pass is mechanical and a worker can run it. A linker mode (`fmlink
+--cruft`) lists candidates: links never reached, nodes off in every
+product, duplicated tables, folds that would relieve a child cap.
+
+**Cautions.** Addresses move — the orphan handling a regroup has. The
+skillset, `/learned` and misses.md name nodes; they fold with the code or
+rot. A rule for eligibility (live and unfolded for a week, say) makes it a
+periodic pass rather than a one-off. Transcript anchors stay valid, since
+the tree's provenance points into the transcripts, not the other way.

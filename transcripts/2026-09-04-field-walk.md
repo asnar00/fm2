@@ -2021,3 +2021,103 @@ Four workers are out. Nothing to request until one returns.
 *2026-09-04 16:07*
 
 > we should also show a "transcribing..." indicator on the post with some animation to let the user know that something is happening. I'd also suggest that we use our agent to figure out a title for the post once the transcription comes through
+
+Two asks, so two nodes. Both belong to the transcription worker's ground and are queued behind the retry fix.
+
+Both queued. The "transcribing…" hint reads its state from the server's queue, so it shows while the job exists and goes when the words land, with "still trying" if the job is stuck. The title comes from an Anthropic call on the mini once the words arrive, only when the title is empty, and travels as an edit like the words. The key is already on the mini.
+
+Four workers are out with seven nodes between them. Nothing to request until one returns.
+
+### p78
+*2026-09-04 16:08*
+
+> <task-notification>
+> <task-id>a1c81bb1f2f5c01de</task-id>
+> <tool-use-id>toolu_01LwnYRdM5Xd6QhRD5d5ftrR</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a1c81bb1f2f5c01de.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build map-only and time filter" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Done. Branch `strip-on-black`, one commit `47c968a` on current main (`2d93a28`), three files, `--prove` implied, gate green, working tree clean, no rig of mine running, live server untouched.
+> 
+> ## `47c968a` — `browse/map-only/strip-on-black` (asks#1788537194805)
+> 
+> **The nøøb button was already the right shape and the wrong opacity.** `/lozenge` gives it `#121215` on a `#3a3a3f` hairline, fully round — the house pill — and then `/button`, an older link, sets `opacity: .55` on the whole element. Opacity applies to the element *and everything in it*, ground included, so the map read through the lozenge as well as through the glyph. That is what the ask means by opaque: the lozenge's colour was never the problem. So opacity goes back to 1 and the quietness moves to the ink at `#9a9aa2` — which is what .55 of the page's white over `#121215` was already reading as, so nothing looks different except that the map stops coming through.
+> 
+> **The two pulses had the same shape of bug.** `/update`'s blue and `/attention`'s parchment both animate `opacity` between .55 and 1 — the same translucency arriving on a timer. They animate `color` now, between a dim and a bright form of their own hue: each accent keeps exactly the one meaning it carries (`/taste` 3), the breathing is still 1.6s ease-in-out (`/taste` 5), and the ground stays solid throughout. Worth flagging, since the ask didn't name it.
+> 
+> **The project's name had no ground at all** — bare accent text, fine over the graph-paper dots and not over a bright ward. It gets the strip's own pill (`/since`'s slot's, which is the lozenge's, which is the house pill), hugging its name rather than filling the gap it was pinned into (`right: auto` lets a fixed box shrink to fit), capped clear of the lozenge, and centred on the line the other two share so the three read as one strip. It stays a **block** rather than becoming a flex row, because `text-overflow: ellipsis` is `/title`'s and only works in a block container — a flex row would have silently broken long names.
+> 
+> Neither `/title`'s nor `/lozenge`'s files are touched: the ground is redefined from this node's own stylesheet, the way `/since` already positions `.proj-title` from its.
+> 
+> ## Evidence
+> 
+> Ward **"Ash and New Ash Green"** picked through `/region`, then the map panned so the bright Stadia Outdoors fill sits directly under the strip:
+> 
+> - computed: `.proj-title` → `rgb(18, 18, 21)`, `opacity: 1`, `999px`; `#build` → `rgb(18, 18, 21)`, `opacity: 1`, `999px`
+> - `elementFromPoint` at the strip's line returns `proj-title` and `build`, not the map
+> - `shots/strip-bright-crop.png` and `shots/strip-bright.png` — a yellow A-road runs up into the name's lozenge and vanishes behind it; the "Ash Road" label is cut dead at the lozenge's edge. `shots/strip-full.png` is the whole screen with the boundary drawn.
+> 
+> Judged against `/taste`: house pill on the house hairline, one accent for the chosen filter, the glyph quiet in "purpose" grey, the three on one line. Good enough — it is what ash asked for and it reads as a strip rather than three floating things.
+> 
+> Full paths: `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a1c81bb1/shots/strip-bright-crop.png`, `.../strip-bright.png`, `.../strip-full.png`.
+> 
+> ## Open risks
+> 
+> 1. **The scope is wider than the map.** `.proj-title` and `#build` are on every screen, so the black pill is too — over the dot ground it simply looks the same. `/map-only` is the parent because a bright ground is what made it necessary, and the untick takes it off everywhere; but a reader looking only at the node name might expect it to be map-scoped.
+> 2. **The pulses are now this node's.** If `/update` or `/attention` ever changes its animation, two definitions exist and the later composition wins. Named in the spec's hostile cases.
+> 3. **`.proj-title`'s left edge is still a hardcoded number** — 80px, set by `/since/one-word`, and now the pill's width cap (`100vw - 210px`) is tuned to it. Three nodes now share a tacit arithmetic for that strip; the parked item in the spec is to draw it as one strip instead of three pills that happen to line up.
+> 4. The gate run was on `355f892`; main advanced twice while I was finishing, both **transcript re-exports only** (verified: `git diff 355f892..2d93a28` touches only `transcripts/`), so the green still stands on the rebased tree, which also relinks clean.</result>
+> <usage><subagent_tokens>697022</subagent_tokens><tool_uses>37</tool_uses><duration_ms>922289</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a1c81bb1f2f5c01de</worktreePath><worktreeBranch>worktree-agent-a1c81bb1f2f5c01de</worktreeBranch></worktree>
+> </task-notification>
+
+Strip fix is back. It found the real cause, the nøøb button's whole-element opacity letting the map through. Landing and deploying.
+
+Deploying the strip. The shipped stamp depends on the build number, and everything else is with workers. Nothing else to request now.
+
+**What changed:** the nøøb button's lozenge was solid black all along, but an older rule faded the whole button to 55%, ground included, so the map showed through. The fade moved to the ink instead. The project name had no ground at all and now sits on its own black pill. The two pulses that breathed by opacity now breathe by colour, so the ground stays solid while they pulse.
+
+### p79
+*2026-09-04 16:09*
+
+*(edited and resent — superseded by the next prompt; do not cite)*
+
+> great. now that those are actioned: I'd like to chat about a thought I had about the feature tree. I'm purposely now looking at any of the code itself, but I wanted to discuss the idea of "cruft" - because the feature tree evolved to its current state through multiple turns, it will have accumulated "cruft" over time - code and nodes that actually were superseded over time. So I wanted to think about the idea of "de-crufting" the tree - a process that filters out the cruft and yields a smaller tree that's easier to reason about. I don't want to action anything based on this conversation just yet - we'll wait till after tomorrow's field test - but I wanted to get your bead on it.
+
+### p80
+*2026-09-04 16:09*
+
+> great. now that those are actioned: I'd like to chat about a thought I had about the feature tree. I'm purposely not looking at any of the code itself, but I wanted to discuss the idea of "cruft" - because the feature tree evolved to its current state through multiple turns, it will have accumulated "cruft" over time - code and nodes that actually were superseded over time. So I wanted to think about the idea of "de-crufting" the tree - a process that filters out the cruft and yields a smaller tree that's easier to reason about. I don't want to action anything based on this conversation just yet - we'll wait till after tomorrow's field test - but I wanted to get your bead on it.
+
+Happy to. I have been staring at the cruft all day, so I have a bead.
+
+**What the cruft actually is, from today's evidence**
+
+- **Superseded roads still composed.** The grid and list views are in the build but unreachable. The old "level" tool level sits dead under the in-place popover. The clip-path region road was replaced by baked tiles. The poster's slow road "stands down" but still links.
+- **Chains where an outer link throws the inner one away.** A later node redefines a function and never calls the earlier body. The earlier code still compiles, still costs a read, and tells a reader something false about what runs.
+- **Copies.** The six grade words exist in four places now. Each was the honest local choice at the time.
+- **Nodes off in every product.** Photo and the phone's whisper are unticked for miso, the only product. They are pure history in the shared tree.
+- **Orphan addresses.** Every regroup and untick leaves enabled-switches in the worlds that no node reads.
+
+**Why it accumulates by design**
+
+The tree doubles as the changelog. Every ask is a node, and the untick rule means a node must keep its parent's old behaviour alive underneath it. That is what makes proof cheap and parallel work safe. But it means the tree holds every state the app has ever been in, not just the one it is in now. The history already lives in the transcripts and git, so the tree does not need to carry it.
+
+**What de-crufting would be**
+
+A fold. A child that has been ticked everywhere since it shipped collapses into its parent. The merged node's spec is "the thing as it is now", and it keeps both provenance anchors. The intermediate state, parent without child, stops being reachable, which is fine when no product wants it. Dead links and copies go in the same pass.
+
+The proof is the same as a regroup's: the composed output must be byte-identical before and after. That makes it mechanical and safe to hand to a worker. The linker could list candidates: links never reached, nodes unticked in every product, duplicated tables, folds that would relieve a child cap.
+
+**Two things to be careful about**
+
+- Addresses move, so worlds need the same orphan handling a regroup has.
+- The skillset and learned defaults name nodes. The docs fold with the code or they rot.
+
+I'd make it a periodic pass with a rule, say a node is eligible after it has been live and unfolded for a week, rather than a one-off cleanup. After tomorrow, as you say. I'll put this in notes.md as a proposal tonight so it is not lost.
+
+### p81
+*2026-09-04 16:11*
+
+> yes, write it up in notes.md as a proposal for after tomorrow - we'll talk about it some more, and maybe look at a few examples together
