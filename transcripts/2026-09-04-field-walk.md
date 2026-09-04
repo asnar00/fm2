@@ -3046,3 +3046,140 @@ The deploy of the baked lines is still in its gate, and the level picker's worke
 *2026-09-04 17:28*
 
 > also, don't revert to blue dots ever - we should always show the map as the background
+
+A ruling for the map-only node: the map is the ground everywhere, never the dot grid. To the map-only worker.
+
+### p111
+*2026-09-04 17:29*
+
+> that should apply for all tools that have a list of objects eg. posts, users, projects - but not for the main page.
+
+### p111a
+*2026-09-04 17:29*
+
+> <task-notification>
+> <task-id>b21wp61z9</task-id>
+> <tool-use-id>toolu_01HQHLaSfYPs9YULuNVBzbkM</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/b21wp61z9.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the baked ward lines on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 681 is live: the ward lines are in the tiles and the map is one layer. Stamped shipped, and the evening's learned defaults are committed.
+
+Two workers are out: the level picker's own-role default with "role" wording, and the map as the ground under every tool level. The handover rewrite waits for those two builds, since it names the final build. Nothing else is independent of them.
+
+**On your phone now, since 680:** every sweep writes what the arriving picture was. When you have done a few, tell me and I run the query.
+
+### p112
+*2026-09-04 17:36*
+
+> when I hit the "add post" button, the map disappears and I see grid dots - it shouldn't. In general, a sub-tool panel shouldn't change the background from the parent's unless it has a reason to - we should treat the parent's background choice as important.
+
+That is the case the map-ground worker already has, with the recording row named first. Your principle sharpens it, so I'm sending it as the spec's rule.
+
+Committed as learned default 28.
+
+What I need next: the two workers' returns, the level picker with "role" wording and the inherited map ground. Then each gets a deploy and a stamp, and the handover is rewritten with the final build. Every one of those depends on a worker returning, so there is nothing to request now.
+
+### p113
+*2026-09-04 17:39*
+
+> another bug: the post with text = "you" (date 4 sep) shows "visible to the project's admins only" in my phone, but on "Tara"'s phone, I see that post, even though "Tara" is a candidate.
+
+A visibility bug matters more than anything else in the queue, so I'm looking at this one myself. First the data: what Tara's world actually holds.
+
+The worker is on it, with a repair for the live data once the fix is proven: every copy on any phone whose floor is above the holder's role gets withdrawn, Tara's copy of that post among them.
+
+**One more thing the log shows:** for about a second at 19:15 that post was at public. Five promote taps in a row take a post all the way down the ladder, and each step hands copies out. Undo brings the floor back but, until this fix lands, not the copies. Worth knowing before tomorrow's team gets the promote arrow.
+
+Three workers are out: the level picker's role wording, the inherited map ground, and this withdrawal. Nothing to request until one returns.
+
+### p114
+*2026-09-04 17:43*
+
+> for the "promote" workflow, let's change it to a "visibility" toolbar that pops up the same option panel as in the settings in 'add post'.
+
+That builds, and it belongs to the worker who built the level popover, queued behind the own-role change.
+
+Queued. The promote arrow goes; a visibility button on your own post pops the same six-row column, with the current floor lit, and one tap sets it. Lowering hands copies out as before; raising withdraws them through the node being built alongside. The column is shared with the recording row through a seam, not copied.
+
+Three workers hold four nodes: role wording and visibility, the inherited map ground, and the withdrawal with its live repair. Everything else waits on one of them, so nothing to request now.
+
+### p115
+*2026-09-04 17:47*
+
+> <task-notification>
+> <task-id>a1c81bb1f2f5c01de</task-id>
+> <tool-use-id>toolu_01P6cZauBey9AxS6eLJgbT7H</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a1c81bb1f2f5c01de.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build map-only and time filter" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Done. Branch `always-the-ground`, one commit `3149815` on current main (`fc89a9b`), three files, gate green, `--prove` implied, tree clean, no rig of mine running, live server untouched.
+> 
+> ## `3149815` — `browse/map-only/always-the-ground` (field-walk #p110)
+> 
+> **Built as inheritance, not a list.** Your sharpening is the design: the ground is chosen once, at the level with something to say about it — the launcher's dots are the root's choice, a browse tool's map is that tool's — and everything opened from there keeps it. **No level is named anywhere in the code.** "Still inside" is asked of the tool registry (a selected button the registry does *not* name is a nested tool — `/one-level`'s own test, asked on the page half because `tools_catalog` is bridged), and "unless it has a reason" is a real seam, `ownGround()`, which answers false everywhere today and which a level with a reason redefines and explains in its own spec. A level written tomorrow inherits without this node changing.
+> 
+> **The memory is `/on-every-tool`'s, widened not copied.** It notes the tool the map was drawn for; this asks the wider question of that note. It needed no seam, so there is no refactor and no trailer. Clearing the note at the launcher and on a switch to another top-level tool cannot change that node's own answer — it is only cleared on screens where its answer was already no.
+> 
+> **Card pages are left entirely to `/opens-over-map`**, which also arms a tap on the map that puts the card away. No other surface here should get a tap that closes something the finger wasn't aiming at — tapping the map while the recording row is up does nothing.
+> 
+> **The deep link draws the map.** A relaunch straight into a remembered card never shows a set, so nothing is noted. The filter slot answers it — it is drawn by exactly the surfaces that browse a set — and `mount()` makes Leaflet if it was never made.
+> 
+> ## Proof — the enumeration is the evidence, not the rule
+> 
+> Measured on the rig across every surface named, before and after:
+> 
+> | surface | before | after |
+> |---|---|---|
+> | the launcher | `map=none` ✓ | `map=none` ✓ (dots kept) |
+> | posts: the set | block | block |
+> | **posts &gt; the recording row** (your case) | **none** | **block** |
+> | **posts &gt; record &gt; the level list** | **none** | **block** |
+> | **posts &gt; the region page** | **none** | **block** |
+> | posts &gt; a post's card | block | block |
+> | people: the set | block | block |
+> | people &gt; a person's card | block | block |
+> | **people &gt; the invite page** | **none** | **block** |
+> | projects: the set | block | block |
+> | projects &gt; a project's page | block | block |
+> | back at the launcher | `map=none` ✓ | `map=none` ✓ |
+> 
+> The memory also clears correctly: `was=""` at the launcher on both visits.
+> 
+> **Screenshots** in `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a1c81bb1/shots/` — `ground-record.png` (your own case: rec/stop/flip/level over the map), `ground-level.png`, `ground-region.png`, `ground-invite.png`, `ground-post-card.png`, `ground-person-card.png`, `ground-project-page.png`, `ground-launcher.png` and `ground-launcher-back.png` (dots).
+> 
+> **The opaque-page hostile case needed nothing.** The region page and the invite page are both `.card-page`, which hugs its content, so the map shows around them rather than being covered — the ask's preferred answer, and neither file was touched.
+> 
+> ## Provenance note
+> 
+> `#p110` is the anchor. The scope correction ("not for the main page") and the sharpening ("treat the parent's background choice as important") are **not in any export yet** — the live transcript still ends at #p110 — so both are quoted in the spec as revisions, in the shorthand `/browse` established for a prompt it is not citing. Worth a re-export before the next node cites either.
+> 
+> ## Open risks
+> 
+> 1. **Three wrappers now sit on `feature_Map.sync`** — `/opens-over-map`, `/on-every-tool`, and this. Order matters (mine must run last) and it is guaranteed only by composition order. A fourth would have to think about it.
+> 2. **This node writes `/on-every-tool`'s field.** Argued safe above and stated in both the code and the spec, but it is a node reaching into another's object, not a declared seam. If `/on-every-tool` ever starts clearing `was` itself, the two clearings need reconciling.
+> 3. **`browsing()` depends on `/since`'s slot** as the page-side signal for "this tool draws a map". With `/since` unticked the deep-link case falls back to the memory — one screen later, not broken — but it is a cross-node dependency on markup rather than on a function.
+> 4. **`/reports` gets the dots** because its button is in the registry and is not the remembered one. That is right today (it lists nothing on a map); if reports ever browses a set, it will draw `#mapData` and note itself, and it will just work.</result>
+> <usage><subagent_tokens>774760</subagent_tokens><tool_uses>32</tool_uses><duration_ms>1071320</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a1c81bb1f2f5c01de</worktreePath><worktreeBranch>worktree-agent-a1c81bb1f2f5c01de</worktreeBranch></worktree>
+> </task-notification>
+
+The map-ground node is back, built as inheritance with every surface measured. Landing and deploying.
+
+Deploying. Nothing left is independent: the stamp waits on the build number, and the other two workers hold the remaining nodes.
+
+**On the phone once it lands:** the recording row, the level list, the region page and the invite page all keep the map behind them, cards do too, and only the launcher keeps its dots. A level added later inherits without anyone listing it.
+
+### p116
+*2026-09-04 17:47*
+
+> <task-notification>
+> <task-id>bxmq3p92m</task-id>
+> <tool-use-id>toolu_017LC35rmqGDVxLQBpuJQnAE</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bxmq3p92m.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the inherited map ground on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
