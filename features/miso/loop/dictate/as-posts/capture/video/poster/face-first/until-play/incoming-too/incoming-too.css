@@ -1,0 +1,15 @@
+/* the still that stands where the clip will be: the same square /clips-too
+   gives the player, the same ground, the same corner — so the page does not
+   move when the clip goes in, and there is something to look at before it. */
+.post-video[data-vid] .vid-still {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; aspect-ratio: 1 / 1;
+  box-sizing: border-box;
+  background: #101012;
+  border: 1px solid #202026;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 0;
+  cursor: pointer;
+}
+.post-video[data-vid] .vid-still .icon-svg { width: 54px; height: 54px; }

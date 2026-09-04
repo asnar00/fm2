@@ -1,4 +1,4 @@
-# transcript: the field walk
+# transcript: field walk
 *session `b70435b4-6806-4a25-aadb-e68df3da3413`, exported by tools/export_transcript.py — do not edit; anchors `#pN` are stable*
 
 ### p1
@@ -729,3 +729,108 @@ A field ask, so it builds now. The worker that built the row still has its conte
 *2026-09-04 11:28*
 
 > for the publish level, let's make the list of options vertical, and explain each publish-level in a short sentence. also, hitting the options button should just pop up the options in the current toolbar without creating a new tool level
+
+Two refinements, so two nodes under the recording row. Announcing them and sending the row's worker back in with its context intact.
+
+The row's worker is back on it with two nodes: a vertical column of levels with a sentence each saying who sees a post at that level, and the picker popping up in the current row rather than descending a level. Both are announced on your sheet, and both will be proven on the simulator before I ship them. Two other workers are still out on map-only with the time filter and on the boundaries. Nothing to request until one returns.
+
+### p32
+*2026-09-04 11:31*
+
+> <task-notification>
+> <task-id>a8a79c849e247bc55</task-id>
+> <tool-use-id>toolu_01Xku8S46VpyqHFUYfs3eGQ1</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a8a79c849e247bc55.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build boundary outlines and region" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Both nodes are in, rebased on current main, tree clean, rig torn down by its own PID.
+> 
+> ## What shipped
+> 
+> **Branch** `worktree-agent-a8a79c849e247bc55` in `/Users/microserver/fm2/.claude/worktrees/agent-a8a79c849e247bc55`, two commits on top of main (`9f39d1a`), nothing else touched. 1,310 insertions, all inside the two new node directories plus two lines in `boundaries/order.md`.
+> 
+> **`7079b32` — `/outlined`** (`features/miso/loop/cards/browse/map/basemap/boundaries/outlined/`). Wraps `feature_Boundaries.styleOf` so a ward is `#000` at 1.2 px, opacity 1, and *only* a ward — `/light-basemap`'s constituency ink survives untouched, which a second wholesale replacement would have discarded. Replaces `place()` with a removal of the label layer, so the names go on every `zoomend`/`moveend` rather than once at draw.
+> 
+> **`5ce6ac8` — `/region`** (`.../boundaries/region/`, `.rs` `.js` `.css` `.vars` `.md`). Server: `tiles/outdoors/{z}/{x}/{y}.png` into `$MISO_CONTEXT_DIR/tiles-outdoors/`, own parser, own PNG check, own fetch. Page: a bounded `L.tileLayer` in a pane at z-index 250 under a `clip-path` written in layer-point space. Control: a `region` sub-tool in the posts row on the map view, a nested tool (not in `tools_list`), a page of pills filled from the geojson, a user-scoped `region` var read through a `#misoRegion` marker rather than a bridged key.
+> 
+> **Brief-vs-terrain divergence, resolved rather than reported:** the brief said "`STADIA_KEY` from the env as the current ground does". The current ground does *not* — ash's key rides inside `MISO_TILE_URL` as `?api_key=…` and is not a variable of its own. `region_source()` therefore looks in three places: `MISO_OUTDOORS_URL`, then `STADIA_KEY`, then the everyday ground's url with the style segment swapped and the query carried over. The rig proved the third road with `STADIA_KEY` explicitly deleted from the environment. Nothing new has to be set on the mini.
+> 
+> ## Evidence
+> 
+> - Smoke gate green on my rig for both commits: `smoke: all passes green`, three passes each, first for `/outlined` alone and again on the rebased tree with both (`/private/tmp/.../scratchpad/rig-a8a79c/gate2.log`). `fmlink.py miso --prove` said **implied** for each node before its commit.
+> - Route: both grounds serve 200 (27 KB / 18 KB); `tiles/outdoors/a/b/c.png`, `/99/0/0`, `/1/9/9`, a missing segment and a fourth segment all 404; `..` never reaches the route (`clean_path` normalises first, so it lands on the index, verified by body).
+> - Screenshots at 402×874, DPR 3, in `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a8a79c/shots/`: `outlined-z11/13/15.png`, `region-z8/11/13/15.png`, `edge-css.png`, `edge-svg.png`, `edge2-{css-a,css-b,css-c,svg-a}.png`, `tap-1-posts-row` → `tap-6-off-the-ward`, `row-close-up.png`, `hostile-no-outdoors.png`.
+> - The mask measurement the brief asked for: on WebKit at DPR 3, with every square let settle first, `clip-path: path()` and an SVG `clipPath` are **byte-identical** — 0 differing pixels of 3,162,132, against a same-mode control of 0. Transition across the cut is a median of 1 device pixel (max 3, the black stroke's own antialiasing). CSS ships because it costs less, not because it looks better.
+> - Tap path, real taps: posts → region control → 27 pills (Sevenoaks first, wards alphabetical) → *Sevenoaks Town and St John's* → ‹ → back at `posts` with `region = E05005029`, that ward alone in Outdoors, bounded layer, zero page errors.
+> - Hostile cases exercised: unknown code falls back to the constituency; outdoors ground blocked at the network → map alive, 12 ground squares, 27 boundary lines, nothing else changes; zoom 8 → mask still applied (my decision, stated in the spec); panned off the ward → 0 outdoors requests; a planted two-part MultiPolygon with a hole → 3 rings, 3 closed subpaths, correct bbox.
+> 
+> ## Three defects the rig found, all fixed
+> 
+> 1. **The second ground only appeared after an unrelated repaint.** `ensure()` hung entirely on `/loop`'s `paint`, and the geojson arrives after the first paints — so a map you opened, panned and zoomed had no outdoors squares at all until something else repainted. The pane's `zoomend`/`moveend`/`viewreset` now call `ensure()`, and the fetch calls it when it lands.
+> 2. **A malformed geometry would have asked Stadia for the world.** Leaflet reads a falsy `bounds` as "every tile is valid", and the layer was made before `cut()` could remove it. The bounding box is now found *before* the layer.
+> 3. **An inert pencil in the row.** `.card-page` gives `/editing/toolbar` its edit control; the region page borrows the card ground for its geometry. Fixed with `/doors`' own idiom — wrapping `feature_Editing.page` to answer nothing for a `.region-page`, from inside my node.
+> 
+> Two 4a changes after looking: the first glyph was a folded map and read as the picker's map glyph three fingers away (now a patch with one part filled), and the button was posts-pink beside two other pinks (now `/ember`'s own pick for the name `region`, teal, as `/recentre` does).
+> 
+> ## Open risks, named
+> 
+> - **The iPhone simulator rig was never available.** `/readout` and `/drive` are hardcoded at `/tmp/miso-readout.json` and `/tmp/miso-drive.json` (`readout.rs:41`, `drive.rs:16`), so there is exactly one simulator rig on this machine and another worker held it for my whole run — taking it would have corrupted their evidence. All my visual proof is Playwright **WebKit** at iPhone 17 Pro viewport and DPR 3 with real touch input, which is the right engine for the crispness question but **is not** the simulator, and is not standalone display mode. The tap path and the mask still want one pass on the real simulator before this is called proven on a phone.
+> - **Shared scratchpad collision.** All four workers of this session share `/private/tmp/.../b70435b4-.../scratchpad/`, and `scratchpad/rig/` was already worker `a1c81bb1`'s when I reached for that name — their live server was serving from `scratchpad/rig/ctx`. I moved to `scratchpad/rig-a8a79c/`, but before I noticed I wrote `start.py`, `stop.py`, `start.sh`, `stop.sh`, `rig.log` into their directory and deleted a stale `rig.pid` holding a dead PID (16348). Their `pid`, `env.sh`, `evidence.py`, `server.log`, `ctx/`, `home/` and `shots/` are untouched. Worth a misses.md entry: a rig directory must be named for its worktree, the way its port is.
+> - **Metered:** this rig fetched **66** Stadia Outdoors squares in total. The layer is bounded to the region, but the whole constituency at zoom 15+ across many phones is a real budget line, and there is no `/stocked` plan for the second ground (parked and named in the spec).
+> - **`opens-over-map` landed under `map/reel` in the rebase.** The region page is a `.card-page`, so `body.fm-map-behind .card-page` will apply to it if that body class is ever set while the region level is open. I did not see it fire in the rig (the region page draws with no `#mapData`, so the map is hidden), but the two nodes were built in parallel and have not been exercised together.
+> - **`/quiet-credits` is unchanged.** The outdoors ground rides on the everyday ground's `MISO_TILE_ATTRIBUTION`, correct today because both are Stadia/OpenMapTiles/OSM. A `MISO_OUTDOORS_URL` pointed elsewhere would need its own credit; parked in the spec.
+> - **The gate's known residual is still there** (`!! the page closed` after the last step, handover item (c)); one earlier gate run of mine reported 2 failures whose text I lost by piping through `tail` — the two runs since, on the final tree with the full transcript captured, are green.
+> - Black on `#333333` is quieter than the grey it replaces, as asked. On the Outdoors ground inside the region it is emphatic. Both are in the screenshots; if ash wants the ward lines to read louder on the dark ground, that is a one-constant refinement and a new node.</result>
+> <usage><subagent_tokens>357978</subagent_tokens><tool_uses>232</tool_uses><duration_ms>3781665</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a8a79c849e247bc55</worktreePath><worktreeBranch>worktree-agent-a8a79c849e247bc55</worktreeBranch></worktree>
+> </task-notification>
+
+The boundaries worker is back. Reviewing the route and the key handling, and looking at the region on the map before shipping.
+
+Both look right: the ward mask cuts cleanly at the boundary, the outlines are black and the names are gone. Landing and deploying.
+
+While the deploy runs, one more ledger entry: two workers collided on the shared scratchpad and on the single simulator rig.
+
+### p32a
+*2026-09-04 11:31*
+
+> <task-notification>
+> <task-id>by2blswkx</task-id>
+> <tool-use-id>toolu_015NyvAq6ik14GGsNPjyseVc</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/by2blswkx.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Fast-forward main to the boundary nodes, verify, and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+The failed deploy never reached the gate, so the cause is earlier in its output, which my filter dropped. The rerun captures the full tail. Waiting on it.
+
+### p33
+*2026-09-04 11:32*
+
+> <task-notification>
+> <task-id>bnvxsgrgn</task-id>
+> <tool-use-id>toolu_01NdMBEjnAEHEiamsobzwqGv</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bnvxsgrgn.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Re-run the deploy with its full tail captured" completed (exit code 0)</summary>
+> </task-notification>
+
+Both failures were the same thing: the transcript export I ran for the last ask left the tree dirty, and my filter hid the message. Committing and deploying again.
+
+The deploy is running with its full tail captured this time. The only thing needed after it is the two shipped stamps, which depend on its build number, so nothing else to request now.
+
+### p34
+*2026-09-04 11:32*
+
+> on the post scrolling - looks better, but the incoming post still flickers its media - it's as if the media preview is scanning forward to the thumbnail frame rather than just displaying it. Also, the first and last in the list allow you to scroll past the start/end of the list, but scroll in the same post, which is disorienting - they should rubber-band scroll. Finally, the "animate-closed" should animate the size of the rectangle as well, so that it animates to the final lozenge position and size, making it clear that it's the same thing. These are all bug corrections to the original request, rather than new features.
+
+Three bug fixes, each a child of the node it corrects. The reel worker keeps its context, so it goes back to it.
+
+The reel worker is back on all three, as bug-fix children of the nodes they correct.
+
+- **The incoming flicker** gets diagnosed on the rig first, counting element creations and seek events on the card that slides in. The likely cure is that the arriving card shows its poster image and never touches the video element until your tap, the same rule the first fix applied to repaints.
+- **The ends of the list** rubber-band: the sweep follows your finger with resistance and springs back, and the same card is never flown off and back.
+- **The close** must shrink on every road, the chevron, the map tap and the swipe. The worker's rig said the width did change, so it has to find why the phone shows otherwise, and prove each road with rect readouts on the simulator.
+
+The boundaries deploy is still in its gate, and the level-picker and map-only workers are still out.
