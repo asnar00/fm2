@@ -620,12 +620,26 @@ impl feature_Baked {
         let bx1 = baked_px(bb[2], world) - ox;
         let by0 = baked_py(bb[3], world) - oy;   // north is the smaller y
         let by1 = baked_py(bb[1], world) - oy;
-        if bx1 < 0.0 || bx0 > 256.0 || by1 < 0.0 || by0 > 256.0 {
+        // the two extension points a later node needs to put anything else
+        // into a square (/lines-too, the boundary lines). `baked_must` says a
+        // square has to be composited even where the region alone would have
+        // let it through untouched; `baked_extra` is the last word on the
+        // picture before it is encoded. Both are no-ops here, so unticking
+        // whatever redefines them leaves this route exactly as it was.
+        let must = baked_must(code.clone(), z, x, y);
+        let outside_box = bx1 < 0.0 || bx0 > 256.0 || by1 < 0.0 || by0 > 256.0;
+        if outside_box && !must {
             baked_mark(dir.clone(), mark_g.clone());
             return baked_plain(baked_ground(z, x, y), code, z, x, y, "outside");
         }
 
-        let mask = baked_mask(&rings, z, x, y);
+        // no rasterising for a square the region's own box cannot reach: the
+        // mask is all zero by construction
+        let mask = if outside_box {
+            vec![0u8; 256 * 256]
+        } else {
+            baked_mask(&rings, z, x, y)
+        };
         let mut lo = false;
         let mut hi = false;
         for m in mask.iter() {
@@ -635,11 +649,11 @@ impl feature_Baked {
         // wholly one or the other: the cached square as it stands, and nothing
         // written — the brief's rule, and what keeps a third copy of every
         // square in Kent off the disk
-        if !hi {
+        if !hi && !must {
             baked_mark(dir.clone(), mark_g);
             return baked_plain(baked_ground(z, x, y), code, z, x, y, "clear");
         }
-        if !lo {
+        if !lo && !must {
             baked_mark(dir.clone(), mark_o);
             return baked_plain(baked_outdoors(z, x, y), code, z, x, y, "full");
         }
@@ -649,15 +663,29 @@ impl feature_Baked {
             println!("miso: baked {} {}/{}/{} no ground", code, z, x, y);
             return text_response(404, "not found");
         }
-        let o = baked_rgb(&baked_outdoors(z, x, y));
-        if o.is_empty() {
-            // the Outdoors source is unreachable: there is nothing to draw
-            // over, so the ground square IS the baked square — and it matches
-            // the ground layer beneath it exactly. Not written: a failure must
-            // not become a week-long ghost.
-            return baked_plain(baked_ground(z, x, y), code, z, x, y, "no outdoors");
+        // the Outdoors square is asked for only where the region actually
+        // reaches. Without this, a square that carries nothing but a boundary
+        // line would still pull a metered square it has no use for — and once
+        // /lines-too made every square a composited square, that would have
+        // been the whole district.
+        let mut base = g.clone();
+        if hi {
+            let o = baked_rgb(&baked_outdoors(z, x, y));
+            if o.is_empty() {
+                // the Outdoors source is unreachable. Whatever else goes on
+                // this square still goes on it, but nothing is written: a
+                // failure must not become a week-long ghost.
+                let out = baked_extra(g, code.clone(), z, x, y);
+                let png = baked_png(&out);
+                if png.is_empty() {
+                    return text_response(404, "not found");
+                }
+                println!("miso: baked {} {}/{}/{} no outdoors", code, z, x, y);
+                return baked_response(png);
+            }
+            base = baked_over(&g, &o, &mask);
         }
-        let png = baked_png(&baked_over(&g, &o, &mask));
+        let png = baked_png(&baked_extra(base, code.clone(), z, x, y));
         if png.is_empty() {
             return text_response(404, "not found");
         }
@@ -666,6 +694,22 @@ impl feature_Baked {
         println!("miso: baked {} {}/{}/{} composited {} bytes", code, z, x, y,
                  png.len());
         baked_response(png)
+    }
+
+    // ---- the two extension points -------------------------------------------
+    // Opened for /lines-too, which draws the boundary lines into the squares.
+    // A node that wants to put anything else on a baked square redefines these
+    // two: `baked_must` to claim squares the region alone would have passed
+    // through untouched, `baked_extra` to draw. Both are the identity here.
+
+    fn baked_must(code: String, z: u32, x: u32, y: u32) -> bool {
+        let _ = (code, z, x, y);
+        false
+    }
+
+    fn baked_extra(rgb: Vec<u8>, code: String, z: u32, x: u32, y: u32) -> Vec<u8> {
+        let _ = (code, z, x, y);
+        rgb
     }
 
     // a zero-byte file whose NAME is the whole of what it remembers: this
