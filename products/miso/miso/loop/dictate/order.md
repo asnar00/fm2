@@ -2,3 +2,4 @@
 - [x] phone
 - [x] transcript
 - [x] as-posts
+- [x] transcribed
