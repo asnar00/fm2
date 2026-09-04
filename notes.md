@@ -2951,3 +2951,14 @@ in a batch, and everyone gets them. A person can switch a feature off in
 the chooser. Later, chosen but not built: the proposal queue with seconds
 ("wanting is cheap"), the payer's sheet with the budget beside it, and the
 flow down the ladder with the asker's rank as the feature's floor.
+
+## the audience floor, ruled (2026-09-04, morning before the field walk)
+
+Ash's rulings, taken in conversation: his own test posts stay admin-only;
+volunteers, once they sign up, see only campaign posts made by Tara, the
+leader; a newcomer sees only posts promoted to their level; the promote
+workflow is what today's walk looks at. This is what `/audience` already
+does — a post is stamped at its author's grade, promote lowers the floor
+one rung and only the author may, a reader sees floors at or below their
+grade — so no node was cut. Test users are reset before the real session
+(`tools/reset_user.py`); an ethernet cable for the mini is being bought.
