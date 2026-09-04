@@ -138,6 +138,16 @@ const feature_Poster = {
     if (typeof feature_Video === 'undefined') return;
     feature_Video.playing[id] = true;
     feature_Video.mount();
+    this.start(h);
+  },
+
+  // the play itself, kept apart from the opening so a node can have the clip
+  // wait for a finger without touching the rest. `replaying` says which road
+  // this open came down: a finger's, or the re-open a repaint owes an already
+  // open clip (set only around restore's call, below).
+  replaying: false,
+
+  start(h) {
     // inside the tap, not after it: a browser gives sound to a play() that
     // is still in the gesture and refuses one that is not. The blob URL was
     // warmed while the poster was showing, so the mount above is synchronous
@@ -169,7 +179,11 @@ const feature_Poster = {
     const holders = document.querySelectorAll('.post-poster[data-vid]');
     for (const h of holders) {
       const id = h.getAttribute('data-vid');
-      if (this.opened[id]) this.open(h); else this.warm(id);
+      if (!this.opened[id]) { this.warm(id); continue; }
+      // the same open, said to be a repaint's — the flag is cleared however
+      // open returns, so a throw inside it cannot leave the road mislabelled
+      this.replaying = true;
+      try { this.open(h); } finally { this.replaying = false; }
     }
   },
 

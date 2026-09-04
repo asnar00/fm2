@@ -128,13 +128,18 @@ answer tomorrow, and nothing else changes.
 JPEG quality down until the data URL is inside the budget. Going through
 `frameOf` is what makes a poster obey `/square-crop` with nothing of its own.
 
-`open(h)` swaps a poster holder into `/capture/video`'s player and starts it
-inside the tap, because a browser gives sound to a `play()` still in the
-gesture and refuses one that is not. `warm(id)` is what makes that possible: it
-makes the clip's blob URL in `/capture/video`'s own caches while the poster is
-still showing, so the mount is synchronous when the tap comes. `restore()`
-re-opens the posts that were open, and warms the ones that are not, after every
-render.
+`open(h)` swaps a poster holder into `/capture/video`'s player and calls
+`start(h)`. `warm(id)` is what makes that possible: it makes the clip's blob
+URL in `/capture/video`'s own caches while the poster is still showing, so the
+mount is synchronous when the tap comes. `restore()` re-opens the posts that
+were open, and warms the ones that are not, after every render.
+
+`start(h)` is the play, and an /extension point/: the clip is started inside
+the tap, because a browser gives sound to a `play()` still in the gesture and
+refuses one that is not, and a node that wants the clip to wait for a finger
+redefines this one function. `replaying` is the second half of that point — it
+says which road an open came down, and `restore()` sets it around its own call
+(cleared in a `finally`, so a throw cannot leave the road mislabelled).
 
 `poster.css` gives the frame the picture's width and ground, and the play mark
 a thin ring in `currentColor` with the only ground it lays over the picture
