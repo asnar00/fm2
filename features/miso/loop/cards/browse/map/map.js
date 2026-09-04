@@ -105,12 +105,8 @@ const feature_Map = {
       }).addTo(this.map);
       // the pin's own handler rather than the loop's delegated [data-ev]
       // listener: Leaflet stops the DOM event on its own markers, so the tap
-      // is sent by hand — to the SAME event /browse already answers.
-      m.on('click', () => {
-        if (typeof feature_Loop !== 'undefined') {
-          feature_Loop.send({ type: 'click', ev: 'browse_open:' + p.id });
-        }
-      });
+      // is sent by hand.
+      m.on('click', () => this.pinTap(p));
       this.markers.push(m);
       at.push([p.lat, p.lon]);
     }
@@ -122,6 +118,15 @@ const feature_Map = {
       maxZoom: 16,
     });
     this.fitted = true;
+  },
+
+  // what a tap on a pin means. An /extension point/: a node that wants the tap
+  // to say something other than "open this" claims it here, and one that only
+  // wants to know about it wraps it. The default is what the tap has always
+  // done — the SAME event /browse already answers for a tile.
+  pinTap(p) {
+    if (typeof feature_Loop === 'undefined') return;
+    feature_Loop.send({ type: 'click', ev: 'browse_open:' + p.id });
   },
 
   pinHtml(p) {

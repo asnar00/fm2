@@ -170,8 +170,14 @@ measured nothing).
 `tiles/attribution` once and shows whatever line the server's tile source
 earned. `draw(pins)` rebuilds the markers only when the pins have actually
 changed, gives each an `L.divIcon` of this node's own markup, hangs a click
-handler that sends `browse_open:<id>`, and fits the bounds. `locate()` is the
+handler that calls `pinTap(p)`, and fits the bounds. `locate()` is the
 no-pins case: one geolocation attempt, silent on refusal.
+
+`pinTap(p)` is what a tap on a pin means, and an /extension point/: the
+default sends `browse_open:<id>`, the same event `/browse` answers for a tile,
+and a node that wants the tap to say something else claims it there. The
+handler is the pin's own rather than the loop's delegated `[data-ev]` listener
+because Leaflet stops the DOM event on its own markers.
 
 `map.head.html` puts the vendored Leaflet stylesheet and script in the page
 head — synchronous, so `L` exists before any fragment runs.
