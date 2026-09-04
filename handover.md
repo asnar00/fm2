@@ -103,6 +103,13 @@ shipped on its own. Fable 60% → ~62%.*
   the asker once (`comms/push/to-one`, `stamp_ask.py --status answered
   --note "…"`). **`push/one` is open to any logged-in caller until
   `to-one/bench-only` lands** — building now. CLAUDE.md carries the rule.
+- **The sheet's builds block is the eight most recent features**
+  (`announced/recent`), newest first, each wearing a stage — building,
+  testing (the gate has started on a release touching it), deploying (the
+  gate passed, bytes moving), installed (this phone runs it — per phone) —
+  no build numbers drawn; a stopped deploy puts its entries back to
+  building with the reason under the row. Field asks keep their own rows
+  (no node, so no stages).
 - **The deploy stamps (build 699, `announced/by-the-ship`):** announce
   with `--node <tree path>`; deploy.sh, after `released.sha`, stamps
   shipped on every announcement whose node the release touched and every
