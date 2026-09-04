@@ -4201,3 +4201,652 @@ That is the one. I'll leave the rule as it is unless you say otherwise; "people 
 *2026-09-04 20:55*
 
 > yeah, let's always show all users on the project, but let's sort them as follows: a) self first b) sort by most recently active first [with a mod to stop things pinging around constantly while looking at the list]
+
+Both building: people always shown, and sorted self first then most recently active, with the order held still while you look. To the map-only worker, which owns the filter and the people band.
+
+Sent. The order is computed when you open the people page and held still while it is on screen; a newcomer joins at the end and a live tick never reorders. Back out and in to re-sort.
+
+What I need next, and what each depends on:
+
+- The transcription worker's two nodes, seeding by location and the correction pass. Pending its return.
+- The people worker's two nodes, the filter exemption and the activity order. Pending its return.
+- A deploy for each, which stamps itself, and a last handover line. Both depend on the workers.
+
+Every item depends on a pending result, so there is nothing to request in this turn.
+
+### p163
+*2026-09-04 20:58*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <tool-use-id>toolu_01KJ5KSmgF2zZ9CyTDJ996gM</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Two commits on `a42-seed`, rebased on `e350b35`, clean tree, rig down, live server healthy.
+> 
+> ## Commits
+> 
+> | | |
+> |---|---|
+> | `9f5c979` | `transcribed/vocabulary/near-the-post` (#p154) |
+> | `30d60f2` | `transcribed/corrected` (#p154) |
+> 
+> Both `fmlink --prove` **implied** — each is a new node plus a line in its parent's `order.md`. Smoke gate green on the final two-node state, 39/39 across all three passes (port 8152).
+> 
+> ## What they do and what the rig showed
+> 
+> **`near-the-post`.** The parent took the thirty nearest of the *constituency's* list with no distance test, which is exactly why Soho got Sevenoaks. Now: 400 m from wherever the post is; `streets.json` answers first (free, offline, and inside the patch it is the whole answer); outside it, one live Overpass radius pull cached by a ~500 m cell so a walk's dozen posts share one query, pulled at 800 m around the cell centre so every point in the cell has its own 400 m covered. **When Overpass cannot be reached the answer is nothing** — the address alone — never the parent's list, because a missing seed costs a little accuracy and a wrong one invents street names. A miss is remembered for an hour. The fixed 0.62 longitude factor became a real cosine, which mattered the moment a post left Kent.
+> 
+> - **S1 PASS**: a post at 51.5137,−0.1352 pulled **1,919** named places once and was seeded with Broadwick Street, Berwick Street, Soho, Kemps Court, Duck Lane, Livonia Street, Hopkins Street, Portland Mews, Ingestre Place.
+> - **S2 PASS**: a post at 51.2720,0.1941 was seeded from `streets.json` with **no pull at all** (Suffolk Way, Buckhurst Lane, Bligh's Road, Brewery Lane, Knole Way) and still transcribed "Bligh's Road".
+> 
+> **`corrected`.** Runs *before* the words land — it is the newest link on `transcribed_land`, so the corrected sentence is what `/as-posts` writes, what `edited` bumps once for, what `/exchange` carries, and what `/from-the-words` titles. Landing twice would have put the wrong words on every phone and titled them. Grade ≥ 2, a nearby list, a name-shaped token, and never over a thumb (`/as-posts`' `auto` hash, checked before the call). Three guards: word count within ±2; an appearing word must have come from the original or the nearby list; a disappearing word must have been name-shaped. Discards are logged too.
+> 
+> - **C1 PASS**: `"So this is on Bourke Street, corner of Bourke Street and Bloor."` → `"So this is on Berwick Street, corner of Berwick Street and Bloor."` — **337 in, 23 out, $0.000452** (claude-haiku-4-5), before→after in `corrections.jsonl`.
+> - **C1b PASS**: the title was then written from the corrected words — `"berwick street corner bloor"` (214 in, 9 out, $0.000259).
+> - **C2 PASS**: a post whose text the author had typed was untouched and drew no correction line at all.
+> 
+> ## Named risks
+> 
+> 1. **The correction is conservative, and one of two is the measured rate on this sentence.** "Bloor" was left alone although Broadwick Street was in the nearby list. It took the name it was sure of. This is in the commit message; it is the thing to watch in `corrections.jsonl` after the field test.
+> 2. **The seed still opens with the constituency name regardless of where the post is** — a Soho seed begins "Sevenoaks". That line is `/vocabulary`'s own first push, not `vocab_streets`, so fixing it means redefining `transcribe_vocab` too. I left it rather than widen the node; it is one wrong word among thirty-five and it is the same class of bug.
+> 3. **Every correction is a model call on the landing path**, so words now arrive one call later (~1–2 s) than before. Deliberate trade, named in the spec.
+> 4. **Overpass is a third party on the transcription path** for out-of-area posts. One pull per cell, an hour's back-off on failure, and failure degrades to the address alone — but it is a new external dependency where there was none.
+> 5. The 400 m radius, the ~500 m cell and the 800 m pull are three constants that must stay consistent; the pull must always exceed cell/2 + radius.
+> 6. `corrected` depends on `/vocabulary` (for `vocab_context_dir`) and `/transcribed`; `near-the-post` depends on `/vocabulary`. Both are real couplings and both parents are ticked.</result>
+> <usage><subagent_tokens>779618</subagent_tokens><tool_uses>868</tool_uses><duration_ms>41162474</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+The seeding and correction nodes are back, with Soho seeded from a live pull and "Bourke Street" corrected to "Berwick Street" then titled. Landing and deploying.
+
+While it deploys, the handover line for these two, since they change what a note is seeded with.
+
+### p163a
+*2026-09-04 20:58*
+
+> <task-notification>
+> <task-id>bs83lv1qf</task-id>
+> <tool-use-id>toolu_01DkdKAWqS2JrC6PkYu1Z7gm</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bs83lv1qf.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the seeding and correction nodes on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+The deploy refused a dirty tree again, the export from your last ask. The tree is clean now; deploying.
+
+### p163b
+*2026-09-04 20:59*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer from the gate wait, draining now the gate has finished. No new information; the verdict it was watching for (`smoke: all passes green`, 39/39) is already in my report.</result>
+> <usage><subagent_tokens>777083</subagent_tokens><tool_uses>868</tool_uses><duration_ms>41188503</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+### p163c
+*2026-09-04 20:59*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>777476</subagent_tokens><tool_uses>868</tool_uses><duration_ms>41192872</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Deploying now. What I need next: this deploy's output to confirm the two announcements stamped themselves, and the people worker's two nodes. Both are pending results with nothing independent of them, so there is nothing to request in this turn. The two stale notices from the transcription worker carry nothing new.
+
+### p164
+*2026-09-04 20:59*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>777868</subagent_tokens><tool_uses>868</tool_uses><duration_ms>41211413</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Stale timer, nothing new. Waiting on the deploy and the people worker.
+
+### p165
+*2026-09-04 20:59*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>778251</subagent_tokens><tool_uses>868</tool_uses><duration_ms>41214409</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Same stale timer. Nothing new.
+
+### p166
+*2026-09-04 20:59*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Confirmed an artefact of my own kill, not a code failure: that run had **27 PASS and 0 FAIL** up to the moment I killed its server (pid 97913, port 8151), after which the browser could no longer reach it and the remaining **12 steps failed together** with `!! the page closed`. I stopped it deliberately so I could commit both nodes and run a single gate on the final state.
+> 
+> The state that actually ships was gated to completion: the combined run on port 8152 — `near-the-post` *and* `corrected` together — reported **`smoke: all passes green`, 39/39 across cold, warm and throttled**. That is the verdict in my report and in neither commit message did I claim the 8151 run as evidence.
+> 
+> Nothing changes: two commits on `a42-seed` at `30d60f2`, rebased on `e350b35`, clean tree, rig stopped by its own PID, live server on 8095 answering 200.</result>
+> <usage><subagent_tokens>779526</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41229598</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+A stale notice again, clarifying that an earlier failed gate run was the worker's own kill, and the shipped state passed all three passes. Nothing changes. Still waiting on the deploy and the people worker.
+
+### p167
+*2026-09-04 20:59*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timers draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>780145</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41232673</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p168
+*2026-09-04 21:00*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>780536</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41246749</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p169
+*2026-09-04 21:00*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>780923</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41258451</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p170
+*2026-09-04 21:00*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>781303</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41263448</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p171
+*2026-09-04 21:00*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>781687</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41281029</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p172
+*2026-09-04 21:01*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>782074</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41308860</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p173
+*2026-09-04 21:01*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>782458</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41332517</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p174
+*2026-09-04 21:01*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>782839</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41335375</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p175
+*2026-09-04 21:01*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>783226</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41351565</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p176
+*2026-09-04 21:01*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>783604</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41353863</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p177
+*2026-09-04 21:02*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>783987</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41370860</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p178
+*2026-09-04 21:02*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>784376</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41385784</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p179
+*2026-09-04 21:02*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>784761</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41388564</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p180
+*2026-09-04 21:04*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>785146</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41501539</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new from that worker. Let me check the seeding deploy directly, since it has been a while.
+
+The deploy is still running, five minutes in and now in its smoke gate. What I need next: its result, then the people worker's two nodes. Both are pending results with nothing independent of them, so there is nothing to request in this turn.
+
+### p181
+*2026-09-04 21:04*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>785524</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41519058</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p182
+*2026-09-04 21:04*
+
+> <task-notification>
+> <task-id>bajlgnh9s</task-id>
+> <tool-use-id>toolu_01DNB86Pom2ovHgbJ2GLF3A3</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bajlgnh9s.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy the seeding and correction nodes through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 711 is live: a note is seeded from the streets around where it was made, and misheard names are matched to the map before the words land. Both announcements stamped themselves.
+
+What I need next is only the people worker's two nodes, the filter exemption and the activity order. Their deploy stamps itself and one handover line follows. That is a single pending result with nothing independent of it, so there is nothing to request in this turn.
+
+### p183
+*2026-09-04 21:04*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>785911</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41535360</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p184
+*2026-09-04 21:05*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>786292</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41555071</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p185
+*2026-09-04 21:05*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>786679</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41575251</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p186
+*2026-09-04 21:05*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>787060</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41591010</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p187
+*2026-09-04 21:06*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining — the last of the gate-wait loops. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>787452</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41600746</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new, and it says that was the last of its timers. Waiting on the people worker.
+
+### p188
+*2026-09-04 21:06*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>787832</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41607786</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p189
+*2026-09-04 21:06*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>788219</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41625716</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p190
+*2026-09-04 21:06*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>788601</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41642430</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p191
+*2026-09-04 21:07*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>788987</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41659530</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p192
+*2026-09-04 21:07*
+
+> <task-notification>
+> <task-id>a42bf4bae1c8c7811</task-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a42bf4bae1c8c7811.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build video notes to the mini" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Stale poll timer draining. Nothing new; work complete and reported.</result>
+> <usage><subagent_tokens>789369</subagent_tokens><tool_uses>869</tool_uses><duration_ms>41678467</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a42bf4bae1c8c7811</worktreePath><worktreeBranch>worktree-agent-a42bf4bae1c8c7811</worktreeBranch></worktree>
+> </task-notification>
+
+Nothing new.
+
+### p193
+*2026-09-04 21:12*
+
+> <task-notification>
+> <task-id>a1c81bb1f2f5c01de</task-id>
+> <tool-use-id>toolu_017iB8F5H1XJYKx5d8wQst2V</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a1c81bb1f2f5c01de.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build map-only and time filter" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Both done. Branch `people-by-activity`, two commits on current main (`4386762`), seven files, gate green, `--prove` implied for each, tree clean, no rig of mine running, live server untouched.
+> 
+> ## `3134e5e` — `since/not-people`
+> 
+> The cut is refused by **card type**, not by which tool is open: "a person is never hidden by a clock" is true wherever a person is drawn, and asking `open_tool_read() == "account"` would only have been true where they happen to be drawn today. `/since`'s own exemption for your own profile card becomes a special case of this one and is left where it is, so unticking gives that behaviour back exactly.
+> 
+> **The slot: hidden on 👤.** With people never cut, the four words change nothing there, and a control that does nothing is noise (`/taste` 7 and 8). Leaving the word drawn was the alternative and I rejected it for that reason — it would be a control that lies about having an effect. The period itself is untouched (a user var), so walking from 👤 to posts finds the same word lit.
+> 
+> ## `fded639` — `browse/people/by-activity`
+> 
+> `/people` named `people_order` as "the chain the next proximity cue joins at" — this is that node. `existing` is called **first**, so `/people`'s `near` decoration survives and the row still says how near someone is; only the order is replaced.
+> 
+> - **Active** = the latest of the person's last post (`when` else `created`), their card's `edited`, and their last live sighting. The first two are in the world; the third is the server's, handed in as `PeopleActive` — `/people`'s own idiom for the invite distances, and for the same reason.
+> - **The hold** is a freeze on the turn's state (`/in-place`'s idiom): written on the turn that opens the tool and on the first turn of a relaunch that landed there, cleared on the turn that leaves. A newcomer joins at the end until the next open — the same rule seen from the other side.
+> - **The key is total** — (you, freeze position, name) — so no activity and equal activity both have a stable place.
+> - **The band follows for free**: `/everyone` lists `#mapData`'s ids, which is `browse_cards`' output in this order.
+> 
+> ## Readouts — headless Chrome, three colleagues planted least-active-first (cara −4d, bea −3d, ann −1d)
+> 
+> ```
+> posts: slot word = today          &lt;- the filter IS set
+> 👤 slot drawn: False              &lt;- and quiet where it means nothing
+> 👤 under `today`: _ash &gt; ann &gt; bea &gt; cara     &lt;- all four show; self first, then recency
+>    band:          _ash &gt; ann &gt; bea &gt; cara     &lt;- the band follows
+> live tick for cara, page still open:
+>                   _ash &gt; ann &gt; bea &gt; cara     &lt;- unmoved: the mod
+> after ‹ and reopening:
+>                   _ash &gt; cara &gt; ann &gt; bea     &lt;- re-sorted; cara now the newest
+> page errors: none
+> ```
+> 
+> All five of the brief's proofs, including the two that matter most: the tick that does **not** move anyone, and the reopen that **does**.
+> 
+> ## Named risks
+> 
+> 1. **The freeze lives on the loop state, so it rides every turn's payload.** It is a comma-joined id list — small, but it grows with the project's people and is re-serialised on every turn while 👤 is open.
+> 2. **`by_activity_at` walks every card for every person** when the freeze is computed — O(people × cards). Once per open, so fine at today's sizes; it would want an index at a few thousand cards.
+> 3. **`PeopleActive` costs a loop turn whenever the live set's timestamps change** — deduped on the serialised map, but `/live` polls every 5s and `t` moves each poll, so on a busy people map that is a turn every 5s. It never reorders (the freeze), but it is traffic.
+> 4. **The rig planted colleagues through `/new`**, so their profile cards have no `from` — real copies arrive via `/exchange` with `from` set. The ordering code never reads `from` (only `people_own_id`'s own-card test does, unchanged), so I judge the proof sound, but it is not the exact card shape the field produces.
+> 5. **`/reports` and the retired cards tool** were not exercised for the slot change; only `account` is named, so they are untouched by construction rather than by measurement.</result>
+> <usage><subagent_tokens>905027</subagent_tokens><tool_uses>30</tool_uses><duration_ms>963695</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a1c81bb1f2f5c01de</worktreePath><worktreeBranch>worktree-agent-a1c81bb1f2f5c01de</worktreeBranch></worktree>
+> </task-notification>
+
+The people nodes are back with the readouts that matter: a live tick does not move anyone, and reopening re-sorts. Landing and deploying.
+
+While it deploys, the handover line for the people nodes and the closing usage figure, both independent of the deploy.
+
+The handover line is written. The usage report just read 1% for Fable, which cannot be right after 62% an hour ago, so I'm checking the raw samples before I quote it.
+
+The endpoint itself changed its answer at 20:55 UTC: Fable went from 62% to 1% and all-models from 49% to 2%, with the reset date unchanged. That is Anthropic's counter, not my sampler. Either your account's usage was reset or re-tiered tonight, or the endpoint is misreporting. Tomorrow's first report will say which, and I'll flag it rather than trust it.
+
+What I need next is only the people deploy's result, to confirm the two self-stamps and then commit the handover. Nothing else is pending, so there is nothing more to request in this turn.
+
+### p194
+*2026-09-04 21:17*
+
+> <task-notification>
+> <task-id>br1ww8l14</task-id>
+> <tool-use-id>toolu_01TdZtPrm3rh4jadxqYggsES</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/br1ww8l14.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the two people nodes on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>

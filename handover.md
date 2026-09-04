@@ -84,6 +84,12 @@ shipped on its own. Fable 60% → ~62%.*
   the context dir — the seed of the manual-fix UI. Conservative: it fixed
   "Bourke" → "Berwick" and left "Bloor" (Broadwick) alone. The seed still
   opens with the constituency's name wherever the post is.
+- **People are never hidden by the clock** (`since/not-people` — the cut is
+  refused by card type; the filter slot is hidden on 👤), and **ordered you
+  first, then most recently active** (`people/by-activity`: last post,
+  card edit or live sighting; the order is frozen on the turn that opens
+  the tool and re-sorted on the next open, so a live tick never reorders;
+  the band follows). Ash's "Tara missing" was the `today` filter.
 - **After the field test (ash's word, #p155):** a manual transcription-fix
   UI, once there is real field data; `transcribed/corrected` logs every
   before → after so that data exists. Seeding is now from the post's own
