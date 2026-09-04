@@ -3054,7 +3054,7 @@ makes it possible later: transcribe parts as they land); speaker
 diarisation (pyannote is cached on the mini; a later rung); anything of the
 public's speech — these are the team's own notes.
 
-**Amendment, approved by ash (field-walk #p8, "parity with fieldnote"):**
+**Amendment, approved by ash (field-walk #p10, "parity with fieldnote"):**
 fieldnote's field pipeline was **Speechmatics** batch (enhanced operating
 point, speaker diarization at sensitivity 0.75, `additional_vocab` built
 from a reverse-geocoded address, ward, district and constituency — its
