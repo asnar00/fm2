@@ -133,3 +133,32 @@ session end from the digest since the last run.*
     map with its band replaced grid and list; the switch's slot became
     today / week / month / all. A second view of the same cards is a
     filter in disguise. (`browse/map-only`, `map-only/since`, 2026-09-04.)
+
+22. **What must be fresh rides with every message.** The phone's local
+    midnights travel on every event, not in a boot-time send that can be
+    missed; a value that only arrives once is a value that is sometimes
+    wrong. (`since/marks-with-the-tap`, 2026-09-04.)
+
+23. **There is never no picture.** A post's face is the first frame the
+    moment filming starts, replaced by a better one if it comes; a dark
+    frame beats an empty square. Confidence dies on a blank tile.
+    (`at-once/first-frame`, 2026-09-04.)
+
+24. **A pill hugs its words.** A lozenge is as wide as its text and its
+    padding, never a fixed width; a column is its widest row; a name sits
+    centred on the screen, not at an offset tuned against its neighbours.
+    (`one-word/hugs-its-words`, `one-word/in-the-middle`, 2026-09-04.)
+
+25. **What must move with the map is in the map.** Region fill and
+    boundary lines are baked into the tiles, so one layer scales through
+    the pinch; an overlay recomputed at zoom end lags and pings.
+    (`region/baked`, `baked/lines-too`, 2026-09-04.)
+
+26. **A stamp is never written over by the asker's resend.** Fields have
+    owners: the builder's status and build, the asker's text and urgency;
+    each side fills, neither overwrites. (`being-built/stamp-stands`,
+    2026-09-04.)
+
+27. **A phone bug is measured on the phone before it is fixed.** Three
+    rig disproofs of a flash ended in a black-box readout of the arriving
+    picture, not a fourth guess. (`blackbox/arriving-picture`, 2026-09-04.)

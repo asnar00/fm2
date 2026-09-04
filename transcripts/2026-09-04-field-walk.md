@@ -1,4 +1,4 @@
-# transcript: field walk
+# transcript: the field walk
 *session `b70435b4-6806-4a25-aadb-e68df3da3413`, exported by tools/export_transcript.py — do not edit; anchors `#pN` are stable*
 
 ### p1
@@ -2759,3 +2759,290 @@ Both back with widths measured to zero slack and the title centred to the pixel.
 Deploying. What I need next: the build number for the two shipped stamps, which depends on this deploy; the reel worker's sweep and flash nodes; and the boundaries worker's baked lines. All three are results I am waiting on, so there is nothing independent to request now.
 
 **A placement note worth knowing:** the centred title could not be a child of the black-lozenge node because your centring ask came nine minutes before the lozenge ask, and the linker refuses a child that predates its parent. It sits under the one-word dropdown instead, which is what freed the middle in the first place.
+
+### p101
+*2026-09-04 17:05*
+
+> <task-notification>
+> <task-id>a481d67a8bff6672b</task-id>
+> <tool-use-id>toolu_012zv9vNKKqrGrPLjpBov1HQ</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a481d67a8bff6672b.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build four map-reel refinements" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>One node shipped, one deliberately not. Both are in the report.
+> 
+> ## `1175409` — `flick/carries-the-card/unbroken` (ash's `#p96`)
+> 
+> Rebased onto current main (`c529d12`), gate green, `--prove` implied (confined).
+> 
+> The turn is sent the moment the sweep passes `/flick`'s threshold **with the finger still down**. Before the event goes, the card being left is moved out of `#app` — `.card-page` is fixed to the viewport by its own rule, so reparenting moves it not one pixel and the paint that replaces `#app` cannot take it away. Then one number moves both: the card being left at the finger's travel, the card arriving a card's height and a gap behind it. Past the threshold the strip completes and the ghost drops; short of it the switch is undone by a real turn back through the same event. `/flick`'s own release send is dropped while a strip is live, so there is one switch per crossing, and no strip is ever started where there is no neighbour — `/rubber-band` still owns the ends.
+> 
+> **Readouts** (rig throttled to Slow 3G, fresh context holding **zero** local pictures — the phone's case, never the rig's default), four sweeps in a row:
+> 
+> - **two cards on screen at once in every sweep** — the card being left at `-42…682` while the card arriving stood at `696…1420` and came up behind it
+> - the strip settled on the new post each time, **`ghosts left 0`**
+> - across all thirteen paints: **0 video elements made, 0 media loads, 0 `play()`** before any tap
+> 
+> ## Not shipped: `prewarmed` — and why
+> 
+> I built it, measured it, and it **changes nothing**, so I did not commit it. The control run (same sweep, `EACH = 0`, warming off) gave an identical result to the warmed run: **13/13 arriving cards had `&lt;img&gt;.complete === true`, naturalWidth 384, in the very paint that built them** — on Slow 3G with no local copies. The reason is that the band's own lozenges draw from **the same `pic/&lt;id&gt;` URL as the card page**, and `/reel` renders a lozenge for every post in the set, so the browser has already fetched every neighbour's picture before any sweep begins. A node whose only effect is a request the band has already made is not worth shipping; the code is trivial to reconstruct from this paragraph if triage disagrees.
+> 
+> ## The black-box finding (restated, since it stands)
+> 
+> `/tmp/miso-blackbox.log`, ash's lines (`asnaroo:…`), 934 entries, **15 sweeps**. Every sweep is a lone `browse_next`/`browse_prev` click — two measured gestures at 169 px in 161 ms and 118 px in 194 ms — with **no poster op, `Transcribing`, title edit or marks within ±2.5 s of any of them**. One paint per sweep, not a storm. (Reader: `…/scratchpad/rig-a481d67a8bff6672b/sweeps.py`.)
+> 
+> ## Open risk, named plainly
+> 
+> **The flash itself is still unexplained and unfixed.** The rig cannot reproduce it: the arriving card's picture is ready in its first paint even throttled with a cold picture store. So the remaining candidates are things only ash's phone has — a JPEG decode costing a frame on that hardware, HTTP-cache eviction on a device holding a walk's worth of pictures, or `/pic-beside`'s `hold()` having blanked an image after a 404 while an owner's upload was still in flight (that road leaves `data-away="1"` on the element and re-asks on a ladder; it would look exactly like flashing). The next measurement I would take is the black box or a readout **on the phone** for `img[data-away]` on an arriving card — not another rig run.
+> 
+> Other risks: on the frame the switch happens there is one sample where the arriving card had not yet taken its offset (both near 0) before `place()` ran — one frame, worth a look on a device; a cancelled sweep costs a reverse turn and rebuilds the card, so its picture is fetched again; and none of this is proven on WebKit — the simulator was not attempted this round.
+> 
+> My rig was stopped by its own PID (`24857`), checked first. Note for triage: a `miso_server` is running from the **shared checkout's** build dir (pid 58573) — not mine.</result>
+> <usage><subagent_tokens>823668</subagent_tokens><tool_uses>62</tool_uses><duration_ms>1509301</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a481d67a8bff6672b</worktreePath><worktreeBranch>worktree-agent-a481d67a8bff6672b</worktreeBranch></worktree>
+> </task-notification>
+
+The unbroken sweep is proven and ready to land after the running deploy. The flash itself is still unexplained, and the worker's rig never had what your phone has: local copies of your own pictures. That points at the dressing road, and I'm sending that hypothesis with a measurement.
+
+Sent. If the picture the phone already holds is first requested from the server and then swapped to the local copy, that blank-then-picture is the flash, and it would never show on a rig with an empty store. The worker seeds its store the way your phone's is and measures the sequence of sources on each arriving image.
+
+The dropdown and title deploy is still in its gate. After it, the unbroken sweep lands. Nothing to request until then.
+
+### p102
+*2026-09-04 17:07*
+
+> <task-notification>
+> <task-id>bwegpnyrj</task-id>
+> <tool-use-id>toolu_01E43DuTwQQ5yyeosd1uAFoR</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bwegpnyrj.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the dropdown width and centred title on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 678 is live with the dropdown hugging its words and the title centred. Now the unbroken sweep lands.
+
+Deploying the unbroken sweep. What I need next: this deploy's build number for its stamp, the reel worker's flash measurement, and the boundaries worker's baked lines. All three are results I am waiting on, so there is nothing independent to request now.
+
+### p103
+*2026-09-04 17:09*
+
+> <task-notification>
+> <task-id>a481d67a8bff6672b</task-id>
+> <tool-use-id>toolu_01RRLHE4U73EYVc2ZA5XFGLy</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a481d67a8bff6672b.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build four map-reel refinements" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>No commit this round — the hypothesis does not survive measurement, and the node it implies would be a no-op.
+> 
+> ## What I measured
+> 
+> Rig, Slow 3G, **device store warm the way ash's is** (three posts recorded on the rig, so `/at-once` minted a local copy of each picture — `local pictures held: 3`), then sweeps. Per paint: the raw html, the `src` **as inserted**, `data-away`, `complete`, `naturalWidth`, plus every network request.
+> 
+> ```
+> {"card":"618197","rawHadPic":true,"inserted":"blob:","away":null,"complete":true,"w":384}
+> {"card":"614852","rawHadPic":true,"inserted":"blob:","away":null,"complete":true,"w":384}
+> {"card":"612023","rawHadPic":true,"inserted":"blob:","away":null,"complete":true,"w":384}
+> {"card":"291352","rawHadPic":true,"inserted":"pic/3","away":null,"complete":true,"w":384}
+> img loads: ['blob:','blob:','blob:','pic/3']   errors: []   requests for pic/…: []
+> ```
+> 
+> The raw html always carries `src="pic/…"`, and **what reaches the DOM is already `blob:`** for every picture the device holds. So `/pic-beside`'s `dress()` does run on the string before insertion, exactly as its spec claims; `complete: true` with `naturalWidth 384` in the same paint; no `data-away`, no errors, and **zero network requests for `pic/…` across the whole sweep**. The one post whose picture this device does *not* hold went in as `pic/3…` and was still complete, because the band had already cached it.
+> 
+> I also tested the one remaining rig-testable candidate — the boot window, where `/pic-beside`'s IndexedDB read might not have landed when a card is painted. Reload, then open a post immediately: `blobs` already populated, `inserted: "blob:"`, complete, zero requests.
+> 
+> ## Where that leaves the flash
+> 
+> Three hypotheses now, three rig disproofs: mid-sweep repaint storms (the black box: one paint per sweep, no other event within ±2.5 s), a cold picture cache (13/13 arriving cards complete in their paint on Slow 3G), and dressing-after-insertion (above). Building `pic-beside/dressed-first` would ship a node that provably changes nothing — there is nothing to move earlier.
+> 
+> **I am not going to guess a fourth time from the rig.** The remaining candidates are all things only ash's hardware has: JPEG decode cost per frame on that device, HTTP-cache or blob-store eviction on a phone holding a walk's worth of pictures, or WebKit compositing the swap differently. None is reproducible here.
+> 
+> ## What I would do instead — one small proposal
+> 
+> The single readout that decides it has to come from his phone: **on each paint, record the arriving card's `&lt;img&gt;` `src` prefix (`blob:` vs `pic/`), its `complete`, and any `data-away`, into the black box.** That is a handful of lines in a child of `/blackbox` or `/shows-progress`'s idiom, it ships with the next build, and the next time ash sweeps his own log answers the question — the same road that settled the taps bug and settled the "no repaint storm" question this morning. Without it I would be building against a map I have already been shown to be wrong about three times.
+> 
+> ## Status
+> 
+> `1175409` — `flick/carries-the-card/unbroken` is on the branch, rebased, gate green, `--prove` implied; readouts in my previous message. Nothing else committed; the tree is clean and the build is green. My rig was stopped by its own PID (`65389`), checked against `ps -o command=` first.</result>
+> <usage><subagent_tokens>835078</subagent_tokens><tool_uses>68</tool_uses><duration_ms>1768782</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a481d67a8bff6672b</worktreePath><worktreeBranch>worktree-agent-a481d67a8bff6672b</worktreeBranch></worktree>
+> </task-notification>
+
+The worker has disproved three causes on the rig, including my dressing hypothesis, and proposes the right next move: instrument your phone so the black box records what the arriving picture actually is on each sweep. Sending it to build that.
+
+The unbroken sweep is in its gate now. Two things are outstanding that only results can unblock: that deploy's build number for the stamp, and the two workers, baked ward lines and the black-box readout. Nothing else to request.
+
+**For your walkabout when this build lands:** sweep through a few posts and tell me whether the flash is still there with the new card following the old one in. If it is, the next build after it records exactly what the arriving picture was on each sweep, and your phone's own log answers the question the rig cannot.
+
+### p104
+*2026-09-04 17:13*
+
+> <task-notification>
+> <task-id>b2s8b3sav</task-id>
+> <tool-use-id>toolu_012aE7hDGcXsbQhrAz1azXr2</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/b2s8b3sav.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the unbroken sweep on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 679 is live: the next post comes up as the old one leaves, so a sweep is one unbroken strip. Stamped shipped.
+
+Two workers are out, the baked ward lines and the black-box readout for the arriving picture. Everything left depends on one of them returning, so nothing to request now.
+
+### p105
+*2026-09-04 17:17*
+
+> <task-notification>
+> <task-id>a481d67a8bff6672b</task-id>
+> <tool-use-id>toolu_012tfhNhAGgbWtxP5HH9J1r5</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a481d67a8bff6672b.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build four map-reel refinements" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Shipped.
+> 
+> ## `8d6aa8d` — `diag/blackbox/arriving-picture` (+ `tools/sweeps.py`)
+> 
+> On main's tip, gate green, `--prove` implied (confined — `tools/` is not counted).
+> 
+> On every paint that leaves a card page on screen, one line into `/blackbox`'s own ring: the picture's `src` **by kind** (`blob:` / `pic/` / `data:` / none), `complete` and `naturalWidth` **at insertion**, `data-away`, whether a `&lt;video&gt;` is there and its `readyState`, which event's turn was painted, the ms since the previous card paint, and whether `/unbroken`'s ghost was present. Then, at the next animation frame, a second line: whether that same element is still in the document and whether its `src` changed under it — the one thing no rig run has ever produced, and exactly what a blank-then-picture would look like.
+> 
+> `tools/sweeps.py` is the one query: `python3 tools/sweeps.py asnaroo` prints a sweep's whole sequence — gesture, switch, and every media line around it — from the live log.
+> 
+> ## Sample from my rig, a real finger, a real sweep
+> 
+> ```
+> -2217 ms  ui pointerdown @200,620 div.card-page.post.fm-
+> -1948 ms  MEDIA  card 962223  src blob:  complete True  w 384  away None
+>           video False/None  by browse_next  +2324ms  ghost
+> -1947 ms  click browse_next
+> -1946 ms    ...one frame on: still True  src changed False -&gt; blob:  complete True  w 384
+>    -1 ms  MEDIA  card 705830  src pic/   complete True  w 384  away None
+>           video False/None  by browse_next  +1947ms  ghost
+>    +0 ms  click browse_next
+>    +1 ms    ...one frame on: still True  src changed False -&gt; pic/  complete True  w 384
+>   +55 ms  MEDIA  card 705830  src pic/   complete True  w 384  by RecFetched  +56ms  ghost
+> ```
+> 
+> Both shapes appear — a locally-held picture arriving as `blob:` and a server-held one as `pic/` — both `complete` at insertion, neither changing a frame later, and the ghost flag distinguishing a sweep's paints from an opening's. That is the rig's answer; the phone's may differ, which is the point.
+> 
+> ## Cost and risks
+> 
+> Two small entries per card paint, nothing new travelling — the ring, trim, flush and server ingest are all `/blackbox`'s own; `record()` writes localStorage each time, so card paints now cost two writes instead of one. The line is written after the paint, inside a `try`, so it can never cost a frame. It records only what is in `#app` — `/unbroken`'s ghost is reported as a flag, not measured. A card with no picture writes one line and no follow-up. `/replay` is honoured through the parent's `paused`.
+> 
+> **What happens next is ash's sweep, not another guess from me.** When he sweeps tonight, `python3 tools/sweeps.py asnaroo` over `/tmp/miso-blackbox.log` will say whether the arriving card's `src` was `blob:` or `pic/`, whether it was complete at insertion, and whether it changed a frame later — and that decides which of the remaining candidates (decode cost, cache eviction, a WebKit swap) it actually is.</result>
+> <usage><subagent_tokens>851255</subagent_tokens><tool_uses>83</tool_uses><duration_ms>2240095</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a481d67a8bff6672b</worktreePath><worktreeBranch>worktree-agent-a481d67a8bff6672b</worktreeBranch></worktree>
+> </task-notification>
+
+The readout is built. Landing and deploying it so your next sweeps write the answer.
+
+Deploying the readout. What I need next, and what each depends on:
+
+- This deploy's result, to confirm the build. That is a pending notification.
+- Your sweeps on that build, then one query over your phone's log. That depends on you and on the deploy.
+- The boundaries worker's baked ward lines. A pending notification.
+
+Nothing is independent of those, so nothing more to request now.
+
+**Once the build is on your phone:** sweep through five or six posts, then tell me. I run one query and the log says whether the arriving picture was local or fetched, complete at insertion or not, and whether it changed a frame later. That decides between the three causes left.
+
+### p106
+*2026-09-04 17:18*
+
+> why has "verifying rig teardown by PID" been running for 7h?
+
+That will be a worker's own background wait that never exited. Let me find it.
+
+No such process exists on the machine. The only long-lived shell is my ask monitor, running since the session started. Everything else is the current deploy's gate and two simulator companions.
+
+So that entry is bookkeeping: a background wait the transcription worker started to poll its rig teardown, whose process ended hours ago while the task row stayed open. That worker has been reporting "stale poll timer draining" all evening, which is the same thing from the other side. Nothing is consuming anything. You can clear it from /tasks, or leave it and it goes with the session.
+
+### p107
+*2026-09-04 17:19*
+
+> <task-notification>
+> <task-id>a8a79c849e247bc55</task-id>
+> <tool-use-id>toolu_014g4uXJ2UrCnKK2mQzXLTL9</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a8a79c849e247bc55.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build boundary outlines and region" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Rebased onto the newest main, links clean, one commit ahead, tree clean, rig down.
+> 
+> ## What shipped
+> 
+> One commit, `3e35270`, on branch `lines-a8a79c` in `/Users/microserver/fm2/.claude/worktrees/agent-a8a79c849e247bc55`, on current main (`8d6aa8d`). 772 insertions, 12 deletions across five files.
+> 
+> - **`.../baked/lines-too/lines-too.rs`** — strokes the ward outlines and the dashed constituency edge into every square a line crosses, whatever region is chosen. A stroke is a *capsule* (every point within half a width of a segment) and a capsule is convex, so it meets a scanline in exactly one interval — which means the ink goes through the same four-sub-scanline, exact-horizontal-overlap machinery `/baked`'s fill already had, and **no 1024×1024 buffer is made**. Segments are bucketed by output row first, which is what keeps the worst square (the whole district and all 2,120 of its segments in one zoom-11 tile) at 5.1 ms.
+> - **`lines-too.js`** — takes `/boundaries`' `L.geoJSON` layer off the map on `place()`'s own beat (wrapped around `/outlined`'s removal of the names), replaces `/region`'s `ensure()` so its second layer and pane never exist, and re-points `/map`'s own ground layer at the baked route. Also re-points `/stocked`'s `url()`.
+> - **`baked.rs`** — refactored to open `baked_must` and `baked_extra`, both the identity in `/baked` itself.
+> 
+> Widths are in tile pixels (= CSS pixels), so a line is the same width at every zoom rather than widening like a road. The dash is measured along the ring, so it never jumps at a tile edge.
+> 
+> ## Evidence
+> 
+> **The overlay is gone and the map is one layer.** Ticked: **1** tile layer (`tiles/region/E05005029/{z}/{x}/{y}.png?g=3`), **0** `.leaflet-overlay-pane path`, `/boundaries.lines` off the map, `/region.layer` gone, its pane never made, `/stocked` asking for the baked route. Unticked, the same page: **2** tile layers, **27** overlay paths, `/stocked` back on `tiles/…`.
+> 
+> **The lines are in the squares** at 11, 13 and 15 with zero overlay paths at each — near-black pixels on screen 15,844 / 8,444 / 1,518, against 14,011 / 7,397 / 1,635 for the vector layer drawing the same view. **Widths match**: median dark run 6 / 9 / 6 device px baked against 6 / 9 / 8 vector. At tile level, a square far outside the district is byte-identical to the plain ground.
+> 
+> **Through a slowed zoom**, the ground's transform runs 0.61 → 0.74 → 0.87 → 0.99 → 1.00 with **0 overlay paths at every frame** — the lines cannot fall behind because they are the tiles.
+> 
+> **Cost per square, release:** a boundary and no region (the new common case) **3.1 ms** cold, 0.5–0.6 ms warm; the region's own edge 3.6–3.9 ms; neither 2.1 ms; the district-in-one-square 5.1 ms. **RSS 5 MB, unchanged.** Build: `client.wasm` +4.9 KB, server binary +17.2 KB, no new crate. **No extra Stadia fetches** — the refactor stops `/baked` asking for an Outdoors square where the region does not reach, which now matters because otherwise every line-only square in the district would have pulled one.
+> 
+> **Toggle proof** (full, since the parent was refactored — the trailer is on the commit): unticked and relinked, the composition loses only this node's own emitted block (321 lines), its implicit `enabled` var, and three chain dispatch lines that revert to `feature_Baked`'s own `baked_must`/`baked_extra`/`baked_stamp`, which are present with the node both on and off; `site/index.html` gains and loses exactly one line, the node's script tag. **Gate green (39 pass)** before and after the rebase.
+> 
+> Screenshots in `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a8a79c/shots/`: `lines-z11/13/15.png`, `vector-z11/13/15.png`, `rebased-z11/13/15.png`, `lines-zoom-0..5.png`, `lines-edge-crop.png`, `ink-baked-z11/13/15.png`.
+> 
+> ## Open risks, named
+> 
+> - **A baked line thickens through a zoom and settles.** The vector line held its width; a line drawn into a picture scales with the picture, exactly as the streets under it always have. Smaller than the fault it replaces, but it *is* a behaviour change and ash may notice it before I get to explain it.
+> - **Two places now hold one style.** `#000000` at 1.2 and `#4a4a54` at 2.0 dashed are restated in `lines-too.rs` because `/outlined` and `/light-basemap` are JavaScript and this runs on the server. The style string rides in the cache stamp so a change re-bakes, but the two must be changed together, and nothing enforces that.
+> - **`/stocked`'s record key does not name the region.** Stocking follows whichever region was chosen when it ran; switching region does not restock, so offline you would see the previous region's daylight. The key is `/stocked`'s to change.
+> - **The disk grows.** `/baked` wrote a few dozen squares; a boundary crosses most of the district, so most squares inside it are written now — about 35 MB per generation on top of the 16 MB of plain ground, and old `&lt;stamp&gt;` directories are still never swept.
+> - **Retina.** The ink is rasterised at tile resolution and the phone upscales it 3×, so at magnification the edge is stepped where a vector line was not. The width measurement says they read the same at 1×; `@2x` squares would fix it and would double what Stadia is asked for.
+> - **Still not the iPhone simulator** — it has been held by another worker for all three of my briefs today. Everything is Playwright WebKit at iPhone 17 Pro size, DPR 3, real touch. The transform readouts are engine-independent, but a real two-finger pinch is a different Leaflet path (`_pinchZoom`) and remains untested on a phone.
+> - **`--prove` said "implied" for a commit that refactors its parent** — the classifier gap `handover.md` already names (a node's own files count as inside it). I carried the full proof and the trailer regardless; worth knowing the gate would not have forced it.</result>
+> <usage><subagent_tokens>589851</subagent_tokens><tool_uses>70</tool_uses><duration_ms>1965082</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a8a79c849e247bc55</worktreePath><worktreeBranch>worktree-agent-a8a79c849e247bc55</worktreeBranch></worktree>
+> </task-notification>
+
+The baked ward lines are back: one tile layer, no overlay, lines scaling with the ground through a zoom. It lands after the readout deploy, which is still running.
+
+Still in its gate. Nothing else is independent of it, so I wait.
+
+**One behaviour change in the baked lines for your eye:** a line drawn into a tile thickens through a pinch and settles, the way streets always have, where the vector line held its width. It is the trade for lines that never lag the ground.
+
+### p108
+*2026-09-04 17:22*
+
+> <task-notification>
+> <task-id>baz0zbg8l</task-id>
+> <tool-use-id>toolu_0122C79CYXL7F61NPEFEUwXD</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/baz0zbg8l.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the arriving-picture readout on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 680 is live with the readout. Now the baked lines land and deploy.
+
+All five workers are done and nothing is queued, so this is the last deploy of the day. Independent of it, I can start the session end: the learning-loop digest of today's asks.
+
+Six more defaults distilled from the evening. What remains: the deploy result and its stamp, which depend on the deploy; the handover rewrite and the final commit, which depend on the last build number. Nothing else is independent now.
+
+### p109
+*2026-09-04 17:27*
+
+> on the "publish level" option, remove "same as me" from the option - but set the default to the user's own level. Don't refer to "rank" anywhere, instead refer to "role"
+
+That builds now. To the worker that owns the level picker.
+
+The deploy of the baked lines is still in its gate, and the level picker's worker has its brief. Both are results I am waiting on, and nothing else is independent of them.
+
+**What the picker becomes:** six rows, your own role in the project lit by default, no "same as me", and "role" everywhere "rank" used to appear, including under a post and on the invite page. The worker lists every string it changes.
+
+### p110
+*2026-09-04 17:28*
+
+> also, don't revert to blue dots ever - we should always show the map as the background
