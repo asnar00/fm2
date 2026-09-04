@@ -1,0 +1,4 @@
+/* the card on its way back down to its lozenge: the transform is the whole of
+   the motion, so /opens-over-map's own arrival animation is not also running */
+.card-page.fm-going-back { will-change: transform, opacity; }
+body.fm-map-behind .card-page.fm-going-back { animation: none; }
