@@ -74,6 +74,16 @@ shipped on its own. Fable 60% → ~62%.*
   is logged as said). Seeding is by the post's location, so a London post
   gets Sevenoaks streets 30 km away — harmless, but the vocabulary should be
   empty when the nearest street is far.
+- **Seeding is by the post's own location now** (`vocabulary/near-the-post`,
+  landing as the last build): 400 m around the post, from `streets.json`
+  inside the patch, one cached Overpass pull per ~500 m cell outside it,
+  nothing rather than a wrong list when Overpass is down. **A correction
+  pass** (`transcribed/corrected`) runs before the words land: name-shaped
+  tokens matched to the nearby list by Haiku, three guards, never over the
+  author's own words, every before → after in `corrections.jsonl` under
+  the context dir — the seed of the manual-fix UI. Conservative: it fixed
+  "Bourke" → "Berwick" and left "Bloor" (Broadwick) alone. The seed still
+  opens with the constituency's name wherever the post is.
 - **After the field test (ash's word, #p155):** a manual transcription-fix
   UI, once there is real field data; `transcribed/corrected` logs every
   before → after so that data exists. Seeding is now from the post's own

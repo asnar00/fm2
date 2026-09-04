@@ -4141,3 +4141,63 @@ Deploying. What I need next: this deploy's output to confirm it stamped the end-
 *2026-09-04 20:47*
 
 > note for tuesday, when fable usage resets: we're going to run across the whole feature tree, analyse and filter out the cruft, and write a fresh specs-only feature tree and then hand the whole thing en masse to a fresh fable 5.1 instance (=you, but with only the tree as handover) and see what happens?
+
+Noted, and it is the sharpest test of the whole thesis: if the specs are the product, a fresh instance with only the tree should be able to rebuild it. Writing it into notes.md under the de-crufting proposal and into the handover for Tuesday.
+
+Written, anchored to your prompt; it commits after the deploy. Four things need deciding before Tuesday, which I put in the note: which documents ride with the tree, whether the linker and tools ride, which assets are data rather than code, and what live state the rebuilt app must read. The measure I'd propose is a byte diff of the composed output per node: where the rebuilt code differs and still passes the gate, the spec was enough; where it fails, that is the list of specs to sharpen.
+
+What I need next: this deploy's output, and the transcription worker's two nodes. Both are pending results with nothing independent of them, so there is nothing to request in this turn.
+
+### p158
+*2026-09-04 20:49*
+
+> <task-notification>
+> <task-id>btc2qxp6m</task-id>
+> <tool-use-id>toolu_015GSypZLQYEZu4wXefTjqn9</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/btc2qxp6m.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the end-of-list fix on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 707 is live with the end-of-list fix, and the deploy stamped its announcement itself. Notes and handover are committed, tree clean.
+
+**Try it on the phone:** pull past the top and past the bottom. The same card should bounce back with nothing changing, no fade, no scroll-in.
+
+What I need next: only the transcription worker's two nodes, seeding from the post's location and the correction pass. Their deploy and a last handover line follow from that one return, so there is nothing else to request in this turn.
+
+### p159
+*2026-09-04 20:52*
+
+> lovely - the scroll feels good now :-D thanks for your persistence!
+
+Glad it feels right. Four rig disproofs and one readout from your phone got there in the end, and that road is in the ledger for next time.
+
+One pending result remains, the two seeding nodes. Their deploy stamps itself, and then the day is done. I'll say when it lands.
+
+### p160
+*2026-09-04 20:53*
+
+> oops, no - still one bug: on my phone, I should see the test "Tara" user on the users page, but I'm only seeing myself. I hadn't noticed that until now because I was focusing on posts.
+
+Let me look at your world before guessing: whether Tara's card is still there and what your filter is set to.
+
+Not a bug: your filter is set to "today". The people page filters by when a card was made, as you asked, and Tara's card was made yesterday, so only you show, since your own card is exempt. Tap the filter and choose "all" and she is there. Bob and alice too.
+
+That said, I think the rule is wrong for people. A colleague who joined last week is not "old" the way a post is. Two better readings:
+
+- **People are never filtered by time.** The filter applies to posts and projects, and the people page always shows everyone you hold.
+- **For people, "today" means active today.** Someone who posted or was live today, which is what a team lead would actually want at the end of a day.
+
+The first is a one-line node and safe for tomorrow. Say which and it builds now; nothing else is pending except the two seeding nodes.
+
+### p161
+*2026-09-04 20:53*
+
+> ahhhh - yeah it was the temporal filter.
+
+That is the one. I'll leave the rule as it is unless you say otherwise; "people never filtered by time" is a one-line node whenever you want it. The two seeding nodes are the only pending result.
+
+### p162
+*2026-09-04 20:55*
+
+> yeah, let's always show all users on the project, but let's sort them as follows: a) self first b) sort by most recently active first [with a mod to stop things pinging around constantly while looking at the list]
