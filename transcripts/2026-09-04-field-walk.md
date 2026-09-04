@@ -4951,3 +4951,306 @@ What I need next is each worker's return; the deploys and a handover line follow
 *2026-09-04 21:46*
 
 > in the feature request (ask) workflow, it's a bit confused - I make a request and it goes straight to building, but also pops up a suggestion. Let's drop the suggestion part. Instead, go to "asked", and if the feature exists already (concierge, i.e. you, determines), you send a text message ad-hoc explaining how they can use the UI to do it. I think that makes more sense.
+
+Agreed, that is cleaner: the box files, the ask sits at "asked", and when the thing already exists I answer as a person would. Three parts: drop the guide popup, stop the automatic "building" stamp on arrival, and give the concierge reply a road. To the ask-box worker.
+
+Sent. The flow becomes: the box files, the ask sits at "asked", I read it, and if it already exists I answer with a note under the ask and one push carrying its first line. Building and proposed stay as stamps I make, not the machine.
+
+Four workers hold four items: the role in the lozenge, the map-location button, "add number" only when missing, and this ask-flow change. Each deploys as it lands and stamps its own line. Every remaining step depends on one of those returns, so there is nothing to request in this turn.
+
+### p200
+*2026-09-04 21:49*
+
+> <task-notification>
+> <task-id>a481d67a8bff6672b</task-id>
+> <tool-use-id>toolu_01NtCxBcNvkDaB87Je2eGEQE</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a481d67a8bff6672b.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build four map-reel refinements" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Done.
+> 
+> ## `903f00d` — `loop/cards/look/marks/location/no-button`
+> 
+> On main's tip (`1cbcd5a`), gate green, `--prove` implied (confined — a new node plus a tick in its parent's `order.md`).
+> 
+> ## Which shape, and why
+> 
+> **Neither of the two you offered, quite.** I read `to-map` first: it does not draw the button — it only *replaces the pill's tap* (`feature_Location.show` → back, then `browse_map`). Unticking it would restore `/location`'s old coordinate sheet and leave the button exactly where it is. `/map-pin` only puts the locator glyph *inside* the pill. The pill itself is drawn by `/location`'s own `card_page_html`, and `/location` also carries the location block that `/map`'s pins, `/reel`'s band and `/where-taken` all read — so it cannot be unticked either.
+> 
+> So: a child of `/location` (its fourth, under the cap). And the tree had already solved this exact problem once — `/byline/plain` takes the pill off a post's page with `.card-page.post .card-place { display: none }`. This widens that one rule from a post's page to every card page, which is the idiom the tree already used for this pill, and is exactly reversible by unticking. `/to-map` stays in the tree unreached, the way `/location`'s sheet has since `/to-map` replaced it — so an untick brings the pill and its tap back together.
+> 
+> ## Readouts (headless Chrome, all three kinds)
+> 
+> ```
+> a post's card:     pill drawn false   "map location" in text false   pins 8
+> a person's card:   pill drawn false   "map location" in text false   pins 0
+> a project's page:  pill drawn false   "map location" in text false   place [51.2765, 0.1886]  pins 1
+> ```
+> 
+> The place is untouched — the project still carries its location block and its pin is on the map behind the card. Screenshots: `no-button-post.png`, `no-button-person.png`, `no-button-project.png` in `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a481d67a8bff6672b/evidence/` — the project one shows the card with the map behind it and no pill.
+> 
+> ## Named risks
+> 
+> - The pill is **hidden, not un-drawn** — the `&lt;span&gt;` is still in the html (`display: none`, so not tappable and not in the card's text). Un-drawing it would mean a Rust cut that has to find the markup after `/map-pin` has already rewritten it; the CSS rule is one selector and survives any change to that markup. If triage would rather it never reached the page, say so and I will do the cut.
+> - A card read where the map is *not* the ground now has no on-card indication of place at all. That follows ash's words ("from all cards") and the argument he gave, but it is the case his hostile note was circling.
+> - `/to-map` and `/map-pin` are now dead code paths while this node is ticked — harmless, and the honest cost of keeping the untick meaningful.
+> 
+> My rig was stopped by its own PID (`16526`), checked against `ps -o command=` first; the tree is clean and builds.</result>
+> <usage><subagent_tokens>917146</subagent_tokens><tool_uses>18</tool_uses><duration_ms>457301</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a481d67a8bff6672b</worktreePath><worktreeBranch>worktree-agent-a481d67a8bff6672b</worktreeBranch></worktree>
+> </task-notification>
+
+The map-location removal is back, as a child of the location node that hides the pill everywhere and keeps the place itself. Landing and deploying.
+
+Deploying. What I need next, and what each depends on:
+
+- This deploy's output, to confirm it stamped the map-location ask itself. Pending.
+- The role-in-the-lozenge node. Pending the people worker.
+- "Add number" only when missing. Pending the stamp worker.
+- The ask-flow change. Pending the ask-box worker.
+- A deploy for each as it lands, and one handover line at the end.
+
+Every item depends on a pending result, so there is nothing to request in this turn.
+
+### p201
+*2026-09-04 21:55*
+
+> <task-notification>
+> <task-id>b9qdy4jly</task-id>
+> <tool-use-id>toolu_01Cepg723oMeLqABY5ju7aF7</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/b9qdy4jly.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the no-button node on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 716 is live: the "map location" pill is gone from every card, and the deploy stamped your ask shipped by its id, the first field ask closed by the machine.
+
+What I need next, and what each depends on:
+
+- The role-in-the-lozenge node. Pending the people worker.
+- "Add number" only when missing. Pending the stamp worker.
+- The ask-flow change. Pending the ask-box worker.
+- A deploy for each as it lands, and one handover line at the end. Both depend on those returns.
+
+Every item depends on a pending result, so there is nothing to request in this turn.
+
+### p202
+*2026-09-04 21:55*
+
+> <task-notification>
+> <task-id>a1c81bb1f2f5c01de</task-id>
+> <tool-use-id>toolu_017KZSKkng7DuLC4nFhERfFn</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a1c81bb1f2f5c01de.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build map-only and time filter" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Done. Branch `role-in-the-tag`, one commit `4bed088` on current main (`6ecd018`), five files, gate green, toggle proof done and in the trailer, tree clean, no rig of mine running, live server untouched.
+> 
+> ## `4bed088` — `browse/people/role-in-the-tag` (asks#1788558038133)
+> 
+> The word "profile" told the reader something they could already see — they are looking at a person — while the fact that decides who sees which post was nowhere on the card.
+> 
+> - **The word is the grade itself** — admin, candidate, team, volunteer, supporter, public — not `/plain-words`' sentence forms. Those are written to finish "visible to …" (*"the project's admins only"*) and read as prose; a tag is a label. The brief pointed at `/plain-words`, but its own expected readouts ("candidate", "team", "admin") are the grade words, so that is what I used.
+> - **`audience_grade_in` is asked, not re-derived**, which gets the two easy-to-miss cases right for free: the project's owner is `admin` by being the owner (no role link to themselves), and a link carrying no grade is the default `team`.
+> - **The current project decides**; none chosen, or a person not on this project, keeps `profile`, because there is no role to show.
+> 
+> **`/tag` had no seam** — the word was `c["type"]` inline — so it gains `card_tag_word(card)`, defaulting to the type. **The colour stays keyed to the type**, deliberately: the word varies and the kind does not, so every person's tag stays one colour and reads as the same kind of card differently labelled, rather than six new colours arriving unasked (`/taste` 3). Say if you'd rather roles were colour-coded.
+> 
+> **One place says the word.** I checked rather than assumed: `.card-tag` is drawn only by `/tag`'s `card_page_html`. The reel lozenge and band show `owner · when` and have never carried a kind word, and the grid and list that did are unreachable under `/map-only`. So the ask's "wherever it says profile" is one function.
+> 
+> ## Readouts — headless Chrome, project owned by `_ash`, tara graded `candidate`, **bob's link carrying no grade**
+> 
+> ```
+> roles: [{"grade":"candidate","name":"tara",…}, {"name":"bob",…}]   &lt;- bob has no grade
+> with the project chosen:   tara = candidate   bob = team   _ash = admin
+> with it unchosen:          tara = profile     _ash = profile
+> page errors: none
+> ```
+> 
+> Bob reading `team` is the hostile case the brief named, coming from `/audience`'s own default rather than a guess of mine. Screenshot: `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a1c81bb1/shots/role-tag.png` — tara's card wearing **candidate**, with `/projects`' "canvasser for Sevenoaks" line below it, so the tag and the line agree without repeating.
+> 
+> ## Toggle proof (in the trailer)
+> 
+> With `/role-in-the-tag` unticked its code leaves the composition entirely (zero `feature_RoleInTheTag` in the emitted source), and the **only** remaining difference from HEAD is the seam: `card_esc(kind)` → `card_esc(card_tag_word(&amp;c))`, the default returning `card["type"]`, and its dispatcher line. That default returns exactly the string the old inline expression did, so the composition without this node is behaviourally identical to `/tag` as it was. Fully ticked the chain is `tag → role-in-the-tag`.
+> 
+> ## Named risks
+> 
+> 1. **A hard link-time dependency on `/audience` and `/current-project`.** The node calls `audience_grade_in` and `current_project_card` by name; Rust has no `typeof`, so unticking either is a link error, not a graceful degradation. The three untick together. It is in the hostile cases, but it is the sharpest edge here.
+> 2. **`/tag`'s spec now promises a seam** that only this node fills. If a future node wants a different word for another kind, the colour-stays-with-the-type decision is a constraint it inherits.
+> 3. **The role line and the tag now both appear on a person's card** ("canvasser for Sevenoaks" and `candidate`). They say different things — job and grade — but it is two role-ish facts on one card, and ash may want one of them gone.
+> 4. **Not seen on a real phone.** Chrome only; the tag is server-rendered markup so I judge the risk low, but it is not the same as the simulator.</result>
+> <usage><subagent_tokens>934968</subagent_tokens><tool_uses>28</tool_uses><duration_ms>888885</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a1c81bb1f2f5c01de</worktreePath><worktreeBranch>worktree-agent-a1c81bb1f2f5c01de</worktreeBranch></worktree>
+> </task-notification>
+
+The role tag is back. Landing and deploying.
+
+Deploying. What I need next, and what each depends on:
+
+- This deploy's output, to confirm the role-tag ask stamped itself. Pending.
+- "Add number" only when missing. Pending the stamp worker.
+- The ask-flow change. Pending the ask-box worker.
+- A deploy for each as it lands, and a last handover line. Both depend on those returns.
+
+Every item depends on a pending result, so there is nothing to request in this turn.
+
+**One choice the worker made for your eye:** the tag's colour stays the same for every person, only the word changes, so roles are not colour-coded. Say if you want colours.
+
+### p203
+*2026-09-04 21:55*
+
+> <task-notification>
+> <task-id>a562b5d6fde125be5</task-id>
+> <tool-use-id>toolu_01VcWB3FYa2udewwVYRZkG7Q</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a562b5d6fde125be5.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build per-ask stamp merge" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Done — this is the fourth brief.
+> 
+> **Commit `4076782`** on branch `only-when-missing-a562b5d6`, rebased onto current main (`6ecd018`), relinked clean there. Three files, 141 insertions: `/Users/microserver/fm2/.claude/worktrees/agent-a562b5d6fde125be5/features/miso/users/login/add-number/only-when-missing/{only-when-missing.md,only-when-missing.rs}` (new) and one line in `add-number/order.md`. `toggle_proof.py HEAD`: **implied** — no trailer needed. The subject cites `asks#1788558115121`, so once `/by-the-ship` is in, the deploy stamps this ask itself.
+> 
+> **Which half was the bug — measured, not assumed.** The row was **never** on anyone else's card, before or after: `/me` draws its block only when 👤 is open on your own card (`me_landing()`), and `me_under` is reached from nowhere else. The fault was entirely on your own card. `/add-number` draws from one answer, `GET users/number`, which reports the account's **alias** — the number that account has *added* — and that is empty for everyone who never added one, which includes everyone whose real number has been on the guest list since they were invited. A real number and an empty alias look identical to the slot, so it offered to add a number to every person the campaign can already text.
+> 
+> **The fix.** We have your number when your world key *is* one. The single case where a key is not a number is `/name-only`: a scan-in that typed no number gets a placeholder, `+9` and sixteen digits — seventeen, two past E.164's cap of fifteen — so length alone answers it. That is `/instant`'s own `instant_is_synthetic`, restated in this node because `products/miso` unticks `/instant`, the same reason `/name-only` restates the mint. The extension point was already open: `/add-number`'s `me_under` draws nothing when the slot answers `ok: false`, so the node redefines `addnum_state` to answer exactly that (with a `why`) for an account whose number we hold. No client code, no parent edit, and unticking puts the row back on every card. A number somebody *did* add is still shown back to them — once the alias is recorded the row is a display, not an offer, so the node steps aside.
+> 
+> **Evidence** (rig on 8143, own home and context, three seeded users, stopped by its own pid file; 8095 answered 200 throughout). Headless Chrome on the real tap path — 👤, then the own card opened from the people band — with the node unticked and then ticked (the shared `order.md` flipped and restored in the same breath):
+> 
+> | | node off (before) | node on (after) |
+> |---|---|---|
+> | `_nameonly`, 17-digit placeholder key | row shown | row shown |
+> | `_ash`, real number, own card | **row shown — the bug** | no row |
+> | `_ash` looking at `_tara`'s card | no row | no row |
+> | `_nameonly` having added a number | — | row shows `number +447700900444` |
+> 
+> Screenshots in `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-a562b5d6fde125be5/`: `addnum-after-1-nameonly.png` (the add field on the placeholder account) and `addnum-after-2-ash-own.png` (ash's card, nothing below the location pill), plus the `before-*` pair. Smoke gate green in all three passes.
+> 
+> **Risks, named.** The test is a length, not a flag — nothing on a guest-list row says "this is a placeholder", so this reads it from the shape of the key exactly as `/instant` and `/name-only` do; the day a row carries an explicit mark, all three should read that instead. The logged-out case is the base's (403, returned untouched). And the smoke gate ran on my tree **before** the rebase; main has since added the "map location button gone" node, and I re-linked (clean) but did not re-run the gate — deploy.sh runs it again on the way out.
+> 
+> **Four branches now waiting on you**, none deployed: `worktree-agent-a562b5d6fde125be5` @ `53a682f` (`/stamp-stands`, carrying the placement question), `withdrawn-agent-a562b5d6fde125be5` @ `1e8a19c` (`/withdrawn`, whose live repair I already ran), `by-the-ship-a562b5d6` @ `14e0faa` (`/by-the-ship` + a transcript re-export commit that may need dropping), and this one.</result>
+> <usage><subagent_tokens>420966</subagent_tokens><tool_uses>43</tool_uses><duration_ms>827384</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a562b5d6fde125be5</worktreePath><worktreeBranch>worktree-agent-a562b5d6fde125be5</worktreeBranch></worktree>
+> </task-notification>
+
+The "add number" fix is back, and it found the real cause: the row read whether you had *added* a number, which is empty for everyone invited with a real one. It lands after the role-tag deploy finishes, since two deploys cannot overlap. That deploy's result is the pending item; nothing is independent of it.
+
+### p204
+*2026-09-04 22:01*
+
+> <task-notification>
+> <task-id>bwcsqhib8</task-id>
+> <tool-use-id>toolu_012CcVNLVWXeVKNTMGMs3mJV</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bwcsqhib8.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Land the role-tag node on main and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Chained: it confirms the role-tag deploy, picks the "add number" fix onto main, and deploys it. What I need next, and what each depends on:
+
+- That chain's output, with both builds and their ask stamps. Pending.
+- The ask-flow change. Pending the ask-box worker.
+- Its deploy and a last handover line. Depend on that return.
+
+Every item depends on a pending result, so there is nothing to request in this turn.
+
+### p205
+*2026-09-04 22:07*
+
+> <task-notification>
+> <task-id>b1vcgg2qy</task-id>
+> <tool-use-id>toolu_01BYaEqNeVqafAa6KkgTFsat</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/b1vcgg2qy.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Confirm the role-tag deploy, cherry-pick the add-number fix, deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Builds 717 and 718 are live: a person's tag reads their role, and "add number" shows only when we do not hold your number. Both asks stamped shipped by the deploys themselves.
+
+What I need next, and what each depends on:
+
+- The ask-flow change from the ask-box worker. Pending its return.
+- Its deploy, which stamps its announcement, and a last handover line. Both depend on that return.
+
+Everything depends on that one pending result, so there is nothing to request in this turn.
+
+### p206
+*2026-09-04 22:33*
+
+> <task-notification>
+> <task-id>afc22af9ea006bc2b</task-id>
+> <tool-use-id>toolu_01DBvcDEBdRTTf2iqzbGAwfy</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/afc22af9ea006bc2b.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build ask box straight-through" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Done. Branch `no-guide-afc22af9ea006bc2b`, three commits on top of main (`bce7bd9`), tree clean, rebased, not deployed, nothing stamped.
+> 
+> ## What shipped
+> 
+> **`0be2446` — `features/miso/shell/panel/noob-button/ask/request-box/straight-through/no-guide/`** (`no-guide.md`, `.index.js`, `.index.css`, tick in a new `straight-through/order.md`). Cites `transcripts/2026-09-04-field-walk.md#p199`.
+> The suggestion goes: `feature_StraightThrough.match()` is redefined to an async null — the narrowest seam, since it is where the 8 MB table is loaded, the query embedded and the catalog scored, and `show()` is its only caller. And the answer arrives instead: a new terminal status `answered` renders on the sheet in the `.crow` grammar with the builder's `note` beneath, wired through the same `feature_Lifecycle.render` wrap `/being-built` and `/did-you-mean` use.
+> 
+> **`4d92307` — `features/miso/comms/push/to-one/`** (`to-one.md`, `to-one.rs`, tick in `push/order.md`). `POST push/one` rings every subscription one number holds, on `/push`'s own wire, screened exactly as `pic/retrofit` is. It lives under `/push` because it calls `send_push`/`subs_file`/`remove_sub` directly — a child cannot compose without its parent, which is the honest shape for a hard Rust dependency.
+> 
+> **`f0bdc8f` — tooling.** `tools/ask_ack.py` no longer stamps anything; it announces each ask and names the asker's authority. `tools/stamp_ask.py` gains `answered` in `--status` and `--only-if`, refuses `--status answered` without `--note`, and pushes the note's first line after the words are safely in the world. `CLAUDE.md` and `notes.md` updated.
+> 
+> **The CLAUDE.md line, as changed** (replacing "Field asks get instant feedback…"):
+> 
+> &gt; **Field asks sit at `asked`; triage stamps building or proposed, or answers with a note (ash, 2026-09-04, field-walk #p199).** No stamp is written by a machine: the ask monitor runs piped through `tools/ask_ack.py`, which now only announces each new ask and names the asker's authority. Rearm it as `python3 tools/ask_monitor.py --local | python3 -u tools/ask_ack.py`. Triage then stamps by hand — `building` for an admin or support asker, `proposed` for anyone else (…notes.md "feature flow"), `shipped` (with the build), a did-you-mean question, or, when the thing already exists, `answered` with a note saying how to do it in the UI (`stamp_ask.py --status answered --note "…"`, which also rings the asker's phone once). A proposal is built only on ash's word.
+> 
+> ## Evidence (my rig, port 8131, own scratch HOME and pid file; headless Chrome at 390×844)
+> 
+> - **Files, nothing pops:** "let me delete a post" → filed through the op door in **16 ms** as `{"status":"asked"}`; `guide popped: False` after a 20 s wait; `#askGuide` is not in the page at all; `feature_SemanticFind.ready = False, loading = False` — the table was never even fetched.
+> - **`ask_monitor.py --local | ask_ack.py`** over a fresh ask printed `ASK from admin — stays 'asked'; stamp: building / answered / a did-you-mean` and the world was untouched: **every status in it is `asked`**.
+> - **The concierge reply:** `stamp_ask.py --local --text "let me delete a post" --status answered --note "…"` → `stamped phone:+15550000131 -&gt; answered`, `pushed to +15550000131: 1 device(s)`; the planted relay received **233 encrypted bytes** with `Authorization: vapid t=eyJ0…` and `Content-Encoding: aes128gcm`; the rig log reads `push one: …0131 -&gt; http://127.0.0.1:8132 (status 201)`; and the sheet shows `{"pill":"answered","ask":"let me delete a post","note":"open the post and tap the bin…"}`.
+> - **Hostile cases, observed:** `--status answered` with no note → refused (exit 2). A stamp matching no ask → exit 1, relay POSTs 2 → 2, no ring. Notifications off → `sent: 0`, stamp still lands. An answered ask stamped `building` → leaves `#answered`, appears in `#building`. **`/to-one` unticked** (relinked, rebuilt, rig restarted) → `push/one` 404s, the stamp lands, the sheet shows the answer, and stamp_ask reports `no push for +15550000131: push/one answered 'not found' (is comms/push/to-one composed?)` without failing. No page errors in any run.
+> - **Toggle proofs:** both new commits are **confined** — `tools/toggle_proof.py --since bce7bd9` says "implied" for each, and the tooling commit has no feature footprint. I ran the untick anyway for both: unticking `no-guide` removes exactly `f/no-guide.index.{js,css}` from index.html and site/f/, and (proven behaviourally on the rig) **the guide comes back** with `/straight-through` unedited; unticking `to-one` leaves index.html and site/f/ byte-identical (server-only) and the server source differing only in the node's own path-keyed `enabled` var. Re-ticked, both index.html and main.rs are byte-identical to the ticked build.
+> - **`tools/smoke.py --port 8142`: all three passes green**, run before and after the rebase. The gate has no ask step, so nothing there needed fixing.
+> - Screenshots: `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/rig-afc22af9ea006bc2b/shots2/` — `1-filed-nothing-pops.png`, `2-answered-on-the-sheet.png`, `3-moved-on-to-building.png`.
+> 
+> ## Where I departed from the brief — say it plainly
+> 
+> The brief said "one node plus tooling". It is **two nodes**: part 3's push cannot be tooling, because the VAPID + RFC 8291 wire is Rust in `/push`, and a per-person send had to exist somewhere in the tree. I put it under `/push` rather than beside its caller so that unticking `/push` takes it along instead of breaking the build. The sheet's `answered` row stayed inside `no-guide` (one prompt, one node) — `/lifecycle` is at the six-child cap and a seventh child would have forced a regroup I was not asked for. `--node straight-through/no-guide` still covers the `no-guide` half for the deploy's announcement; **the `to-one` commit is not under that node, so `by-the-ship` will not close the announcement from it** — the release just needs to touch `no-guide`, which it does.
+> 
+> I also skipped my own transcript re-export commit during the rebase: main's newer export already carries `#p199` at the same anchor, and misses.md's rule says that file is landed by re-export, not by a worker's copy.
+> 
+> ## Named risks
+> 
+> 1. **`push/one` trusts any logged-in caller through the tunnel** — the same screen `pic/retrofit` carries, no stronger. A logged-in user could ring any number with any words. Named in the node's hostile cases; a stricter screen (admin only, or bench-only) is the obvious next rung and I did not take it because it would have diverged from the door the tree already treats as the standard.
+> 2. **The push is proven to the relay, not to a phone.** A planted P-256 subscription pointing at a local sink shows correct VAPID and `aes128gcm` framing and 233 bytes on the wire; nothing decrypted it. Delivery to a real iPhone is untested.
+> 3. **A `building` stamp after an `answered` one leaves the note attached** to the entry. `/being-built` does not render it, so it is invisible rather than wrong — but it is stale data riding along.
+> 4. **`stamp_ask --text` still matches by substring across every world**, so a short phrase can answer more asks than intended. Unchanged by me, but the new `answered` status makes a wrong match more visible to the asker.
+> 5. **`straight-through.index.css` still loads** with `no-guide` ticked — an unused `#askGuide` rule. Harmless, but it means the untick story for the *pair* is "unticking `straight-through` alone would strand `no-guide`'s redefinition on an undefined object" — guarded by `typeof`, so it degrades rather than breaks.
+> 6. **`answered` rows never leave the sheet.** Deliberate (the asker came back for the answer), but on a busy week the requests block will grow. `/lifecycle`-style folding is listed as a named next rung in the spec.</result>
+> <usage><subagent_tokens>311223</subagent_tokens><tool_uses>127</tool_uses><duration_ms>2785847</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-afc22af9ea006bc2b</worktreePath><worktreeBranch>worktree-agent-afc22af9ea006bc2b</worktreeBranch></worktree>
+> </task-notification>
+
+The ask-flow change is back, with a push road for the concierge note. One risk it names I want closed before the team has phones: the per-person push route is open to any logged-in caller. Landing and deploying now, and sending the worker straight back to make that route answer only from the box.
+
+The ask monitor is re-armed on the new rule: it announces, it stamps nothing. What I need next, and what each depends on:
+
+- The ask-flow deploy's output, to confirm its announcement stamped itself. Pending.
+- The handover commit, after that deploy so the tree is clean at its start. Depends on it.
+- The bench-only screen on the push route. Pending the ask-box worker.
+- Its deploy, which is the last of the night. Depends on that return.
+
+Every item depends on a pending result, so there is nothing to request in this turn.
+
+### p207
+*2026-09-04 22:34*
+
+> <task-notification>
+> <task-id>blqm775ut</task-id>
+> <summary>Monitor event: "field asks from the phone (announced, not stamped)"</summary>
+> <event>watching /Users/microserver/.miso-context (5 worlds) for asked,proposed</event>
+> If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+> </task-notification>
+
+The monitor is watching. Nothing else new.
+
+### p208
+*2026-09-04 22:37*
+
+> I had an idea for the "building" list of features showing the work queue. why not keep those features there, and change the label; eg. "building", "testing", "deploying", "installed" - showing the most recent N features, whatever their status? That way we don't have to care about version numbers or whatever. It's just a feature list, most recent first.

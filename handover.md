@@ -95,6 +95,14 @@ shipped on its own. Fable 60% → ~62%.*
   before → after so that data exists. Seeding is now from the post's own
   location (`vocabulary/near-the-post`), a correction pass matches names to
   nearby streets (`transcribed/corrected`) — both landing tonight.
+- **The ask flow, re-ruled late (#p199, the last build):** the box files
+  and nothing pops (`straight-through/no-guide`); every ask sits at `asked`
+  — `ask_ack.py` only announces now — and triage stamps by hand: building,
+  proposed, shipped (the deploy does that one), a did-you-mean, or
+  `answered` with a note saying how to do it in the UI, which also rings
+  the asker once (`comms/push/to-one`, `stamp_ask.py --status answered
+  --note "…"`). **`push/one` is open to any logged-in caller until
+  `to-one/bench-only` lands** — building now. CLAUDE.md carries the rule.
 - **The deploy stamps (build 699, `announced/by-the-ship`):** announce
   with `--node <tree path>`; deploy.sh, after `released.sha`, stamps
   shipped on every announcement whose node the release touched and every
