@@ -454,8 +454,15 @@ async def s_since(pg):
     # /post-time's CardWhen, as the post step does; the evidence is #mapData's
     # data-ids, which is the set the map draws AND the set the band lists.
     await open_tool(pg, "posts")
-    if await pg.evaluate("document.querySelectorAll('.since-pill').length") != 4:
-        print("      (the four pills are not on the strip)"); await dump(pg, "since-pills"); return False
+    # /one-word: the slot holds ONE word and the four drop under it on a tap
+    if await pg.evaluate("!document.querySelector('.since-pill[data-ev=\"since_pick\"]')"):
+        print("      (no filter word in the slot)"); await dump(pg, "since-pills"); return False
+    await pg.click('.since-pill[data-ev="since_pick"]'); await pg.wait_for_timeout(900)
+    if await pg.evaluate("document.querySelectorAll('.since-drop .since-pill').length") != 4:
+        print("      (the column did not drop four)"); await dump(pg, "since-pills"); return False
+    await pg.click('.since-pill[data-ev="since_pick"]'); await pg.wait_for_timeout(700)
+    if await pg.evaluate("!!document.querySelector('.since-drop')"):
+        print("      (a second tap on the word did not put the column away)"); await dump(pg, "since-pills"); return False
     old = int(time.time() * 1000) - 40 * 86400000
     await pg.evaluate("(w) => feature_Loop.send({type:'CardNew', data:{owner:'_smoke', type:'post', title:'an old post', t:w}})", old)
     await pg.wait_for_timeout(1200)
@@ -470,7 +477,9 @@ async def s_since(pg):
         return await pg.evaluate("(() => { const d = document.getElementById('mapData'); return d ? (d.getAttribute('data-ids') || '') : ''; })()")
 
     async def pill(which):
-        await pg.click(f'.since-pill[data-ev="since_{which}"]'); await pg.wait_for_timeout(1400)
+        # open the column, pick, and the pick closes it again
+        await pg.click('.since-pill[data-ev="since_pick"]'); await pg.wait_for_timeout(800)
+        await pg.click(f'.since-drop .since-pill[data-ev="since_{which}"]'); await pg.wait_for_timeout(1400)
         return await ids()
 
     under_all, under_today, back = await pill("all"), await pill("today"), await pill("all")
@@ -535,6 +544,7 @@ async def passes(port: int, cookie: str) -> int:
             # start every pass unfiltered, whatever the last pass left behind:
             # /since's `period` is a USER var and the world outlives the pass
             await open_tool(pg, "account")
+            await pg.evaluate("(() => { const w=document.querySelector('[data-ev=\"since_pick\"]'); if (w) w.click(); })()"); await pg.wait_for_timeout(700)
             await pg.evaluate("(() => { const v=document.querySelector('[data-ev=\"since_all\"]'); if (v) v.click(); })()"); await pg.wait_for_timeout(800)
             await go_home(pg)
             for name, fn in STEPS:

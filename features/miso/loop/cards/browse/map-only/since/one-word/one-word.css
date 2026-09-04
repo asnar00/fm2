@@ -1,0 +1,49 @@
+/* the one word in the slot: /since's pill, always lit, because there is
+   nothing beside it to be dimmer than. It sizes to its word, so the strip is
+   ~50 points where four pills took 175, and /title's project name gets the
+   room back. */
+.since-pill.since-one { min-width: 34px; justify-content: center; }
+
+/* the column, hanging under the word it came from rather than rising out of a
+   row: the slot is at the top of the screen, so the list drops. Anchored to
+   the slot's own left edge and its own bottom, not centred on the pill —
+   /in-place's reason, one screen edge up.
+
+   The ground is /long-press' card's, a step lighter than a page's, because it
+   is over the map rather than instead of it (/taste 1; /learned 2, the context
+   stays visible under whatever opens). */
+.since-drop {
+  position: fixed;
+  z-index: 25;
+  top: calc(env(safe-area-inset-top, 0px) + 39px);
+  left: calc(env(safe-area-inset-left, 0px) + 16px);
+  min-width: 96px;
+  box-sizing: border-box;
+  display: flex; flex-direction: column; gap: 2px;
+  background: #17171a;
+  border: 1px solid #3a3a3f;
+  border-radius: 12px;
+  padding: 6px;
+  user-select: none; -webkit-user-select: none;
+  animation: since-drop-in 0.18s ease-out;
+}
+
+/* in the column the pills are rows, so they fill the width and read as a list
+   rather than as a strip of buttons */
+.since-drop .since-pill {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 0 10px;
+  height: 30px;
+}
+
+/* quick, not bouncy — /taste 5's 0.18s ease-out, the toolbar's own */
+@keyframes since-drop-in {
+  from { transform: translateY(-6px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* the name has the whole middle back now that the slot is one word */
+.proj-title {
+  left: calc(env(safe-area-inset-left, 0px) + 80px);
+}
