@@ -3,4 +3,3 @@
 - [x] pins
 - [x] recentre
 - [x] reel
-- [x] keeps-its-view
