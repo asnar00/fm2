@@ -1,0 +1,5 @@
+/* the pill goes from every card. /byline/plain already took it off a post's
+   page with this rule scoped to `.post`; the map is now behind every card
+   (/map-only, /always-the-ground), so the same rule holds everywhere and the
+   pin behind the card is where the place is shown. */
+.card-page .card-place { display: none; }
