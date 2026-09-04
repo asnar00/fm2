@@ -1,0 +1,8 @@
+/* the card while the finger has it, and while it is arriving: the transform is
+   the whole of the motion, so nothing else may be animating the same element —
+   /opens-over-map's grow-from-96% would fight the slide. */
+.card-page.fm-carried,
+.card-page.fm-carry-in { will-change: transform, opacity; }
+
+body.fm-map-behind .card-page.fm-carried,
+body.fm-map-behind .card-page.fm-carry-in { animation: none; }
