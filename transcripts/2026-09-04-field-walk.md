@@ -595,3 +595,137 @@ Build 621 is live with transcription, and the reel build is deploying. Meanwhile
 > <status>completed</status>
 > <summary>Background command "Deploy the map-reel build through the gate" completed (exit code 0)</summary>
 > </task-notification>
+
+Streets pulled: 1,986 named places in Sevenoaks are now on the mini for seeding. The combined deploy is in its gate. While it runs I'm writing today's two misses into the ledger.
+
+Written. Waiting on the deploy gate before committing the ledger entry, since a deploy refuses a dirty tree only at its start and I want the commit to land cleanly after it.
+
+### p25
+*2026-09-04 10:48*
+
+> <task-notification>
+> <task-id>bvhk1xc6d</task-id>
+> <tool-use-id>toolu_01JdwxGK2FpAn4GSjryKZeqc</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/bvhk1xc6d.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Deploy transcription plus the map-reel build through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 632 is live with the gate green: transcription and the four map fixes together. Seven of your builds are stamped shipped on your sheet.
+
+**What changed on the phone**
+
+- Recording streams up in two-second pieces as you film, and queues if the signal is poor. Whether iOS hands over pieces during recording or only at stop is still untested, since the worker could not get a camera on the rig. Your walkabout answers it either way.
+- A finished clip is transcribed by Speechmatics, fieldnote's field pipeline, seeded with the geocoded address and the nearest streets. On the one test clip it wrote "Bligh's Road" where whisper wrote "Bly's Road". The local whisper fallback is built but not switched on, because the mini has no memory to spare while five rigs run. The phone's own whisper is gone, and the app is 133 MB lighter.
+- The worker found and fixed a real defect on the way: a transcript landed by the server was not travelling to other people. It does now.
+- A post opens out of its lozenge, comes up still with no flashing and no autoplay, drags with your finger, and shrinks back to the right lozenge on close with the reel and map moved to it. The swipe-away close gets the reel and map move but not the shrink, since the card is already off screen by then.
+
+**Two misses of mine, now in the ledger:** a fast-forward merge that git refused on the second line of its output, so build 621 shipped without transcription and I stamped three builds wrongly before catching it, and a merge commit that the deploy refused. Main is linear from now on, landed by cherry-pick.
+
+Three workers are still out: the recording row, map-only with the time filter, and the boundaries.
+
+### p26
+*2026-09-04 11:02*
+
+> <task-notification>
+> <task-id>a27755b799c22c34e</task-id>
+> <tool-use-id>toolu_01B9csjKZAGo3b5Pf4LRuGT4</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/a27755b799c22c34e.output</output-file>
+> <status>completed</status>
+> <summary>Agent "Build capture/options node" finished</summary>
+> <note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+> <result>Work is committed on a clean tree, rebased onto main's tip, rig torn down.
+> 
+> ## What shipped
+> 
+> **Branch** `worktree-agent-a27755b799c22c34e`, commit **`9f39d1a`**, rebased onto main's tip `0753013`. Working tree clean.
+> 
+> **Contact report first — the redirect did collide.** The `capture/options` node was fully built, gated and proven on the simulator before your message arrived (options button in the posts row, a page with camera + level pill rows). Superseded, not contradicted: I deleted that node and re-placed the work as `features/miso/loop/dictate/as-posts/capture/one-add/video-only/armed/`. Everything you asked me to keep survived intact — the `post_level` var, the `/audience` seam + refactor, the clamp, flip's default-front takeover. Roughly 40 minutes of the first build's rig proof was spent twice.
+> 
+> **One judgement I made against your steer:** you suggested the level page be a *child* of `armed`. I made it one node. A child citing #p5 could not extend a #p14 row (causality bounds extension), and a child citing #p14 would be two nodes at one anchor — misses.md's "siblings at one anchor". Split it in review if you disagree; the page is `render` + three functions.
+> 
+> **The build:** `one_add_ev` is the single seam — the + now carries `tool_record` instead of `vid_rec`, so `/tools` opens a nested level and `/one-level` gives ‹ for free at both depths. The row is rec / stop / camera / publish-level; one of rec+stop is always drawn dead (no `data-ev` at all, so a tap sends nothing). `/audience` gained `audience_new_floor(grade) -&gt; String` returning `grade` unchanged.
+> 
+> ## Evidence
+> 
+> - **Smoke gate green**, all three passes, on the rebased tree. I rewrote the post step (`tools/smoke.py`) — it now walks + → row → level page → ‹ → ‹ with real clicks, and keeps its old branch. Proven green both with `armed` ticked and unticked.
+> - **Real tap path on the iPhone 17 Pro simulator** (my own rig, port 8098, private home/ctx/readout/drive), re-run on the rebased build: `+` → row `tools_home vid_rec no-ev(off) armed_flip tool_level` → camera reads `back camera` / `constraints {"facingMode":"environment"}` → publish level page, 7 pills → `volunteer` → ‹ → `rec` → **live track `facingMode: environment`, `Mock video device 2`** → `stop` → post `_ash.1788519537235` with `floor:"volunteer"` and the project's `in` link. Then `+` → `‹` → post count unchanged at 13.
+> - **Hostile cases run on the rig:** dead stop tap sends nothing (`feature_Loop.send` trace empty, row unchanged, nothing filed); rec goes dead while recording; `+` then `‹` mints nothing; clamp — a *team* member choosing `admin` gets `floor:"team"`, choosing `supporter` gets `floor:"supporter"`; "same as me" gets the author's grade; no project selected gets no floor and no link.
+> - **Toggle proof** (in the commit trailer): `feature_Armed` leaves the composed server entirely; the only added lines are seven chain heads rebinding to the previous outermost link; index.html loses exactly two fragment references.
+> - **Screenshots** (judged against `/taste` and `learned`): `/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/scratchpad/evidence/record-row.png` and `.../level-page.png`.
+> 
+> ## Two bugs I found and fixed mid-build
+> 
+> - A wrapper that removed `/editing`'s phantom pencil **froze the page** — `/editing/toolbar` re-places it every paint and the two chase each other. The page now wears its own class instead of `.card-page`, which is the honest fix. Written into the spec so nobody retries it.
+> - The camera flip wrote **after** `existing.update`, so `/payload` published a one-turn-stale bridge: the button's title said "back camera" while `feature_Flip.facing()` still answered `user`. Caught on the rig, fixed by writing before the chain. Same class as misses.md's "navigation from the wrong side", from the other side.
+> 
+> ## Open risks, named
+> 
+> 1. **The record level shows bare ground** — the posts list does not stay visible under it, which `learned` 2 would prefer. Not fixed: it needs `/posts` and `/browse` symbols my node deliberately does not touch.
+> 2. **A third copy of the six grades** now exists (`audience.rs`, `audience.js`, `armed.rs`). It buys `/audience`-independence; the lists must be kept in agreement.
+> 3. **Neither setting is on `/undo`'s stack** — observed, not designed. My write lands before `/undo` takes its outbox mark, so `/aside` draws no arrow at these levels. Documented as-is.
+> 4. **`/audience` is not untickable** in this tree today — `/invited-into`, `/doors` and `/ranked` call its ladder. Pre-existing; my node is not among them.
+> 5. **The `/flip`-unticked fallback** (`feature_Video.constraints` written directly) is proven at composition level — it links and `cargo build` is clean — but **not** exercised at runtime. Hypothesis, not result.
+> 6. **Rig contention**: another worker shares this scratchpad path and the machine's single simulator, and `/tmp/miso-readout.json` / `/tmp/miso-drive.json` are global. I isolated my rig by patching those paths in the gitignored build dir. `rig.md` says "one rig at a time"; that is not true today and it cost me an hour of misdiagnosis. Worth a real fix (an env var for both paths).
+> 7. The simulator's web clip had to be **reinstalled** (the old `.webclip` lingered after an earlier removal); deploy.md's recovery worked, and the note that Spotlight's Top Hit must be screenshotted before tapping earned itself again.</result>
+> <usage><subagent_tokens>521750</subagent_tokens><tool_uses>414</tool_uses><duration_ms>7267325</duration_ms></usage>
+> <worktree><worktreePath>/Users/microserver/fm2/.claude/worktrees/agent-a27755b799c22c34e</worktreePath><worktreeBranch>worktree-agent-a27755b799c22c34e</worktreeBranch></worktree>
+> </task-notification>
+
+The recording row is back, rebased on main. Reviewing the diff, then landing it.
+
+The recording row passed review and is deploying. The one thing it needs next is the shipped stamp after the gate, which depends on the deploy, so nothing else to request now.
+
+**What the review found**
+
+- The audience change is exactly one function opened where the floor is stamped, returning the grade unchanged. The clamp in the new node refuses a level above the author's own rank.
+- The worker made the level page part of the same node rather than a child, because a child could not cite a later prompt than its parent. That is right.
+- The smoke gate now walks plus, row, level page, back, back with real taps, and passes with the node on and off.
+
+**Two things for your walkabout**
+
+- The record level shows bare ground under the row rather than the posts list. The worker left it because fixing it touches the browse tool.
+- Neither setting is on the undo stack. Camera and level are settings, so that is probably fine, but say if you want them undoable.
+
+### p27
+*2026-09-04 11:06*
+
+> <task-notification>
+> <task-id>b8c6bs7h1</task-id>
+> <tool-use-id>toolu_019ex9Ete9tAQL2zkm276dug</tool-use-id>
+> <output-file>/private/tmp/claude-501/-Users-microserver-fm2/b70435b4-6806-4a25-aadb-e68df3da3413/tasks/b8c6bs7h1.output</output-file>
+> <status>completed</status>
+> <summary>Background command "Fast-forward main to the recording row, verify it landed, and deploy through the gate" completed (exit code 0)</summary>
+> </task-notification>
+
+Build 634 is live with the recording row, gate green, stamped shipped. Two workers remain out: map-only with the time filter, and the boundaries. Nothing to request until one returns.
+
+**On the phone now:** plus opens the row. Rec starts filming and mints the post, stop files it, the camera button flips and stays flipped, and publish level opens the pills. Front camera is the default.
+
+### p28
+*2026-09-04 11:26*
+
+> great. let's make selfie camera the default
+
+It already is. The new row keeps its own camera setting with front as the default, so a fresh install or an updated phone films you first. If your phone is showing the back camera, one of two things is true: it has not taken build 634 yet, or you tapped the camera button once since, and the choice persists. One tap on the camera button puts it back to selfie and it stays there.
+
+If it still comes up on the back camera after the update with no tap from you, tell me and I will treat it as a bug.
+
+### p29
+*2026-09-04 11:27*
+
+> oh ok, I misunderstood "front".
+
+Easy to do. In the code "front" is the screen-side camera, the selfie one, and "back" is the one facing away from you. The button's tool-word could say "selfie" and "rear" instead, which reads better on the phone. Say the word and it is a one-line tweak in the next build.
+
+### p30
+*2026-09-04 11:28*
+
+> for the publish level, let's make the list of options vertical, and explain each publish-level in a short sentence.
+
+A field ask, so it builds now. The worker that built the row still has its context, so I'm sending it back for this rather than briefing a fresh one.
+
+### p31
+*2026-09-04 11:28*
+
+> for the publish level, let's make the list of options vertical, and explain each publish-level in a short sentence. also, hitting the options button should just pop up the options in the current toolbar without creating a new tool level

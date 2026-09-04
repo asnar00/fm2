@@ -604,3 +604,19 @@ is the union of everything it brings in — four nodes, no trailer, refused.
 The worker's own commits each carried their proof. **The rule:** main is
 linear. Land a worker's branch by cherry-pick (or a rebase onto main), never
 by a merge commit, so each commit is judged as the worker proved it.
+
+## five workers, one scratchpad, one simulator (2026-09-04)
+
+Five worker seats ran at once for the first time. Two collisions, both
+reported by the workers themselves: the session scratchpad is shared by
+every agent of the session, and two of them reached for `scratchpad/rig/`
+— one overwrote the other's start/stop scripts and pid file (nothing was
+killed; the PID was restored within a minute). And the simulator rig's
+readout and drive files are fixed at `/tmp/miso-readout.json` and
+`/tmp/miso-drive.json`, so there is exactly one simulator rig per machine:
+one worker held it all session and the other four proved on headless
+WebKit or Chrome instead, and said so. **The rules:** a rig directory is
+named for its worktree, as its port already is (`scratchpad/rig-<agent>/`);
+and the readout/drive paths want an env var (`/diag/rig`'s job) so a
+second simulator rig can exist — until then a brief says who has the
+simulator, and the rest prove on WebKit and name the gap.
